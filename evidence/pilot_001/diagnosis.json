@@ -1,0 +1,49 @@
+{
+  "diagnostic_only": true,
+  "solver_or_evaluator_changed": false,
+  "tiny_consumer_block_test": {
+    "blocks": [
+      [
+        100.0,
+        0.5
+      ],
+      [
+        1000.0,
+        1.0
+      ]
+    ],
+    "dispatch_pu": 1.0,
+    "interval_hours": [
+      0.5,
+      1.0,
+      0.25
+    ],
+    "correct_benefit_per_hour": 1000.0,
+    "frozen_check_benefit_per_hour": 550.0,
+    "total_objective_discrepancy": 787.4999999999991,
+    "known_checker_bug_reproduced": true
+  },
+  "windows_lock_test": {
+    "replacement_blocked": true,
+    "winerror": 5,
+    "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\thoma\\\\Documents\\\\go3-division2-cpu\\\\tmp\\\\tmppmll1amg\\\\status.pending' -> 'C:\\\\Users\\\\thoma\\\\Documents\\\\go3-division2-cpu\\\\tmp\\\\tmppmll1amg\\\\status.json'",
+    "same_error_class_as_pilot": true
+  },
+  "pilot_demand_benefit_difference": 64919806.213967964,
+  "pilot_objective_discrepancy": 64919806.21411133,
+  "scheduling_configuration_risk": {
+    "setting": "relax_balances=true in pinned LANL copperplate helper",
+    "upstream_code": "src/scheduling_model.jl:1310-1323",
+    "source_penalties": {
+      "e_vio_cost": 500.0,
+      "p_bus_vio_cost": 1000000.0,
+      "q_bus_vio_cost": 1000000.0,
+      "s_vio_cost": 500.0
+    },
+    "helper_balance_penalty_field": "e_vio_cost",
+    "hour_5_generation_mw": 1834.71919598,
+    "hour_5_consumption_mw": 6610.263610184263,
+    "conclusion": "Candidate construction underprices imbalance; this subproblem objective/gap does not certify full GO3 quality."
+  },
+  "finding_scope": "Saved initial-candidate objective components plus tiny counterexamples; not a new full evaluation or replacement run."
+}

@@ -1,0 +1,106 @@
+{
+  "implementation_commit": "3ad6ef25c64b08028b24596c38ca90a5696dbb71",
+  "retained_run": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N00617D2_s002_20260916T190451Z",
+  "initial_candidate_note": "Official hard-feasible but NOT accepted by project objective-agreement gate",
+  "partial_candidate_note": "Last serialized AC checkpoint; NOT finally verified; do not call it a passed result",
+  "raw_objective_initial_candidate": -9146513684.699429,
+  "computed_rule_score_initial_candidate": 0.0,
+  "no_final_verified_objective": true,
+  "source_files": {
+    "completion.json": {
+      "bytes": 200,
+      "sha256": "5c426fcce6cfa1df04c213a588334b4403f7e88fbe3f713e6f2d514f6e1a33f4"
+    },
+    "live_status.json": {
+      "bytes": 345,
+      "sha256": "32ed225684227c535f4cf6746345391bacd1e8370610d093a4b9a11e81c3ffe0"
+    },
+    "live_status.json.pending": {
+      "bytes": 345,
+      "sha256": "c0f4037e207fb23feffc11e10ec09a50e386554ca06ad686dce3b13cc9a9f8e5"
+    },
+    "preflight.json": {
+      "bytes": 4642,
+      "sha256": "b2d27fa3750b17f063e7c3adc400eb27f52e98fa9cf72ef4a26451d39e1e4cd4"
+    },
+    "result.json": {
+      "bytes": 36613,
+      "sha256": "63a7b8f0e0e4d8f32590cb6546fa190cc4ee7ff20d719dde841f15874b32b201"
+    },
+    "verification/schedule/certificate.json": {
+      "bytes": 1453,
+      "sha256": "56280d0b140af05c63493fb431773d68b3bea079be491d1c6a36fd6f12f8a3ca"
+    },
+    "verification/schedule/contingency_violations.jsonl.gz": {
+      "bytes": 11041,
+      "sha256": "067a8986e9d8e86c93cd36a77f6bdf93203648c73eb62501e8fbc81fd2ffb064"
+    },
+    "verification/schedule/independent.json": {
+      "bytes": 25083361,
+      "sha256": "7708caaacd6226006bd2300652257aad1c251e3cc5460ee9a47f6b97db624ff4"
+    },
+    "verification/schedule/official/data_errors.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification/schedule/official/ignored_errors.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification/schedule/official/solution_errors.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification/schedule/official/summary.csv": {
+      "bytes": 53617,
+      "sha256": "810521ee540e4a2befa8e10665426326c00547bab257ca8635169cadfcdd65a7"
+    },
+    "verification/schedule/official/summary.json": {
+      "bytes": 77779,
+      "sha256": "79688d89f8282604da28cfaa6f9861b3e9d778b187e3c3d54d56ed87c4b9ad19"
+    },
+    "verification/schedule/official.log": {
+      "bytes": 638663,
+      "sha256": "476112125b251145fc259ee861ab13979690dfe038a62a1e001e67331c198a99"
+    },
+    "verification/schedule/process.log": {
+      "bytes": 1895,
+      "sha256": "ee9b678029003afb8f156638287ae41390a797d383ecb1169556bc5ec87eb325"
+    },
+    "verification_progress.json": {
+      "bytes": 1938,
+      "sha256": "359a483f4e31ae89333a69ea06d75fd83a85be20eaf80120d58cc02656392756"
+    },
+    "worker/candidate_ac_partial.json": {
+      "bytes": 3286954,
+      "sha256": "9b5a03dff8e2c0f74d5d17c12f2597f539580774a0ea1e4031df9c89d6848d33"
+    },
+    "worker/candidate_schedule.json": {
+      "bytes": 3021246,
+      "sha256": "27f69e1a366f27718f66fc95a8f941391d3155d203c3d96efd6abeafbcbb27e6"
+    },
+    "worker/console.log": {
+      "bytes": 165867,
+      "sha256": "dfce8d8f0f607f46e6b910868a3d5766f7639030ede5e78be9a3a7c83b553493"
+    },
+    "worker/continue_after_schedule": {
+      "bytes": 62,
+      "sha256": "36fd533b9cd16183f212a41c88f393a48f94c8d2ac87dabb557d32e700aac55e"
+    },
+    "worker/progress.json": {
+      "bytes": 149,
+      "sha256": "8eae13f2b7d3cabb5775611a92b1ddaed3fad39b65cc22a074ef621c8a2af56f"
+    },
+    "worker/solver_statistics.json": {
+      "bytes": 19254,
+      "sha256": "b8e7685444ca93b71014ed4401a1cbbac618b9e62471550096cc57c72931199e"
+    },
+    "worker/timings.json": {
+      "bytes": 116,
+      "sha256": "c218b6336ad0668c946d525aa4199e14999987b3e7fe8855cefb30b06dd1afa9"
+    }
+  },
+  "ac_intervals_finished": 47,
+  "ac_completed_interval_wall_seconds": 120.86399865150452,
+  "ac_final_solve_iterations": 2387
+}

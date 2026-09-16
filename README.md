@@ -5,9 +5,16 @@ Challenge 3 Final Event, Division 2, 617-bus pilot.
 
 ## Status
 
-Candidate construction, independent/official checking and the deadline controller
-are implemented. Tiny component tests precede the frozen pilot. **No full
-competition-case experiment has run yet.** This is not a competition submission.
+The one authorized cold pilot ran at frozen commit `3ad6ef2` and stopped after
+**197.398 seconds with NO_VERIFIED_INCUMBENT**. It exposed an independent
+consumer-cost ordering bug, a fatal Windows live-status replacement conflict,
+and a weak imbalance-penalty configuration in candidate scheduling. No automatic
+replacement was launched. This is not yet a validated working GO3 solver.
+
+See [the complete first-pilot failure report](docs/PILOT_001_RESULTS_20260916.md)
+for timings, retained artifacts, initial-candidate penalties, matched published
+results and proposed corrections. The frozen algorithm/evaluator were not changed
+during or after the pilot; post-run diagnostics use tiny fixtures and saved records.
 
 ## Scope
 
