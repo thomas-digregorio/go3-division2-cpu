@@ -1,4 +1,4 @@
-# Frozen first-pilot model contract
+# GO3 pilot model contract
 
 ## Identity and revision compatibility
 
@@ -147,3 +147,31 @@ No solver duals are presented as ISO prices. GO3 is a research benchmark, not an
 exact PJM or CAISO market model. Laptop and competition runtimes differ in
 hardware, implementation and budgets and do not establish an apples-to-apples
 speed comparison.
+
+## Authorized replacement pilot 002
+
+The official formulation, raw input, evaluator, PMIN values, source domains and
+acceptance tolerances are unchanged. The following implementation corrections
+are registered in `config/pilot_002.json`:
+
+- The independent objective integrates canonical marginal blocks: increasing
+  marginal production costs, decreasing marginal consumption benefits. Sorting
+  uses a local copy; source arrays and values are never rewritten.
+- The project-owned copperplate adapter prices aggregate real/reactive imbalance
+  with `dt[t] * p_bus_vio_cost` and `dt[t] * q_bus_vio_cost`, respectively.
+  The first pilot inherited the benchmark helper's `e_vio_cost` on these slacks.
+  That underpricing could favor inadequate commitment. Aggregate balance remains
+  a candidate-generation approximation, not nodal AC feasibility or a GO3 bound.
+- Live status, interval statistics and per-interval complete-horizon checkpoints
+  are immutable numbered files. A Windows reader cannot block replacing an older
+  snapshot because no older snapshot is replaced. Verified incumbents have
+  immutable content-hash directories; a better incumbent never overwrites the
+  first complete verified solution.
+- Interrupted worker execution still enters reserved verification of the latest
+  fully published checkpoint. A checkpoint is never accepted without all checks.
+
+`runs/pilot_latch.json` remains intact. The replacement has its own exclusive
+`runs/pilot_002_latch.json`, backed by `manifests/authorization_pilot_002.json`.
+It has the same single cold run and 1,800-second limits, and reads no old solution.
+The lack of contingency-feedback iterations and other candidate-only restrictions
+above remain disclosed limitations; this correction is not a new global solver.

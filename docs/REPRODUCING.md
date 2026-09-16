@@ -61,3 +61,22 @@ The controller overwrites its children's TEMP/TMP, Julia depot, Python bytecode
 cache and numerical thread settings with paths/settings within this local project.
 It records a live physical-storage gate, hardware inventory, implementation/config
 hashes and sampling-based process memory/CPU measurements for the run.
+
+## Explicitly authorized replacement 002
+
+Do not erase the first latch or use the default command to bypass it. The user
+authorized a separate single replacement after the first-pilot report. Its test,
+preflight and launch commands are:
+
+```
+python scripts/component_gate.py
+python scripts/run_pilot.py --config config/pilot_002.json --preflight-only
+python scripts/run_pilot.py --config config/pilot_002.json
+```
+
+The last command consumes `runs/pilot_002_latch.json` permanently. Test repetition
+is limited to tiny synthetic fixtures; these commands do not authorize another
+full run after the replacement. Read `completion.json` for measured end-to-end
+time through final result serialization. `live_status/*.json` and
+`worker/progress/*.json` are immutable snapshots; the largest numeric filename is
+the latest published one. `result.json` is written only at finalization.

@@ -1,11 +1,13 @@
-# Component-test evidence before the single pilot
+# Component-test evidence
 
 All tests use an original two-bus, three-interval synthetic fixture, with
 durations 0.5, 1.0 and 0.25 hours, parallel lines, a transformer, shunt,
 producer, consumer, reserve zones and three source-style outages. No real
 competition-case solve is a component test.
 
-On 2026-09-16 (final machine-readable gate: `manifests/component_tests.json`):
+## Original pilot 001 (historical gate)
+
+On 2026-09-16, before the original `3ad6ef2` pilot:
 
 - Python `unittest discover -s tests -v`: **26/26 passed**, 1.030 s.
 - Julia `scripts/test_solver.jl`: **8/8 passed**, 26.0 s including fixture
@@ -37,3 +39,30 @@ No commercial optimization is invoked by the evaluator adapter.
 Retained development evidence is under ignored `tmp/`; the full pilot's evidence
 will be separate under `runs/`. Passing tiny tests is a launch prerequisite, not
 evidence that the real-case pilot has passed.
+
+## Authorized replacement 002
+
+The current machine-readable gate is `manifests/component_tests.json`.
+All stages passed on 2026-09-16, before any replacement competition-case solve:
+
+| Stage | Result | Wall time |
+|---|---|---:|
+| Official synthetic fixture creation/check | PASS | 0.676 s |
+| Python component tests | 36/36 PASS | 1.268 s |
+| Julia scheduling/AC and penalty assertions | 25/25 PASS | 30.791 s |
+| Complete tiny worker, 3 unequal-duration intervals | PASS | 35.427 s |
+| Independent and official final check | PASS, 9/9 outage-interval checks | 0.813 s |
+
+Tiny final objective: 1732.0994148700997. Independent/official difference:
+1.25e-11; maximum hard residual 0; maximum P/Q imbalance 1.80e-13/2.20e-14 pu.
+These are synthetic-fixture development timings, not competition benchmarks.
+
+Added regressions cover producer/consumer marginal-block ordering and raw-array
+immutability; held/open and concurrent snapshot readers; preserving the first
+verified incumbent when a better one arrives; independent authorization latches;
+latest fully published checkpoint selection; refusal to replace immutable files;
+real/reactive source-penalty coefficients over unequal-duration intervals; and
+a cheap-imbalance commitment counterexample with reserve drivers isolated.
+
+All 23 retained files listed for pilot 001 were also rehashed unchanged before
+the replacement. That was an integrity check, not a rerun or re-evaluation.

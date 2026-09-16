@@ -5,8 +5,10 @@
 - GOC3Benchmark.jl: Robert Parker and Carleton Coffrin, Los Alamos National
   Laboratory; revision `588f3566ab29df240622a9a98c758af1bfc66bb1`.
   Upstream BSD-3 license is retained in the ignored, unmodified upstream checkout
-  at `.cache/upstream/GOC3Benchmark.jl/LICENSE.md`. Any future redistribution must
-  include that full license. Reference: Parker and Coffrin, *Managing Power Balance
+  at `.cache/upstream/GOC3Benchmark.jl/LICENSE.md` and in the tracked
+  `licenses/GOC3Benchmark.BSD-3.txt`. The project-owned `src/scheduling.jl`
+  adapter calls the pinned model/extraction functions and adapts their objective
+  coefficients without modifying the upstream checkout. Reference: Parker and Coffrin, *Managing Power Balance
   and Reserve Feasibility in the AC Unit Commitment Problem*, 2024,
   https://doi.org/10.1016/j.epsr.2024.110670.
 - GO-3-data-model: NREL/Alliance for Sustainable Energy LLC and Battelle Memorial

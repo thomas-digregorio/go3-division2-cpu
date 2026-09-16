@@ -18,7 +18,8 @@ import traceback
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from go3cpu.contract import load_case, case_manifest
-from go3cpu.controller import Deadline, Incumbent, atomic_json, claim_pilot, run_bounded, sha256, stop_process
+from go3cpu.controller import (Deadline, Incumbent, Snapshots, atomic_json, claim_pilot,
+    latest_candidate, latest_snapshot, registered_latch, run_bounded, sha256, stop_process)
 from go3cpu.official import configure_imports
 from go3cpu.safety import GIB, local_path, storage_check
 configure_imports(ROOT)
@@ -49,8 +50,9 @@ def preflight(config_path):
     if (config.get("pilot_ready") is not True or config["maximum_full_runs"]!=1 or
         config["total_seconds"]!=1800 or not config["cold_start"] or config["allow_pop_solution"]):
         raise RuntimeError("Pilot registration is not ready or scope changed")
-    if (ROOT/"runs/pilot_latch.json").exists():
-        raise RuntimeError("The sole authorized pilot was already claimed; no automatic replacement")
+    latch=registered_latch(ROOT,config)
+    if latch.exists():
+        raise RuntimeError("This explicit pilot authorization was already claimed; no automatic replacement")
     if git("status","--porcelain"):
         raise RuntimeError("Freeze and push all code/configuration first: worktree is not clean")
     commit=git("rev-parse","HEAD")
@@ -81,6 +83,7 @@ def preflight(config_path):
             "powershell.exe","-NoProfile","-Command",
             "@{ computer=Get-CimInstance Win32_ComputerSystem | Select-Object Manufacturer,Model,TotalPhysicalMemory; cpu=Get-CimInstance Win32_Processor | Select-Object Name,NumberOfCores,NumberOfLogicalProcessors } | ConvertTo-Json -Depth 4"],text=True))
     record={"commit":commit,"branch":branch,"config_sha256":sha256(config_path),
+        "pilot_id":config.get("pilot_id","pilot_001"),"authorization_latch":str(latch),
         "julia_manifest_sha256":sha256(ROOT/"Manifest.toml"),"source_manifest_sha256":sha256(ROOT/"manifests/sources.json"),
         "component_tests_sha256":sha256(ROOT/"manifests/component_tests.json"),
         "config":config,"case":json.loads((ROOT/"manifests/case.json").read_text()),
@@ -101,6 +104,7 @@ class Monitor:
         self.next_storage=0
         self.next_report=0
         self.last_stage=None
+        self.snapshots=Snapshots(run/"live_status")
 
     def observe(self,process=None):
         if process is not None and process not in self.owned:
@@ -130,13 +134,12 @@ class Monitor:
         if now>=self.next_storage:
             storage_check(ROOT,floor_bytes=int(self.config["minimum_free_gib"]*GIB))
             self.next_storage=now+5
-        progress_file=self.run/"worker/progress.json"
-        progress=json.loads(progress_file.read_text()) if progress_file.exists() else {}
+        progress=latest_snapshot(self.run/"worker/progress")
         stage=(progress.get("stage"),progress.get("interval"))
         if now>=self.next_report or stage!=self.last_stage:
             message={"elapsed_seconds":now-self.clock.start,"remaining_seconds":self.clock.remaining(),
                 "worker":progress,"peak_sampled_process_tree_rss_bytes":self.peak_rss}
-            atomic_json(self.run/"live_status.json",message)
+            self.snapshots.publish(message)
             print("PILOT_PROGRESS "+json.dumps(message),flush=True)
             self.next_report=now+30
             self.last_stage=stage
@@ -144,9 +147,11 @@ class Monitor:
 
 def execute(config_path,config,env,preflight_record):
     stamp=dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    run=ROOT/"runs"/f"C3E4N00617D2_s002_{stamp}"
+    pilot_id=config.get("pilot_id","pilot_001")
+    run=ROOT/"runs"/f"C3E4N00617D2_s002_{pilot_id}_{stamp}"
     # Claim before any solver starts. An unsuccessful run still consumes the authorization.
-    claim_pilot(ROOT/"runs/pilot_latch.json",{"run":str(run),"commit":preflight_record["commit"],"created_utc":stamp})
+    claim_pilot(registered_latch(ROOT,config),{"pilot_id":pilot_id,"run":str(run),
+        "commit":preflight_record["commit"],"created_utc":stamp})
     run.mkdir(parents=True,exist_ok=False)
     worker_dir=run/"worker"; worker_dir.mkdir()
     clock=Deadline(config["total_seconds"],reserve=config["evaluation_reserve_seconds"]+config["finalization_reserve_seconds"])
@@ -156,7 +161,7 @@ def execute(config_path,config,env,preflight_record):
     result={"schema_version":1,"status":"INCOMPLETE","preflight":preflight_record,
         "run_directory":str(run),"global_optimality_certificate":False,
         "full_GO3_certified_gap":None,"evaluations":evaluations}
-    atomic_json(run/"result.json",result)
+    atomic_json(run/"initial_record.json",result,exclusive=True)
     worker=None
     finished=threading.Event()
     # Emergency last resort, not normal cancellation: no optimizer survives the global budget.
@@ -166,7 +171,7 @@ def execute(config_path,config,env,preflight_record):
             for p in list(monitor.owned):
                 stop_process(p)
             atomic_json(run/"hard_deadline.json",{"status":"DEADLINE","elapsed_seconds":time.perf_counter()-clock.start,
-                "retained_certificate":str(run/"verified_incumbent/certificate.json"),
+                "retained_certificate_directory":str(run/"verified_incumbent"),
                 "note":"Only already-written complete certificates remain valid; no incomplete verification is a pass."})
             os._exit(124)
     threading.Thread(target=last_resort,daemon=True).start()
@@ -193,7 +198,7 @@ def execute(config_path,config,env,preflight_record):
             entry["retained"]=incumbent.consider(candidate,certificate)
         else:
             entry["retained"]=False
-        atomic_json(run/"verification_progress.json",evaluations)
+        atomic_json(run/"verification_records"/(label+".json"),entry,exclusive=True)
         print("PILOT_VERIFICATION "+json.dumps({"label":label,"retained":entry["retained"],
             "pass":certificate.get("pass"),"complete":certificate.get("complete"),
             "objective":certificate.get("objective"),"wall_seconds":entry["wall_seconds"]}),flush=True)
@@ -227,44 +232,59 @@ def execute(config_path,config,env,preflight_record):
                     # Generated handshake is not a solver start or a separate experiment.
                     (worker_dir/"continue_after_schedule").write_text("initial candidate checked; continue within original deadline\n")
                 time.sleep(0.1)
-        result["worker_returncode"]=worker.returncode
-        for name in ("candidate_final.json","candidate_ac_partial.json","candidate_schedule.json"):
-            candidate=worker_dir/name
-            if candidate.exists() and not any(e["certificate"]["candidate_sha256"]==sha256(candidate) for e in evaluations):
-                verify(candidate,"final",clock.remaining()-config["finalization_reserve_seconds"])
-                break
     except Exception:
         result["controller_error"]=traceback.format_exc()
     finally:
         if worker is not None:
             stop_process(worker)
+            result["worker_returncode"]=worker.returncode
         for p in monitor.owned:
             stop_process(p)
+        # An interrupted worker must not skip the reserved verification phase.
+        # This is verification of an already-written checkpoint, never another solve.
+        try:
+            candidate=latest_candidate(worker_dir)
+            if candidate is not None and not any(e["certificate"]["candidate_sha256"]==sha256(candidate) for e in evaluations):
+                verify(candidate,"final",clock.remaining()-config["finalization_reserve_seconds"])
+        except Exception:
+            result["final_verification_error"]=traceback.format_exc()
         result["verified_incumbent"]=incumbent.record
-        result["status"]="VERIFIED_HARD_FEASIBLE" if incumbent.record else "NO_VERIFIED_INCUMBENT"
+        result["progress"]=latest_snapshot(worker_dir/"progress")
+        result["pipeline_completed"]=(result["progress"].get("stage")=="complete" and result.get("worker_returncode")==0)
+        result["status"]=("VERIFIED_HARD_FEASIBLE" if result["pipeline_completed"] else
+            "VERIFIED_HARD_FEASIBLE_INCOMPLETE_REFINEMENT") if incumbent.record else "NO_VERIFIED_INCUMBENT"
         result["penalized_violations_allowed_by_official_rules"]=True
         result["peak_sampled_process_tree_rss_bytes"]=monitor.peak_rss
         result["cpu_seconds_by_pid_sampled"]=monitor.cpu_by_pid
         result["cpu_measurement_note"]="Sampled process CPU and sum of RSS, not allocator peak; shared pages may be counted twice."
         result["thread_settings"]={k:config[k] for k in ("highs_threads","julia_threads","blas_threads")}
-        for name in ("timings","solver_statistics","worker_error","progress"):
+        for name in ("timings","solver_statistics","worker_error","schedule_balance"):
             p=worker_dir/(name+".json")
             if p.exists():
                 result[name]=json.loads(p.read_text())
+        if "solver_statistics" not in result:
+            result["solver_statistics"]={"ac_intervals":[json.loads(p.read_text()) for p in sorted((worker_dir/"statistics").glob("ac_*.json"))]}
+            schedule_stats=worker_dir/"statistics/scheduling.json"
+            if schedule_stats.exists():
+                result["solver_statistics"]["scheduling"]=json.loads(schedule_stats.read_text())
+        if "timings" not in result:
+            partial=worker_dir/"timing_snapshots/initial.json"
+            result["timings"]=json.loads(partial.read_text()) if partial.exists() else {}
+            result["timings"]["completed_ac_interval_wall_seconds"]=sum(
+                s["wall_seconds"] for s in result["solver_statistics"].get("ac_intervals",[]))
         serialization=time.perf_counter()
         result["total_seconds_before_final_serialization"]=serialization-clock.start
-        atomic_json(run/"result.json",result)
-        result["final_result_serialization_seconds"]=time.perf_counter()-serialization
-        result["total_end_to_end_seconds"]=time.perf_counter()-clock.start
-        result["within_local_deadline"]=result["total_end_to_end_seconds"]<config["total_seconds"]
-        atomic_json(run/"result.json",result)
+        atomic_json(run/"result.json",result,exclusive=True)
+        final_serialization_seconds=time.perf_counter()-serialization
+        total_seconds=time.perf_counter()-clock.start
         # Completion marker is written last; latch/provisional result never imply success.
-        atomic_json(run/"completion.json",{"status":result["status"],
-            "result_sha256":sha256(run/"result.json"),"elapsed_through_result_serialization_seconds":time.perf_counter()-clock.start})
+        atomic_json(run/"completion.json",{"status":result["status"],"final_result_serialization_seconds":final_serialization_seconds,
+            "result_sha256":sha256(run/"result.json"),"elapsed_through_result_serialization_seconds":time.perf_counter()-clock.start,
+            "within_local_deadline":total_seconds<config["total_seconds"]},exclusive=True)
         finished.set()
     print("PILOT_COMPLETE "+json.dumps({"status":result["status"],"run":str(run),
-        "total_seconds":result["total_end_to_end_seconds"],"objective":(incumbent.record or {}).get("objective")}),flush=True)
-    return 0 if incumbent.record and result["within_local_deadline"] else 2
+        "total_seconds":total_seconds,"objective":(incumbent.record or {}).get("objective")}),flush=True)
+    return 0 if incumbent.record and total_seconds<config["total_seconds"] and result["pipeline_completed"] else 2
 
 
 def main():

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "pilot_id": "pilot_002",
+  "maximum_full_runs": 1,
+  "user_request": "fix these issues and run again and continue from the previous prompt i posted",
+  "scope": "One replacement cold CPU-only 617-bus Division 2 pilot after fixing the three reported issues, then stop for review",
+  "network": "C3E4N00617D2",
+  "scenario": "002",
+  "input_sha256": "d143b112b9d6959cc59a2c074b041f1b6dcfed4598539d8ae761ea48bba8d1c9",
+  "total_seconds": 1800,
+  "previous_implementation": "3ad6ef25c64b08028b24596c38ca90a5696dbb71",
+  "previous_latch": "runs/pilot_latch.json",
+  "previous_evidence": "evidence/pilot_001/retained_manifest.json",
+  "previous_artifacts_policy": "Preserve unchanged; do not use their solutions as initialization"
+}

@@ -43,9 +43,11 @@ def branch_flow(branch, vf, vt, on=1, tm=1.0, ta=0.0):
     return vf * np.conj(i_fr), vt * np.conj(i_to)
 
 
-def pwl_value(blocks, p):
+def pwl_value(blocks, p, *, consumer=False):
+    # Source blocks are unordered offers/bids: cheapest production first,
+    # highest consumer marginal benefit first. Never mutate the raw case.
     remaining, cost = float(p), 0.0
-    for slope, width in blocks:
+    for slope, width in sorted(blocks, key=lambda block: block[0], reverse=consumer):
         take = min(remaining, width)
         cost += slope * take
         remaining -= take
@@ -152,7 +154,7 @@ def check(case, solution, *, deadline=float("inf"), exhaustive=True, violation_s
         costs["on"] += dt*u*g["on_cost"]
         costs["startup"] += su*g["startup_cost"]
         costs["shutdown"] += sd*g["shutdown_cost"]
-        costs["production" if prod else "demand_benefit"] += dt*np.array([pwl_value(ts["cost"][t], actual[t]) for t in range(nt)])
+        costs["production" if prod else "demand_benefit"] += dt*np.array([pwl_value(ts["cost"][t], actual[t], consumer=not prod) for t in range(nt)])
         device_details.append({"uid": uid, "device_type": g["device_type"], "on_status": u.tolist(),
             "startup": su.tolist(), "shutdown": sd.tolist(), "p_su_pu": psu.tolist(), "p_sd_pu": psd.tolist(),
             "p_pu": actual.tolist(), "p_mw": (actual*n["general"]["base_norm_mva"]).tolist(),

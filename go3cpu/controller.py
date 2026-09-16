@@ -7,16 +7,65 @@ from pathlib import Path
 import shutil
 import subprocess
 import time
+import uuid
 
 from .safety import local_path
 
 
-def atomic_json(path, data):
+def atomic_json(path, data, *, exclusive=False):
     path = local_path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    temp = path.with_name(path.name+".pending")
+    if exclusive and path.exists():
+        raise FileExistsError(f"Immutable artifact already exists: {path}")
+    temp = path.with_name(path.name+"."+uuid.uuid4().hex+".pending")
     temp.write_text(json.dumps(data, indent=2, allow_nan=False), encoding="utf-8")
     os.replace(temp,path)
+
+
+class Snapshots:
+    """Single-writer immutable publications: readers never block replacement."""
+    def __init__(self, directory):
+        self.directory=local_path(directory)
+        self.directory.mkdir(parents=True,exist_ok=True)
+        self.sequence=max((int(p.stem) for p in self.directory.glob("*.json") if p.stem.isdigit()),default=0)
+
+    def publish(self, data):
+        self.sequence+=1
+        path=self.directory/f"{self.sequence:08d}.json"
+        atomic_json(path,data,exclusive=True)
+        return path
+
+
+def latest_snapshot(directory):
+    paths=sorted(p for p in local_path(directory).glob("*.json") if p.stem.isdigit())
+    return json.loads(paths[-1].read_text()) if paths else {}
+
+
+def registered_latch(root, config):
+    """Each explicit authorization has a separate immutable one-run latch."""
+    root=local_path(root)
+    pilot_id=config.get("pilot_id","pilot_001")
+    if pilot_id=="pilot_001":
+        return root/"runs/pilot_latch.json"
+    if pilot_id!="pilot_002":
+        raise ValueError("No registered user authorization for this pilot identifier")
+    authorization=json.loads((root/"manifests/authorization_pilot_002.json").read_text())
+    if (authorization["pilot_id"]!=pilot_id or authorization["maximum_full_runs"]!=1 or
+        authorization["input_sha256"]!=config["input_sha256"] or not (root/"runs/pilot_latch.json").exists()):
+        raise ValueError("Replacement authorization or preceding-run record mismatch")
+    return root/"runs/pilot_002_latch.json"
+
+
+def latest_candidate(worker_dir):
+    worker_dir=local_path(worker_dir)
+    final=worker_dir/"candidate_final.json"
+    if final.exists():
+        return final
+    checkpoints=sorted((worker_dir/"checkpoints").glob("candidate_ac_*.json"))
+    if checkpoints:
+        return checkpoints[-1]
+    initial=worker_dir/"candidate_schedule.json"
+    return initial if initial.exists() else None
 
 
 def sha256(path):
@@ -103,13 +152,16 @@ class Incumbent:
             raise ValueError("Nonfinite verified objective")
         if self.record is not None and objective <= self.record["objective"]:
             return False
-        self.output.mkdir(parents=True,exist_ok=True)
-        destination = self.output/"solution.json"
-        temporary = self.output/"solution.json.pending"
+        snapshot=self.output/verification["candidate_sha256"]
+        snapshot.mkdir(parents=True,exist_ok=False)
+        destination = snapshot/"solution.json"
+        temporary = snapshot/"solution.json.pending"
         shutil.copyfile(candidate,temporary)
         if sha256(temporary) != verification["candidate_sha256"]:
             raise ValueError("Incumbent copy failed verification")
         os.replace(temporary,destination)
-        self.record = dict(verification)
-        atomic_json(self.output/"certificate.json",self.record)
+        record = dict(verification)
+        record["retained_solution"]=str(destination)
+        atomic_json(snapshot/"certificate.json",record,exclusive=True)
+        self.record=record
         return True

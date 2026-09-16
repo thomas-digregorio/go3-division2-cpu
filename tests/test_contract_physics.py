@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
+import itertools
 
 import numpy as np
 
@@ -93,6 +94,21 @@ class PhysicsTests(unittest.TestCase):
         self.assertAlmostEqual(result["costs_total"]["production"], 17.5)
         self.assertAlmostEqual(result["costs_total"]["demand_benefit"], 1750)
 
+    def test_permuted_pwl_blocks_and_negative_slopes(self):
+        production=[[-2.0,0.2],[10.0,0.4],[30.0,3.4]]
+        benefit=[[100.0,0.5],[1000.0,1.0],[500.0,2.5]]
+        for blocks in itertools.permutations(production):
+            self.assertAlmostEqual(pwl_value(blocks,1.0),15.6)
+        for blocks in itertools.permutations(benefit):
+            self.assertAlmostEqual(pwl_value(blocks,1.0,consumer=True),1000.0)
+        self.assertEqual(pwl_value([[-10,1],[-20,1]],1,consumer=True),-10)
+
+    def test_cost_ordering_does_not_mutate_source(self):
+        blocks=[[100.0,0.5],[1000.0,1.0]]
+        before=deepcopy(blocks)
+        self.assertEqual(pwl_value(blocks,1,consumer=True),1000)
+        self.assertEqual(blocks,before)
+
     def test_unknown_required_features_rejected(self):
         for field in ("energy_req_lb", "energy_req_ub", "startups_ub", "startup_states"):
             case = deepcopy(self.case)
@@ -151,6 +167,20 @@ class OfficialCrossChecks(unittest.TestCase):
         self.assertGreater(independent["costs_total"]["contingency_worst"], 0)
         self.assertAlmostEqual(independent["costs_total"]["contingency_worst"], -official.z_k_worst_case, places=8)
         self.assertAlmostEqual(independent["costs_total"]["contingency_average"], -official.z_k_average_case, places=8)
+
+    def test_consumer_ordering_regression_against_official(self):
+        case=tiny_case(); sol=tiny_solution(case)
+        case["time_series_input"]["simple_dispatchable_device"][1]["cost"]=[[[100.0,0.5],[1000.0,1.0]] for _ in range(3)]
+        independent,official=check(case,sol),self.official(case,sol)
+        self.assertAlmostEqual(independent["costs_total"]["demand_benefit"],1750)
+        self.assertAlmostEqual(independent["objective"],official.get_obj(),places=8)
+
+    def test_multiblock_producer_and_consumer_agree_with_official(self):
+        case=tiny_case(); sol=tiny_solution(case)
+        devices=case["time_series_input"]["simple_dispatchable_device"]
+        devices[0]["cost"]=[[[30.0,3.4],[-2.0,0.2],[10.0,0.4]] for _ in range(3)]
+        devices[1]["cost"]=[[[100.0,0.5],[1000.0,1.0],[500.0,2.5]] for _ in range(3)]
+        self.assertAlmostEqual(check(case,sol)["objective"],self.official(case,sol).get_obj(),places=8)
 
     def test_official_rejects_bound_ramp_reserve(self):
         case = tiny_case()

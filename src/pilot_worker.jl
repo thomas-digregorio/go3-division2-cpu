@@ -3,13 +3,15 @@ using GOC3Benchmark, JuMP, HiGHS, Ipopt, JSON, LinearAlgebra
 const GO3 = GOC3Benchmark
 const MOI = JuMP.MOI
 LinearAlgebra.BLAS.set_num_threads(1)
+include(joinpath(@__DIR__,"scheduling.jl"))
 
 function atomic_json(path, object)
     occursin("onedrive", lowercase(abspath(path))) && error("OneDrive output forbidden")
+    isfile(path) && error("Refusing to replace an immutable artifact: $path")
     mkpath(dirname(path))
     temp = path * ".pending"
     open(io -> JSON.print(io, object), temp, "w")
-    mv(temp, path; force=true)
+    mv(temp, path)
 end
 
 function safe_stat(f)
@@ -84,10 +86,12 @@ end
 function run_worker(case_path, output, config, work_deadline)
     started = time()
     timings, statistics = Dict{String,Any}(), Dict{String,Any}()
+    progress_sequence=0
     function progress(stage; extra=Dict())
+        progress_sequence+=1
         message = merge(Dict("stage"=>stage, "elapsed_worker_seconds"=>time()-started,
                              "remaining_work_seconds"=>work_deadline-time()), extra)
-        atomic_json(joinpath(output,"progress.json"),message)
+        atomic_json(joinpath(output,"progress",lpad(string(progress_sequence),8,'0')*".json"),message)
         println("GO3_PROGRESS ", JSON.json(message)); flush(stdout)
     end
     function available(cap)
@@ -105,15 +109,15 @@ function run_worker(case_path, output, config, work_deadline)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, "threads"=>config["highs_threads"],
         "mip_rel_gap"=>config["scheduling_relative_gap"], "mip_feasibility_tolerance"=>1e-9,
         "primal_feasibility_tolerance"=>1e-9, "random_seed"=>0)
-    model, schedule = GO3.schedule_power_copperplate(input; optimizer=optimizer,
-        time_limit=available(config["scheduling_seconds"]), include_reserves=true,
-        relax_balances=true, relax_reserves=true, overcommitment_factor=1.0,
-        warmstart_data=nothing)
+    get(config,"scheduling_balance_penalties","")=="source_pq_duration_weighted" || error("Missing registered scheduling penalty policy")
+    model, schedule = schedule_source_balances(input; optimizer=optimizer,
+        time_limit=available(config["scheduling_seconds"]))
     statistics["scheduling"] = model_stats(model)
     statistics["scheduling"]["bound_scope"] = "approximate_copperplate_subproblem_only_not_full_GO3"
     timings["scheduling"] = time()-stage
-    atomic_json(joinpath(output,"solver_statistics.json"),statistics)
+    atomic_json(joinpath(output,"statistics","scheduling.json"),statistics["scheduling"])
     schedule === nothing && error("No feasible whole-horizon UC schedule; no fixed-initial fallback")
+    atomic_json(joinpath(output,"schedule_balance.json"),schedule_balance_summary(input,model))
 
     stage = time()
     initial = candidate_from_schedule(input,schedule)
@@ -124,7 +128,7 @@ function run_worker(case_path, output, config, work_deadline)
     put_reserves!(initial,initial_reserves)
     timings["initial_reserves"] = time()-stage
     atomic_json(joinpath(output,"candidate_schedule.json"),initial)
-    atomic_json(joinpath(output,"timings.json"),timings)
+    atomic_json(joinpath(output,"timing_snapshots","initial.json"),timings)
     progress("schedule_candidate_ready")
     if get(config,"handshake",true)
         while !isfile(joinpath(output,"continue_after_schedule"))
@@ -170,14 +174,14 @@ function run_worker(case_path, output, config, work_deadline)
         stats["warm_start"] = "flat voltage and source shunt starts; within-run UC/deviation targets; no supplied primal, dual or basis start"
         push!(ac_stats,stats)
         statistics["ac_intervals"] = ac_stats
-        atomic_json(joinpath(output,"solver_statistics.json"),statistics)
+        atomic_json(joinpath(output,"statistics","ac_"*lpad(string(i),4,'0')*".json"),stats)
         # Complete-horizon serialization includes still-scheduled future intervals;
         # it is a candidate only and must be rechecked after projection.
-        if i % 8 == 0 || i == length(input.periods)
+        if i % get(config,"checkpoint_every_intervals",1) == 0 || i == length(input.periods)
             partial = GO3.construct_solution_dict(input,schedule;opf_data=results,
                 include_reserves=false,postprocess=true,print_projected_devices=false)
             force_source_topology!(partial,input)
-            atomic_json(joinpath(output,"candidate_ac_partial.json"),partial)
+            atomic_json(joinpath(output,"checkpoints","candidate_ac_"*lpad(string(i),4,'0')*".json"),partial)
         end
     end
     timings["ac_optimization"] = time()-stage
@@ -185,7 +189,7 @@ function run_worker(case_path, output, config, work_deadline)
     final = GO3.construct_solution_dict(input,schedule;opf_data=results,
         include_reserves=false,postprocess=true,print_projected_devices=false)
     force_source_topology!(final,input)
-    atomic_json(joinpath(output,"candidate_ac_partial.json"),final)
+    atomic_json(joinpath(output,"candidate_before_final_reserves.json"),final)
     progress("reserves")
     awards = GO3.calculate_reserves_from_generation(input,final;
         optimizer=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>config["highs_threads"],
@@ -196,6 +200,7 @@ function run_worker(case_path, output, config, work_deadline)
     atomic_json(joinpath(output,"candidate_final.json"),final)
     timings["worker_total"] = time()-started
     atomic_json(joinpath(output,"timings.json"),timings)
+    atomic_json(joinpath(output,"solver_statistics.json"),statistics)
     progress("complete")
 end
 
