@@ -1,0 +1,99 @@
+{
+  "pass": true,
+  "scope": "Original synthetic 2-bus 3-interval fixture only; no competition-case solve",
+  "python_test_count": 26,
+  "julia_test_count": 8,
+  "stages": [
+    {
+      "name": "official_fixture",
+      "returncode": 0,
+      "seconds": 10.071011700005329,
+      "log_sha256": "ba3726d3abfae303b07ed8868f768ea6544e00a2183db078b92cef11ada71ba4"
+    },
+    {
+      "name": "python_tests",
+      "returncode": 0,
+      "seconds": 1.4115703999996185,
+      "log_sha256": "5b534ff041b96cd5e04879e194f80690c9a123a8fc5d8a4925190ddf519903f1"
+    },
+    {
+      "name": "julia_tests",
+      "returncode": 0,
+      "seconds": 29.221299299999373,
+      "log_sha256": "0bda6c125ec277df687a494b486902e81f632c0ec9f3798ba554b1714bf3e912"
+    },
+    {
+      "name": "tiny_worker",
+      "returncode": 0,
+      "seconds": 35.0019014999998,
+      "log_sha256": "d4a4350b13dd493be21e2e90c29c48f671da56633b992b2e98f807188830f6a2"
+    },
+    {
+      "name": "tiny_final_check",
+      "returncode": 0,
+      "seconds": 0.8342684999952326,
+      "log_sha256": "1ebb9a3b50834913eb6c4f1c1610e79b227dca2094de5cb668935964e01ddb7f"
+    }
+  ],
+  "tiny_integration_certificate": {
+    "pass": true,
+    "complete": true,
+    "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
+    "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
+    "independent_seconds": 0.006193300003360491,
+    "official_seconds": 0.5394005999987712,
+    "objective": 1732.0994148700997,
+    "official_feas": 1,
+    "official_phys_feas": 1,
+    "independent_hard_pass": true,
+    "max_hard_residual": 0.0,
+    "objective_discrepancy": 1.2505552149377763e-11,
+    "objective_agreement": true,
+    "contingencies_completed": 9,
+    "contingencies_required": 9,
+    "max_p_imbalance_pu": 1.800781745942004e-13,
+    "max_q_imbalance_pu": 2.2020607320496416e-14,
+    "max_contingency_overload_pu": 0.0,
+    "costs_total": {
+      "production": 17.548480281330683,
+      "demand_benefit": 1750.0,
+      "on": 0.35000000000000003,
+      "startup": 0.0,
+      "shutdown": 0.0,
+      "reserve_awards": 0.0021048480281330682,
+      "switching": 0.0,
+      "real_imbalance": 4.993505609007798e-10,
+      "reactive_imbalance": 2.918980439673792e-11,
+      "base_overload": 0.0,
+      "reserve_shortfall": 0.0,
+      "contingency_worst": 0.0,
+      "contingency_average": 0.0
+    },
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\final_component_gate\\verification",
+    "total_verification_seconds": 0.5456039000055171
+  },
+  "source_sha256": {
+    "config/pilot.json": "131fe843dfda8fa86737e388500b6ff9e81fc0b3da5082d38c6cbbe8699cbf86",
+    "config/tiny_test.json": "f693abd6177b3a45256d0aa8e2a6c9088001d50cb99cb848d5ab9c7082332bc5",
+    "go3cpu/__init__.py": "24960f6da5f3db9c3a5b144d85b1f2ece6605552ba2d6ddc899a64e976b8dc71",
+    "go3cpu/contract.py": "7e862d8f5ad72a484fbeb3c25755475aef2695154e966b1300601eec7e0299b8",
+    "go3cpu/controller.py": "d1cc3d18ced3a8e715d185d4f5489f004b4e2588f321ffbe50e5780c042872d5",
+    "go3cpu/independent.py": "fe205aa3ecd5d7a60be6d30f46e6af3d5fc27106728323b5559f2313d6729aba",
+    "go3cpu/official.py": "e32d4affe04aaa85db97a6dd2d540a43391ca3b53244cdec05139171b6b8f719",
+    "go3cpu/safety.py": "52d7a0fa146fcedfb61e6b3ddcd087bb59812d2e5bce487c933a56d25eca45ee",
+    "Manifest.toml": "5afc92f37c3e084af91394f264acbb2c002134142e615e826d82ff63d324e09f",
+    "Project.toml": "50c14401c4735898c365dd1e15bc6f0952f9d2305b1f99db7bae04c882e2dd9f",
+    "scripts/audit_sources.py": "e4be54726c3262f4468bc49efc59bb33e9d1e03da00cc0db49f94135c4ff54f2",
+    "scripts/component_gate.py": "d93fc65ad08dd52f2c3a834ce461a94a0535d03ad13e2c116b0859fb13a8afcd",
+    "scripts/register_sources.py": "8e28b44c380f91253435b005bde9af869c64d0ef831b75379c470d87bec1209d",
+    "scripts/run_pilot.py": "3e72506976b5c22c316d8715ae3172429709622aa24ed98b88ed5acd82261254",
+    "scripts/test_official_adapter.py": "144c7d2cb0b83f792de52a00ad4e8f7543fb00ca1c0b1e0d39fc1c08c2d41785",
+    "scripts/test_solver.jl": "f53fca559d5a02201168ec5dce843545cfe99476090ad3e6c6fd6508117de470",
+    "scripts/verify_candidate.py": "faaa2370656c0eaf795653176568bb0cb62e9cb56661f5eaf73c30e0bc3fdb96",
+    "src/pilot_worker.jl": "aaffa29de990b2dd7b7306061aa0e6d24ecfdc4705324a6ef4286e9d9377d8ad",
+    "tests/fixtures.py": "617ec0a8840c06da399b9af82c584c790abf269218f4447fb0bacefb6fba6e7e",
+    "tests/test_contract_physics.py": "07169195c22c0b20b02f6d000f2c35c113161e9f7f5386defed43c94a52ed079",
+    "tests/test_controller.py": "90e44533b97e375ed4aea8853a6b5b058beacb946ba9bba510f8caf7f8d53dcc",
+    "tests/test_safety.py": "58d4c21e7f590bd619db7f9ee9ab7713005925dfb44cb667c8aa7f818074ceba"
+  }
+}

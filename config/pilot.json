@@ -7,10 +7,22 @@
   "official_allow_switching": true,
   "total_seconds": 1800,
   "evaluation_reserve_seconds": 240,
+  "initial_verification_seconds": 180,
   "finalization_reserve_seconds": 30,
   "minimum_free_gib": 30,
   "maximum_full_runs": 1,
   "cold_start": true,
   "allow_pop_solution": false,
-  "pilot_ready": false
+  "highs_threads": 4,
+  "julia_threads": 1,
+  "blas_threads": 1,
+  "scheduling_relative_gap": 0.001,
+  "scheduling_seconds": 300,
+  "ac_seconds_per_solve": 10,
+  "reserve_seconds_per_interval": 2,
+  "reserve_finish_seconds": 45,
+  "candidate_topology": "fixed_source_heuristic",
+  "candidate_transformer_controls": "fixed_source_heuristic",
+  "handshake": true,
+  "pilot_ready": true
 }

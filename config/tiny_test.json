@@ -1,0 +1,9 @@
+{
+  "highs_threads": 4,
+  "scheduling_relative_gap": 0.000001,
+  "scheduling_seconds": 15,
+  "ac_seconds_per_solve": 10,
+  "reserve_seconds_per_interval": 2,
+  "reserve_finish_seconds": 10,
+  "handshake": false
+}

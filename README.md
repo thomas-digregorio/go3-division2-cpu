@@ -5,12 +5,15 @@ Challenge 3 Final Event, Division 2, 617-bus pilot.
 
 ## Status
 
-Source audit and implementation in progress. **No full experiment has run.**
-This is not a claim of a working or competition-certified GO3 solver.
+Candidate construction, independent/official checking and the deadline controller
+are implemented. Tiny component tests precede the frozen pilot. **No full
+competition-case experiment has run yet.** This is not a competition submission.
 
 ## Scope
 
-- One deterministically selected scenario; prefer published no-switching results.
+- Registered `C3E4N00617D2`, scenario `002`: 48 one-hour intervals and 562
+  source contingencies per interval. Matching public results allow switching;
+  candidate topology/taps are fixed to source values as a disclosed heuristic.
 - Actual GO3 multi-period formulation, not repeated GO2 snapshots.
 - Open-source CPU solvers only. No commercial solvers or GPU execution.
 - GO2 repository is a read-only reference; do not modify or delete its artifacts.
@@ -32,8 +35,12 @@ The first complete solution must be retained for independent re-evaluation.
 - [Official data model](https://github.com/Smart-DS/GO-3-data-model)
 - [LANL benchmark](https://github.com/lanl-ansi/GOC3Benchmark.jl)
 
-Exact revisions, hashes, source compatibility, limitations and reuse decisions
-will be recorded in `docs/` and `manifests/` before a pilot is permitted.
+See [reuse audit](docs/REUSE_AUDIT.md),
+[formulation and limitations](docs/FORMULATION_AND_LIMITATIONS.md),
+[test evidence](docs/TESTS.md), and [reproduction notes](docs/REPRODUCING.md).
+`manifests/` pins the exact input, upstream files, component-test code hashes
+and same-scenario published records. Hard-feasible GO3 outputs can contain
+penalized violations; no global GO3 optimality certificate is claimed.
 
 No license is granted for newly authored code at this stage. Upstream components
 retain their own licenses and attribution; see `THIRD_PARTY_NOTICES.md` as the
