@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "network": "C3E4N00617D2",
+  "scenario": "002",
+  "input_path": "data/raw/C3E4N00617D2_s002/scenario.json",
+  "input_sha256": "d143b112b9d6959cc59a2c074b041f1b6dcfed4598539d8ae761ea48bba8d1c9",
+  "official_allow_switching": true,
+  "total_seconds": 1800,
+  "evaluation_reserve_seconds": 240,
+  "finalization_reserve_seconds": 30,
+  "minimum_free_gib": 30,
+  "maximum_full_runs": 1,
+  "cold_start": true,
+  "allow_pop_solution": false,
+  "pilot_ready": false
+}
