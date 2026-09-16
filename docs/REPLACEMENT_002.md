@@ -45,5 +45,8 @@ acceptance constraint was changed. This was a tiny component test, not a full ru
   and report the read-only preflight before launching. No automatic further run.
 
 Machine-readable current test evidence is `manifests/component_tests.json`.
-The implementation commit and preflight will be copied into the run record.
-The complete result and comparison will be reported separately after the pilot.
+The frozen implementation was `b8bbc66f1d5bf7a28f8228c443624f614b915046`; the
+preflight is copied into the run record. The one replacement completed in
+554.844 seconds, objective 163,770,857.22572678, with both verification systems
+passing. See [the complete result](PILOT_002_RESULTS_20260916.md). The new latch is
+now consumed; no additional full run is authorized.

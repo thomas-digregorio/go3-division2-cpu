@@ -5,14 +5,17 @@ Challenge 3 Final Event, Division 2, 617-bus pilot.
 
 ## Status
 
-The original authorized cold pilot ran at frozen commit `3ad6ef2` and stopped after
-**197.398 seconds with NO_VERIFIED_INCUMBENT**. It exposed an independent
-consumer-cost ordering bug, a fatal Windows live-status replacement conflict,
-and a weak imbalance-penalty configuration in candidate scheduling. Its artifacts
-and latch are retained unchanged. The user subsequently authorized **one replacement
-pilot**, registered separately as `pilot_002`; see
-[the correction and replacement registration](docs/REPLACEMENT_002.md).
-No replacement result is claimed before that experiment and its checks finish.
+The authorized cold replacement at frozen commit `b8bbc66` completed in
+**554.844 seconds**, with **objective 163,770,857.23**. Independent and official
+checks passed all **26,976** outage-interval evaluations; official `feas=1` and
+`phys_feas=1`. Penalized thermal overloads remain, and no global-optimality or
+strict zero-overload security certificate is claimed.
+
+See [the complete replacement result and matched comparison](docs/PILOT_002_RESULTS_20260916.md).
+The original failed pilot (`3ad6ef2`, 197.398 s, NO_VERIFIED_INCUMBENT) and its
+artifacts/latch remain unchanged. The replacement fixed independent cost ordering,
+Windows live-status publication, and underpriced scheduling imbalance; see
+[the correction registration](docs/REPLACEMENT_002.md). No further run is authorized.
 
 See [the complete first-pilot failure report](docs/PILOT_001_RESULTS_20260916.md)
 for timings, retained artifacts, initial-candidate penalties, matched published
