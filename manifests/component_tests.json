@@ -1,0 +1,103 @@
+{
+  "pass": true,
+  "scope": "Original synthetic 2-bus 3-interval fixture only; no competition-case solve",
+  "python_test_count": 36,
+  "julia_test_count": 25,
+  "stages": [
+    {
+      "name": "official_fixture",
+      "returncode": 0,
+      "seconds": 0.6755005000013625,
+      "log_sha256": "6514e813237fd20fd0e55b3365ae554da44e39894630f3d4979581a276ee0a38"
+    },
+    {
+      "name": "python_tests",
+      "returncode": 0,
+      "seconds": 1.268262199999299,
+      "log_sha256": "3876d3c5c73d2ea4c360d104982e921ab7d03dd05688b6343ad874d62cd84ee2"
+    },
+    {
+      "name": "julia_tests",
+      "returncode": 0,
+      "seconds": 30.79110270000092,
+      "log_sha256": "49849bc106a5b402adc6d8008e598a25860a45a068309c57695ae80bb3175c9f"
+    },
+    {
+      "name": "tiny_worker",
+      "returncode": 0,
+      "seconds": 35.42748389999906,
+      "log_sha256": "d62f20e338a069fbfaeb989c9b62fcf3c4854ba4e138f1815e057db845edf4fb"
+    },
+    {
+      "name": "tiny_final_check",
+      "returncode": 0,
+      "seconds": 0.8126680999994278,
+      "log_sha256": "e09627359413209813117346f1c4b13851d415ed1fc358309f73d901d246e96e"
+    }
+  ],
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_504ta4h5",
+  "tiny_integration_certificate": {
+    "pass": true,
+    "complete": true,
+    "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
+    "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
+    "independent_seconds": 0.016131500000483356,
+    "official_seconds": 0.5359564999962458,
+    "objective": 1732.0994148700997,
+    "official_feas": 1,
+    "official_phys_feas": 1,
+    "independent_hard_pass": true,
+    "max_hard_residual": 0.0,
+    "objective_discrepancy": 1.2505552149377763e-11,
+    "objective_agreement": true,
+    "contingencies_completed": 9,
+    "contingencies_required": 9,
+    "max_p_imbalance_pu": 1.800781745942004e-13,
+    "max_q_imbalance_pu": 2.2020607320496416e-14,
+    "max_contingency_overload_pu": 0.0,
+    "costs_total": {
+      "production": 17.548480281330683,
+      "demand_benefit": 1750.0,
+      "on": 0.35000000000000003,
+      "startup": 0.0,
+      "shutdown": 0.0,
+      "reserve_awards": 0.0021048480281330682,
+      "switching": 0.0,
+      "real_imbalance": 4.993505609007798e-10,
+      "reactive_imbalance": 2.918980439673792e-11,
+      "base_overload": 0.0,
+      "reserve_shortfall": 0.0,
+      "contingency_worst": 0.0,
+      "contingency_average": 0.0
+    },
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_504ta4h5\\verification",
+    "total_verification_seconds": 0.5520955999963917
+  },
+  "source_sha256": {
+    "config/pilot.json": "131fe843dfda8fa86737e388500b6ff9e81fc0b3da5082d38c6cbbe8699cbf86",
+    "config/pilot_002.json": "15bfac31b4b4dda0efed3be2b8addb13a85e320665efa03417dc8158ef55eb0f",
+    "config/tiny_test.json": "1fdde86815c02a085a868374f9d9c89c1a71fc477d078b7c28e93259042b367a",
+    "go3cpu/__init__.py": "24960f6da5f3db9c3a5b144d85b1f2ece6605552ba2d6ddc899a64e976b8dc71",
+    "go3cpu/contract.py": "7e862d8f5ad72a484fbeb3c25755475aef2695154e966b1300601eec7e0299b8",
+    "go3cpu/controller.py": "60b82f3bc808d6a4c4257d365e66f753af8210b886bef4286d21bcb00b9a2b2e",
+    "go3cpu/independent.py": "45bad52f2a58b2d758ed8a702f4f57871b243595a9d0f0dcd995bc2b429573b2",
+    "go3cpu/official.py": "e32d4affe04aaa85db97a6dd2d540a43391ca3b53244cdec05139171b6b8f719",
+    "go3cpu/safety.py": "52d7a0fa146fcedfb61e6b3ddcd087bb59812d2e5bce487c933a56d25eca45ee",
+    "Manifest.toml": "5afc92f37c3e084af91394f264acbb2c002134142e615e826d82ff63d324e09f",
+    "manifests/authorization_pilot_002.json": "fa99be6acba2cf44f4da13e506ae4d8618621cd162e610e97a49fe3bb65756b2",
+    "Project.toml": "50c14401c4735898c365dd1e15bc6f0952f9d2305b1f99db7bae04c882e2dd9f",
+    "scripts/audit_sources.py": "e4be54726c3262f4468bc49efc59bb33e9d1e03da00cc0db49f94135c4ff54f2",
+    "scripts/component_gate.py": "8d1743d1f28d1b4a492724c572c323d7adbd31a7799291f0b81ae1e1ad3f37ce",
+    "scripts/register_sources.py": "8e28b44c380f91253435b005bde9af869c64d0ef831b75379c470d87bec1209d",
+    "scripts/run_pilot.py": "b4abdbcd97e284f1f3faf529f661da9d5498b482e11a94ca70918d9c0ea35f4a",
+    "scripts/test_official_adapter.py": "144c7d2cb0b83f792de52a00ad4e8f7543fb00ca1c0b1e0d39fc1c08c2d41785",
+    "scripts/test_solver.jl": "6f9d2a8302103eebc53e9c59e435fc301bb3c9152a730749a8c399bafb81c656",
+    "scripts/verify_candidate.py": "faaa2370656c0eaf795653176568bb0cb62e9cb56661f5eaf73c30e0bc3fdb96",
+    "src/pilot_worker.jl": "13e0f20297663715e8eeded7eac0d5f5768b08658daa43f529512d5840565b1e",
+    "src/scheduling.jl": "b1079ef9973681023af620ab35473b855a856c30be86803b03257a2b203e39a4",
+    "tests/fixtures.py": "617ec0a8840c06da399b9af82c584c790abf269218f4447fb0bacefb6fba6e7e",
+    "tests/test_contract_physics.py": "9f77c230bdd1ddfce262b4036710689d54d33da19a41c4733433633c47c04e4c",
+    "tests/test_controller.py": "e128726e4e666508e3290b7ea0fd82ffe0ea4ad08b919f172edef640121d7862",
+    "tests/test_safety.py": "58d4c21e7f590bd619db7f9ee9ab7713005925dfb44cb667c8aa7f818074ceba"
+  }
+}

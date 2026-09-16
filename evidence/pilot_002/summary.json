@@ -1,0 +1,588 @@
+{
+  "operation": "Post-run aggregation/hash audit only; no new solve or reevaluation",
+  "implementation_commit": "b8bbc66f1d5bf7a28f8228c443624f614b915046",
+  "run_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N00617D2_s002_pilot_002_20260916T222357Z",
+  "status": "VERIFIED_HARD_FEASIBLE",
+  "official_objective": 163770857.22572678,
+  "computed_rule_score_not_official_entry": 163770857.22572678,
+  "end_to_end_seconds": 554.8442398000043,
+  "peak_sampled_rss_gib": 10.56399917602539,
+  "final_certificate": {
+    "pass": true,
+    "complete": true,
+    "candidate_sha256": "629134d5d1bf562af922a2eb8a5f6ce2e67127320c8ad235ec0484e347f55857",
+    "input_sha256": "d143b112b9d6959cc59a2c074b041f1b6dcfed4598539d8ae761ea48bba8d1c9",
+    "independent_seconds": 2.1644909999959054,
+    "official_seconds": 3.95470270000078,
+    "objective": 163770857.22572678,
+    "official_feas": 1,
+    "official_phys_feas": 1,
+    "independent_hard_pass": true,
+    "max_hard_residual": 9.950928969715278e-13,
+    "objective_discrepancy": 0.00013524293899536133,
+    "objective_agreement": true,
+    "contingencies_completed": 26976,
+    "contingencies_required": 26976,
+    "max_p_imbalance_pu": 1.5362378036343216e-10,
+    "max_q_imbalance_pu": 1.8562072851002753e-09,
+    "max_contingency_overload_pu": 5.630091978696461,
+    "costs_total": {
+      "production": 6678373.107354641,
+      "demand_benefit": 170638146.78188005,
+      "on": 2320.60000000002,
+      "startup": 725.0,
+      "shutdown": 250.0,
+      "reserve_awards": 0.0,
+      "switching": 0.0,
+      "real_imbalance": 0.014519533071639487,
+      "reactive_imbalance": 0.05813219724146618,
+      "base_overload": 10974.061866939948,
+      "reserve_shortfall": 0.0,
+      "contingency_worst": 171979.7586120506,
+      "contingency_average": 2666.955803149791
+    },
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N00617D2_s002_pilot_002_20260916T222357Z\\verification\\final",
+    "total_verification_seconds": 6.119217599996773
+  },
+  "per_interval": [
+    {
+      "hour_one_based": 1,
+      "producers_on": 94,
+      "generation_mw": 7425.682942203108,
+      "consumption_mw": 7291.300459008088,
+      "objective": 3432991.769719593
+    },
+    {
+      "hour_one_based": 2,
+      "producers_on": 94,
+      "generation_mw": 7288.962739165622,
+      "consumption_mw": 7159.915770995137,
+      "objective": 3364723.729631481
+    },
+    {
+      "hour_one_based": 3,
+      "producers_on": 94,
+      "generation_mw": 7147.826522214183,
+      "consumption_mw": 7023.639035390241,
+      "objective": 3294041.9185339874
+    },
+    {
+      "hour_one_based": 4,
+      "producers_on": 94,
+      "generation_mw": 6981.764010046913,
+      "consumption_mw": 6862.354558121303,
+      "objective": 3210711.4933126126
+    },
+    {
+      "hour_one_based": 5,
+      "producers_on": 77,
+      "generation_mw": 5365.68059719379,
+      "consumption_mw": 5288.210881937686,
+      "objective": 3317060.2735482664
+    },
+    {
+      "hour_one_based": 6,
+      "producers_on": 76,
+      "generation_mw": 5104.233194637519,
+      "consumption_mw": 5029.856748590756,
+      "objective": 3163979.5841334555
+    },
+    {
+      "hour_one_based": 7,
+      "producers_on": 74,
+      "generation_mw": 4873.190942098136,
+      "consumption_mw": 4801.320562728994,
+      "objective": 3023190.166121887
+    },
+    {
+      "hour_one_based": 8,
+      "producers_on": 74,
+      "generation_mw": 4736.184325852833,
+      "consumption_mw": 4665.363775403907,
+      "objective": 2939520.0090731354
+    },
+    {
+      "hour_one_based": 9,
+      "producers_on": 74,
+      "generation_mw": 4663.05689232845,
+      "consumption_mw": 4592.934916603692,
+      "objective": 2894886.111821085
+    },
+    {
+      "hour_one_based": 10,
+      "producers_on": 74,
+      "generation_mw": 4650.628103965675,
+      "consumption_mw": 4580.6670282658815,
+      "objective": 2887231.1419030493
+    },
+    {
+      "hour_one_based": 11,
+      "producers_on": 74,
+      "generation_mw": 4712.273883757502,
+      "consumption_mw": 4641.60778224885,
+      "objective": 2924969.992020955
+    },
+    {
+      "hour_one_based": 12,
+      "producers_on": 74,
+      "generation_mw": 4869.00873903742,
+      "consumption_mw": 4797.017989362901,
+      "objective": 3020843.5009502945
+    },
+    {
+      "hour_one_based": 13,
+      "producers_on": 76,
+      "generation_mw": 5076.931160460865,
+      "consumption_mw": 5002.94603469951,
+      "objective": 3147313.4406383885
+    },
+    {
+      "hour_one_based": 14,
+      "producers_on": 76,
+      "generation_mw": 5185.109692709105,
+      "consumption_mw": 5109.065071952185,
+      "objective": 3212890.443866811
+    },
+    {
+      "hour_one_based": 15,
+      "producers_on": 77,
+      "generation_mw": 5410.089752232556,
+      "consumption_mw": 5330.061772694938,
+      "objective": 3348394.932602695
+    },
+    {
+      "hour_one_based": 16,
+      "producers_on": 77,
+      "generation_mw": 5653.270213949254,
+      "consumption_mw": 5569.994960651817,
+      "objective": 3496200.736682222
+    },
+    {
+      "hour_one_based": 17,
+      "producers_on": 78,
+      "generation_mw": 5838.267704668455,
+      "consumption_mw": 5752.779042020639,
+      "objective": 3608038.0531504047
+    },
+    {
+      "hour_one_based": 18,
+      "producers_on": 78,
+      "generation_mw": 5931.810194167109,
+      "consumption_mw": 5845.152773164097,
+      "objective": 3665013.667288979
+    },
+    {
+      "hour_one_based": 19,
+      "producers_on": 78,
+      "generation_mw": 5945.53910142038,
+      "consumption_mw": 5858.9725650387,
+      "objective": 3673512.6482699313
+    },
+    {
+      "hour_one_based": 20,
+      "producers_on": 78,
+      "generation_mw": 5911.103685169748,
+      "consumption_mw": 5824.741109452259,
+      "objective": 3652500.264304679
+    },
+    {
+      "hour_one_based": 21,
+      "producers_on": 78,
+      "generation_mw": 5864.654143913206,
+      "consumption_mw": 5778.849589492983,
+      "objective": 3624493.8613999174
+    },
+    {
+      "hour_one_based": 22,
+      "producers_on": 78,
+      "generation_mw": 5815.948684132949,
+      "consumption_mw": 5730.756604162766,
+      "objective": 3594973.1853238977
+    },
+    {
+      "hour_one_based": 23,
+      "producers_on": 78,
+      "generation_mw": 5825.830373248075,
+      "consumption_mw": 5740.498789007982,
+      "objective": 3601008.3584005507
+    },
+    {
+      "hour_one_based": 24,
+      "producers_on": 78,
+      "generation_mw": 6098.727132872606,
+      "consumption_mw": 6009.710326862862,
+      "objective": 3766166.5475629666
+    },
+    {
+      "hour_one_based": 25,
+      "producers_on": 78,
+      "generation_mw": 6293.872669259891,
+      "consumption_mw": 6201.539254689375,
+      "objective": 3883771.0766341514
+    },
+    {
+      "hour_one_based": 26,
+      "producers_on": 78,
+      "generation_mw": 6204.836433331916,
+      "consumption_mw": 6114.009606950267,
+      "objective": 3830705.7299304744
+    },
+    {
+      "hour_one_based": 27,
+      "producers_on": 78,
+      "generation_mw": 6099.782312712682,
+      "consumption_mw": 6010.736225124458,
+      "objective": 3766749.2285285285
+    },
+    {
+      "hour_one_based": 28,
+      "producers_on": 78,
+      "generation_mw": 5943.416008490974,
+      "consumption_mw": 5856.634616309706,
+      "objective": 3672356.8007052755
+    },
+    {
+      "hour_one_based": 29,
+      "producers_on": 78,
+      "generation_mw": 5712.082654026373,
+      "consumption_mw": 5628.2217221830415,
+      "objective": 3531872.3431438636
+    },
+    {
+      "hour_one_based": 30,
+      "producers_on": 77,
+      "generation_mw": 5427.853361496935,
+      "consumption_mw": 5347.36579097954,
+      "objective": 3359202.765432452
+    },
+    {
+      "hour_one_based": 31,
+      "producers_on": 76,
+      "generation_mw": 5191.107977119267,
+      "consumption_mw": 5115.024080054979,
+      "objective": 3216787.0902604884
+    },
+    {
+      "hour_one_based": 32,
+      "producers_on": 76,
+      "generation_mw": 5049.865089082869,
+      "consumption_mw": 4976.20610532657,
+      "objective": 3131627.64897369
+    },
+    {
+      "hour_one_based": 33,
+      "producers_on": 76,
+      "generation_mw": 4993.174653801486,
+      "consumption_mw": 4919.502504899656,
+      "objective": 3096841.265179641
+    },
+    {
+      "hour_one_based": 34,
+      "producers_on": 76,
+      "generation_mw": 4991.747577113802,
+      "consumption_mw": 4918.087939716897,
+      "objective": 3095968.0118054566
+    },
+    {
+      "hour_one_based": 35,
+      "producers_on": 76,
+      "generation_mw": 5071.675312291034,
+      "consumption_mw": 4997.856255983761,
+      "objective": 3145013.7877667868
+    },
+    {
+      "hour_one_based": 36,
+      "producers_on": 76,
+      "generation_mw": 5255.837170985963,
+      "consumption_mw": 5179.306476942498,
+      "objective": 3256474.548209869
+    },
+    {
+      "hour_one_based": 37,
+      "producers_on": 77,
+      "generation_mw": 5520.170193857142,
+      "consumption_mw": 5438.197488752181,
+      "objective": 3415039.285034337
+    },
+    {
+      "hour_one_based": 38,
+      "producers_on": 78,
+      "generation_mw": 5714.774118865888,
+      "consumption_mw": 5629.50771569668,
+      "objective": 3531855.115006845
+    },
+    {
+      "hour_one_based": 39,
+      "producers_on": 79,
+      "generation_mw": 5948.86119254707,
+      "consumption_mw": 5860.815150807726,
+      "objective": 3674026.203616355
+    },
+    {
+      "hour_one_based": 40,
+      "producers_on": 79,
+      "generation_mw": 6063.388016131305,
+      "consumption_mw": 5973.863780974436,
+      "objective": 3743665.135455066
+    },
+    {
+      "hour_one_based": 41,
+      "producers_on": 79,
+      "generation_mw": 6049.304183075467,
+      "consumption_mw": 5959.890911758019,
+      "objective": 3735178.199126161
+    },
+    {
+      "hour_one_based": 42,
+      "producers_on": 79,
+      "generation_mw": 5948.532190139327,
+      "consumption_mw": 5860.458587328735,
+      "objective": 3674263.5161684877
+    },
+    {
+      "hour_one_based": 43,
+      "producers_on": 79,
+      "generation_mw": 5814.393452339277,
+      "consumption_mw": 5728.073605330422,
+      "objective": 3592633.3064003144
+    },
+    {
+      "hour_one_based": 44,
+      "producers_on": 78,
+      "generation_mw": 5685.06856316791,
+      "consumption_mw": 5599.844442164471,
+      "objective": 3514207.133599907
+    },
+    {
+      "hour_one_based": 45,
+      "producers_on": 78,
+      "generation_mw": 5597.605950360766,
+      "consumption_mw": 5513.821918636439,
+      "objective": 3462260.968362293
+    },
+    {
+      "hour_one_based": 46,
+      "producers_on": 78,
+      "generation_mw": 5570.610923085806,
+      "consumption_mw": 5487.19562795607,
+      "objective": 3445586.5961440606
+    },
+    {
+      "hour_one_based": 47,
+      "producers_on": 78,
+      "generation_mw": 5614.084125946468,
+      "consumption_mw": 5530.0538582897925,
+      "objective": 3471488.8392002713
+    },
+    {
+      "hour_one_based": 48,
+      "producers_on": 78,
+      "generation_mw": 5923.720446167474,
+      "consumption_mw": 5835.757062704666,
+      "objective": 3658626.8006455367
+    }
+  ],
+  "producer_startups": 7.0,
+  "producer_shutdowns": 23.0,
+  "commitment_changes_during_ac_refinement": 0,
+  "maximum_base_overload_pu": 0.8550632533222,
+  "maximum_reserve_shortfall_pu": 0.0,
+  "ac_final_solve_iterations": 2644,
+  "ac_statuses": [
+    "LOCALLY_SOLVED"
+  ],
+  "independent_timing": {
+    "base_and_temporal": 0.23086480000347365,
+    "exhaustive_contingencies": 1.3193959999989602
+  },
+  "top_five": [
+    {
+      "source_row": 8860,
+      "team": "TIM-GO",
+      "model": "C3E4N00617D2",
+      "scenario": "2",
+      "SW": "1",
+      "objective": "163780452.926727",
+      "z": null,
+      "score": "163780452.926727",
+      "runtime": "189",
+      "timelimit": "7200",
+      "feas": "1",
+      "infeas": "0",
+      "uuid": "1054-1693622042_c3E4",
+      "Div.": "2",
+      "scored": "45176.190524745369",
+      "allow_switching": "1",
+      "evaluation_feas": "1",
+      "evaluation_infeas": "0",
+      "git_info_c3datautilities_commit": "fabdeb545cd2f471396579e720f355de1e36595f",
+      "git_info_bid_ds_data_model_commit": "nan",
+      "problem_num_buses": "617",
+      "problem_num_intervals": "48",
+      "problem_num_contingencies": "562",
+      "problem_total_duration": "48",
+      "problem_interval_durations": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+      "problem_general_base_norm_mva": "100",
+      "evaluation_pass": null,
+      "scoring_method": "2",
+      "is_active": "1"
+    },
+    {
+      "source_row": 3508,
+      "team": "GravityX",
+      "model": "C3E4N00617D2",
+      "scenario": "2",
+      "SW": "1",
+      "objective": "163780161.86518899",
+      "z": null,
+      "score": "163780161.86518899",
+      "runtime": "242",
+      "timelimit": "7200",
+      "feas": "1",
+      "infeas": "0",
+      "uuid": "51-1693897156_c3E4",
+      "Div.": "2",
+      "scored": "45176.19178854167",
+      "allow_switching": "1",
+      "evaluation_feas": "1",
+      "evaluation_infeas": "0",
+      "git_info_c3datautilities_commit": "fabdeb545cd2f471396579e720f355de1e36595f",
+      "git_info_bid_ds_data_model_commit": "nan",
+      "problem_num_buses": "617",
+      "problem_num_intervals": "48",
+      "problem_num_contingencies": "562",
+      "problem_total_duration": "48",
+      "problem_interval_durations": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+      "problem_general_base_norm_mva": "100",
+      "evaluation_pass": null,
+      "scoring_method": "2",
+      "is_active": "1"
+    },
+    {
+      "source_row": 2839,
+      "team": "GOT-BSI-OPF",
+      "model": "C3E4N00617D2",
+      "scenario": "2",
+      "SW": "1",
+      "objective": "163779883.86193299",
+      "z": null,
+      "score": "163779883.86193299",
+      "runtime": "141",
+      "timelimit": "7200",
+      "feas": "1",
+      "infeas": "0",
+      "uuid": "504-1693849098_c3E4",
+      "Div.": "2",
+      "scored": "45177.017283125002",
+      "allow_switching": "1",
+      "evaluation_feas": "1",
+      "evaluation_infeas": "0",
+      "git_info_c3datautilities_commit": "bb5df337553b21ab8be89ae5f9106958541730d4",
+      "git_info_bid_ds_data_model_commit": "nan",
+      "problem_num_buses": "617",
+      "problem_num_intervals": "48",
+      "problem_num_contingencies": "562",
+      "problem_total_duration": "48",
+      "problem_interval_durations": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+      "problem_general_base_norm_mva": "100",
+      "evaluation_pass": null,
+      "scoring_method": "2",
+      "is_active": "1"
+    },
+    {
+      "source_row": 9529,
+      "team": "YongOptimization",
+      "model": "C3E4N00617D2",
+      "scenario": "2",
+      "SW": "1",
+      "objective": "163769973.120424",
+      "z": null,
+      "score": "163769973.120424",
+      "runtime": "161",
+      "timelimit": "7200",
+      "feas": "1",
+      "infeas": "0",
+      "uuid": "535-1693855412_c3E4",
+      "Div.": "2",
+      "scored": "45176.190380509259",
+      "allow_switching": "1",
+      "evaluation_feas": "1",
+      "evaluation_infeas": "0",
+      "git_info_c3datautilities_commit": "fabdeb545cd2f471396579e720f355de1e36595f",
+      "git_info_bid_ds_data_model_commit": "nan",
+      "problem_num_buses": "617",
+      "problem_num_intervals": "48",
+      "problem_num_contingencies": "562",
+      "problem_total_duration": "48",
+      "problem_interval_durations": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+      "problem_general_base_norm_mva": "100",
+      "evaluation_pass": null,
+      "scoring_method": "2",
+      "is_active": "1"
+    },
+    {
+      "source_row": 4846,
+      "team": "Occams razor",
+      "model": "C3E4N00617D2",
+      "scenario": "2",
+      "SW": "1",
+      "objective": "163768479.92458299",
+      "z": null,
+      "score": "163768479.92458299",
+      "runtime": "317",
+      "timelimit": "7200",
+      "feas": "1",
+      "infeas": "0",
+      "uuid": "507-1693885200_c3E4",
+      "Div.": "2",
+      "scored": "45180.372310613428",
+      "allow_switching": "1",
+      "evaluation_feas": "1",
+      "evaluation_infeas": "0",
+      "git_info_c3datautilities_commit": "bb5df337553b21ab8be89ae5f9106958541730d4",
+      "git_info_bid_ds_data_model_commit": "nan",
+      "problem_num_buses": "617",
+      "problem_num_intervals": "48",
+      "problem_num_contingencies": "562",
+      "problem_total_duration": "48",
+      "problem_interval_durations": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+      "problem_general_base_norm_mva": "100",
+      "evaluation_pass": null,
+      "scoring_method": "2",
+      "is_active": "1"
+    }
+  ],
+  "published_benchmark": {
+    "source_row": 163,
+    "team": "ARPA-e Benchmark",
+    "model": "C3E4N00617D2",
+    "scenario": "2",
+    "SW": "1",
+    "objective": "163637410.323598",
+    "z": null,
+    "score": "163637410.323598",
+    "runtime": "592",
+    "timelimit": "7200",
+    "feas": "1",
+    "infeas": "0",
+    "uuid": "1073-1693588995_c3E4",
+    "Div.": "2",
+    "scored": "45176.846777800929",
+    "allow_switching": "1",
+    "evaluation_feas": "1",
+    "evaluation_infeas": "0",
+    "git_info_c3datautilities_commit": "bb5df337553b21ab8be89ae5f9106958541730d4",
+    "git_info_bid_ds_data_model_commit": "nan",
+    "problem_num_buses": "617",
+    "problem_num_intervals": "48",
+    "problem_num_contingencies": "562",
+    "problem_total_duration": "48",
+    "problem_interval_durations": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+    "problem_general_base_norm_mva": "100",
+    "evaluation_pass": null,
+    "scoring_method": "2",
+    "is_active": "1"
+  },
+  "percent_below_best_published_objective_not_optimality_gap": 0.005858880488324575,
+  "objective_above_published_benchmark": 133446.90212878585
+}
