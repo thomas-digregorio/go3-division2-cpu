@@ -5,6 +5,7 @@ const MOI = JuMP.MOI
 LinearAlgebra.BLAS.set_num_threads(1)
 include(joinpath(@__DIR__,"consumer_dominance.jl"))
 include(joinpath(@__DIR__,"startup_windows.jl"))
+include(joinpath(@__DIR__,"scheduling_seed.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"ac_primal_start.jl"))
 include(joinpath(@__DIR__,"ac_interval_start.jl"))
@@ -153,24 +154,51 @@ function run_worker(case_path, output, config, work_deadline)
         "mip_rel_gap"=>config["scheduling_relative_gap"], "mip_feasibility_tolerance"=>1e-9,
         "primal_feasibility_tolerance"=>1e-9, "random_seed"=>0,
         "mip_lp_solver"=>get(config,"scheduling_mip_lp_solver","choose"),
-        "log_dev_level"=>get(config,"scheduling_log_dev_level",0))
+        "log_dev_level"=>get(config,"scheduling_log_dev_level",0),
+        "highs_analysis_level"=>get(config,"scheduling_analysis_level",0))
     get(config,"scheduling_balance_penalties","")=="source_pq_duration_weighted" || error("Missing registered scheduling penalty policy")
     dominance_policy=get(config,"scheduling_consumer_dominance","off")
     dominance_policy in ("off","guarded_online_v1") || error("Unknown consumer dominance policy")
     model, schedule = schedule_source_balances(input; optimizer=optimizer,
         time_limit=available(config["scheduling_seconds"]),
         include_reserves=get(config,"scheduling_include_reserves",true),
-        consumer_dominance=dominance_policy=="guarded_online_v1")
+        consumer_dominance=dominance_policy=="guarded_online_v1",
+        seed_policy=get(config,"scheduling_seed_policy","off"),
+        construction_seconds=get(config,"scheduling_construction_seconds",0),
+        cost_seconds=get(config,"scheduling_constructed_cost_seconds",0),
+        deadline=work_deadline,
+        native_log_path=joinpath(output,"statistics","scheduling_economic_native.log"),
+        on_phase=record->begin
+            atomic_json(joinpath(output,"statistics",record["phase"]*".json"),record)
+            progress("scheduling_phase_complete";extra=Dict("phase"=>record["phase"],
+                "primal_status"=>record["primal_status"]))
+        end,
+        on_seed=(schedule,audit)->atomic_json(joinpath(output,"scheduling_seed.json"),
+            Dict("source"=>"constructed_within_this_cold_attempt","schedule"=>schedule,"audit"=>audit)))
     statistics["scheduling"] = model_stats(model)
+    if haskey(model.ext,:selected_schedule_audit)
+        statistics["scheduling"]["native_economic_mip_statistics"]=copy(statistics["scheduling"])
+        selected=model.ext[:selected_schedule_audit]
+        statistics["scheduling"]["selected_schedule"]=selected
+        statistics["scheduling"]["objective"]=selected["objective"]
+        statistics["scheduling"]["primal_status"]="VERIFIED_ORIGINAL_SCHEDULING_POINT"
+        bound=statistics["scheduling"]["bound"]
+        statistics["scheduling"]["relative_gap"]=bound===nothing || bound<selected["objective"]-1e-6 ?
+            nothing : max(0.0,bound-selected["objective"])/max(abs(selected["objective"]),1e-10)
+    end
     merge!(statistics["scheduling"],model.ext[:scheduling_formulation])
     statistics["scheduling"]["mip_lp_solver_requested"]=get(config,"scheduling_mip_lp_solver","choose")
     statistics["scheduling"]["mip_lp_solver_option"]=get_optimizer_attribute(model,"mip_lp_solver")
     statistics["scheduling"]["log_dev_level"]=get_optimizer_attribute(model,"log_dev_level")
+    statistics["scheduling"]["highs_analysis_level"]=get_optimizer_attribute(model,"highs_analysis_level")
     statistics["scheduling"]["bound_scope"] = "approximate_copperplate_subproblem_only_not_full_GO3"
     timings["scheduling"] = time()-stage
     atomic_json(joinpath(output,"statistics","scheduling.json"),statistics["scheduling"])
+    atomic_json(joinpath(output,"timing_snapshots","scheduling.json"),timings)
     schedule === nothing && error("No feasible whole-horizon UC schedule; no fixed-initial fallback")
-    atomic_json(joinpath(output,"schedule_balance.json"),schedule_balance_summary(input,model))
+    atomic_json(joinpath(output,"schedule_balance.json"),
+        get(model.ext,:selected_schedule_balance,nothing)===nothing ?
+        schedule_balance_summary(input,model) : model.ext[:selected_schedule_balance])
     # Only extracted within-run schedules and compact statistics are needed below.
     # Do not retain the large scheduling model during AC solves and verification.
     model=nothing

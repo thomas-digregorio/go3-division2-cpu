@@ -23,7 +23,15 @@ function source_balance_scheduling_model(input; include_reserves::Bool=true,
 end
 
 function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
-        include_reserves::Bool=true,consumer_dominance::Bool=false)
+        include_reserves::Bool=true,consumer_dominance::Bool=false,
+        seed_policy="off",construction_seconds=0,cost_seconds=0,deadline=Inf,
+        native_log_path=nothing,on_phase=record->nothing,on_seed=(schedule,audit)->nothing)
+    seed_policy in ("off",SCHEDULING_SEED_POLICY) || error("Unknown scheduling seed policy")
+    if seed_policy!= "off"
+        include_reserves || error("Cold construction must retain joint source reserves")
+        all(x->isfinite(x) && x>0,(construction_seconds,cost_seconds)) ||
+            error("Cold construction requires positive finite phase budgets")
+    end
     started=time()
     model=source_balance_scheduling_model(input;include_reserves=include_reserves,
         consumer_dominance=consumer_dominance)
@@ -45,9 +53,71 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
     set_optimizer(model,optimizer)
     set_time_limit_sec(model,time_limit)
     set_silent && JuMP.set_silent(model)
-    # No saved starts, no preceding pilot data, no external optimized solution.
+    best=nothing
+    seed_audit=nothing
+    if seed_policy!= "off"
+        best,phases=construct_scheduling_seed!(model,input;
+            construction_seconds=construction_seconds,cost_seconds=cost_seconds,
+            deadline=deadline,on_phase=on_phase)
+        model.ext[:scheduling_formulation]["cold_construction"]=Dict(
+            "policy"=>seed_policy,"phases"=>phases,"external_initialization"=>false)
+        if best!==nothing
+            seed_audit=audit_scheduling_point(model,best)
+            on_seed(schedule_at_scheduling_point(input,model,best;include_reserves=include_reserves),seed_audit)
+        end
+        # Start a fresh native MIP with all original domains/costs. Do not carry
+        # the restricted LP's basis, bound, or integrality relaxation into it.
+        set_optimizer(model,optimizer)
+        set_silent && JuMP.set_silent(model)
+        if native_log_path!==nothing
+            occursin("onedrive",lowercase(abspath(native_log_path))) && error("OneDrive log forbidden")
+            isfile(native_log_path) && error("Native scheduling log already exists")
+            mkpath(dirname(native_log_path))
+            set_optimizer_attribute(model,"log_file",abspath(native_log_path))
+        end
+        if best!==nothing
+            start=supply_scheduling_primal!(model,best)
+            model.ext[:scheduling_formulation]["cold_construction"]["mip_start"]=start
+            println("GO3_SCHEDULING_START ",JSON.json(start));flush(stdout)
+        end
+        set_time_limit_sec(model,max(0.0,min(Float64(time_limit),deadline-time()-1.0)))
+    end
+    # No saved starts, preceding pilot data, or external optimized solution.
+    economic_started=time()
     optimize!(model)
     schedule=nothing
+    if seed_policy!= "off"
+        native_stats=merge(model_stats(model),Dict("phase"=>"original_economic_mip",
+            "wall_seconds"=>time()-economic_started))
+        on_phase(native_stats)
+        construction=model.ext[:scheduling_formulation]["cold_construction"]
+        construction["economic_mip"]=native_stats
+        if haskey(construction,"mip_start") && native_log_path!==nothing && isfile(native_log_path)
+            lines=filter(line->occursin("MIP start",line) || occursin("supplied solution",lowercase(line)),
+                readlines(native_log_path))
+            construction["mip_start"]["native_log_evidence"]=lines
+            construction["mip_start"]["native_acceptance"]=any(
+                line->occursin("mip start solution is feasible",lowercase(line)),lines) ?
+                "native_log_confirms_feasible_start" : "not_confirmed_by_native_log"
+        end
+        best!==nothing && termination_status(model)==MOI.INFEASIBLE &&
+            error("Native MIP infeasibility contradicts audited original-model seed")
+        native=nothing
+        audit=nothing
+        if primal_status(model)==FEASIBLE_POINT
+            native=capture_scheduling_point(model)
+            audit=audit_scheduling_point(model,native)
+            construction["native_returned_point_audit"]=audit
+        end
+        best,seed_audit,origin=select_scheduling_point(best,seed_audit,native,audit)
+        if best!==nothing
+            model.ext[:selected_schedule_audit]=merge(seed_audit,Dict("origin"=>origin))
+            model.ext[:selected_schedule_balance]=schedule_balance_summary(input,model;
+                getter=v->scheduling_point_value(best,v))
+            schedule=schedule_at_scheduling_point(input,model,best;include_reserves=include_reserves)
+        end
+        return model,schedule
+    end
     if primal_status(model)==FEASIBLE_POINT
         schedule=GO3.extract_data_from_scheduling_model(input,model;include_reserves=include_reserves)
         schedule=GO3._process_schedule_data(input,schedule)
@@ -55,13 +125,13 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
     model,schedule
 end
 
-function schedule_balance_summary(input,model)
+function schedule_balance_summary(input,model;getter=value)
     Dict("policy"=>"source_P_Q_bus_penalties_times_interval_duration",
         "source_p_penalty"=>input.violation_cost["p_bus_vio_cost"],
         "source_q_penalty"=>input.violation_cost["q_bus_vio_cost"],
-        "p_imbalance_pu"=>[value(model[:p_balance_slack_pos][t])-value(model[:p_balance_slack_neg][t]) for t in input.periods],
-        "q_imbalance_pu"=>[value(model[:q_balance_slack_pos][t])-value(model[:q_balance_slack_neg][t]) for t in input.periods],
+        "p_imbalance_pu"=>[getter(model[:p_balance_slack_pos][t])-getter(model[:p_balance_slack_neg][t]) for t in input.periods],
+        "q_imbalance_pu"=>[getter(model[:q_balance_slack_pos][t])-getter(model[:q_balance_slack_neg][t]) for t in input.periods],
         "penalty_cost"=>sum(input.dt[t]*(
-            input.violation_cost["p_bus_vio_cost"]*(value(model[:p_balance_slack_pos][t])+value(model[:p_balance_slack_neg][t]))+
-            input.violation_cost["q_bus_vio_cost"]*(value(model[:q_balance_slack_pos][t])+value(model[:q_balance_slack_neg][t]))) for t in input.periods))
+            input.violation_cost["p_bus_vio_cost"]*(getter(model[:p_balance_slack_pos][t])+getter(model[:p_balance_slack_neg][t]))+
+            input.violation_cost["q_bus_vio_cost"]*(getter(model[:q_balance_slack_pos][t])+getter(model[:q_balance_slack_neg][t]))) for t in input.periods))
 end

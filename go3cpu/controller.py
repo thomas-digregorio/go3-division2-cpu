@@ -42,6 +42,16 @@ def latest_snapshot(directory):
     return json.loads(paths[-1].read_text()) if paths else {}
 
 
+def partial_worker_timings(worker_dir):
+    """Prefer the most advanced completed stage; never infer a missing subtotal."""
+    directory = local_path(worker_dir) / "timing_snapshots"
+    for name in ("initial.json", "scheduling.json"):
+        path = directory / name
+        if path.is_file():
+            return json.loads(path.read_text())
+    return {}
+
+
 def registered_latch(root, config):
     """Each explicit authorization has a separate immutable one-run latch."""
     root=local_path(root)

@@ -169,3 +169,59 @@ No data was deleted. Result SHA256:
 Completion SHA256:
 `89fd9f5b62bd4bd767d5ad45533292c46b3bba4774cdbfa447e1586dab930373`.
 The 6,717-bus network is not marked complete, and the next network is not started.
+
+## r02 design, registered before its cold attempt
+
+The root bottleneck motivates an explicitly bounded, **within-attempt** commitment
+construction, not initialization from r01, a competitor, POP, or another case.
+The source model, joint reserves, PMIN, temporal constraints, costs and acceptance
+tolerances are unchanged. Candidate construction is a heuristic, not a new proof
+of full AC feasibility or optimality.
+
+1. Build the same whole-horizon scheduling model from the immutable raw case.
+2. For at most 180 requested native seconds, maximize producer-online hours under
+   all original scheduling constraints. This auxiliary objective is explicitly
+   distinct from source welfare. Restore the exact original objective in a
+   `finally` block, even on a construction error.
+3. Audit any complete finite integer point against every original scheduling
+   row, variable bound and integer domain, with residual limit `1e-8`.
+4. Temporarily fix all integer variables to this newly constructed pattern,
+   solve the original-cost, joint-reserve LP for at most 600 requested seconds,
+   then restore every original integer type, explicit bound and preexisting fix.
+   Re-audit the point against the restored model. This restricted LP's bound is
+   never substituted for a bound on the full scheduling MILP.
+5. Save the extracted within-attempt schedule and audit immediately. Start a
+   fresh native HiGHS MILP with the original objective and domains, no inherited
+   restricted-LP basis, and the complete audited primal vector. Record interface
+   readback and native log evidence separately; interface acceptance alone does
+   not establish native acceptance. The economic MILP receives at most 600
+   requested seconds, subject to the remaining absolute work deadline.
+6. Retain the better locally audited original-model point. If the native solver
+   returns no incumbent, the constructed point is not discarded. Selected-point
+   objective, balance and provenance are separate from native solver statistics.
+   A contradictory native infeasibility declaration stops the worker.
+7. Continue the unchanged 48-hour AC/refinement, source reserve allocation,
+   independent exhaustive security check, official evaluator and score gate.
+   A scheduling point alone is never declared a successful GO3 solution.
+
+The 7,200-second external end-to-end cap, verification and finalization reserves
+remain unchanged. Native limits may overrun between solver checkpoints; the
+external controller is still the hard backstop. Detailed HiGHS MIP timing is
+enabled with analysis flag 128. Completed scheduling-stage timings are now
+persisted before a no-schedule error and recovered by the controller.
+
+This is a registered algorithm correction after the failed r01, not a repeated
+timing sample of r01. Tiny tests cover source-objective/domain restoration,
+exception cleanup, deleted-variable index holes, invalid/incomplete point
+rejection, exact schedule extraction, native MIP-start acceptance, and retention
+when the main MILP has no usable new point. A separate full tiny pipeline must
+also pass before freezing and launching r02.
+
+The complete r02 fixture-only gate passed: **74 Python tests, 823 Julia
+assertions, and eight independently checked tiny pipelines**. Every pipeline
+checked 9/9 contingency-interval combinations and passed official hard and
+physical feasibility. All seven normal worker variants completed exactly 3/3
+AC intervals. The cold-construction variant confirmed native MIP-start acceptance
+and saved the scheduling timing snapshot. Gate evidence is
+`tmp/pilot002_component_gate_p_s3wu_s`, with its exact source inventory in
+`manifests/component_tests.json`. No full-case warmup or diagnostic solve occurred.

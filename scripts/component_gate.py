@@ -39,6 +39,8 @@ def main():
     stage("official_fixture",[sys.executable,"scripts/test_official_adapter.py"])
     stage("python_tests",[sys.executable,"-m","unittest","discover","-s","tests","-v"])
     stage("julia_tests",[str(JULIA),"--startup-file=no","--project=.","scripts/test_solver.jl"])
+    stage("scheduling_seed_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_scheduling_seed.jl"])
     stage("consumer_dominance_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -109,6 +111,22 @@ def main():
         "--solution",str(evidence/"source_features_worker/candidate_final.json"),
         "--output",str(evidence/"source_features_verification"),"--seconds","60"])
     source_features_certificate=json.loads((evidence/"source_features_verification/certificate.json").read_text())
+    stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
+        "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
+    stage("tiny_cold_seed_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/source_features_problem.json",
+        "--solution",str(evidence/"cold_seed_worker/candidate_final.json"),
+        "--output",str(evidence/"cold_seed_verification"),"--seconds","60"])
+    cold_seed_certificate=json.loads((evidence/"cold_seed_verification/certificate.json").read_text())
+    seed_stats=json.loads((evidence/"cold_seed_worker/statistics/scheduling.json").read_text())
+    start=seed_stats["cold_construction"]["mip_start"]
+    if (not start["complete"] or start["accepted_interface_count"]!=start["variable_count"]
+        or start["native_acceptance"]!="native_log_confirms_feasible_start"
+        or not seed_stats["selected_schedule"]["pass"]
+        or seed_stats["highs_analysis_level"]!=128
+        or not (evidence/"cold_seed_worker/timing_snapshots/scheduling.json").is_file()):
+        raise RuntimeError("Cold scheduling construction/start/timing integration failed")
     feature_stats=json.loads((evidence/"source_features_worker/statistics/scheduling.json").read_text())
     source_ac_stats=json.loads((evidence/"source_features_worker/solver_statistics.json").read_text())["ac_intervals"]
     for interval in source_ac_stats:
@@ -148,13 +166,13 @@ def main():
         feature_stats["mip_lp_solver_option"]!="simplex"):
         raise RuntimeError("New tiny integration did not exercise the registered source features")
     for checked in (certificate,separated_certificate,hipo_certificate,dominance_certificate,
-                    reserve_ac_certificate,source_features_certificate,recovery_certificate):
+                    reserve_ac_certificate,source_features_certificate,recovery_certificate,cold_seed_certificate):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
     coverage_records={}
     for name in ("worker","separated_worker","hipo_worker","dominance_worker",
-                 "reserve_ac_worker","source_features_worker"):
+                 "reserve_ac_worker","source_features_worker","cold_seed_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -174,7 +192,7 @@ def main():
     julia_logs="\n".join((evidence/(name+".log")).read_text()
         for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests",
                      "ac_primal_start_tests","ac_interval_start_tests","ac_recovery_tests",
-                     "ac_primal_guard_tests"))
+                     "ac_primal_guard_tests","scheduling_seed_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
@@ -190,6 +208,8 @@ def main():
         "tiny_reserve_aware_certificate":reserve_ac_certificate,
         "tiny_source_features_certificate":source_features_certificate,
         "tiny_forced_recovery_certificate":recovery_certificate,
+        "tiny_cold_seed_certificate":cold_seed_certificate,
+        "tiny_cold_seed_scheduling":seed_stats,
         "tiny_worker_exact_interval_coverage":coverage_records,
         "tiny_source_features_scheduling":feature_stats,
         "tiny_source_features_ac_statistics":source_ac_stats,
