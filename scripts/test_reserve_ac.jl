@@ -175,7 +175,8 @@ end
     model,sol=compute_reserve_aware_ac(working,input,2;
         on_status=Dict(u=>1 for u in input.sdd_ids),
         real_power=Dict(u=>1.0 for u in input.sdd_ids),curves=curves,
-        optimizer=ipopt,set_silent=true,shunt_primal_start="within_interval_complete_v1",audit_phases=true)
+        optimizer=ipopt,set_silent=true,shunt_primal_start="within_interval_primal_dual_v1",audit_phases=true,
+        rounded_seconds=15.0,work_deadline=time()+30.0,rounded_max_iter=1000)
     @test termination_status(model) in (MOI.LOCALLY_SOLVED,MOI.ALMOST_LOCALLY_SOLVED)
     @test model.ext[:reserve_ac]["original_bounds"]===true
     @test model.ext[:reserve_ac]["products"]==10
@@ -184,6 +185,10 @@ end
     @test start_record["complete"]===true
     @test start_record["variable_count"]==num_variables(model)
     @test start_record["accepted_interface_count"]==num_variables(model)
+    @test start_record["dual_transfer_used"]===true
+    @test start_record["dual_start"]["complete_current_mapping"]===true
+    @test start_record["dual_start"]["accepted_interface_count"]==
+        length(all_constraints(model;include_variable_in_set_constraints=true))
     @test length(model.ext[:reserve_ac]["phases"])==2
     @test !ac_requires_stop(model.ext[:reserve_ac],true)
     for key in (:p_balance_slack_pos,:p_balance_slack_neg,:q_balance_slack_pos,:q_balance_slack_neg)

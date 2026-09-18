@@ -105,6 +105,9 @@ def main():
         phases=reserve["phases"]
         if (not start["complete"] or start["variable_count"]<=0 or
             start["accepted_interface_count"]!=start["variable_count"] or
+            not start.get("dual_transfer_used") or
+            not start.get("dual_start",{}).get("complete_current_mapping") or
+            start["dual_start"]["constraint_count"]!=start["dual_start"]["accepted_interface_count"] or
             len(phases)!=2 or not phases[-1]["complete_finite_point"] or
             phases[-1]["max_primal_residual"]>1e-8):
             raise RuntimeError("Tiny pipeline did not transfer and audit the complete same-interval primal")

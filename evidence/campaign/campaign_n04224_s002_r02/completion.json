@@ -1,0 +1,7 @@
+{
+  "status": "VERIFIED_HARD_FEASIBLE_INCOMPLETE_REFINEMENT",
+  "final_result_serialization_seconds": 0.0015564999775961041,
+  "result_sha256": "3dfc5e465342b99ca85af523c285551c66b4b6654aede23506922a1aa0f2afd4",
+  "elapsed_through_result_serialization_seconds": 690.4526945999824,
+  "within_local_deadline": true
+}

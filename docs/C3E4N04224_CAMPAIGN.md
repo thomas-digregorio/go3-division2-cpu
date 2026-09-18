@@ -149,3 +149,72 @@ window/P-Q fixture also verified complete primal-transfer coverage and both
 phase residuals in every interval. Evidence is under
 `tmp/pilot002_component_gate_92od8msu`, hash-registered in
 `manifests/component_tests.json`. No full competition case was used in testing.
+
+## Second attempt: transfer accepted, local convergence still failed
+
+`campaign_n04224_s002_r02`, frozen at
+`94ddf0b3b2005495a7948377ce8f51341f95b331`, completed its failure record in
+**690.452695 seconds**. The primal transfer was consumed and its full variable
+map was logged. Intervals 1 and 2 passed the explicit local screen. Interval 3's
+continuous-shunt solve converged in 56.814 API seconds with a 2.93418e-10 maximum
+primal residual. The rounded-shunt solve reached its 90-second cap after 201
+iterations, with a 9.16706e-5 primal residual and roughly 1.41e12 unscaled dual
+infeasibility. More time alone is not known to cure this numerical trajectory.
+
+The automatic failure path saved interval 3 before exiting. No interval 4 or
+later was attempted. The controller independently checked all 111,024 source
+contingency/interval pairs on that incomplete checkpoint and serialized it.
+Official physical feasibility was 0 and the quality gate failed. The unfinished
+objective -32,948,543,069.83811 is not a completed scenario score. Complete
+compact evidence is in `evidence/campaign/campaign_n04224_s002_r02`; original
+outputs remain local. No data was deleted or reevaluated for the archive.
+
+## Registered third attempt: primal-dual initialization and bounded allowance
+
+The next cold attempt uses `within_interval_primal_dual_v1`. After a converged,
+residual-verified first AC solve it captures finite primal and dual values before
+rounding. Every current row's dual start is mapped by constraint identity, not
+by assumed array positions. Only the known removed shunt-bound rows may be
+discarded; newly fixed shunts receive zero initial multipliers. The separate
+legacy nonlinear block retains its verified exact order. Unexpected row changes
+raise errors. Complete MOI readback counts are logged for both primals and duals.
+No duals from another interval, attempt or competitor are loaded. If the first
+point is not converged and residual-verified, dual transfer is explicitly skipped
+and the complete same-interval primal remains the only start.
+
+As documented in the official [Ipopt options](https://coin-or.github.io/Ipopt/OPTIONS.html),
+primal-dual initialization is enabled with `warm_start_init_point=yes`.
+`warm_start_same_structure` stays `no`: fixing shunts changes the reduced
+structure. Interior primal/slack/multiplier pushes are 1e-8 and initial barrier
+parameter is 1e-6 for this second solve. These are initialization settings, not
+relaxed source bounds, scoring rules or acceptance tolerances. The first AC
+solve still uses the original cold/default initialization. These NLP duals are
+solver starts, **not** a global lower-bound or optimality certificate.
+
+The full component gate initially caught a small reserve-economic precision
+error: a nominally converged tiny point cost 0.001414186 versus the independent
+fixed-dispatch LP's 0.001202771. No full-size attempt was launched. Tightening
+Ipopt's **unscaled complementarity stopping tolerance** to 1e-8 for the rounded
+phase made the unchanged reference-cost test pass. Primal feasibility and the
+independent acceptance tolerances were not relaxed. This stopping correction is
+included in the new warm-start options and logged with them.
+
+The continuous-shunt cap remains 90 seconds. The rounded phase receives at most
+240 seconds and 1,000 iterations, with its wall allowance recomputed immediately
+before that solve against the remaining work deadline. The external controller
+still enforces 7,200 seconds including the reserved 600-second final verification
+and 30-second serialization allowance. Ipopt iteration logging is enabled for
+both phases. Source physics, penalties, PMIN, temporal/reserve constraints and
+independent verification remain unchanged. This is a combined robustness/budget
+experiment, not an isolated speedup ablation or a guarantee of convergence.
+
+Tiny native zero-iteration probes verify actual transfer of active duals with
+the correct signs under both objective senses and both JuMP nonlinear interfaces.
+Tests also reject unknown/deleted row mappings and enforce the remaining-budget
+cap. A complete component gate and frozen push precede the single full run.
+
+The completed corrected gate passed **69 Python tests and 472 Julia assertions**.
+All six tiny pipelines passed official hard/physical feasibility and independent
+9/9 exhaustive verification. The source-feature pipeline transferred complete
+primal and dual mappings in every interval. Evidence is hash-registered from
+`tmp/pilot002_component_gate_u6np0plw` in `manifests/component_tests.json`.

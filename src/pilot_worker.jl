@@ -124,7 +124,8 @@ function run_worker(case_path, output, config, work_deadline)
     ac_reserve_policy=get(config,"ac_reserve_policy","off")
     ac_reserve_policy in ("off","source_joint_reserves_in_ac_v1") || error("Unknown AC reserve policy")
     ac_shunt_primal_start=get(config,"ac_shunt_primal_start","off")
-    ac_shunt_primal_start in ("off","within_interval_complete_v1") || error("Unknown shunt start policy")
+    ac_shunt_primal_start in ("off","within_interval_complete_v1","within_interval_primal_dual_v1") ||
+        error("Unknown shunt start policy")
     ac_fail_fast=get(config,"ac_fail_fast_on_infeasible",false)
     ac_fail_fast isa Bool || error("AC fail-fast option must be Boolean")
     (ac_shunt_primal_start=="off" && !ac_fail_fast) ||
@@ -202,13 +203,17 @@ function run_worker(case_path, output, config, work_deadline)
             "honor_original_bounds"=>"yes", "bound_relax_factor"=>0.0,
             "tol"=>1e-9,"constr_viol_tol"=>1e-9,"acceptable_tol"=>1e-8,
             "acceptable_constr_viol_tol"=>1e-9,"max_iter"=>500,
-            "max_wall_time"=>available(config["ac_seconds_per_solve"]),"print_level"=>3)
+            "max_wall_time"=>available(config["ac_seconds_per_solve"]),
+            "print_level"=>get(config,"ac_print_level",3))
         ac_start = time()
         if ac_reserve_policy=="source_joint_reserves_in_ac_v1"
             ac_model,result=compute_reserve_aware_ac(working,input,i;
                 on_status=current_on,real_power=current_p,curves=power_curves,
                 optimizer=ipopt,shunt_primal_start=ac_shunt_primal_start,
-                audit_phases=ac_fail_fast || ac_shunt_primal_start!="off")
+                audit_phases=ac_fail_fast || ac_shunt_primal_start!="off",
+                rounded_seconds=get(config,"ac_rounded_seconds_per_solve",nothing),
+                rounded_max_iter=get(config,"ac_rounded_max_iterations",500),
+                work_deadline=work_deadline)
         else
             ac_model, result = GO3.compute_optimal_power_flow_at_interval(working,i;
                 on_status=current_on,real_power=current_p,optimizer=ipopt,
@@ -226,7 +231,7 @@ function run_worker(case_path, output, config, work_deadline)
         end
         stats["warm_start"] = ac_shunt_primal_start=="off" ?
             "flat voltage and source shunt starts; within-run UC/deviation targets; no supplied primal, dual or basis start" :
-            "cold first AC solve; complete same-interval primal transferred after shunt rounding; no external, prior-interval, dual or basis start"
+            "cold first AC solve; same-interval start policy $(ac_shunt_primal_start); exact primal/dual acceptance in reserve_ac log; no external, prior-interval or basis start"
         push!(ac_stats,stats)
         statistics["ac_intervals"] = ac_stats
         atomic_json(joinpath(output,"statistics","ac_"*lpad(string(i),4,'0')*".json"),stats)

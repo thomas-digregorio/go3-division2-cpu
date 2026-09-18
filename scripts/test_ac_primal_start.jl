@@ -29,6 +29,70 @@ include(joinpath(@__DIR__,"..","src","pilot_worker.jl"))
     @test_throws ErrorException restore_complete_ac_primal!(model,point)
 end
 
+@testset "GO3 primal-dual transfer preserves row identities and native signs" begin
+    for legacy in (false,true), maximize in (false,true)
+        m=Model(optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,
+            "tol"=>1e-9,"constr_viol_tol"=>1e-9,"bound_relax_factor"=>0.0,
+            "honor_original_bounds"=>"yes","max_iter"=>500))
+        @variable(m,0 <= x <= 5,start=1.5)
+        @variable(m,0 <= y <= 5,start=1.5)
+        @variable(m,0 <= shunt <= 3,start=1.2)
+        @constraint(m,balance,x+y==3)
+        cap=legacy ? @NLconstraint(m,x^2 <= 4) : @constraint(m,x^2 <= 4)
+        if maximize
+            @objective(m,Max,x-0.1*(shunt-1.4)^2)
+        else
+            @objective(m,Min,-x+0.1*(shunt-1.4)^2)
+        end
+        optimize!(m)
+        @test termination_status(m)==MOI.LOCALLY_SOLVED
+        p=capture_complete_ac_primal(m)
+        d=capture_complete_ac_dual(m)
+        cap_dual=dual(cap)
+        @test abs(cap_dual)>0.1
+        removed=Set([LowerBoundRef(shunt),UpperBoundRef(shunt)])
+        fix(shunt,round(value(shunt));force=true)
+        restore_complete_ac_primal!(m,p)
+        audit=restore_complete_ac_dual!(m,d;new_fixed=Set([FixRef(shunt)]),removed_bounds=removed)
+        @test audit["complete_current_mapping"]===true
+        @test audit["constraint_count"]==audit["accepted_interface_count"]
+        @test audit["new_fixed_shunt_zero_duals"]==1
+        @test audit["removed_shunt_bound_duals"]==2
+        @test audit["legacy_nonlinear_count"]==Int(legacy)
+        @test get_optimizer_attribute(m,"warm_start_init_point")=="yes"
+        @test get_optimizer_attribute(m,"warm_start_same_structure")=="no"
+        @test lower_bound(x)==0 && upper_bound(x)==5
+        # No native iteration can reconstruct these multipliers. Equality of
+        # the returned active-constraint dual confirms actual consumption and
+        # correct objective-sense conversion, not merely interface readback.
+        set_optimizer_attribute(m,"max_iter",0)
+        optimize!(m)
+        @test termination_status(m)==MOI.ITERATION_LIMIT
+        @test dual(cap)≈cap_dual atol=1e-7
+        set_optimizer_attribute(m,"max_iter",500)
+        optimize!(m)
+        @test termination_status(m)==MOI.LOCALLY_SOLVED
+        @test ac_primal_residual(m,capture_complete_ac_primal(m))<=1e-8
+        @test value(shunt)==1.0
+        @constraint(m,unexpected,y<=2.0)
+        @test_throws ErrorException restore_complete_ac_dual!(m,d;
+            new_fixed=Set([FixRef(shunt)]),removed_bounds=removed)
+        delete(m,unexpected)
+        delete(m,balance)
+        @test_throws ErrorException restore_complete_ac_dual!(m,d;
+            new_fixed=Set([FixRef(shunt)]),removed_bounds=removed)
+    end
+end
+
+@testset "GO3 rounded solve allowance respects remaining work deadline" begin
+    @test rounded_ac_time_limit(240.0,1000.0;now=0.0)==240.0
+    @test rounded_ac_time_limit(240.0,101.0;now=0.0)==100.0
+    @test rounded_ac_time_limit(240.0,Inf;now=0.0)==240.0
+    @test_throws ErrorException rounded_ac_time_limit(0.0,1000.0;now=0.0)
+    @test_throws ErrorException rounded_ac_time_limit(240.0,1.0;now=0.0)
+    @test_throws ErrorException rounded_ac_time_limit(240.0,NaN;now=0.0)
+end
+
 @testset "GO3 native Ipopt consumes primal start and nonlinear residual audit" begin
     model=Model(optimizer_with_attributes(Ipopt.Optimizer,
         "max_iter"=>0,"print_level"=>0,"bound_relax_factor"=>0.0))

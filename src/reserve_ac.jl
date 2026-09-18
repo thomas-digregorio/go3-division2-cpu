@@ -117,8 +117,12 @@ function fixed_schedule_power_curves(input,schedule)
 end
 
 function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
-        optimizer,set_silent=false,shunt_primal_start="off",audit_phases=false)
-    shunt_primal_start in ("off","within_interval_complete_v1") || error("Unknown AC primal start policy")
+        optimizer,set_silent=false,shunt_primal_start="off",audit_phases=false,
+        rounded_seconds=nothing,work_deadline=Inf,rounded_max_iter=500)
+    shunt_primal_start in ("off","within_interval_complete_v1","within_interval_primal_dual_v1") ||
+        error("Unknown AC primal start policy")
+    shunt_primal_start=="within_interval_primal_dual_v1" && !audit_phases &&
+        error("Primal-dual transfer requires an audited first point")
     args=Dict{String,Any}("on_status"=>on_status,"real_power"=>real_power,
         "penalize_power_deviation"=>true,"relax_power_balance"=>true,
         "relax_p_balance"=>true,"relax_q_balance"=>true,"fix_real_power"=>false,
@@ -158,20 +162,50 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         audit_phases || return
         phase=merge(model_stats(model),Dict("phase"=>name,
             "wall_seconds"=>time()-phase_started,"complete_finite_point"=>true,
+            "wall_limit_seconds"=>get_optimizer_attribute(model,"max_wall_time"),
             "max_primal_residual"=>ac_primal_residual(model,point)))
         push!(phases,phase)
         println("GO3_AC_PHASE ",JSON.json(merge(Dict("interval"=>i),phase)));flush(stdout)
     end
     record_phase("continuous_shunts",phase_started,point)
+    dual_point=nothing
+    if shunt_primal_start=="within_interval_primal_dual_v1" && has_duals(model) &&
+            last(phases)["max_primal_residual"]<=AC_POINT_RESIDUAL_TOLERANCE &&
+            termination_status(model) in (MOI.LOCALLY_SOLVED,MOI.ALMOST_LOCALLY_SOLVED)
+        dual_point=capture_complete_ac_dual(model)
+    end
+    removed_bounds=Set{ConstraintRef}()
+    if dual_point!==nothing
+        for uid in source.shunt_ids
+            v=model[:shunt_step][uid]
+            has_lower_bound(v) && push!(removed_bounds,LowerBoundRef(v))
+            has_upper_bound(v) && push!(removed_bounds,UpperBoundRef(v))
+        end
+    end
     # Read all values before modifying bounds, which invalidates JuMP's result.
     rounded=Dict(uid=>round(value(model[:shunt_step][uid])) for uid in source.shunt_ids)
     for uid in source.shunt_ids
         fix(model[:shunt_step][uid],rounded[uid];force=true)
     end
-    if shunt_primal_start=="within_interval_complete_v1"
+    if shunt_primal_start!="off"
         start_record=restore_complete_ac_primal!(model,point)
+        start_record["requested_policy"]=shunt_primal_start
+        start_record["dual_transfer_used"]=dual_point!==nothing
+        if dual_point!==nothing
+            fixed=Set(FixRef(model[:shunt_step][uid]) for uid in source.shunt_ids)
+            start_record["dual_start"]=restore_complete_ac_dual!(model,dual_point;
+                new_fixed=fixed,removed_bounds=removed_bounds)
+            start_record["dual_or_basis_start"]=true
+            start_record["basis_start"]=false
+        elseif shunt_primal_start=="within_interval_primal_dual_v1"
+            start_record["dual_skip_reason"]="First point was not a converged residual-verified point with duals; retained complete primal only"
+        end
         model.ext[:reserve_ac]["shunt_primal_start"]=start_record
         println("GO3_AC_PRIMAL_START ",JSON.json(merge(Dict("interval"=>i),start_record)));flush(stdout)
+    end
+    if rounded_seconds!==nothing
+        set_optimizer_attribute(model,"max_wall_time",rounded_ac_time_limit(rounded_seconds,work_deadline))
+        set_optimizer_attribute(model,"max_iter",rounded_max_iter)
     end
     phase_started=time()
     optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
