@@ -28,6 +28,19 @@ separately and consumes its own permanent one-run latch. No silent retry and no
 repetition of a successful attempt. Changes are tested on tiny fixtures and frozen
 and pushed before the next full cold attempt.
 
+## Completed networks
+
+| Network | Scenario | Accepted numerical commit | Verified score | Sixth-best published score | End-to-end seconds | Exhaustive checks | Target |
+| --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| C3E4N02000D2 | 005 | 2e16d83 | 755,301,043.857519 | 754,720,348.826734 | 2,960.691 | 132,288 / 132,288 | PASS |
+| C3E4N04224D2 | 002 | da1d7ab | 493,989,736.571029 | 467,272,744.768504 | 2,477.004 | 111,024 / 111,024 | PASS |
+
+Both completed within the registered 7,200-second end-to-end cap with official
+hard/physical feasibility and independent verification. These are separately
+frozen development milestones, **not** results from one identical final revision.
+No successful scenario is rerun automatically. Detailed failures, numerical
+warnings, penalties and attribution are recorded in the per-network reports.
+
 ## Cold and source-faithful execution
 
 Every attempt starts a fresh process from the immutable raw input, its source

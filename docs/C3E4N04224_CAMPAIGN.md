@@ -278,3 +278,69 @@ tiny pipelines again passed official hard/physical feasibility and independent
 cold defaults, with complete current primal vectors and matching immediate-prior
 interval identities thereafter. Evidence is hash-registered from
 `tmp/pilot002_component_gate_tc7_e26f` in `manifests/component_tests.json`.
+
+## Fourth attempt: verified target achieved
+
+The single cold `campaign_n04224_s002_r04` attempt used frozen, pushed numerical
+revision `da1d7ab4a715225c98555597e5a7e9ec00981e50`. It completed all 48 hours,
+reserve finalization, independent and official evaluation, and serialization in
+**2,477.003961 seconds (41 min 17.004 s)**, within the two-hour end-to-end cap.
+No prior attempt or supplied POP was used as a start. No successful run is repeated.
+
+| Measure | Result |
+| --- | ---: |
+| Verified objective and score | 493,989,736.571029 |
+| Sixth-best eligible published score | 467,272,744.768504 |
+| Required minimum, 90% of sixth-best | 420,545,470.291654 |
+| Score above sixth-best | 5.717644% |
+| Official hard / physical feasibility | 1 / 1 |
+| Independent contingency-hour checks | 111,024 / 111,024 |
+| Maximum hard residual | 1.59362e-10 |
+| Maximum nodal P / Q imbalance, p.u. | 2.03071e-11 / 4.01849e-10 |
+| Absolute objective discrepancy, independent vs official | 0.030719 |
+| Peak sampled process-tree RSS | 10.2719 GiB |
+
+Objective agreement passed. All 48 hourly final model residuals were below 1e-8;
+their maximum was 4.01847e-10. Native hourly termination was `LOCALLY_SOLVED`
+for 45 hours, `ALMOST_LOCALLY_SOLVED` for hours 3 and 29, and `OTHER_ERROR`
+for hour 5. Hour 5's native log says `Restoration Failed!`; its returned complete
+point nevertheless had a 5.10247e-11 model residual and passed the final independent
+and official checks. This warning is not reclassified as solver convergence.
+Acceptance establishes verified feasibility and the published-score threshold,
+not local stationarity at every hour or global optimality of the nonconvex MILP/NLP.
+
+| Timing component | Seconds |
+| --- | ---: |
+| Scheduling stage, including model work | 170.228 |
+| HiGHS scheduling solve API, included above | 102.526 |
+| Initial reserves | 21.286 |
+| Initial schedule verification, process wall | 94.028 |
+| 48 hourly AC refinements | 2,060.494 |
+| Final reserves and postprocessing | 16.634 |
+| Final independent evaluator | 61.286 |
+| Final official evaluator | 35.394 |
+| Final verification process wall, includes preceding two | 98.780 |
+| Complete end-to-end run | 2,477.004 |
+
+Subtimings are nested, not an additive partition. Loading, runtime/JIT startup,
+handshakes, writes, verification, and serialization count end-to-end. The
+scheduling MILP returned objective 498,357,170.280954, bound 498,409,474.782750,
+and relative gap 0.000104953846. That scheduling bound is **not** a global bound
+for the final AC/security-constrained solution.
+
+The GO3 objective includes base-overload penalties of 713,273.068383,
+worst-contingency penalties of 1,230,909.757401, and mean-contingency penalties
+of 697,511.185678. Maximum contingency overload was 8.454354 p.u. under source
+scoring semantics. Reserve-shortfall cost was approximately zero (2.99760e-9).
+This must not be described as zero-overload N-1 operation. All original penalty
+terms and contingency evaluations are retained. The score lies between the
+fourth- and fifth-highest eligible published scores for the same scenario,
+but this is not an official placing or hardware-normalized speed comparison.
+
+Compact evidence is hash-archived at `evidence/campaign/campaign_n04224_s002_r04`.
+Full solutions, logs, interval statistics and independent residuals remain in the
+original local run folder; nothing was pruned. Candidate SHA256:
+`2f8145f8190023d63ac272c9b4fab665093fd2f33a49d59859fd4c9801f5d5a5`.
+Result SHA256:
+`7335ef109e91f7a98f5c147c6040952c302ec172b4d78d60d6717bb005cfc157`.
+This verified completion authorizes progression to the 6,049-bus network.

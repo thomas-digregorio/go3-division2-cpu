@@ -56,6 +56,12 @@
       "completion_path": "evidence/campaign/campaign_n02000_s005_r04/completion.json",
       "result_sha256": "4a07fbd2813e15758d99ee056246485f6ed49e541b3e42bcc5459b0526b16b5e",
       "completion_sha256": "559b1491cae9e1628db620781e1840c952faae080ed963d311c6094b2dd562b2"
+    },
+    "C3E4N04224D2": {
+      "result_path": "evidence/campaign/campaign_n04224_s002_r04/result.json",
+      "completion_path": "evidence/campaign/campaign_n04224_s002_r04/completion.json",
+      "result_sha256": "7335ef109e91f7a98f5c147c6040952c302ec172b4d78d60d6717bb005cfc157",
+      "completion_sha256": "21088c38969d5d8b3a4ea6527b08f6774244b44c8c0ea8c37509d439dbbd44ac"
     }
   }
 }
