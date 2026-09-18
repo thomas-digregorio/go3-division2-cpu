@@ -52,6 +52,13 @@ AC subsolve, under one 7,200 s end-to-end limit. Reserve 600 s for exhaustive ve
 and 30 s for finalization. Checkpoint each four intervals to avoid needless
 full-horizon copies. Full verification is never replaced with a sample.
 
+The first attempt's scheduling root relaxation exhausted its internal budget
+without a feasible integer point. The separately registered r02 separates
+candidate commitment scheduling from subsequent full reserve allocation and
+allows scheduling 1,800 seconds within the same total limit. See the
+[measured failure and correction](C3E4N02000_CAMPAIGN.md). This modifies candidate
+generation, never official constraints, penalties, tolerances or acceptance.
+
 Use the existing read-only Python interpreter at
 `C:/Users/thoma/Documents/goc2-ac-score-check/evaluator-venv/Scripts/python.exe`,
 which matches the historical 617-bus Python 3.12.14, NumPy 1.26.4 and SciPy 1.13.1

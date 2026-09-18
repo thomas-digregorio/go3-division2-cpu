@@ -1,7 +1,7 @@
 # Project-owned adapter; pinned upstream code and source penalties are untouched.
-function source_balance_scheduling_model(input)
+function source_balance_scheduling_model(input; include_reserves::Bool=true)
     model = GO3.get_copperplate_scheduling_model(input;
-        include_reserves=true,relax_balances=true,relax_reserves=true,
+        include_reserves=include_reserves,relax_balances=true,relax_reserves=true,
         overcommitment_factor=1.0)
     original = objective_function(model)
     for (symbol, source_key) in ((:p_balance_slack_pos,"p_bus_vio_cost"),
@@ -19,8 +19,18 @@ function source_balance_scheduling_model(input)
     model
 end
 
-function schedule_source_balances(input;optimizer,time_limit,set_silent=false)
-    model=source_balance_scheduling_model(input)
+function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
+        include_reserves::Bool=true)
+    started=time()
+    model=source_balance_scheduling_model(input;include_reserves=include_reserves)
+    model.ext[:scheduling_formulation]=Dict(
+        "include_reserves"=>include_reserves,
+        "build_seconds"=>time()-started,
+        "variables"=>num_variables(model),
+        "constraints_excluding_variable_bounds"=>num_constraints(model;count_variable_in_set_constraints=false),
+        "reserve_policy"=>include_reserves ? "joint_scheduling_then_full_reallocation" :
+            "candidate_schedule_only_then_full_reserve_allocation_and_evaluation")
+    println("GO3_SCHEDULING_MODEL ",JSON.json(model.ext[:scheduling_formulation])); flush(stdout)
     set_optimizer(model,optimizer)
     set_time_limit_sec(model,time_limit)
     set_silent && JuMP.set_silent(model)
@@ -28,7 +38,7 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false)
     optimize!(model)
     schedule=nothing
     if primal_status(model)==FEASIBLE_POINT
-        schedule=GO3.extract_data_from_scheduling_model(input,model;include_reserves=true)
+        schedule=GO3.extract_data_from_scheduling_model(input,model;include_reserves=include_reserves)
         schedule=GO3._process_schedule_data(input,schedule)
     end
     model,schedule

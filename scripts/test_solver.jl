@@ -31,6 +31,42 @@ input = GOC3Benchmark.process_input_data(JSON.parsefile(CASE))
     println("TINY_IPOPT_STATUS ",termination_status(model))
 end
 
+@testset "GO3 separated reserve candidate scheduling" begin
+    joint=source_balance_scheduling_model(input)
+    separated=source_balance_scheduling_model(input;include_reserves=false)
+    @test num_variables(separated) < num_variables(joint)
+    @test num_constraints(separated;count_variable_in_set_constraints=false) <
+        num_constraints(joint;count_variable_in_set_constraints=false)
+    @test count(is_binary,all_variables(separated)) == count(is_binary,all_variables(joint))
+    @test !haskey(object_dictionary(separated),:p_rgu)
+    @test haskey(object_dictionary(joint),:p_rgu)
+    # All shared temporal constraints and balances are literally the same.
+    for symbol in (:on_status_evolution,:prohibit_su_sd,:min_up,:min_dn,
+            :ramp_ub,:ramp_lb,:copperplate_p_balance,:copperplate_q_balance)
+        @test string.(separated[symbol]) == string.(joint[symbol])
+    end
+    original_data=JSON.parsefile(CASE)
+    source_copy=deepcopy(original_data)
+    inp=GO3.process_input_data(original_data)
+    opt=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>4,"mip_rel_gap"=>1e-6,
+        "mip_feasibility_tolerance"=>1e-9,"primal_feasibility_tolerance"=>1e-9)
+    m,s=schedule_source_balances(inp;optimizer=opt,time_limit=15.0,set_silent=true,
+        include_reserves=false)
+    @test s !== nothing
+    @test !hasproperty(s,:p_rgu)
+    @test all(inp.sdd_ts_lookup[uid]["p_lb"][t]*s.on_status[uid][t]-1e-8 <=
+        value(m[:p_on][uid,t]) <= inp.sdd_ts_lookup[uid]["p_ub"][t]*s.on_status[uid][t]+1e-8
+        for uid in inp.sdd_ids for t in inp.periods)
+    candidate=candidate_from_schedule(inp,s)
+    awards=GO3.calculate_reserves_from_generation(inp,candidate;
+        optimizer=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>4,"time_limit"=>2.0))
+    put_reserves!(candidate,awards)
+    @test sum(awards.p_rgu["g"]) > 0.0
+    @test all(hasproperty(awards,k) for k in (:p_rgu,:p_rgd,:p_scr,:p_nsc,
+        :p_rru_on,:p_rrd_on,:p_rru_off,:p_rrd_off,:q_qru,:q_qrd))
+    @test original_data == source_copy
+end
+
 @testset "GO3 source penalty duration coefficients" begin
     data=JSON.parsefile(CASE)
     data["network"]["violation_cost"]["p_bus_vio_cost"]=10000.0
@@ -74,4 +110,7 @@ end
     @test all(corrected.on_status["g"] .== 1)
     @test maximum(abs.(schedule_balance_summary(inp,model)["p_imbalance_pu"])) < 1e-8
     @test maximum(abs.(corrected.real_power["g"]-corrected.real_power["d"])) < 1e-8
+    _,separated=schedule_source_balances(inp;optimizer=opt,time_limit=15.0,
+        set_silent=true,include_reserves=false)
+    @test all(separated.on_status["g"] .== 1)
 end

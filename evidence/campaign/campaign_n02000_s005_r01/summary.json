@@ -1,0 +1,129 @@
+{
+  "operation": "Post-run hash audit only; no solve or reevaluation",
+  "network": "C3E4N02000D2",
+  "scenario": "005",
+  "attempt": "campaign_n02000_s005_r01",
+  "implementation_commit": "7bfdab0097ade105bb2e3b0175aeed5b9d111776",
+  "input_sha256": "a0036576821f955e79fcf260b66fefbc9ab31127a48a788d0da84b0d8acd81bf",
+  "status": "NO_VERIFIED_INCUMBENT",
+  "quality_gate": {
+    "pass": false,
+    "score": null,
+    "relative_shortfall_from_sixth": null,
+    "verification_pass": false,
+    "pipeline_completed": false,
+    "within_deadline": true,
+    "target": {
+      "network": "C3E4N02000D2",
+      "scenario": "005",
+      "division": 2,
+      "official_allow_switching": true,
+      "metric": "sixth_best_eligible_score",
+      "relative_shortfall_limit": 0.1,
+      "sixth_best_score": 754720348.826734,
+      "minimum_score": 679248313.9440606,
+      "top_six": [
+        {
+          "team": "GravityX",
+          "score": 755492907.146713,
+          "objective": 755492907.146713,
+          "runtime_seconds": 4815.0,
+          "source_row": 3622,
+          "uuid": "51-1693897156_c3E4"
+        },
+        {
+          "team": "TIM-GO",
+          "score": 755295282.448108,
+          "objective": 755295282.448108,
+          "runtime_seconds": 732.0,
+          "source_row": 8974,
+          "uuid": "1054-1693622042_c3E4"
+        },
+        {
+          "team": "YongOptimization",
+          "score": 755259134.491175,
+          "objective": 755259134.491175,
+          "runtime_seconds": 2328.0,
+          "source_row": 9643,
+          "uuid": "535-1693855412_c3E4"
+        },
+        {
+          "team": "LLGoMax",
+          "score": 755191236.82516,
+          "objective": 755191236.82516,
+          "runtime_seconds": 7158.0,
+          "source_row": 4291,
+          "uuid": "393-1693875700_c3E4"
+        },
+        {
+          "team": "quasiGrad",
+          "score": 754748701.539428,
+          "objective": 754748701.539428,
+          "runtime_seconds": 6767.0,
+          "source_row": 6967,
+          "uuid": "1062-1693667274_c3E4"
+        },
+        {
+          "team": "GOT-BSI-OPF",
+          "score": 754720348.826734,
+          "objective": 754720348.826734,
+          "runtime_seconds": 527.0,
+          "source_row": 2953,
+          "uuid": "504-1693849098_c3E4"
+        }
+      ],
+      "eligible_competitors": 10,
+      "rejected": [
+        {
+          "source_row": 277,
+          "reason": "unmatched, inactive, infeasible or benchmark"
+        },
+        {
+          "source_row": 2284,
+          "reason": "unmatched, inactive, infeasible or benchmark"
+        },
+        {
+          "source_row": 5629,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 6298,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 7636,
+          "reason": "missing comparison fields"
+        }
+      ],
+      "note": "Comparison with published scores, not a global-optimality certificate."
+    }
+  },
+  "objective": null,
+  "end_to_end_seconds": 978.2999744999979,
+  "peak_sampled_process_tree_rss_gib": 11.994003295898438,
+  "solver_statistics": {
+    "ac_intervals": [],
+    "scheduling": {
+      "solve_seconds": 904.1936521530151,
+      "nodes": 0,
+      "bound_scope": "approximate_copperplate_subproblem_only_not_full_GO3",
+      "objective": null,
+      "primal_status": "NO_SOLUTION",
+      "termination": "TIME_LIMIT",
+      "simplex_iterations": 344574,
+      "bound": 779676827.2032791,
+      "barrier_iterations": 0,
+      "relative_gap": null
+    }
+  },
+  "timings": {
+    "completed_ac_interval_wall_seconds": 0
+  },
+  "worker_error": {
+    "backtrace": "No feasible whole-horizon UC schedule; no fixed-initial fallback\nStacktrace:\n [1] error(s::String)\n   @ Base .\\error.jl:35\n [2] run_worker(case_path::String, output::String, config::Dict{String, Any}, work_deadline::Float64)\n   @ Main C:\\Users\\thoma\\Documents\\go3-division2-cpu\\src\\pilot_worker.jl:119\n [3] top-level scope\n   @ C:\\Users\\thoma\\Documents\\go3-division2-cpu\\src\\pilot_worker.jl:211\n [4] include(mod::Module, _path::String)\n   @ Base .\\Base.jl:495\n [5] exec_options(opts::Base.JLOptions)\n   @ Base .\\client.jl:316\n [6] _start()\n   @ Base .\\client.jl:550",
+    "error": "No feasible whole-horizon UC schedule; no fixed-initial fallback"
+  },
+  "controller_error": null,
+  "final_certificate": null,
+  "completed_network_registration": null
+}

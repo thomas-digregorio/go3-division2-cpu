@@ -46,6 +46,13 @@ def main():
     stage("tiny_final_check",[sys.executable,"scripts/verify_candidate.py","--input","tmp/official_tiny/problem.json",
         "--solution",str(evidence/"worker/candidate_final.json"),"--output",str(evidence/"verification"),"--seconds","60"])
     certificate=json.loads((evidence/"verification/certificate.json").read_text())
+    stage("tiny_separated_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/problem.json",str(evidence/"separated_worker"),
+        "config/tiny_separated_reserves.json",str(time.time()+120)],timeout=125)
+    stage("tiny_separated_check",[sys.executable,"scripts/verify_candidate.py","--input","tmp/official_tiny/problem.json",
+        "--solution",str(evidence/"separated_worker/candidate_final.json"),
+        "--output",str(evidence/"separated_verification"),"--seconds","60"])
+    separated_certificate=json.loads((evidence/"separated_verification/certificate.json").read_text())
     python_count=int(re.search(r"Ran (\d+) tests",(evidence/"python_tests.log").read_text()).group(1))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",(evidence/"julia_tests.log").read_text(),re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
@@ -54,7 +61,8 @@ def main():
         "runtime":runtime_identity(),
         "python_test_count":python_count,"julia_test_count":sum(int(a) for a,b in julia_counts),"stages":stages,
         "evidence_directory":str(evidence),
-        "tiny_integration_certificate":certificate,"source_sha256":source_hashes()}
+        "tiny_integration_certificate":certificate,
+        "tiny_separated_reserves_certificate":separated_certificate,"source_sha256":source_hashes()}
     atomic_json(ROOT/"manifests/component_tests.json",result)
 
 

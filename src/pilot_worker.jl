@@ -111,13 +111,19 @@ function run_worker(case_path, output, config, work_deadline)
         "primal_feasibility_tolerance"=>1e-9, "random_seed"=>0)
     get(config,"scheduling_balance_penalties","")=="source_pq_duration_weighted" || error("Missing registered scheduling penalty policy")
     model, schedule = schedule_source_balances(input; optimizer=optimizer,
-        time_limit=available(config["scheduling_seconds"]))
+        time_limit=available(config["scheduling_seconds"]),
+        include_reserves=get(config,"scheduling_include_reserves",true))
     statistics["scheduling"] = model_stats(model)
+    merge!(statistics["scheduling"],model.ext[:scheduling_formulation])
     statistics["scheduling"]["bound_scope"] = "approximate_copperplate_subproblem_only_not_full_GO3"
     timings["scheduling"] = time()-stage
     atomic_json(joinpath(output,"statistics","scheduling.json"),statistics["scheduling"])
     schedule === nothing && error("No feasible whole-horizon UC schedule; no fixed-initial fallback")
     atomic_json(joinpath(output,"schedule_balance.json"),schedule_balance_summary(input,model))
+    # Only extracted within-run schedules and compact statistics are needed below.
+    # Do not retain the large scheduling model during AC solves and verification.
+    model=nothing
+    GC.gc()
 
     stage = time()
     initial = candidate_from_schedule(input,schedule)

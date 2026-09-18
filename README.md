@@ -9,7 +9,11 @@ An explicitly authorized [cold scaling campaign](docs/COLD_SCALING_CAMPAIGN.md)
 now targets one scenario each on 2,000, 4,224, 6,049, 6,717, 8,316 and 23,643
 buses, sequentially. The target is within 10% of the sixth-best eligible published
 score with full independent and official verification. The first registered case
-is `C3E4N02000D2` scenario `005`. No result is yet claimed for it.
+is `C3E4N02000D2` scenario `005`. Its first attempt stopped at the scheduling
+stage without an incumbent after 978.300 seconds, not proven infeasibility.
+The [attempt report and registered reserve-decomposition correction](docs/C3E4N02000_CAMPAIGN.md)
+retain the failed evidence and describe the next cold attempt. No passing result
+is yet claimed for this network.
 Historical pilot-only restrictions below describe the completed 617-bus pilots;
 their latches and evidence are preserved, not reused for the new campaign.
 

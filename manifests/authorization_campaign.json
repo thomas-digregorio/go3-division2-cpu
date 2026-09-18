@@ -13,6 +13,11 @@
       "network": "C3E4N02000D2",
       "scenario": "005",
       "input_sha256": "a0036576821f955e79fcf260b66fefbc9ab31127a48a788d0da84b0d8acd81bf"
+    },
+    "campaign_n02000_s005_r02": {
+      "network": "C3E4N02000D2",
+      "scenario": "005",
+      "input_sha256": "a0036576821f955e79fcf260b66fefbc9ab31127a48a788d0da84b0d8acd81bf"
     }
   },
   "completed_networks": {}

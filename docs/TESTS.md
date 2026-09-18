@@ -85,3 +85,19 @@ runtime as the verified 617-bus pilot:
 Only tiny fixtures were solved during setup. These tests do not establish a pass
 for the 2,000-bus scenario. Earlier exploratory component checks using the shell's
 different Python were superseded by this complete matched-runtime gate.
+
+## Campaign r02: separated reserve candidate scheduling
+
+On 2026-09-18 UTC, the matched-runtime gate passed 47 Python tests and 45 Julia
+assertions. New assertions cover identical shared commitment/temporal/balance
+constraints, unchanged binary count, fewer scheduling rows/variables, exact
+conditional source PMIN/PMAX, source-input immutability, all ten subsequent reserve
+products, and starting a source-off unit when economically required. The archive
+tests reject incomplete/tampered results and preserve a failed run without a score.
+
+Both original and separated-reserve tiny three-interval pipelines passed full
+independent and official verification, 9/9 contingency-interval checks each.
+For the separated path: objective 1732.0994148700997; objective disagreement
+1.25e-11; maximum hard residual 0; P/Q imbalance 1.80e-13/2.20e-14 pu; official
+`feas=1`, `phys_feas=1`; zero reserve shortfall. These are fixture tests, not extra
+competition-case runs or evidence that the 2,000-bus attempt will succeed.
