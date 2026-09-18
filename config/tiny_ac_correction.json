@@ -16,6 +16,8 @@
   "ac_seconds_per_solve": 10,
   "ac_print_level": 0,
   "ac_correction_policy": "network_slp_fixed_shunts_v1",
+  "ac_correction_budget_policy": "remaining_horizon_v1",
+  "ac_correction_min_hour_seconds": 15,
   "ac_correction_hour_seconds": 45,
   "ac_correction_seconds": 15,
   "ac_correction_lp_seconds": 8,

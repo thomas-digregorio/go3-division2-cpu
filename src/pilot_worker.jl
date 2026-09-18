@@ -283,17 +283,20 @@ function run_worker(case_path, output, config, work_deadline)
             "print_level"=>get(config,"ac_print_level",3))
         ac_start = time()
         if ac_correction==AC_CORRECTION_POLICY
-            hour_deadline=min(refinement_deadline,ac_start+get(config,"ac_correction_hour_seconds",45.0))
+            hour_budget=correction_interval_budget(config,length(input.periods)-i+1,refinement_deadline;now=ac_start)
+            hour_deadline=hour_budget["hour_deadline"]
+            correction_phase_event("hour_allocation","begin";details=merge(Dict("interval"=>i),hour_budget))
             ac_model,result=compute_corrected_ac(working,input,i;
                 on_status=current_on,real_power=current_p,
                 reactive_power=Dict(uid=>schedule.reactive_power[uid][i] for uid in input.sdd_ids),
                 curves=power_curves,optimizer=ipopt,deadline=hour_deadline,interval_seed=interval_seed,
-                slp_seconds=get(config,"ac_correction_seconds",15.0),
+                slp_seconds=hour_budget["slp_seconds"],
                 lp_seconds=get(config,"ac_correction_lp_seconds",4.0),
                 max_rounds=get(config,"ac_correction_max_rounds",8),
                 fallback_seconds=get(config,"ac_correction_fallback_seconds",12.0),
-                threads=config["highs_threads"],
+                threads=config["highs_threads"],adaptive_budget=hour_budget["policy"]=="remaining_horizon_v1",
                 diagnostic_dir=joinpath(output,"native_correction","hour_"*lpad(string(i),4,'0')))
+            ac_model.ext[:reserve_ac]["correction"]["hour_budget"]=hour_budget
         elseif ac_reserve_policy=="source_joint_reserves_in_ac_v1"
             ac_model,result=compute_reserve_aware_ac(working,input,i;
                 on_status=current_on,real_power=current_p,curves=power_curves,
@@ -341,7 +344,7 @@ function run_worker(case_path, output, config, work_deadline)
             stats["warm_start"]="first interval cold; subsequent first phases use previous locally screened interval from this attempt; rounded phase uses $(ac_shunt_primal_start); no external solution or basis"
         end
         if correction_point!==nothing
-            stats["warm_start"]="source voltages and current cold schedule for first interval; later intervals use previous locally screened primal from this attempt; native LP start storage audited; fallback uses complete same-attempt primal only; no supplied dual, basis, or external solution"
+            stats["warm_start"]="source voltages and current cold schedule for first interval; later intervals use previous locally screened primal from this attempt; fresh presolved native LP without primal/basis start; fallback uses complete same-attempt primal only; no supplied dual, basis, or external solution"
         end
         push!(ac_stats,stats)
         statistics["ac_intervals"] = ac_stats

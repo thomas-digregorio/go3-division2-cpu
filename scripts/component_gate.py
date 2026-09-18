@@ -139,6 +139,8 @@ def main():
             or not Path(native["native_log_file"]).is_relative_to(evidence/"correction_worker")
             or not native["import_audit"]["domains_exact"]
             or not native["import_audit"]["objective_exact"]
+            or native["native_stored_start"] or native["complete_start_api_status"] is not None
+            or native["native_useful_basis_bypassed_presolve"]
             or (native["native_optimizations"] and not native["import_audit"]["pass"])):
             raise RuntimeError("Native correction import/log retention gate failed")
     if any(s["termination"]!="HEURISTIC_CORRECTION_POINT"

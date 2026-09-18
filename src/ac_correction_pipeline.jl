@@ -1,5 +1,48 @@
 # One sequential hourly search: source/within-attempt discrete shunts, bounded
 # AC linear corrections, short Ipopt fallback, optional bounded shunt revisit.
+
+function correction_interval_budget(config,remaining_intervals,deadline;now=time())
+    remaining_intervals isa Integer && remaining_intervals>0 || error("Invalid remaining AC intervals")
+    policy=get(config,"ac_correction_budget_policy","fixed_hour_v1")
+    policy in ("fixed_hour_v1","remaining_horizon_v1") || error("Unknown AC correction budget policy")
+    cap=Float64(get(config,"ac_correction_hour_seconds",45.0))
+    isfinite(cap) && cap>0 && isfinite(deadline) && isfinite(now) || error("Invalid AC correction budget")
+    available=max(0.0,deadline-now)
+    fair=available/remaining_intervals
+    future_reserve=0.0
+    allowance=if policy=="fixed_hour_v1"
+        min(cap,available)
+    else
+        minimum=Float64(get(config,"ac_correction_min_hour_seconds",60.0))
+        factor=Float64(get(config,"ac_correction_share_multiplier",1.5))
+        future=Float64(get(config,"ac_correction_future_hour_floor_seconds",20.0))
+        all(isfinite,(minimum,factor,future)) && 0<minimum<=cap && factor>=1 && future>0 ||
+            error("Invalid adaptive AC correction allocation")
+        # Prefer a short correction but let a difficult hour use a larger share.
+        # Recompute after each hour; never reset the global/finalization deadline.
+        future_reserve=min(future,fair)*(remaining_intervals-1)
+        min(cap,max(minimum,factor*fair),available-future_reserve,available)
+    end
+    slp=min(Float64(get(config,"ac_correction_seconds",15.0)),
+        policy=="remaining_horizon_v1" ? 0.3*allowance : allowance)
+    isfinite(slp) && slp>=0 || error("Invalid correction phase budget")
+    Dict("policy"=>policy,"remaining_intervals"=>remaining_intervals,
+        "remaining_refinement_seconds"=>available,"fair_share_seconds"=>fair,
+        "future_hours_reserved_seconds"=>future_reserve,"hour_allowance_seconds"=>allowance,
+        "hour_deadline"=>now+allowance,"slp_seconds"=>slp,
+        "global_deadline_reset"=>false)
+end
+
+function correction_fallback_budget(cap,deadline;now=time(),adaptive=false)
+    cap isa Real && isfinite(cap) && cap>0 || error("Invalid fallback cap")
+    remaining=max(0.0,deadline-now-2.0)
+    min(Float64(cap),adaptive ? 0.75*remaining : remaining)
+end
+
+function correction_phase_event(phase,event;details=Dict())
+    println("GO3_CORRECTION_PHASE ",JSON.json(merge(Dict("phase"=>phase,"event"=>event),details)))
+    flush(stdout)
+end
 function initialize_ac_network_flows!(model,input)
     # Evaluate physical branch flows from this attempt's voltage starts. This
     # is a cheap starting point construction, not a power-flow feasibility claim.
@@ -93,24 +136,30 @@ function extract_ac_correction_result(model,input,on,real_power,point)
         "dc_line"=>Dict{String,Any}())
 end
 
-function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,phase="fixed_shunt_fallback")
+function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,phase="fixed_shunt_fallback",max_iter=120)
     started=time()
-    record=prepare_ac_recovery!(model,optimizer,point;seconds,deadline,max_iter=120)
+    correction_phase_event(phase,"begin";details=Dict("requested_seconds"=>seconds,
+        "remaining_hour_seconds"=>deadline-started,"max_iterations"=>max_iter))
+    record=prepare_ac_recovery!(model,optimizer,point;seconds,deadline,max_iter)
     record["trigger"]="linear_correction_failed_original_model_residual_screen"
     record["complete_primal_start"]["source"]="network_correction_in_same_interval_and_attempt"
     set_optimizer_attribute(model,"max_wall_time",rounded_ac_time_limit(seconds,deadline))
     guard=install_ac_primal_guard!(model;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts",
         min_iterations=0,window=2,objective_relative_range=1.0)
     optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
+    guard_record=finish_ac_primal_guard!(model,guard)
     has_values(model) || return point,Dict("phase"=>phase,"complete_finite_point"=>true,
         "max_primal_residual"=>ac_primal_residual(model,point),"termination"=>string(termination_status(model)),
-        "wall_seconds"=>time()-started,"fallback"=>true,"start"=>record,"returned_point"=>false)
-    guard_record=finish_ac_primal_guard!(model,guard)
+        "wall_seconds"=>time()-started,"fallback"=>true,"start"=>record,"returned_point"=>false,
+        "native_primal_guard"=>guard_record)
     proposed=capture_complete_ac_primal(model)
     before=ac_primal_residual(model,point);after=ac_primal_residual(model,proposed)
     accept=after<=before
     chosen=accept ? proposed : point
-    chosen,merge(model_stats(model),Dict("phase"=>phase,"complete_finite_point"=>true,
+    correction_phase_event(phase,"end";details=Dict("wall_seconds"=>time()-started,
+        "before_residual"=>before,"selected_residual"=>min(before,after),
+        "termination"=>string(termination_status(model))))
+    chosen,merge(model_stats(model;include_bound_and_gap=false),Dict("phase"=>phase,"complete_finite_point"=>true,
         "max_primal_residual"=>min(before,after),"before_residual"=>before,
         "wall_seconds"=>time()-started,"fallback"=>true,"start"=>record,
         "native_primal_guard"=>guard_record,"returned_point"=>true,"accepted"=>accept,
@@ -119,7 +168,7 @@ end
 
 function compute_corrected_ac(working,source,i;on_status,real_power,reactive_power,curves,
         optimizer,deadline,interval_seed=nothing,slp_seconds=15.0,lp_seconds=4.0,
-        max_rounds=8,fallback_seconds=12.0,threads=4,diagnostic_dir=nothing)
+        max_rounds=8,fallback_seconds=12.0,threads=4,diagnostic_dir=nothing,adaptive_budget=false)
     began=time()
     model,reserve=build_reserve_aware_ac(working,source,i;on_status,real_power,curves)
     set_optimizer(model,optimizer)
@@ -134,11 +183,18 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
     end
     point=(variables=all_variables(model),values=Float64[start_value(v) for v in all_variables(model)])
     built=time()-began
+    correction_phase_event("linearized_correction","begin";details=Dict(
+        "budget_seconds"=>slp_seconds,"remaining_hour_seconds"=>deadline-time()))
     point,slp=ac_linear_correction(model,point;deadline=min(deadline,time()+slp_seconds),
         max_rounds,lp_seconds,threads,log_dir=diagnostic_dir)
+    correction_phase_event("linearized_correction","end";details=Dict(
+        "wall_seconds"=>slp["wall_seconds"],"residual"=>slp["max_primal_residual"],
+        "accepted_steps"=>slp["accepted_steps"],"termination"=>slp["termination"]))
     phases=Any[slp]
     if slp["max_primal_residual"]>AC_POINT_RESIDUAL_TOLERANCE && deadline-time()>3
-        point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=fallback_seconds)
+        seconds=correction_fallback_budget(fallback_seconds,deadline;adaptive=adaptive_budget)
+        point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds,
+            max_iter=adaptive_budget ? 600 : 120)
         push!(phases,phase)
     end
     revisited=false
@@ -173,6 +229,15 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
         end
     end
     residual=ac_primal_residual(model,point)
+    if adaptive_budget && revisited && residual>AC_POINT_RESIDUAL_TOLERANCE && deadline-time()>5
+        # Rounding creates a new fixed-shunt subproblem. Its repair may use the
+        # remaining hourly allocation, always from the current attempt's point.
+        seconds=correction_fallback_budget(fallback_seconds,deadline)
+        point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds,
+            phase="post_revisit_fixed_shunt_fallback",max_iter=600)
+        push!(phases,phase)
+        residual=ac_primal_residual(model,point)
+    end
     push!(phases,Dict("phase"=>"selected_correction_point","complete_finite_point"=>true,
         "max_primal_residual"=>residual,"wall_seconds"=>0.0,
         "certificate_scope"=>"local primal only; full final verification still mandatory"))
@@ -185,6 +250,7 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
         "shunts_revisited"=>revisited,"final_discrete_settings"=>settings,
         "source_bounds_changed"=>false,"sequential_temporal_bounds"=>true,
         "final_model_residual"=>residual,"threads"=>threads,"external_solution_read"=>false)
+    model.ext[:reserve_ac]["correction"]["adaptive_hour_budget"]=adaptive_budget
     lookup=Dict(zip(point.variables,point.values))
     model.ext[:reserve_ac]["reserve_cost_at_solution"]=value(v->lookup[v],reserve.cost)
     result=extract_ac_correction_result(model,working,on_status,real_power,point)

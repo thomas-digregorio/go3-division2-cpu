@@ -155,6 +155,9 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
     record=Dict{String,Any}("native_log_file"=>log_path,"native_optimizations"=>0,
         "requested_seconds"=>seconds,"columns"=>length(x),"rows"=>length(rl),
         "basis_reused"=>false,"external_solution_read"=>false,
+        "start_policy"=>"fresh_presolved_lp_v1","presolve_requested"=>"on",
+        "complete_start_api_status"=>nothing,"native_stored_start"=>false,
+        "native_start_use"=>"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search",
         "certificate_scope"=>"linearized candidate subproblem only; no full GO3 bound")
     try
         check(HiGHS.Highs_setStringOptionValue(h,"log_file",log_path),"log_file")
@@ -166,6 +169,7 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
         check(HiGHS.Highs_setDoubleOptionValue(h,"dual_feasibility_tolerance",1e-9),"dual_tolerance")
         check(HiGHS.Highs_setDoubleOptionValue(h,"small_matrix_value",1e-12),"matrix_threshold")
         check(HiGHS.Highs_setStringOptionValue(h,"solver","simplex"),"solver")
+        check(HiGHS.Highs_setStringOptionValue(h,"presolve","on"),"presolve")
         # One bulk CSC transfer, no per-variable native edits or commercial backend.
         starts=HiGHS.HighsInt.(A.colptr.-1);indices=HiGHS.HighsInt.(A.rowval.-1)
         import_status=HiGHS.Highs_passLp(h,length(c),length(rl),nnz(A),HiGHS.kHighsMatrixFormatColwise,
@@ -179,11 +183,10 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
             record["reason"]="native_import_changed_linearization_beyond_audited_limit"
             return nothing,record # Return to unchanged point / bounded Ipopt fallback.
         end
-        start_status=HiGHS.Highs_setSolution(h,x,A*x,C_NULL,C_NULL)
-        stored=zeros(length(x));stored_rows=zeros(length(rl))
-        stored_ok=HiGHS.Highs_getSolution(h,stored,C_NULL,stored_rows,C_NULL)==HiGHS.kHighsStatusOk && stored==x
-        record["complete_start_api_status"]=Int(start_status);record["native_stored_start"]=stored_ok
-        record["native_start_use"]="stored vector observed; algorithmic use after presolve not asserted"
+        # Highs_setSolution on an infeasible AC linearization point can construct
+        # a numerically poor basis and bypass presolve. A fresh native LP has no
+        # primal/basis start. x still defines the outer linearization/line search;
+        # the same-attempt complete point remains available to the Ipopt fallback.
         allowance=seconds-(time()-wall)
         if allowance<=0
             record["reason"]="lp_budget_consumed_by_import_and_audit"
@@ -198,8 +201,16 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
         status=Int(HiGHS.Highs_getModelStatus(h));ps=intinfo("primal_solution_status")
         if ps==HiGHS.kHighsSolutionStatusFeasible
             point=zeros(length(x))
-            check(HiGHS.Highs_getSolution(h,point,C_NULL,stored_rows,C_NULL),"get_solution")
+            check(HiGHS.Highs_getSolution(h,point,C_NULL,C_NULL,C_NULL),"get_solution")
             all(isfinite,point) || error("Native correction returned nonfinite point")
+            ax=A*point
+            residual=max(0.0,maximum(lb.-point;init=0.0),maximum(point.-ub;init=0.0),
+                maximum(rl.-ax;init=0.0),maximum(ax.-ru;init=0.0))
+            record["original_linearization_residual"]=residual
+            if residual>AC_POINT_RESIDUAL_TOLERANCE
+                record["reason"]="native_point_failed_original_linearization_screen"
+                point=nothing
+            end
         end
         merge!(record,Dict("native_model_status"=>status,"native_primal_status"=>ps,
             "native_seconds"=>HiGHS.Highs_getRunTime(h),"api_seconds"=>api_seconds,
@@ -211,11 +222,16 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
     finally
         HiGHS.Highs_destroy(h)
         record["wall_seconds"]=time()-wall
-        messages=filter(line->occursin(r"(?i)^\s*(warning|error)\s*:",line),readlines(log_path))
+        lines=readlines(log_path)
+        messages=filter(line->occursin(r"(?i)^\s*(warning|error)\s*:",line),lines)
+        record["native_presolve_observed"]=any(line->occursin("Presolving model",line) || occursin("Presolve reductions",line),lines)
+        record["native_useful_basis_bypassed_presolve"]=any(line->occursin("useful basis so presolve not used",line),lines)
         record["native_warning_error_count"]=length(messages)
         record["native_warning_error_excerpt"]=first(messages,min(20,length(messages)))
         atomic_json(log_path*".json",record)
         println("GO3_CORRECTION_NATIVE ",JSON.json(record));flush(stdout)
+        record["native_useful_basis_bypassed_presolve"] &&
+            error("Fresh correction LP unexpectedly bypassed presolve through a useful basis; see $log_path")
     end
 end
 

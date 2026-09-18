@@ -57,7 +57,8 @@ end
     result,stats=ac_linear_correction(m,pt;deadline=time()+15,max_rounds=12,lp_seconds=2)
     @test stats["max_primal_residual"]<=1e-8
     @test stats["accepted_steps"]>0
-    @test all(r["native_stored_start"] for r in stats["rounds"])
+    @test all(!r["native_stored_start"] && r["complete_start_api_status"]===nothing &&
+        r["presolve_requested"]=="on" && !r["native_useful_basis_bypassed_presolve"] for r in stats["rounds"])
     @test lower_bound(v)==0.5 && upper_bound(v)==1.5
     expired,record=ac_linear_correction(m,pt;deadline=time()-1)
     @test record["termination"]=="correction_deadline"
@@ -71,6 +72,54 @@ end
     @test stopped.values==point.values
     @test record["termination"]=="linearized_solve_failed"
     @test record["max_primal_residual"]>1e-8
+end
+
+@testset "GO3 fresh presolve rejects inherited-start path and audits returned LP point" begin
+    A=sparse([1.0 1.0 0.0;2.0 2.0 0.0;1e-10 0.0 8e4])
+    c=[3e6,0.1,0.0];lb=[0.0,0.0,0.5];ub=[1.0,1.0,0.5]
+    rhs=[1.0,2.0,4e4+1e-10]
+    # Deliberately poor reference point is NOT installed into native HiGHS.
+    reference=[1e10,-1e10,0.0];original=copy(reference)
+    point,stats=correction_native_lp(A,c,lb,ub,rhs,rhs,reference;seconds=10)
+    @test point!==nothing
+    @test stats["native_model_status"]==HiGHS.kHighsModelStatusOptimal
+    @test stats["native_presolve_observed"]
+    @test !stats["native_useful_basis_bypassed_presolve"]
+    @test stats["complete_start_api_status"]===nothing && !stats["native_stored_start"]
+    @test stats["original_linearization_residual"]<=1e-8
+    @test maximum(abs.(A*point-rhs))<=1e-8
+    @test dot(c,point)≈3e6 atol=1e-5
+    @test reference==original
+    @test stats["import_audit"]["domains_exact"] && stats["import_audit"]["objective_exact"]
+end
+
+@testset "GO3 adaptive correction shares protect future hours and finalization" begin
+    cfg=Dict("ac_correction_budget_policy"=>"remaining_horizon_v1",
+        "ac_correction_hour_seconds"=>600.0,"ac_correction_seconds"=>45.0,
+        "ac_correction_min_hour_seconds"=>60.0,"ac_correction_share_multiplier"=>1.5,
+        "ac_correction_future_hour_floor_seconds"=>20.0)
+    budget=correction_interval_budget(cfg,48,6200.0;now=100.0)
+    @test budget["hour_allowance_seconds"]≈1.5*6100/48
+    @test budget["hour_allowance_seconds"]>45
+    @test budget["hour_deadline"]<=6200.0-budget["future_hours_reserved_seconds"]
+    @test budget["slp_seconds"]==45.0
+    @test !budget["global_deadline_reset"]
+    last=correction_interval_budget(cfg,1,6200.0;now=100.0)
+    @test last["hour_allowance_seconds"]==600.0
+    tight=correction_interval_budget(cfg,48,110.0;now=100.0)
+    @test 0<=tight["hour_allowance_seconds"]<=10/48+1e-12
+    @test tight["hour_deadline"]<=110.0
+    expired=correction_interval_budget(cfg,48,99.0;now=100.0)
+    @test expired["hour_allowance_seconds"]==0
+    @test correction_fallback_budget(120.0,300.0;now=100.0,adaptive=true)==120.0
+    @test correction_fallback_budget(120.0,180.0;now=100.0,adaptive=true)==58.5
+    @test correction_fallback_budget(120.0,99.0;now=100.0,adaptive=true)==0.0
+    @test correction_fallback_budget(12.0,180.0;now=100.0)==12.0
+    fixed=correction_interval_budget(Dict(),48,6200.0;now=100.0)
+    @test fixed["hour_allowance_seconds"]==45.0 && fixed["slp_seconds"]==15.0
+    @test_throws ErrorException correction_interval_budget(cfg,0,6200.0;now=100.0)
+    @test_throws ErrorException correction_interval_budget(merge(cfg,Dict("ac_correction_budget_policy"=>"unknown")),48,6200.0;now=100.0)
+    @test_throws ErrorException correction_interval_budget(merge(cfg,Dict("ac_correction_share_multiplier"=>NaN)),48,6200.0;now=100.0)
 end
 
 @testset "GO3 source AC correction, discrete shunts, reserves and fallback" begin
@@ -119,7 +168,7 @@ end
         m,result=compute_corrected_ac(working,input,i;on_status=on,real_power=power,
             reactive_power=Dict(u=>schedule.reactive_power[u][i] for u in input.sdd_ids),curves,
             optimizer=opt,deadline=time()+40,interval_seed=seed,
-            max_rounds=i==2 ? 0 : 8,slp_seconds=8,fallback_seconds=10)
+            max_rounds=i==2 ? 0 : 8,slp_seconds=8,fallback_seconds=10,adaptive_budget=true)
         @test raw==original
         @test !ac_requires_stop(m.ext[:reserve_ac],true)
         @test all(isinteger,[d["step"] for d in values(result["shunt"])])

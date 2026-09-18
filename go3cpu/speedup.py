@@ -1,19 +1,20 @@
-"""The separately approved, single cold 6049-bus speedup experiment."""
+"""Registered cold speedup iterations; each frozen attempt executes only once."""
 import json
+import re
 from .controller import sha256
 from .safety import local_path
 
 
 def speedup_latch(root, config):
     root = local_path(root)
-    registrations = {
-        "speedup_n06049_s003_r01": "authorization_speedup_001.json",
-        "speedup_n06049_s003_r02": "authorization_speedup_002.json",
-    }
-    filename = registrations.get(config.get("pilot_id"))
+    match = re.fullmatch(r"speedup_n06049_s003_r([0-9]{2})", str(config.get("pilot_id", "")))
+    number = int(match[1]) if match else 0
+    filename = f"authorization_speedup_{number:03d}.json" if number > 0 else None
     if filename is None or not (root / "manifests" / filename).is_file():
         raise ValueError("No explicit authorization for this speedup attempt")
     auth = json.loads((root / "manifests" / filename).read_text())
+    if number >= 3 and auth.get("ongoing_iteration_authorized") is not True:
+        raise ValueError("Iterative speedup registration must record the updated user authorization")
     identity = {k: config[k] for k in ("pilot_id", "network", "scenario", "input_sha256")}
     if (identity != auth["identity"]
             or config["total_seconds"] != auth.get("hard_safety_limit_seconds", 1800)

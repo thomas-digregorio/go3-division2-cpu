@@ -12,6 +12,36 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class SpeedupTests(unittest.TestCase):
+    def test_ongoing_iterations_remain_cold_and_one_execution_per_registration(self):
+        config=json.loads((ROOT/"config/speedup_n06049_s003_r03.json").read_text())
+        auth=json.loads((ROOT/"manifests/authorization_speedup_003.json").read_text())
+        self.assertTrue(registered_budget(config))
+        self.assertEqual(config["ac_correction_budget_policy"],"remaining_horizon_v1")
+        self.assertEqual(config["total_seconds"],7200)
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as d:
+            root=Path(d)
+            for group,keys in (("baseline",("result","completion","configuration","comparison")),
+                               ("previous_attempt",("result","completion"))):
+                for key in keys:
+                    path=root/auth[group][key+"_path"]
+                    atomic_json(path,{"tiny":group+key})
+                    auth[group][key+"_sha256"]=sha256(path)
+            registration=root/"manifests/authorization_speedup_003.json"
+            atomic_json(registration,auth)
+            latch=registered_latch(root,config)
+            claim_pilot(latch,{"tiny":True})
+            with self.assertRaises(FileExistsError):
+                claim_pilot(latch,{"repeated":True})
+            for change in ({"pilot_id":"speedup_n06049_s003_r04"},
+                           {"pilot_id":"../authorization_speedup_003"},
+                           {"network":"C3E4N06717D2"},{"total_seconds":7201},
+                           {"cold_start":False},{"allow_pop_solution":True}):
+                with self.assertRaises(ValueError):
+                    registered_latch(root,{**config,**change})
+            atomic_json(registration,{**auth,"ongoing_iteration_authorized":False})
+            with self.assertRaisesRegex(ValueError,"updated user authorization"):
+                registered_latch(root,config)
+
     def test_replacement_has_separate_latch_and_soft_target(self):
         config=json.loads((ROOT/"config/speedup_n06049_s003_r02.json").read_text())
         auth=json.loads((ROOT/"manifests/authorization_speedup_002.json").read_text())
