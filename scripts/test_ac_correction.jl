@@ -1,6 +1,45 @@
 using Test, JSON
 include(joinpath(@__DIR__,"..","src","pilot_worker.jl"))
 
+@testset "GO3 native import warnings, retained logs and model readback" begin
+    # A native warning is not infeasibility. Reproduce one with an intentionally
+    # tiny candidate-matrix entry, then bound the import's complete row effect.
+    A=sparse([1,1],[1,2],[1.0,5e-13],1,2)
+    original=copy(A)
+    point,stats=correction_native_lp(A,[1.0,0.0],[0.0,0.0],[1.0,1.0],[-Inf],[1.0],[0.0,0.0];seconds=10)
+    @test stats["import_status"]==HiGHS.kHighsStatusWarning
+    @test stats["import_audit"]["pass"]
+    @test stats["import_audit"]["domains_exact"] && stats["import_audit"]["objective_exact"]
+    @test stats["import_audit"]["changed_nonzeros"]==1
+    @test stats["import_audit"]["maximum_bounded_row_error"]==5e-13
+    @test stats["native_optimizations"]==1 && point!==nothing
+    @test maximum(A*point.-[1.0])<=1e-9
+    @test isfile(stats["native_log_file"]*".json")
+    @test occursin("WARNING",read(stats["native_log_file"],String))
+    @test stats["native_warning_error_count"]==1
+    @test !any(occursin("P-D objective error",s) for s in stats["native_warning_error_excerpt"])
+    @test A==original
+    # Small coefficient does not imply harmless: wide or unbounded domains
+    # can amplify it. Refuse that LP before optimization, preserving the point.
+    for upper in (1e10,Inf)
+        point,stats=correction_native_lp(A,[1.0,0.0],[0.0,0.0],[1.0,upper],[-Inf],[1.0],[0.0,0.0];seconds=10)
+        @test point===nothing && !stats["import_audit"]["pass"]
+        @test stats["native_optimizations"]==0
+        @test stats["reason"]=="native_import_changed_linearization_beyond_audited_limit"
+    end
+    # Source finite bounds must never silently become native infinity.
+    point,stats=correction_native_lp(sparse([1.0;;]),[1.0],[0.0],[1e25],[-Inf],[1.0],[0.0];seconds=10)
+    @test point===nothing && !stats["import_audit"]["domains_exact"]
+    @test stats["native_optimizations"]==0
+    # True native errors remain errors and retain their diagnostic record.
+    logs=mktempdir(joinpath(@__DIR__,"..","tmp");cleanup=false)
+    @test_throws ErrorException correction_native_lp(sparse([1e16;;]),[1.0],[0.0],[1.0],[-Inf],[1.0],[0.0];seconds=10,log_dir=logs)
+    record=JSON.parsefile(only(filter(p->endswith(p,".json"),readdir(logs;join=true))))
+    @test record["import_status"]==HiGHS.kHighsStatusError
+    @test haskey(record,"error") && record["native_warning_error_count"]>0
+    @test_throws ErrorException correction_native_lp(A,[1.0,0.0],[0.0,0.0],[1.0,1.0],[-Inf],[1.0],[0.0,0.0];seconds=10,log_dir="C:/OneDrive/forbidden")
+end
+
 @testset "GO3 AC correction original equations, Jacobian, bounds, rollback" begin
     m=Model();@variable(m,0.5<=v<=1.5,start=1.0)
     @variable(m,-0.5<=a<=0.5,start=0.0)

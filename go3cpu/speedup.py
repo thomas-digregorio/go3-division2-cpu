@@ -6,9 +6,18 @@ from .safety import local_path
 
 def speedup_latch(root, config):
     root = local_path(root)
-    auth = json.loads((root / "manifests/authorization_speedup_001.json").read_text())
+    registrations = {
+        "speedup_n06049_s003_r01": "authorization_speedup_001.json",
+        "speedup_n06049_s003_r02": "authorization_speedup_002.json",
+    }
+    filename = registrations.get(config.get("pilot_id"))
+    if filename is None or not (root / "manifests" / filename).is_file():
+        raise ValueError("No explicit authorization for this speedup attempt")
+    auth = json.loads((root / "manifests" / filename).read_text())
     identity = {k: config[k] for k in ("pilot_id", "network", "scenario", "input_sha256")}
-    if (identity != auth["identity"] or config["total_seconds"] != 1800
+    if (identity != auth["identity"]
+            or config["total_seconds"] != auth.get("hard_safety_limit_seconds", 1800)
+            or config.get("target_seconds", 1800) != auth.get("target_seconds", 1800)
             or auth["maximum_full_runs"] != 1 or config["maximum_full_runs"] != 1
             or not config["cold_start"] or config["allow_pop_solution"]
             or config["evaluation_reserve_seconds"] < 450
@@ -22,7 +31,20 @@ def speedup_latch(root, config):
     for key in ("result", "completion", "configuration", "comparison"):
         if sha256(root / baseline[key + "_path"]) != baseline[key + "_sha256"]:
             raise ValueError("Frozen speedup baseline evidence changed: " + key)
+    previous = auth.get("previous_attempt")
+    if previous:
+        for key in ("result", "completion"):
+            if sha256(root / previous[key + "_path"]) != previous[key + "_sha256"]:
+                raise ValueError("Previous speedup evidence changed: " + key)
     return root / "runs" / (identity["pilot_id"] + "_latch.json")
+
+
+def runtime_target_status(config, elapsed_seconds):
+    target = config.get("target_seconds", config["total_seconds"])
+    return {"target_seconds": target, "hard_safety_limit_seconds": config["total_seconds"],
+            "within_target": elapsed_seconds <= target,
+            "within_hard_limit": elapsed_seconds < config["total_seconds"],
+            "target_is_hard_deadline": target == config["total_seconds"]}
 
 
 def skip_intermediate_verification(config):

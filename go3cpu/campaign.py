@@ -16,6 +16,8 @@ def registered_budget(config):
         return False
     if config.get("pilot_id", "").startswith("campaign_"):
         return 0 < seconds <= 7200
+    if config.get("pilot_id") == "speedup_n06049_s003_r02":
+        return seconds == 7200 and config.get("target_seconds") == 1800
     return seconds == 1800
 
 

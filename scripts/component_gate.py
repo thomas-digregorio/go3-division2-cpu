@@ -130,6 +130,17 @@ def main():
         "--output",str(evidence/"correction_verification"),"--seconds","60"])
     correction_certificate=json.loads((evidence/"correction_verification/certificate.json").read_text())
     correction_stats=json.loads((evidence/"correction_worker/solver_statistics.json").read_text())
+    native_records=list((evidence/"correction_worker/native_correction").rglob("*.json"))
+    if not native_records:
+        raise RuntimeError("Missing retained native correction import/start audit")
+    for path in native_records:
+        native=json.loads(path.read_text())
+        if (not Path(native["native_log_file"]).is_file()
+            or not Path(native["native_log_file"]).is_relative_to(evidence/"correction_worker")
+            or not native["import_audit"]["domains_exact"]
+            or not native["import_audit"]["objective_exact"]
+            or (native["native_optimizations"] and not native["import_audit"]["pass"])):
+            raise RuntimeError("Native correction import/log retention gate failed")
     if any(s["termination"]!="HEURISTIC_CORRECTION_POINT"
            or s["reserve_ac"]["correction"]["final_model_residual"]>1e-8
            or s["reserve_ac"]["correction"]["policy"]!="network_slp_fixed_shunts_v1"

@@ -9,192 +9,192 @@
     "pydantic": "1.10.24",
     "psutil": "7.0.0"
   },
-  "python_test_count": 78,
-  "julia_test_count": 928,
+  "python_test_count": 79,
+  "julia_test_count": 952,
   "stages": [
     {
       "name": "official_fixture",
       "returncode": 0,
-      "seconds": 0.7766522000019904,
+      "seconds": 0.8347402000217699,
       "log_sha256": "6514e813237fd20fd0e55b3365ae554da44e39894630f3d4979581a276ee0a38"
     },
     {
       "name": "python_tests",
       "returncode": 0,
-      "seconds": 1.8190735999960452,
-      "log_sha256": "70b2ef18a6112591823b15b33fe53d0a9d1501baae2ac1b5f725c811bd571ff4"
+      "seconds": 1.8487943000218365,
+      "log_sha256": "14f6c2ef9027678d6c2609e8a9d011b332d76e8fb3179e79886669d2d4e54a4e"
     },
     {
       "name": "julia_tests",
       "returncode": 0,
-      "seconds": 33.791644699987955,
-      "log_sha256": "6566797ce907f2a2962f3965b9162dca2728a2d9bb4f674a235136d872a30682"
+      "seconds": 33.9449864999915,
+      "log_sha256": "5b159eb98a27b16d34da961c84c5c2a05a9b9725f18fadb5dd4d0165a199ee9d"
     },
     {
       "name": "scheduling_seed_tests",
       "returncode": 0,
-      "seconds": 24.151452599995537,
-      "log_sha256": "30d447ab765722a6769d23e835f7734e8c0f3230089ee53e6ae448bf403a48ed"
+      "seconds": 24.304613799991785,
+      "log_sha256": "69ad2d6bc25e35a123b9b1ab2ac4c36bc590d6bbf544a279b01d2f6fa615a09a"
     },
     {
       "name": "consumer_dominance_tests",
       "returncode": 0,
-      "seconds": 21.212221099995077,
-      "log_sha256": "d93a18a870afe256d2216a2c45dcbcec076e87a981ec69a2ccc995fdaef3ba2e"
+      "seconds": 21.417391099996166,
+      "log_sha256": "c1b5e96435634512a73ee7009b1ddf460b41730cc23b4fad0947aa2726b9b9f1"
     },
     {
       "name": "reserve_ac_tests",
       "returncode": 0,
-      "seconds": 27.67278220001026,
-      "log_sha256": "03ec5c84b2dba9cda75d0c7082b4e38b0754756ac7ca385d598d4ef0ec7c00e8"
+      "seconds": 28.010301000002073,
+      "log_sha256": "743823098ee3db53104efa10b27327bab9c8458608b23e3112a4af01a0d9e400"
     },
     {
       "name": "source_feature_tests",
       "returncode": 0,
-      "seconds": 16.961198100005277,
-      "log_sha256": "5e9ad85e3219291538734a4600bff690a72fa9c3f5724238b1d06686acc55b86"
+      "seconds": 17.17864239998744,
+      "log_sha256": "34e65c86711be4898a67e1f208b0daa228eb5bf964e4c3d914741e2b4e7bcdc6"
     },
     {
       "name": "ac_primal_start_tests",
       "returncode": 0,
-      "seconds": 17.85833650000859,
-      "log_sha256": "2d3190afd13e0ac19fd4114d28d2780252c3a1674e10db281eb8139ca92f0e09"
+      "seconds": 17.809454700007336,
+      "log_sha256": "f30fa7216e589bddfd92a746b00a1988f17d9b01286ccdce8991620ee4ea79be"
     },
     {
       "name": "ac_interval_start_tests",
       "returncode": 0,
-      "seconds": 23.79815210000379,
-      "log_sha256": "9dbfacd18b571e759464ef3a1ad878749103e4bd03e89cfc270e9ad831c26b35"
+      "seconds": 23.855317600013223,
+      "log_sha256": "deabab0f6c45c5ac3c6f07b2242df1804476d327abae7b72e0766b9675cd57b8"
     },
     {
       "name": "ac_primal_guard_tests",
       "returncode": 0,
-      "seconds": 12.019246800016845,
-      "log_sha256": "4fa568b082ed5db719b7051b5f2a078b979bd5590627ac14f38ca92d68df9431"
+      "seconds": 11.739979100006167,
+      "log_sha256": "2e2952ead74662878fd30519b490a6fef89a1b4ae091461f7698c72cfa4075a9"
     },
     {
       "name": "ac_correction_tests",
       "returncode": 0,
-      "seconds": 42.13880620000418,
-      "log_sha256": "4014bff78447ca5e0c99e9d0515f355ea82901555ac1730c82809da7b32630b3"
+      "seconds": 44.24613039998803,
+      "log_sha256": "761622aa786fbea7a8ae99c42f5cd3d2a15b9f5c0a9e9e8b0612bc4aa474fa5c"
     },
     {
       "name": "ac_recovery_tests",
       "returncode": 0,
-      "seconds": 28.194834199995967,
-      "log_sha256": "ef0a77ed16e4f261fe5d5e508b5f66737125de28524a6e99efc5e3dd0d627006"
+      "seconds": 28.25957739999285,
+      "log_sha256": "e2fd6926b30bda89629499f9a1358c14b33353e89f506b398d59daec70f565f6"
     },
     {
       "name": "tiny_recovery_check",
       "returncode": 0,
-      "seconds": 0.8306272000190802,
-      "log_sha256": "e133c44aba87429bc65d0f5905ae618e0edd4bb7934e6f5e0807e940131e9456"
+      "seconds": 0.8285040999762714,
+      "log_sha256": "491cf861fcebd79c6f2b55ab6a81ff6b23257548e2094018e46284712319784e"
     },
     {
       "name": "tiny_worker",
       "returncode": 0,
-      "seconds": 41.394974099996034,
-      "log_sha256": "99d16157ca55f6c6ce683cd713cdbc21942920abf71204aa09a0c9a587abbc4d"
+      "seconds": 41.49810220001382,
+      "log_sha256": "a923c05b1296f2fa91a654aae0d3a401e8c4bb70618e61062937a3496a6a002a"
     },
     {
       "name": "tiny_final_check",
       "returncode": 0,
-      "seconds": 0.8255042999808211,
-      "log_sha256": "615d650c430546f27eecb76af4e10d98e362f14ea61a62f29f4f3a24176e3339"
+      "seconds": 0.8345803999982309,
+      "log_sha256": "45e09c11a5f5b491f910e843f63fe2834b4c036d728ea3b463d039bbd1425e60"
     },
     {
       "name": "tiny_separated_worker",
       "returncode": 0,
-      "seconds": 38.190235599991865,
-      "log_sha256": "30c188f634af0c7bdbb53a83f482b94a0055c4d44483f81636b02c8649a7ad4a"
+      "seconds": 38.10929199997918,
+      "log_sha256": "60c0ec2186ebfc6db17a2e93499468229a5ba356c1614fe770909ee9446590f7"
     },
     {
       "name": "tiny_separated_check",
       "returncode": 0,
-      "seconds": 0.8606955999857746,
-      "log_sha256": "b16d7e6b3571037568cabb2284c88ca96e5ced5e6df30619d9f87b5dcd9b68b4"
+      "seconds": 0.8324332000047434,
+      "log_sha256": "5a7f06cae718ef8cfcd8ee1d754d11b676cd7fb18c6cb8238d4c09929295c285"
     },
     {
       "name": "tiny_hipo_worker",
       "returncode": 0,
-      "seconds": 42.725303699990036,
-      "log_sha256": "d88b73f099afbe854c4786406260fa647913479c153d9b5995a116d59406eda5"
+      "seconds": 41.27096919997712,
+      "log_sha256": "c40382f022554d6a60792c938684f8f9619cfcddf97909aa3e34d866f6b3520a"
     },
     {
       "name": "tiny_hipo_check",
       "returncode": 0,
-      "seconds": 0.8401659000082873,
-      "log_sha256": "8357caad88aa1e832cd4ed16f727d1c2da0469b5765b0237105f7304c00d1df0"
+      "seconds": 0.8181271999783348,
+      "log_sha256": "05271631239e683fc9e26679df546c6eb59dc9e2a249430173ab508e7f8811e9"
     },
     {
       "name": "tiny_dominance_worker",
       "returncode": 0,
-      "seconds": 41.49731669999892,
-      "log_sha256": "4682801a0edf13467f61e8c48ff8d7fce8fd35d3dd1c9666debef1d20923f35c"
+      "seconds": 41.49109639998642,
+      "log_sha256": "f11599f82d7bb9d852ae204c5e719d39acfbe1a1832a6704e85528e7e5c8c55b"
     },
     {
       "name": "tiny_dominance_check",
       "returncode": 0,
-      "seconds": 0.8461489999899641,
-      "log_sha256": "f14517769ef99bd559320b102937090086db99ceb85e12128e6dcb116f918769"
+      "seconds": 0.8431793999916408,
+      "log_sha256": "b993416c64d5fe770b705cf9bef5b9e44f8b28b53e0e2cd5920139b51410f398"
     },
     {
       "name": "tiny_reserve_ac_worker",
       "returncode": 0,
-      "seconds": 42.58733019998181,
-      "log_sha256": "d6481c668dd1f289697ca1c35f55f358afdefac4750d95d5cd3b2c7400ac214b"
+      "seconds": 42.64125950000016,
+      "log_sha256": "7b2b27015d4e09a6e56a2d70d6186c43075f41356bdda0cca5be2722ea79d9f3"
     },
     {
       "name": "tiny_reserve_ac_check",
       "returncode": 0,
-      "seconds": 0.8333650000276975,
-      "log_sha256": "da96330bffca8267d5d9f7dce72c314823e98505babd8b20742c3af5491ac170"
+      "seconds": 0.8354860000254121,
+      "log_sha256": "9029fa3fb44fb030adf0f750d120d7be944d2cd2364ea11c8781169dce845323"
     },
     {
       "name": "tiny_source_features_worker",
       "returncode": 0,
-      "seconds": 48.96785970000201,
-      "log_sha256": "38d2c68780f41fe73acda7f84c2c43ddcdeb78d74dc1a0cfd455ac5735a910d5"
+      "seconds": 49.092416100000264,
+      "log_sha256": "e631b3b6f8ec0f7c6aed7dfa928eba850c99be3b4f9ce0b5ae46bf6372a0e027"
     },
     {
       "name": "tiny_source_features_check",
       "returncode": 0,
-      "seconds": 0.8377257999964058,
-      "log_sha256": "8a285b99eb87b5d32f48b64cdf1b22e51de5762e2811ac683f0152eec2a968c9"
+      "seconds": 0.8187421000038739,
+      "log_sha256": "0ad9588b969e0ffc481f95f5aca646f4b08d81aa9306e36c85ddf524faeded18"
     },
     {
       "name": "tiny_cold_seed_worker",
       "returncode": 0,
-      "seconds": 49.79234250000445,
-      "log_sha256": "c0a5cc8abd7355d17af789e7093e49faf06809f6c29df7c9cc3ae8d2062aa4f3"
+      "seconds": 49.965149600000586,
+      "log_sha256": "3d21091656db5482be0594a54e09a2b2aa38b9b6896d1a0b4f42463aa14a3715"
     },
     {
       "name": "tiny_cold_seed_check",
       "returncode": 0,
-      "seconds": 0.8453018000000156,
-      "log_sha256": "5a8130cdba6cbc69794e54882a5882f8a61050f7918d1ed718fe2bd2be255640"
+      "seconds": 0.8274362999945879,
+      "log_sha256": "6143586b7a714504c9faad12d0dfce352b891ed0fb0a96fc9972abda4e2a0bb0"
     },
     {
       "name": "tiny_correction_worker",
       "returncode": 0,
-      "seconds": 53.5983930999937,
-      "log_sha256": "89aad756650e8222f798078f02df76ec74d42970b4a8c47696ef696d40004672"
+      "seconds": 54.15410690000863,
+      "log_sha256": "6d309f17ea4f5b99d1f96d0f52ec1864c26763bd1c0d0e59d4896d3fca5b8c5b"
     },
     {
       "name": "tiny_correction_check",
       "returncode": 0,
-      "seconds": 0.8084476000221912,
-      "log_sha256": "c0c2b414928d2b4e1570256bc00a1a437c0cbccecbbe56c7561ebb3918ffa98f"
+      "seconds": 0.8152272999868728,
+      "log_sha256": "e83115e4090293e47fd69c0d3908e0e9b9e3afb5cd2568ce8ac610433829c4c5"
     }
   ],
-  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p",
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2",
   "tiny_integration_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
     "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
-    "independent_seconds": 0.015972099994542077,
-    "official_seconds": 0.5317589000042062,
+    "independent_seconds": 0.016969599993899465,
+    "official_seconds": 0.5272565000050236,
     "objective": 1732.0994148700997,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -222,16 +222,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p\\verification",
-    "total_verification_seconds": 0.5477377999923192
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\verification",
+    "total_verification_seconds": 0.5442339000001084
   },
   "tiny_separated_reserves_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
     "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
-    "independent_seconds": 0.01658789999783039,
-    "official_seconds": 0.5328079999890178,
+    "independent_seconds": 0.015966799983289093,
+    "official_seconds": 0.5386715999920852,
     "objective": 1732.0994148700997,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -259,16 +259,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p\\separated_verification",
-    "total_verification_seconds": 0.5494029999827035
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\separated_verification",
+    "total_verification_seconds": 0.5546462000056636
   },
   "tiny_hipo_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
     "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
-    "independent_seconds": 0.016306799981975928,
-    "official_seconds": 0.5402922999928705,
+    "independent_seconds": 0.007127799995942041,
+    "official_seconds": 0.5343882000015583,
     "objective": 1732.0994148700997,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -296,16 +296,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p\\hipo_verification",
-    "total_verification_seconds": 0.5566068000043742
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\hipo_verification",
+    "total_verification_seconds": 0.5415229999925941
   },
   "tiny_consumer_dominance_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "890148f29a91bf2034536a988d70bd99764815b0a7e5fef313307f4923763ac9",
     "input_sha256": "5a7dcaf54ca6890f946c9d812aa637c02e5461d9f0f7bf0bdaa6aedfbafc7e94",
-    "independent_seconds": 0.016586799989454448,
-    "official_seconds": 0.5389685000118334,
+    "independent_seconds": 0.01608579998719506,
+    "official_seconds": 0.5366281000024173,
     "objective": 1732.274418320436,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -333,8 +333,8 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p\\dominance_verification",
-    "total_verification_seconds": 0.5555630000017118
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\dominance_verification",
+    "total_verification_seconds": 0.5527210999862291
   },
   "tiny_consumer_dominance_audit": {
     "fixed_online_variables": 3,
@@ -352,8 +352,8 @@
     "complete": true,
     "candidate_sha256": "32f2caa302d29d35ddee8e5084ae9c4a7763b618a8f0d2c3323b16fab699f2bd",
     "input_sha256": "5a7dcaf54ca6890f946c9d812aa637c02e5461d9f0f7bf0bdaa6aedfbafc7e94",
-    "independent_seconds": 0.016657899977872148,
-    "official_seconds": 0.5356600999948569,
+    "independent_seconds": 0.016209499997785315,
+    "official_seconds": 0.5393895999877714,
     "objective": 1732.2744182160795,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -381,16 +381,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p\\reserve_ac_verification",
-    "total_verification_seconds": 0.552325299999211
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\reserve_ac_verification",
+    "total_verification_seconds": 0.5556065999844577
   },
   "tiny_source_features_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "9641b3545bd8a06af578ddf8e1d7cf4d570eb754b399f7b2cada7245ea2b9556",
     "input_sha256": "456f541c7dbaed7bb09347279d5b9865e2927bd6a85c423717704673a59b75a8",
-    "independent_seconds": 0.007123000017600134,
-    "official_seconds": 0.5517873000062536,
+    "independent_seconds": 0.006328699993900955,
+    "official_seconds": 0.5316013999981806,
     "objective": 1732.2744005653567,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -418,16 +418,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p\\source_features_verification",
-    "total_verification_seconds": 0.5589176999928895
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\source_features_verification",
+    "total_verification_seconds": 0.5379368000139948
   },
   "tiny_forced_recovery_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "65cc877b98269c00e65377fb942f7832a34876c9bd3b1f282426b2257cdf92bf",
     "input_sha256": "5a7dcaf54ca6890f946c9d812aa637c02e5461d9f0f7bf0bdaa6aedfbafc7e94",
-    "independent_seconds": 0.015837700018892065,
-    "official_seconds": 0.5376470999908634,
+    "independent_seconds": 0.016402199980802834,
+    "official_seconds": 0.5312686999968719,
     "objective": 1732.2744181366172,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -455,16 +455,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p\\recovery_verification",
-    "total_verification_seconds": 0.5534920000063721
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\recovery_verification",
+    "total_verification_seconds": 0.5476781000033952
   },
   "tiny_cold_seed_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "9641b3545bd8a06af578ddf8e1d7cf4d570eb754b399f7b2cada7245ea2b9556",
     "input_sha256": "456f541c7dbaed7bb09347279d5b9865e2927bd6a85c423717704673a59b75a8",
-    "independent_seconds": 0.0068472000129986554,
-    "official_seconds": 0.5470664999738801,
+    "independent_seconds": 0.01648750001913868,
+    "official_seconds": 0.5320556000224315,
     "objective": 1732.2744005653567,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -492,13 +492,13 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p\\cold_seed_verification",
-    "total_verification_seconds": 0.5539216000179294
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\cold_seed_verification",
+    "total_verification_seconds": 0.5485869999974966
   },
   "tiny_cold_seed_scheduling": {
-    "solve_seconds": 0.006150960922241211,
+    "solve_seconds": 0.006026029586791992,
     "bound_and_gap_queried": true,
-    "build_seconds": 6.83899998664856,
+    "build_seconds": 6.851000070571899,
     "include_reserves": true,
     "objective": 1732.3228999999997,
     "bound": 1732.3229,
@@ -507,7 +507,7 @@
     "variables": 153,
     "bound_scope": "approximate_copperplate_subproblem_only_not_full_GO3",
     "native_economic_mip_statistics": {
-      "solve_seconds": 0.006150960922241211,
+      "solve_seconds": 0.006026029586791992,
       "bound_and_gap_queried": true,
       "objective": 1732.3229,
       "bound": 1732.3229,
@@ -545,7 +545,7 @@
       },
       "phases": [
         {
-          "solve_seconds": 0.006808042526245117,
+          "solve_seconds": 0.006854057312011719,
           "bound_and_gap_queried": true,
           "objective_scope": "producer_online_hours_not_source_economics",
           "objective": 1.75,
@@ -565,11 +565,11 @@
           },
           "primal_status": "FEASIBLE_POINT",
           "phase": "online_commitment_construction",
-          "wall_seconds": 0.6119999885559082,
+          "wall_seconds": 0.625,
           "relative_gap": 0.0
         },
         {
-          "solve_seconds": 0.0015079975128173828,
+          "solve_seconds": 0.0017788410186767578,
           "bound_and_gap_queried": false,
           "objective": 1732.322899999993,
           "termination": "OTHER_ERROR",
@@ -591,12 +591,12 @@
           "primal_status": "FEASIBLE_POINT",
           "phase": "constructed_commitment_cost_lp",
           "solver": "ipx",
-          "wall_seconds": 0.04400014877319336,
+          "wall_seconds": 0.03800010681152344,
           "relative_gap": null
         }
       ],
       "economic_mip": {
-        "solve_seconds": 0.006150960922241211,
+        "solve_seconds": 0.006026029586791992,
         "bound_and_gap_queried": true,
         "objective": 1732.3229,
         "termination": "OPTIMAL",
@@ -607,7 +607,7 @@
         "native_relative_gap": 0.0,
         "primal_status": "FEASIBLE_POINT",
         "phase": "original_economic_mip",
-        "wall_seconds": 0.01699995994567871,
+        "wall_seconds": 0.014999866485595703,
         "relative_gap": 0.0
       },
       "policy": "cold_online_construction_cost_lp_v2",
@@ -660,8 +660,8 @@
     "complete": true,
     "candidate_sha256": "9e9b28e1b3b3969a6accf9575d296bf62427045f30d0a853d41777a66d7e60d2",
     "input_sha256": "456f541c7dbaed7bb09347279d5b9865e2927bd6a85c423717704673a59b75a8",
-    "independent_seconds": 0.007374200009508058,
-    "official_seconds": 0.5241425999847706,
+    "independent_seconds": 0.016544500016607344,
+    "official_seconds": 0.5221748999902047,
     "objective": 1732.2744075516116,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -689,8 +689,8 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_runzlb4p\\correction_verification",
-    "total_verification_seconds": 0.5315244999947026
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\correction_verification",
+    "total_verification_seconds": 0.5387272000079975
   },
   "tiny_network_correction_statistics": {
     "ac_intervals": [
@@ -702,7 +702,7 @@
         "interval": 1,
         "certificate_scope": "No local/global optimality claim; see individual native calls",
         "interval_start_policy": "previous_screened_interval_v1",
-        "wall_seconds": 18.37999987602234,
+        "wall_seconds": 18.444999933242798,
         "reserve_policy": "source_joint_reserves_in_ac_v1",
         "reserve_ac": {
           "phases": [
@@ -713,208 +713,392 @@
               "objective": 494.9721365167636,
               "nonlinear_rows": 22,
               "variables": 67,
-              "oracle_build_seconds": 5.806999921798706,
+              "oracle_build_seconds": 5.812999963760376,
               "certificate_scope": "local original-model primal feasibility only; not optimality",
-              "wall_seconds": 6.986999988555908,
+              "wall_seconds": 6.931999921798706,
               "jacobian_structure_reused": true,
               "rounds": [
                 {
                   "native_primal_status": 2,
+                  "native_allowance_seconds": 7.891000032424927,
+                  "api_seconds": 0.0009999275207519531,
+                  "import_audit": {
+                    "removed_small_coefficients_only": true,
+                    "row_error_limit": 1e-10,
+                    "domains_exact": true,
+                    "maximum_bounded_row_error": 0.0,
+                    "scope": "Candidate LP import only; original nonlinear/source checks remain mandatory",
+                    "unbounded_changed_columns": 0,
+                    "changed_nonzeros": 0,
+                    "matrix_import_threshold": 1e-12,
+                    "objective_exact": true,
+                    "native_nonzeros": 217,
+                    "input_nonzeros": 225,
+                    "pass": true,
+                    "maximum_coefficient_change": 0.0,
+                    "wall_seconds": 0.0
+                  },
+                  "import_status": 0,
+                  "after_residual": 0.06194191366427776,
+                  "native_optimizations": 1,
+                  "trust_radius": 0.25,
                   "native_model_status": 7,
+                  "native_warning_error_count": 0,
                   "certificate_scope": "linearized candidate subproblem only; no full GO3 bound",
+                  "bulk_transfer_and_audit_seconds": 0.10899996757507324,
+                  "wall_seconds": 0.20300006866455078,
                   "round": 1,
-                  "wall_seconds": 0.08699989318847656,
+                  "native_warning_error_excerpt": [],
                   "external_solution_read": false,
                   "native_start_use": "stored vector observed; algorithmic use after presolve not asserted",
-                  "complete_start_api_status": 0,
-                  "requested_seconds": 8.0,
-                  "accepted": true,
-                  "bulk_transfer_seconds": 0.0,
-                  "api_seconds": 0.0010001659393310547,
-                  "after_residual": 0.06194191366427776,
-                  "trust_radius": 0.25,
                   "simplex_iterations": 11,
+                  "native_log_file": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\correction_worker\\native_correction\\hour_0001\\jl_C5CA.tmp",
+                  "complete_start_api_status": 0,
                   "native_stored_start": true,
                   "step_fraction": 1.0,
+                  "requested_seconds": 8.0,
                   "rows": 69,
-                  "native_run_status": 0,
-                  "native_seconds": 0.0002598762512207031,
                   "basis_reused": false,
+                  "native_run_status": 0,
+                  "native_seconds": 0.0011692047119140625,
+                  "accepted": true,
                   "before_residual": 1.0,
                   "columns": 67
                 },
                 {
                   "native_primal_status": 2,
+                  "native_allowance_seconds": 8.0,
+                  "api_seconds": 0.0009999275207519531,
+                  "import_audit": {
+                    "removed_small_coefficients_only": true,
+                    "row_error_limit": 1e-10,
+                    "domains_exact": true,
+                    "maximum_bounded_row_error": 0.0,
+                    "scope": "Candidate LP import only; original nonlinear/source checks remain mandatory",
+                    "unbounded_changed_columns": 0,
+                    "changed_nonzeros": 0,
+                    "matrix_import_threshold": 1e-12,
+                    "objective_exact": true,
+                    "native_nonzeros": 223,
+                    "input_nonzeros": 225,
+                    "pass": true,
+                    "maximum_coefficient_change": 0.0,
+                    "wall_seconds": 0.0
+                  },
+                  "import_status": 0,
+                  "after_residual": 0.035213045378399366,
+                  "native_optimizations": 1,
+                  "trust_radius": 0.25,
                   "native_model_status": 7,
+                  "native_warning_error_count": 1,
                   "certificate_scope": "linearized candidate subproblem only; no full GO3 bound",
+                  "bulk_transfer_and_audit_seconds": 0.0,
+                  "wall_seconds": 0.006999969482421875,
                   "round": 2,
-                  "wall_seconds": 0.0,
+                  "native_warning_error_excerpt": [
+                    "WARNING: Problem has some excessively small row bounds"
+                  ],
                   "external_solution_read": false,
                   "native_start_use": "stored vector observed; algorithmic use after presolve not asserted",
-                  "complete_start_api_status": 0,
-                  "requested_seconds": 8.0,
-                  "accepted": true,
-                  "bulk_transfer_seconds": 0.0,
-                  "api_seconds": 0.0,
-                  "after_residual": 0.035213045378399366,
-                  "trust_radius": 0.25,
                   "simplex_iterations": 22,
+                  "native_log_file": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\correction_worker\\native_correction\\hour_0001\\jl_C657.tmp",
+                  "complete_start_api_status": 0,
                   "native_stored_start": true,
                   "step_fraction": 0.5,
+                  "requested_seconds": 8.0,
                   "rows": 69,
-                  "native_run_status": 0,
-                  "native_seconds": 0.0003032684326171875,
                   "basis_reused": false,
+                  "native_run_status": 0,
+                  "native_seconds": 0.0004620552062988281,
+                  "accepted": true,
                   "before_residual": 0.06194191366427776,
                   "columns": 67
                 },
                 {
                   "native_primal_status": 2,
+                  "native_allowance_seconds": 7.999000072479248,
+                  "api_seconds": 0.0,
+                  "import_audit": {
+                    "removed_small_coefficients_only": true,
+                    "row_error_limit": 1e-10,
+                    "domains_exact": true,
+                    "maximum_bounded_row_error": 0.0,
+                    "scope": "Candidate LP import only; original nonlinear/source checks remain mandatory",
+                    "unbounded_changed_columns": 0,
+                    "changed_nonzeros": 0,
+                    "matrix_import_threshold": 1e-12,
+                    "objective_exact": true,
+                    "native_nonzeros": 223,
+                    "input_nonzeros": 225,
+                    "pass": true,
+                    "maximum_coefficient_change": 0.0,
+                    "wall_seconds": 0.0
+                  },
+                  "import_status": 0,
+                  "after_residual": 0.016806684658907473,
+                  "native_optimizations": 1,
+                  "trust_radius": 0.125,
                   "native_model_status": 7,
+                  "native_warning_error_count": 1,
                   "certificate_scope": "linearized candidate subproblem only; no full GO3 bound",
+                  "bulk_transfer_and_audit_seconds": 0.0009999275207519531,
+                  "wall_seconds": 0.004999876022338867,
                   "round": 3,
-                  "wall_seconds": 0.0,
+                  "native_warning_error_excerpt": [
+                    "WARNING: Problem has some excessively small row bounds"
+                  ],
                   "external_solution_read": false,
                   "native_start_use": "stored vector observed; algorithmic use after presolve not asserted",
-                  "complete_start_api_status": 0,
-                  "requested_seconds": 8.0,
-                  "accepted": true,
-                  "bulk_transfer_seconds": 0.0,
-                  "api_seconds": 0.0,
-                  "after_residual": 0.016806684658907473,
-                  "trust_radius": 0.125,
                   "simplex_iterations": 25,
+                  "native_log_file": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\correction_worker\\native_correction\\hour_0001\\jl_C658.tmp",
+                  "complete_start_api_status": 0,
                   "native_stored_start": true,
                   "step_fraction": 1.0,
+                  "requested_seconds": 8.0,
                   "rows": 69,
-                  "native_run_status": 0,
-                  "native_seconds": 0.0001709461212158203,
                   "basis_reused": false,
+                  "native_run_status": 0,
+                  "native_seconds": 0.0005571842193603516,
+                  "accepted": true,
                   "before_residual": 0.035213045378399366,
                   "columns": 67
                 },
                 {
                   "native_primal_status": 2,
+                  "native_allowance_seconds": 8.0,
+                  "api_seconds": 0.0009999275207519531,
+                  "import_audit": {
+                    "removed_small_coefficients_only": true,
+                    "row_error_limit": 1e-10,
+                    "domains_exact": true,
+                    "maximum_bounded_row_error": 0.0,
+                    "scope": "Candidate LP import only; original nonlinear/source checks remain mandatory",
+                    "unbounded_changed_columns": 0,
+                    "changed_nonzeros": 0,
+                    "matrix_import_threshold": 1e-12,
+                    "objective_exact": true,
+                    "native_nonzeros": 223,
+                    "input_nonzeros": 225,
+                    "pass": true,
+                    "maximum_coefficient_change": 0.0,
+                    "wall_seconds": 0.0
+                  },
+                  "import_status": 0,
+                  "after_residual": 0.004183500083480889,
+                  "native_optimizations": 1,
+                  "trust_radius": 0.125,
                   "native_model_status": 7,
+                  "native_warning_error_count": 0,
                   "certificate_scope": "linearized candidate subproblem only; no full GO3 bound",
+                  "bulk_transfer_and_audit_seconds": 0.0,
+                  "wall_seconds": 0.006999969482421875,
                   "round": 4,
-                  "wall_seconds": 0.0009999275207519531,
+                  "native_warning_error_excerpt": [],
                   "external_solution_read": false,
                   "native_start_use": "stored vector observed; algorithmic use after presolve not asserted",
-                  "complete_start_api_status": 0,
-                  "requested_seconds": 8.0,
-                  "accepted": true,
-                  "bulk_transfer_seconds": 0.0,
-                  "api_seconds": 0.0,
-                  "after_residual": 0.004183500083480889,
-                  "trust_radius": 0.125,
                   "simplex_iterations": 24,
+                  "native_log_file": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\correction_worker\\native_correction\\hour_0001\\jl_C659.tmp",
+                  "complete_start_api_status": 0,
                   "native_stored_start": true,
                   "step_fraction": 1.0,
+                  "requested_seconds": 8.0,
                   "rows": 69,
-                  "native_run_status": 0,
-                  "native_seconds": 0.0001583099365234375,
                   "basis_reused": false,
+                  "native_run_status": 0,
+                  "native_seconds": 0.0005860328674316406,
+                  "accepted": true,
                   "before_residual": 0.016806684658907473,
                   "columns": 67
                 },
                 {
                   "native_primal_status": 2,
+                  "native_allowance_seconds": 8.0,
+                  "api_seconds": 0.0,
+                  "import_audit": {
+                    "removed_small_coefficients_only": true,
+                    "row_error_limit": 1e-10,
+                    "domains_exact": true,
+                    "maximum_bounded_row_error": 0.0,
+                    "scope": "Candidate LP import only; original nonlinear/source checks remain mandatory",
+                    "unbounded_changed_columns": 0,
+                    "changed_nonzeros": 0,
+                    "matrix_import_threshold": 1e-12,
+                    "objective_exact": true,
+                    "native_nonzeros": 223,
+                    "input_nonzeros": 225,
+                    "pass": true,
+                    "maximum_coefficient_change": 0.0,
+                    "wall_seconds": 0.0
+                  },
+                  "import_status": 0,
+                  "after_residual": 0.003937809549800733,
+                  "native_optimizations": 1,
+                  "trust_radius": 0.125,
                   "native_model_status": 7,
+                  "native_warning_error_count": 0,
                   "certificate_scope": "linearized candidate subproblem only; no full GO3 bound",
+                  "bulk_transfer_and_audit_seconds": 0.0,
+                  "wall_seconds": 0.006000041961669922,
                   "round": 5,
-                  "wall_seconds": 0.0,
+                  "native_warning_error_excerpt": [],
                   "external_solution_read": false,
                   "native_start_use": "stored vector observed; algorithmic use after presolve not asserted",
-                  "complete_start_api_status": 0,
-                  "requested_seconds": 8.0,
-                  "accepted": true,
-                  "bulk_transfer_seconds": 0.0,
-                  "api_seconds": 0.0,
-                  "after_residual": 0.003937809549800733,
-                  "trust_radius": 0.125,
                   "simplex_iterations": 22,
+                  "native_log_file": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\correction_worker\\native_correction\\hour_0001\\jl_C66A.tmp",
+                  "complete_start_api_status": 0,
                   "native_stored_start": true,
                   "step_fraction": 1.0,
+                  "requested_seconds": 8.0,
                   "rows": 69,
-                  "native_run_status": 0,
-                  "native_seconds": 0.00016188621520996094,
                   "basis_reused": false,
+                  "native_run_status": 0,
+                  "native_seconds": 0.00039505958557128906,
+                  "accepted": true,
                   "before_residual": 0.004183500083480889,
                   "columns": 67
                 },
                 {
                   "native_primal_status": 2,
+                  "native_allowance_seconds": 8.0,
+                  "api_seconds": 0.0010001659393310547,
+                  "import_audit": {
+                    "removed_small_coefficients_only": true,
+                    "row_error_limit": 1e-10,
+                    "domains_exact": true,
+                    "maximum_bounded_row_error": 0.0,
+                    "scope": "Candidate LP import only; original nonlinear/source checks remain mandatory",
+                    "unbounded_changed_columns": 0,
+                    "changed_nonzeros": 0,
+                    "matrix_import_threshold": 1e-12,
+                    "objective_exact": true,
+                    "native_nonzeros": 223,
+                    "input_nonzeros": 225,
+                    "pass": true,
+                    "maximum_coefficient_change": 0.0,
+                    "wall_seconds": 0.0
+                  },
+                  "import_status": 0,
+                  "after_residual": 0.00391822429911283,
+                  "native_optimizations": 1,
+                  "trust_radius": 0.125,
                   "native_model_status": 7,
+                  "native_warning_error_count": 0,
                   "certificate_scope": "linearized candidate subproblem only; no full GO3 bound",
+                  "bulk_transfer_and_audit_seconds": 0.0,
+                  "wall_seconds": 0.009000062942504883,
                   "round": 6,
-                  "wall_seconds": 0.0,
+                  "native_warning_error_excerpt": [],
                   "external_solution_read": false,
                   "native_start_use": "stored vector observed; algorithmic use after presolve not asserted",
-                  "complete_start_api_status": 0,
-                  "requested_seconds": 8.0,
-                  "accepted": true,
-                  "bulk_transfer_seconds": 0.0,
-                  "api_seconds": 0.0,
-                  "after_residual": 0.00391822429911283,
-                  "trust_radius": 0.125,
                   "simplex_iterations": 24,
+                  "native_log_file": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\correction_worker\\native_correction\\hour_0001\\jl_C66B.tmp",
+                  "complete_start_api_status": 0,
                   "native_stored_start": true,
                   "step_fraction": 1.0,
+                  "requested_seconds": 8.0,
                   "rows": 69,
-                  "native_run_status": 0,
-                  "native_seconds": 0.00014781951904296875,
                   "basis_reused": false,
+                  "native_run_status": 0,
+                  "native_seconds": 0.0005958080291748047,
+                  "accepted": true,
                   "before_residual": 0.003937809549800733,
                   "columns": 67
                 },
                 {
                   "native_primal_status": 2,
+                  "native_allowance_seconds": 8.0,
+                  "api_seconds": 0.0009999275207519531,
+                  "import_audit": {
+                    "removed_small_coefficients_only": true,
+                    "row_error_limit": 1e-10,
+                    "domains_exact": true,
+                    "maximum_bounded_row_error": 0.0,
+                    "scope": "Candidate LP import only; original nonlinear/source checks remain mandatory",
+                    "unbounded_changed_columns": 0,
+                    "changed_nonzeros": 0,
+                    "matrix_import_threshold": 1e-12,
+                    "objective_exact": true,
+                    "native_nonzeros": 223,
+                    "input_nonzeros": 225,
+                    "pass": true,
+                    "maximum_coefficient_change": 0.0,
+                    "wall_seconds": 0.0
+                  },
+                  "import_status": 0,
+                  "after_residual": 0.0029387483167920697,
+                  "native_optimizations": 1,
+                  "trust_radius": 0.125,
                   "native_model_status": 7,
+                  "native_warning_error_count": 1,
                   "certificate_scope": "linearized candidate subproblem only; no full GO3 bound",
+                  "bulk_transfer_and_audit_seconds": 0.0,
+                  "wall_seconds": 0.009000062942504883,
                   "round": 7,
-                  "wall_seconds": 0.0,
+                  "native_warning_error_excerpt": [
+                    "WARNING: Problem has some excessively small row bounds"
+                  ],
                   "external_solution_read": false,
                   "native_start_use": "stored vector observed; algorithmic use after presolve not asserted",
-                  "complete_start_api_status": 0,
-                  "requested_seconds": 8.0,
-                  "accepted": true,
-                  "bulk_transfer_seconds": 0.0,
-                  "api_seconds": 0.0,
-                  "after_residual": 0.0029387483167920697,
-                  "trust_radius": 0.125,
                   "simplex_iterations": 22,
+                  "native_log_file": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\correction_worker\\native_correction\\hour_0001\\jl_C67C.tmp",
+                  "complete_start_api_status": 0,
                   "native_stored_start": true,
                   "step_fraction": 0.5,
+                  "requested_seconds": 8.0,
                   "rows": 69,
-                  "native_run_status": 0,
-                  "native_seconds": 0.00015091896057128906,
                   "basis_reused": false,
+                  "native_run_status": 0,
+                  "native_seconds": 0.0006780624389648438,
+                  "accepted": true,
                   "before_residual": 0.00391822429911283,
                   "columns": 67
                 },
                 {
                   "native_primal_status": 2,
+                  "native_allowance_seconds": 8.0,
+                  "api_seconds": 0.0009999275207519531,
+                  "import_audit": {
+                    "removed_small_coefficients_only": true,
+                    "row_error_limit": 1e-10,
+                    "domains_exact": true,
+                    "maximum_bounded_row_error": 0.0,
+                    "scope": "Candidate LP import only; original nonlinear/source checks remain mandatory",
+                    "unbounded_changed_columns": 0,
+                    "changed_nonzeros": 0,
+                    "matrix_import_threshold": 1e-12,
+                    "objective_exact": true,
+                    "native_nonzeros": 223,
+                    "input_nonzeros": 225,
+                    "pass": true,
+                    "maximum_coefficient_change": 0.0,
+                    "wall_seconds": 0.0
+                  },
+                  "import_status": 0,
+                  "after_residual": 0.0009911811931760037,
+                  "native_optimizations": 1,
+                  "trust_radius": 0.0625,
                   "native_model_status": 7,
+                  "native_warning_error_count": 1,
                   "certificate_scope": "linearized candidate subproblem only; no full GO3 bound",
+                  "bulk_transfer_and_audit_seconds": 0.0,
+                  "wall_seconds": 0.006999969482421875,
                   "round": 8,
-                  "wall_seconds": 0.0010001659393310547,
+                  "native_warning_error_excerpt": [
+                    "WARNING: Problem has some excessively small row bounds"
+                  ],
                   "external_solution_read": false,
                   "native_start_use": "stored vector observed; algorithmic use after presolve not asserted",
-                  "complete_start_api_status": 0,
-                  "requested_seconds": 8.0,
-                  "accepted": true,
-                  "bulk_transfer_seconds": 0.0,
-                  "api_seconds": 0.0010001659393310547,
-                  "after_residual": 0.0009911811931760037,
-                  "trust_radius": 0.0625,
                   "simplex_iterations": 24,
+                  "native_log_file": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_3cwknph2\\correction_worker\\native_correction\\hour_0001\\jl_C67D.tmp",
+                  "complete_start_api_status": 0,
                   "native_stored_start": true,
                   "step_fraction": 1.0,
+                  "requested_seconds": 8.0,
                   "rows": 69,
-                  "native_run_status": 0,
-                  "native_seconds": 0.0001583099365234375,
                   "basis_reused": false,
+                  "native_run_status": 0,
+                  "native_seconds": 0.00061798095703125,
+                  "accepted": true,
                   "before_residual": 0.0029387483167920697,
                   "columns": 67
                 }
@@ -930,7 +1114,7 @@
               "linear_rows": 47
             },
             {
-              "solve_seconds": 2.4019999504089355,
+              "solve_seconds": 2.135999917984009,
               "bound_and_gap_queried": true,
               "max_primal_residual": 6.590309257516191e-10,
               "rollback": false,
@@ -965,13 +1149,13 @@
                 "policy": "verified_stable_rounded_primal_v1",
                 "callback_count": 36,
                 "native_primal_residual_at_stop": 3.4741637761070976e-09,
-                "audit_seconds": 0.0279998779296875,
+                "audit_seconds": 0.029000043869018555,
                 "objective_relative_range_limit": 1.0,
                 "enabled": true,
                 "source_bounds_changed": false
               },
               "returned_point": true,
-              "wall_seconds": 4.439000129699707,
+              "wall_seconds": 4.440999984741211,
               "start": {
                 "legacy_nonlinear_count": 0,
                 "constraint_count": 179,
@@ -1043,14 +1227,14 @@
           "policy": "source_joint_reserves_in_ac_v1",
           "correction": {
             "final_model_residual": 6.590309257516191e-10,
-            "total_seconds": 15.503999948501587,
+            "total_seconds": 15.412000179290771,
             "policy": "network_slp_fixed_shunts_v1",
             "shunts_revisited": false,
             "final_discrete_settings": {
               "sh": 0.0
             },
             "threads": 4,
-            "model_build_and_initialization_seconds": 4.052000045776367,
+            "model_build_and_initialization_seconds": 4.01200008392334,
             "external_solution_read": false,
             "sequential_temporal_bounds": true,
             "source_bounds_changed": false
@@ -1084,7 +1268,7 @@
         "interval": 2,
         "certificate_scope": "No local/global optimality claim; see individual native calls",
         "interval_start_policy": "previous_screened_interval_v1",
-        "wall_seconds": 0.3190000057220459,
+        "wall_seconds": 0.3259999752044678,
         "reserve_policy": "source_joint_reserves_in_ac_v1",
         "reserve_ac": {
           "phases": [
@@ -1095,9 +1279,9 @@
               "objective": 989.9433949899267,
               "nonlinear_rows": 22,
               "variables": 67,
-              "oracle_build_seconds": 0.017999887466430664,
+              "oracle_build_seconds": 0.02200007438659668,
               "certificate_scope": "local original-model primal feasibility only; not optimality",
-              "wall_seconds": 0.017999887466430664,
+              "wall_seconds": 0.023000001907348633,
               "jacobian_structure_reused": true,
               "rounds": [],
               "policy": "network_slp_fixed_shunts_v1",
@@ -1121,14 +1305,14 @@
           "policy": "source_joint_reserves_in_ac_v1",
           "correction": {
             "final_model_residual": 1.97708525766227e-09,
-            "total_seconds": 0.1809999942779541,
+            "total_seconds": 0.18500018119812012,
             "policy": "network_slp_fixed_shunts_v1",
             "shunts_revisited": false,
             "final_discrete_settings": {
               "sh": 0.0
             },
             "threads": 4,
-            "model_build_and_initialization_seconds": 0.16200017929077148,
+            "model_build_and_initialization_seconds": 0.16100001335144043,
             "external_solution_read": false,
             "sequential_temporal_bounds": true,
             "source_bounds_changed": false
@@ -1179,7 +1363,7 @@
         "interval": 3,
         "certificate_scope": "No local/global optimality claim; see individual native calls",
         "interval_start_policy": "previous_screened_interval_v1",
-        "wall_seconds": 0.014999866485595703,
+        "wall_seconds": 0.01699995994567871,
         "reserve_policy": "source_joint_reserves_in_ac_v1",
         "reserve_ac": {
           "phases": [
@@ -1190,9 +1374,9 @@
               "objective": 247.48584874748167,
               "nonlinear_rows": 22,
               "variables": 67,
-              "oracle_build_seconds": 0.012000083923339844,
+              "oracle_build_seconds": 0.012999773025512695,
               "certificate_scope": "local original-model primal feasibility only; not optimality",
-              "wall_seconds": 0.012000083923339844,
+              "wall_seconds": 0.01399993896484375,
               "jacobian_structure_reused": true,
               "rounds": [],
               "policy": "network_slp_fixed_shunts_v1",
@@ -1216,14 +1400,14 @@
           "policy": "source_joint_reserves_in_ac_v1",
           "correction": {
             "final_model_residual": 1.97708525766227e-09,
-            "total_seconds": 0.014999866485595703,
+            "total_seconds": 0.01699995994567871,
             "policy": "network_slp_fixed_shunts_v1",
             "shunts_revisited": false,
             "final_discrete_settings": {
               "sh": 0.0
             },
             "threads": 4,
-            "model_build_and_initialization_seconds": 0.0019998550415039062,
+            "model_build_and_initialization_seconds": 0.003000020980834961,
             "external_solution_read": false,
             "sequential_temporal_bounds": true,
             "source_bounds_changed": false
@@ -1268,7 +1452,7 @@
       }
     ],
     "scheduling": {
-      "build_seconds": 6.863000154495239,
+      "build_seconds": 6.852999925613403,
       "native_relative_gap": 0.0,
       "variables": 153,
       "reserve_policy": "joint_scheduling_then_full_reallocation",
@@ -1285,7 +1469,7 @@
         "source_values_changed": false,
         "windows": 4
       },
-      "solve_seconds": 0.005979061126708984,
+      "solve_seconds": 0.006226062774658203,
       "bound_and_gap_queried": true,
       "include_reserves": true,
       "objective": 1732.3229,
@@ -1376,7 +1560,7 @@
     }
   },
   "tiny_source_features_scheduling": {
-    "build_seconds": 6.846999883651733,
+    "build_seconds": 6.8399999141693115,
     "native_relative_gap": 0.0,
     "variables": 153,
     "reserve_policy": "joint_scheduling_then_full_reallocation",
@@ -1393,7 +1577,7 @@
       "source_values_changed": false,
       "windows": 4
     },
-    "solve_seconds": 0.006111860275268555,
+    "solve_seconds": 0.006237030029296875,
     "bound_and_gap_queried": true,
     "include_reserves": true,
     "objective": 1732.3229,
@@ -1418,14 +1602,14 @@
   },
   "tiny_source_features_ac_statistics": [
     {
-      "solve_seconds": 0.19700002670288086,
+      "solve_seconds": 0.17599987983703613,
       "bound_and_gap_queried": true,
       "objective": 494.9715416903511,
       "bound": null,
       "native_relative_gap": null,
       "interval": 1,
       "interval_start_policy": "previous_screened_interval_v1",
-      "wall_seconds": 12.793999910354614,
+      "wall_seconds": 12.77999997138977,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
         "numerical_recovery": {
@@ -1464,7 +1648,7 @@
               "policy": "verified_stable_rounded_primal_v1",
               "callback_count": 21,
               "native_primal_residual_at_stop": 6.435824095873954e-16,
-              "audit_seconds": 0.026999950408935547,
+              "audit_seconds": 0.0280001163482666,
               "objective_relative_range_limit": 1e-07,
               "enabled": true,
               "source_bounds_changed": false
@@ -1475,7 +1659,7 @@
         "source_interval_duration": 0.5,
         "phases": [
           {
-            "solve_seconds": 2.010999917984009,
+            "solve_seconds": 2.005000114440918,
             "bound_and_gap_queried": true,
             "max_primal_residual": 1.7013820907685329e-13,
             "objective": 494.97169755727043,
@@ -1488,12 +1672,12 @@
             "wall_limit_seconds": 10.0,
             "primal_status": "FEASIBLE_POINT",
             "phase": "continuous_shunts",
-            "wall_seconds": 2.9240000247955322,
+            "wall_seconds": 2.9179999828338623,
             "complete_finite_point": true,
             "relative_gap": null
           },
           {
-            "solve_seconds": 0.19700002670288086,
+            "solve_seconds": 0.17599987983703613,
             "bound_and_gap_queried": true,
             "max_primal_residual": 6.435824095873954e-16,
             "objective": 494.9715416903511,
@@ -1506,7 +1690,7 @@
             "wall_limit_seconds": 15.0,
             "primal_status": "FEASIBLE_POINT",
             "phase": "rounded_shunts",
-            "wall_seconds": 0.25500011444091797,
+            "wall_seconds": 0.2329998016357422,
             "complete_finite_point": true,
             "relative_gap": null
           }
@@ -1567,14 +1751,14 @@
       "relative_gap": null
     },
     {
-      "solve_seconds": 0.006000041961669922,
+      "solve_seconds": 0.004999876022338867,
       "bound_and_gap_queried": true,
       "objective": 989.9433951145406,
       "bound": null,
       "native_relative_gap": null,
       "interval": 2,
       "interval_start_policy": "previous_screened_interval_v1",
-      "wall_seconds": 0.34600019454956055,
+      "wall_seconds": 0.3470001220703125,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
         "numerical_recovery": {
@@ -1623,12 +1807,12 @@
             "wall_limit_seconds": 10.0,
             "primal_status": "FEASIBLE_POINT",
             "phase": "continuous_shunts",
-            "wall_seconds": 0.009000062942504883,
+            "wall_seconds": 0.006999969482421875,
             "complete_finite_point": true,
             "relative_gap": null
           },
           {
-            "solve_seconds": 0.006000041961669922,
+            "solve_seconds": 0.004999876022338867,
             "bound_and_gap_queried": true,
             "max_primal_residual": 1.4554329963445412e-15,
             "objective": 989.9433951145406,
@@ -1641,7 +1825,7 @@
             "wall_limit_seconds": 15.0,
             "primal_status": "FEASIBLE_POINT",
             "phase": "rounded_shunts",
-            "wall_seconds": 0.006000041961669922,
+            "wall_seconds": 0.004999876022338867,
             "complete_finite_point": true,
             "relative_gap": null
           }
@@ -1765,7 +1949,7 @@
         "source_interval_duration": 0.25,
         "phases": [
           {
-            "solve_seconds": 0.012000083923339844,
+            "solve_seconds": 0.013000011444091797,
             "bound_and_gap_queried": true,
             "max_primal_residual": 2.374836438612249e-15,
             "objective": 247.48577084513346,
@@ -1778,7 +1962,7 @@
             "wall_limit_seconds": 10.0,
             "primal_status": "FEASIBLE_POINT",
             "phase": "continuous_shunts",
-            "wall_seconds": 0.012000083923339844,
+            "wall_seconds": 0.013000011444091797,
             "complete_finite_point": true,
             "relative_gap": null
           },
@@ -1886,7 +2070,7 @@
       "native_relative_gap": null,
       "interval": 1,
       "interval_start_policy": "off",
-      "wall_seconds": 7.35699987411499,
+      "wall_seconds": 7.234999895095825,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
         "policy": "source_joint_reserves_in_ac_v1",
@@ -1941,7 +2125,7 @@
       "native_relative_gap": null,
       "interval": 2,
       "interval_start_policy": "off",
-      "wall_seconds": 0.026000022888183594,
+      "wall_seconds": 0.02700018882751465,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
         "policy": "source_joint_reserves_in_ac_v1",
@@ -1989,14 +2173,14 @@
       "relative_gap": null
     },
     {
-      "solve_seconds": 0.01100015640258789,
+      "solve_seconds": 0.010999917984008789,
       "bound_and_gap_queried": true,
       "objective": 247.48584877862885,
       "bound": null,
       "native_relative_gap": null,
       "interval": 3,
       "interval_start_policy": "off",
-      "wall_seconds": 0.024000167846679688,
+      "wall_seconds": 0.023999929428100586,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
         "policy": "source_joint_reserves_in_ac_v1",
@@ -2062,6 +2246,7 @@
     "config/pilot.json": "131fe843dfda8fa86737e388500b6ff9e81fc0b3da5082d38c6cbbe8699cbf86",
     "config/pilot_002.json": "15bfac31b4b4dda0efed3be2b8addb13a85e320665efa03417dc8158ef55eb0f",
     "config/speedup_n06049_s003_r01.json": "1b80eb638179ce32bca7c9be27565e0fae784bb9839e0789df5181a4d1189e4c",
+    "config/speedup_n06049_s003_r02.json": "de18d12113cf22dc8af978e10182e7b801165915fa147b566190db1ad27d48be",
     "config/tiny_ac_correction.json": "08ee33cb6ab72f1fbde554428856df880fcd87d57a1e6b32be7db7477cea7f5e",
     "config/tiny_cold_scheduling_seed.json": "535e4c871315e4f8b1ba7bb4f35e17969c6da722efae17d644ec1349b155df0c",
     "config/tiny_consumer_dominance.json": "cc79ac84067ac84fcacdcc4c5c0bb63ed710ae96a8057f67e4c1e1c7b02d1077",
@@ -2071,7 +2256,7 @@
     "config/tiny_source_features.json": "18ed082a8dd064c79f8b424b60937a2f4a85d2afdd8429f76cf772d12bcb6698",
     "config/tiny_test.json": "1fdde86815c02a085a868374f9d9c89c1a71fc477d078b7c28e93259042b367a",
     "go3cpu/__init__.py": "24960f6da5f3db9c3a5b144d85b1f2ece6605552ba2d6ddc899a64e976b8dc71",
-    "go3cpu/campaign.py": "bc8e238ce91a3cad31fb6747cfcbaa0f8536392e1e3e99c24fe173cc5b4ec955",
+    "go3cpu/campaign.py": "a052ee8ef69b3c656a1105e3a5211aecf4cc461676f073f35c039295777b9d89",
     "go3cpu/contract.py": "022af78bdcba1dafdd8bb79ebc7643974e6781741b436e93b0ea54f9ef5503c8",
     "go3cpu/controller.py": "20240e5d791fc8dfad63956974935b2159c05f82dc3cc8fb7fbd3919d4f2b5a8",
     "go3cpu/independent.py": "90d94c1a9e483803396b2cffd9835b5661c86f0f8058d724245beaf372410183",
@@ -2079,11 +2264,12 @@
     "go3cpu/provenance.py": "80bf8b2d5dee2e4662956423e88115ca9e8e99c1a7c84635ccc4b1b2e96034ec",
     "go3cpu/safety.py": "52d7a0fa146fcedfb61e6b3ddcd087bb59812d2e5bce487c933a56d25eca45ee",
     "go3cpu/selection.py": "04deb83ba562fc7bbbb725c87a2bab663aa82b790ca2407a7df5c1c605f5cf02",
-    "go3cpu/speedup.py": "6f512c8d05bda6e53421801179519f4cf17c2ebfa72682a0d4513b8b513176a7",
+    "go3cpu/speedup.py": "eb8ef18e7da710f3169f257a017ec3f9f68a8c66188bd724dab3cabe8651b845",
     "Manifest.toml": "5afc92f37c3e084af91394f264acbb2c002134142e615e826d82ff63d324e09f",
     "manifests/authorization_campaign.json": "f50c350a5c27015f7ce55c0f1eac9e0ef733dadcd9ba5af6dcca93c9644e59bd",
     "manifests/authorization_pilot_002.json": "fa99be6acba2cf44f4da13e506ae4d8618621cd162e610e97a49fe3bb65756b2",
     "manifests/authorization_speedup_001.json": "72f11f97e276979c142aa8b1f730616f897293dfb447dbdd57f1cde4322389f4",
+    "manifests/authorization_speedup_002.json": "5df8ec62ab0593d866d90adc1bc22239f7c9cfe2c4ff78bb33e5f3b342052b56",
     "manifests/campaign/case_C3E4N02000D2_s005.json": "8bdfd453ed5ce1f03b49dc576d65b9cca658f88054d38727dc04a3b3179f1f1d",
     "manifests/campaign/case_C3E4N04224D2_s002.json": "b62960f4ba1c942125f442d268591511a029d49687acddaa5d3a9f868c4346c9",
     "manifests/campaign/case_C3E4N06049D2_s003.json": "40dfaf204de0086b322d13aba8254ecd3c3c3cd9b63a9f800d812e70aff67d15",
@@ -2095,14 +2281,14 @@
     "manifests/case.json": "44770b88e30d41031b711e764fef7c7ed89aeb5abce63216db454346e08a1964",
     "manifests/sources.json": "c3e0f10ef33c25e0ab91b1dd991274cdd9968e82d041aad44720204fd4b4b6b9",
     "Project.toml": "50c14401c4735898c365dd1e15bc6f0952f9d2305b1f99db7bae04c882e2dd9f",
-    "scripts/archive_campaign_attempt.py": "cdd31b19f6955de66fbeef993710b462ec00e67467d1794fe7742a41d93ec1a7",
+    "scripts/archive_campaign_attempt.py": "b382b9aa63f36c57ded611a33f3ba5e8d0ba67b1ce1a6f1882cd28025377159a",
     "scripts/archive_pilot_002.py": "e67159e4a9b9c259e273759a3f0fcaa61dce168d789738059d54c7b369177308",
     "scripts/audit_sources.py": "ed22fc66c4fd2b7259ccc16c294e8c38e7e94c4b3a65117be70bdbc3c49915d2",
-    "scripts/component_gate.py": "3b10aa3bfe3b5d63a452f914b61e4c8f9c96ae5105c6b10eeef9236b817cce0f",
+    "scripts/component_gate.py": "a29e0b292b60561856d5d49516a37a7e14f7a3fbdb0a7e44d75e4bd3f90ebea3",
     "scripts/register_campaign_case.py": "79a9433eb84267def70b1762532e6d5264a389c6a1140a1f517dcb90d5dad132",
     "scripts/register_sources.py": "8e28b44c380f91253435b005bde9af869c64d0ef831b75379c470d87bec1209d",
-    "scripts/run_pilot.py": "b5de9535ccf69567a593149daf1eeb2b186ac4d6bfa3a00a014425570441c771",
-    "scripts/test_ac_correction.jl": "43b260669500b175089cd6086bf5f07088cca5938ffb29748fe19dae75897304",
+    "scripts/run_pilot.py": "10b5e6de55c596d44469068b71313f77af2c19977b3c01151fa6564b9d78a675",
+    "scripts/test_ac_correction.jl": "cc75d6e127e29a1cd409b423e954404b3eff63ebeedf2389008a7a0a3b6b61dc",
     "scripts/test_ac_interval_start.jl": "60a3b097f8c98a27a696ba48d2f6c577fa8853f0e0d86efef944c0f7bd9fa8a2",
     "scripts/test_ac_primal_guard.jl": "7183568f1f816c7bb8f9bec4f3bf12221d6f29a42b6cd9f954a6d7a60e5c5169",
     "scripts/test_ac_primal_start.jl": "f8b48513f167c5747df4b10ebb8dc0469b7d08ca41a768f53fafdff17c2db846",
@@ -2114,14 +2300,14 @@
     "scripts/test_solver.jl": "ee18293cd9279ae2dcbba53650e192d3c35981ae9ae02f24353e8a56ac85982d",
     "scripts/test_source_features.jl": "cdb3869cc12be200a2841b2706623b4ffad6026bb4e28051e967d187b02e2351",
     "scripts/verify_candidate.py": "faaa2370656c0eaf795653176568bb0cb62e9cb56661f5eaf73c30e0bc3fdb96",
-    "src/ac_correction.jl": "206c3664bc6890bd11d4f638ae81c98bc28cf432ebba442b2665661201c9b18f",
-    "src/ac_correction_pipeline.jl": "c7eef1b7a45aec76a533ac6712a6e429022df2fe3bb42771e56e37d56a3f9b4b",
+    "src/ac_correction.jl": "49678db923acf44eb63ab5e620e9b880f72a1736663559d40d140a61146c6335",
+    "src/ac_correction_pipeline.jl": "7389fa7d75dedfc1f8abf64f4d6727ac4061908f7f0fba8aa24bac19ec266552",
     "src/ac_interval_start.jl": "97c6c1eedc3ec63adb68342aa3898333b242042438c1d393ae200593808ebdf9",
     "src/ac_primal_guard.jl": "837b64cbdb159afe1a50717b92c93f4fe18c03ba0731f4cfe0d94490a5936e1c",
     "src/ac_primal_start.jl": "79874293bafeea402d6648344f843b63f562c84b1a9e84b96ed7d48c4d5f88cc",
     "src/ac_recovery.jl": "e5d0891853df8a59c01119cd63f2533da3906b31b2196f085d43a800659f986e",
     "src/consumer_dominance.jl": "5602e982e169e847c7d19d0c865730d649d6f1bad7c10b7c65394d11c438cbc7",
-    "src/pilot_worker.jl": "af5db79e74c231b3d137692eb0256e9b7d4c7b896614859e3b7401a7af1579e5",
+    "src/pilot_worker.jl": "76375accde3600e5748c754f3f3e0847c57b8bc2b54a2d25abdaf8c6b85eaf83",
     "src/reserve_ac.jl": "69858a7d74b23bc5b5339b60ed17181d7804174fcdf8261f8c1a14ee20fbbacc",
     "src/scheduling.jl": "4e500997bc3e5b40fe3479eac1c277f1ebecec4e26e97c63feedc010ca8c166a",
     "src/scheduling_seed.jl": "5a89d1b453ea45937c56029cc54d5a00969b2bae96b3a9d7112309f7e82e9830",
@@ -2136,6 +2322,6 @@
     "tests/test_selection.py": "5e11ebbce82f13a93ded31ded33bf143054c20293248fd404358a2ddde612203",
     "tests/test_source_downloads.py": "adb9946d6d47e4f4a7b67dec27bb0285037b64107a6068a4764e86d950a0ebdf",
     "tests/test_source_features.py": "442af49273c692932fc49c48b94aaf55b42a236cbb16a7da480a826c8c79c48e",
-    "tests/test_speedup.py": "885c7db2650ed3606080891adb829812f50832e6b6a9c80ae406c1302e005356"
+    "tests/test_speedup.py": "2fec673681c8827b569dacc04e41c41d70cb12a5355d7da61c66da7242eb849e"
   }
 }

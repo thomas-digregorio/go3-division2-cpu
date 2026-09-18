@@ -4,13 +4,49 @@ import tempfile
 import unittest
 
 from go3cpu.controller import atomic_json, claim_pilot, registered_latch, sha256
-from go3cpu.speedup import skip_intermediate_verification, final_verification_required
-from go3cpu.campaign import sixth_best_target
+from go3cpu.speedup import (skip_intermediate_verification, final_verification_required,
+                           runtime_target_status)
+from go3cpu.campaign import sixth_best_target, registered_budget
 
 ROOT=Path(__file__).resolve().parents[1]
 
 
 class SpeedupTests(unittest.TestCase):
+    def test_replacement_has_separate_latch_and_soft_target(self):
+        config=json.loads((ROOT/"config/speedup_n06049_s003_r02.json").read_text())
+        auth=json.loads((ROOT/"manifests/authorization_speedup_002.json").read_text())
+        self.assertTrue(registered_budget(config))
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as d:
+            root=Path(d)
+            for group in ("baseline","previous_attempt"):
+                for key in (("result","completion","configuration","comparison") if group=="baseline" else ("result","completion")):
+                    path=root/auth[group][key+"_path"]
+                    atomic_json(path,{"tiny":group+key})
+                    auth[group][key+"_sha256"]=sha256(path)
+            atomic_json(root/"manifests/authorization_speedup_002.json",auth)
+            old=root/"runs/speedup_n06049_s003_r01_latch.json"
+            atomic_json(old,{"consumed":True})
+            old_hash=sha256(old)
+            latch=registered_latch(root,config)
+            self.assertNotEqual(latch,old)
+            claim_pilot(latch,{"test":True})
+            with self.assertRaises(FileExistsError):
+                claim_pilot(latch,{"repeat":True})
+            self.assertEqual(sha256(old),old_hash)
+            for change in ({"total_seconds":1800},{"total_seconds":3600},{"target_seconds":3600},
+                           {"pilot_id":"speedup_n06049_s003_r03"},{"cold_start":False},
+                           {"allow_pop_solution":True},{"evaluation_reserve_seconds":299}):
+                with self.assertRaises(ValueError):
+                    registered_latch(root,{**config,**change})
+        at_target=runtime_target_status(config,1800)
+        beyond_target=runtime_target_status(config,1801)
+        self.assertTrue(at_target["within_target"])
+        self.assertFalse(beyond_target["within_target"])
+        self.assertTrue(beyond_target["within_hard_limit"])
+        self.assertFalse(beyond_target["target_is_hard_deadline"])
+        self.assertTrue(runtime_target_status(config,3600)["within_hard_limit"])
+        self.assertFalse(runtime_target_status(config,7200)["within_hard_limit"])
+
     def test_frozen_reference_target_is_unchanged(self):
         manifest=json.loads((ROOT/"manifests/campaign/published_C3E4N06049D2_s003.json").read_text())
         target=sixth_best_target(manifest,network="C3E4N06049D2",scenario="003",switching=True)

@@ -25,7 +25,8 @@ from go3cpu.official import configure_imports
 from go3cpu.safety import GIB, local_path, storage_check
 from go3cpu.campaign import (sixth_best_target, quality_gate, registered_budget,
                              experiment_exit_code, pipeline_coverage)
-from go3cpu.speedup import skip_intermediate_verification, final_verification_required
+from go3cpu.speedup import (skip_intermediate_verification, final_verification_required,
+                           runtime_target_status)
 configure_imports(ROOT)
 import psutil
 
@@ -113,7 +114,8 @@ def preflight(config_path):
              floor_bytes=int(config["minimum_free_gib"]*GIB)),
         "setup_exclusions":"Dependency installation, package precompilation, source registration, checkout and download only. Runtime process import/JIT, raw loading, preprocessing and case factors included.",
         "initialization":"Cold; source conditions only, no POP or saved optimized solutions",
-        "benchmark_kind":f"One local cold attempt, {config['total_seconds']}-second end-to-end limit; not an official competition submission"}
+        "runtime_target":runtime_target_status(config, 0),
+        "benchmark_kind":f"One local cold attempt, {config.get('target_seconds',config['total_seconds'])}-second target and {config['total_seconds']}-second safety limit; not an official competition submission"}
     return config,env,record
 
 
@@ -126,6 +128,7 @@ class Monitor:
         self.next_storage=0
         self.next_report=0
         self.last_stage=None
+        self.target_reported=False
         self.snapshots=Snapshots(run/"live_status")
 
     def observe(self,process=None):
@@ -157,10 +160,15 @@ class Monitor:
             storage_check(ROOT,floor_bytes=int(self.config["minimum_free_gib"]*GIB))
             self.next_storage=now+5
         progress=latest_snapshot(self.run/"worker/progress")
+        target=runtime_target_status(self.config,now-self.clock.start)
+        if not target["within_target"] and not target["target_is_hard_deadline"] and not self.target_reported:
+            print("PILOT_SOFT_TARGET_EXCEEDED "+json.dumps(target),flush=True)
+            self.target_reported=True
         stage=(progress.get("stage"),progress.get("interval"))
         if now>=self.next_report or stage!=self.last_stage:
             message={"elapsed_seconds":now-self.clock.start,"remaining_seconds":self.clock.remaining(),
-                "worker":progress,"peak_sampled_process_tree_rss_bytes":self.peak_rss}
+                "worker":progress,"peak_sampled_process_tree_rss_bytes":self.peak_rss,
+                "runtime_target":target}
             self.snapshots.publish(message)
             print("PILOT_PROGRESS "+json.dumps(message),flush=True)
             self.next_report=now+30
@@ -315,13 +323,15 @@ def execute(config_path,config,env,preflight_record):
             result["quality_gate"]=quality_gate(incumbent.record,result["quality_target"],
                 pipeline_completed=result["pipeline_completed"],within_deadline=clock.remaining()>0)
         result["total_seconds_before_final_serialization"]=serialization-clock.start
+        result["runtime_target"]=runtime_target_status(config,serialization-clock.start)
         atomic_json(run/"result.json",result,exclusive=True)
         final_serialization_seconds=time.perf_counter()-serialization
         total_seconds=time.perf_counter()-clock.start
         # Completion marker is written last; latch/provisional result never imply success.
         atomic_json(run/"completion.json",{"status":result["status"],"final_result_serialization_seconds":final_serialization_seconds,
             "result_sha256":sha256(run/"result.json"),"elapsed_through_result_serialization_seconds":time.perf_counter()-clock.start,
-            "within_local_deadline":total_seconds<config["total_seconds"]},exclusive=True)
+            "within_local_deadline":total_seconds<config["total_seconds"],
+            "runtime_target":runtime_target_status(config,total_seconds)},exclusive=True)
         finished.set()
     print("PILOT_COMPLETE "+json.dumps({"status":result["status"],"run":str(run),
         "total_seconds":total_seconds,"objective":(incumbent.record or {}).get("objective"),

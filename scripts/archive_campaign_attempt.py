@@ -50,11 +50,14 @@ def collect(attempt, *, root=ROOT):
     output = local_path(root / "evidence" / collection / attempt)
     output.mkdir(parents=True, exist_ok=False)
     copied = []
-    for relative in ("result.json", "completion.json", "preflight.json", "initial_record.json",
+    compact_files=("result.json", "completion.json", "preflight.json", "initial_record.json",
             "agent_stop_reason.json",
             "worker/solver_statistics.json", "worker/worker_error.json", "worker/schedule_balance.json",
             "worker/statistics/scheduling.json", "worker/timings.json",
-            "verification/schedule/certificate.json", "verification/final/certificate.json"):
+            "verification/schedule/certificate.json", "verification/final/certificate.json")
+    compact_files += tuple(str(p.relative_to(run)) for p in
+        sorted((run/"worker/native_correction").rglob("*.json")))
+    for relative in compact_files:
         source = run / relative
         if source.exists():
             destination = output / relative

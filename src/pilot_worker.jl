@@ -292,7 +292,8 @@ function run_worker(case_path, output, config, work_deadline)
                 lp_seconds=get(config,"ac_correction_lp_seconds",4.0),
                 max_rounds=get(config,"ac_correction_max_rounds",8),
                 fallback_seconds=get(config,"ac_correction_fallback_seconds",12.0),
-                threads=config["highs_threads"])
+                threads=config["highs_threads"],
+                diagnostic_dir=joinpath(output,"native_correction","hour_"*lpad(string(i),4,'0')))
         elseif ac_reserve_policy=="source_joint_reserves_in_ac_v1"
             ac_model,result=compute_reserve_aware_ac(working,input,i;
                 on_status=current_on,real_power=current_p,curves=power_curves,

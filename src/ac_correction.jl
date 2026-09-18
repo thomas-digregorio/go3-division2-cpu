@@ -87,59 +87,139 @@ function correction_linearization(o,x)
     (A=[o.A;J],lower=[o.al;o.nl_lower.+shift],upper=[o.au;o.nl_upper.+shift],J=J,g=g)
 end
 
-function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4)
+# Read the original, unpresolved native LP back before accepting any import
+# warning. Candidate linearizations may lose tiny coefficients inside HiGHS;
+# allow that only with a conservative bound on EVERY row's possible error.
+# The original JuMP/source model and nonlinear acceptance tolerances never change.
+function correction_import_audit(h,A,c,lb,ub,rl,ru;matrix_threshold=1e-12)
+    started=time();m,n=size(A)
+    native_n=Int(HiGHS.Highs_getNumCol(h));native_m=Int(HiGHS.Highs_getNumRow(h))
+    native_z=Int(HiGHS.Highs_getNumNz(h))
+    native_n==n && native_m==m && native_z>=0 || error("Imported correction dimensions changed")
+    nc=Ref{HiGHS.HighsInt}(0);nr=Ref{HiGHS.HighsInt}(0);nz=Ref{HiGHS.HighsInt}(0)
+    sense=Ref{HiGHS.HighsInt}(0);offset=Ref(0.0)
+    cost=zeros(n);cl=zeros(n);cu=zeros(n);lower=zeros(m);upper=zeros(m)
+    starts=zeros(HiGHS.HighsInt,n+1);starts[end]=native_z
+    indices=zeros(HiGHS.HighsInt,native_z);values_=zeros(native_z)
+    status=HiGHS.Highs_getLp(h,HiGHS.kHighsMatrixFormatColwise,nc,nr,nz,sense,offset,
+        cost,cl,cu,lower,upper,starts,indices,values_,C_NULL)
+    status==HiGHS.kHighsStatusOk || error("Cannot audit imported correction LP: $status")
+    nc[]==n && nr[]==m && nz[]==native_z && starts[1]==0 && starts[end]==native_z &&
+        issorted(starts) && all(0 .<=indices.<m) || error("Invalid native correction matrix mapping")
+    imported=SparseMatrixCSC(m,n,Int.(starts).+1,Int.(indices).+1,values_)
+    delta=A-imported;dropzeros!(delta)
+    rows,cols,changes=findnz(delta)
+    removed_only=all(imported[r,j]==0.0 && A[r,j]==v for (r,j,v) in zip(rows,cols,changes))
+    maximum_change=maximum(abs,changes;init=0.0)
+    row_error=zeros(m);unbounded=Set{Int}()
+    for (r,j,v) in zip(rows,cols,changes)
+        bound=max(abs(lb[j]),abs(ub[j]))
+        if isfinite(bound)
+            row_error[r]+=abs(v)*bound
+        else
+            push!(unbounded,j)
+        end
+    end
+    exact_domains=cl==lb && cu==ub && lower==rl && upper==ru
+    exact_objective=cost==c && sense[]==HiGHS.kHighsObjSenseMaximize && offset[]==0.0
+    max_row_error=isempty(unbounded) ? maximum(row_error;init=0.0) : nothing
+    accepted=exact_domains && exact_objective && removed_only &&
+        maximum_change<=matrix_threshold && isempty(unbounded) && max_row_error<=1e-10
+    Dict("pass"=>accepted,"domains_exact"=>exact_domains,"objective_exact"=>exact_objective,
+        "removed_small_coefficients_only"=>removed_only,"changed_nonzeros"=>length(changes),
+        "maximum_coefficient_change"=>maximum_change,"maximum_bounded_row_error"=>max_row_error,
+        "unbounded_changed_columns"=>length(unbounded),"row_error_limit"=>1e-10,
+        "matrix_import_threshold"=>matrix_threshold,"native_nonzeros"=>native_z,
+        "input_nonzeros"=>nnz(A),"wall_seconds"=>time()-started,
+        "scope"=>"Candidate LP import only; original nonlinear/source checks remain mandatory")
+end
+
+function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothing)
     seconds>0 && isfinite(seconds) || error("Invalid correction LP budget")
     size(A)==(length(rl),length(c)) && length(ru)==length(rl) &&
         length(lb)==length(ub)==length(x)==length(c) || error("Correction LP dimensions differ")
     all(isfinite,c) && all(isfinite,A.nzval) && all(lb.<=ub) && all(rl.<=ru) ||
         error("Invalid correction LP data")
     length(A.nzval)<=typemax(HiGHS.HighsInt) || error("Correction matrix exceeds native index range")
+    logs=abspath(something(log_dir,joinpath(@__DIR__,"..","tmp","ac_correction_native")))
+    occursin("onedrive",lowercase(logs)) && error("OneDrive diagnostic path forbidden")
+    mkpath(logs)
+    log_path,log_io=mktemp(logs;cleanup=false);close(log_io)
     h=HiGHS.Highs_create();h!=C_NULL || error("HiGHS allocation failed")
-    check(s)=s==HiGHS.kHighsStatusOk || error("HiGHS correction API failed: $s")
+    check(s,operation)=s==HiGHS.kHighsStatusOk || error("HiGHS correction $operation failed: $s")
     function intinfo(key)
         v=Ref{HiGHS.HighsInt}(0)
         HiGHS.Highs_getIntInfoValue(h,key,v)==HiGHS.kHighsStatusOk ? Int(v[]) : nothing
     end
     wall=time();point=nothing
+    record=Dict{String,Any}("native_log_file"=>log_path,"native_optimizations"=>0,
+        "requested_seconds"=>seconds,"columns"=>length(x),"rows"=>length(rl),
+        "basis_reused"=>false,"external_solution_read"=>false,
+        "certificate_scope"=>"linearized candidate subproblem only; no full GO3 bound")
     try
-        check(HiGHS.Highs_setBoolOptionValue(h,"output_flag",0))
-        check(HiGHS.Highs_setIntOptionValue(h,"threads",threads))
-        check(HiGHS.Highs_setIntOptionValue(h,"random_seed",0))
-        check(HiGHS.Highs_setDoubleOptionValue(h,"time_limit",seconds))
-        check(HiGHS.Highs_setDoubleOptionValue(h,"primal_feasibility_tolerance",1e-9))
-        check(HiGHS.Highs_setDoubleOptionValue(h,"dual_feasibility_tolerance",1e-9))
-        check(HiGHS.Highs_setStringOptionValue(h,"solver","simplex"))
+        check(HiGHS.Highs_setStringOptionValue(h,"log_file",log_path),"log_file")
+        check(HiGHS.Highs_setBoolOptionValue(h,"output_flag",1),"output_flag")
+        check(HiGHS.Highs_setBoolOptionValue(h,"log_to_console",0),"log_to_console")
+        check(HiGHS.Highs_setIntOptionValue(h,"threads",threads),"threads")
+        check(HiGHS.Highs_setIntOptionValue(h,"random_seed",0),"random_seed")
+        check(HiGHS.Highs_setDoubleOptionValue(h,"primal_feasibility_tolerance",1e-9),"primal_tolerance")
+        check(HiGHS.Highs_setDoubleOptionValue(h,"dual_feasibility_tolerance",1e-9),"dual_tolerance")
+        check(HiGHS.Highs_setDoubleOptionValue(h,"small_matrix_value",1e-12),"matrix_threshold")
+        check(HiGHS.Highs_setStringOptionValue(h,"solver","simplex"),"solver")
         # One bulk CSC transfer, no per-variable native edits or commercial backend.
         starts=HiGHS.HighsInt.(A.colptr.-1);indices=HiGHS.HighsInt.(A.rowval.-1)
-        check(HiGHS.Highs_passLp(h,length(c),length(rl),nnz(A),HiGHS.kHighsMatrixFormatColwise,
-            HiGHS.kHighsObjSenseMaximize,0.0,c,lb,ub,rl,ru,starts,indices,A.nzval))
-        transfer=time()-wall
+        import_status=HiGHS.Highs_passLp(h,length(c),length(rl),nnz(A),HiGHS.kHighsMatrixFormatColwise,
+            HiGHS.kHighsObjSenseMaximize,0.0,c,lb,ub,rl,ru,starts,indices,A.nzval)
+        record["import_status"]=Int(import_status)
+        import_status in (HiGHS.kHighsStatusOk,HiGHS.kHighsStatusWarning) ||
+            error("HiGHS correction LP import error: $import_status; see $log_path")
+        audit=correction_import_audit(h,A,c,lb,ub,rl,ru)
+        record["import_audit"]=audit;record["bulk_transfer_and_audit_seconds"]=time()-wall
+        if !audit["pass"]
+            record["reason"]="native_import_changed_linearization_beyond_audited_limit"
+            return nothing,record # Return to unchanged point / bounded Ipopt fallback.
+        end
         start_status=HiGHS.Highs_setSolution(h,x,A*x,C_NULL,C_NULL)
         stored=zeros(length(x));stored_rows=zeros(length(rl))
         stored_ok=HiGHS.Highs_getSolution(h,stored,C_NULL,stored_rows,C_NULL)==HiGHS.kHighsStatusOk && stored==x
+        record["complete_start_api_status"]=Int(start_status);record["native_stored_start"]=stored_ok
+        record["native_start_use"]="stored vector observed; algorithmic use after presolve not asserted"
+        allowance=seconds-(time()-wall)
+        if allowance<=0
+            record["reason"]="lp_budget_consumed_by_import_and_audit"
+            return nothing,record
+        end
+        check(HiGHS.Highs_setDoubleOptionValue(h,"time_limit",allowance),"time_limit")
+        record["native_allowance_seconds"]=allowance;record["native_optimizations"]=1
         native_started=time();run_status=HiGHS.Highs_run(h);api_seconds=time()-native_started
+        record["native_run_status"]=Int(run_status)
+        run_status in (HiGHS.kHighsStatusOk,HiGHS.kHighsStatusWarning) ||
+            error("HiGHS correction solve API error: $run_status; see $log_path")
         status=Int(HiGHS.Highs_getModelStatus(h));ps=intinfo("primal_solution_status")
         if ps==HiGHS.kHighsSolutionStatusFeasible
             point=zeros(length(x))
-            check(HiGHS.Highs_getSolution(h,point,C_NULL,stored_rows,C_NULL))
+            check(HiGHS.Highs_getSolution(h,point,C_NULL,stored_rows,C_NULL),"get_solution")
             all(isfinite,point) || error("Native correction returned nonfinite point")
         end
-        record=Dict("native_model_status"=>status,"native_primal_status"=>ps,
-            "native_run_status"=>Int(run_status),"native_seconds"=>HiGHS.Highs_getRunTime(h),
-            "api_seconds"=>api_seconds,"bulk_transfer_seconds"=>transfer,
-            "simplex_iterations"=>intinfo("simplex_iteration_count"),
-            "requested_seconds"=>seconds,"columns"=>length(x),"rows"=>length(rl),
-            "complete_start_api_status"=>Int(start_status),"native_stored_start"=>stored_ok,
-            "native_start_use"=>"stored vector observed; algorithmic use after presolve not asserted",
-            "basis_reused"=>false,"external_solution_read"=>false,
-            "certificate_scope"=>"linearized candidate subproblem only; no full GO3 bound")
+        merge!(record,Dict("native_model_status"=>status,"native_primal_status"=>ps,
+            "native_seconds"=>HiGHS.Highs_getRunTime(h),"api_seconds"=>api_seconds,
+            "simplex_iterations"=>intinfo("simplex_iteration_count")))
         point,record
+    catch e
+        record["error"]=sprint(showerror,e)
+        rethrow()
     finally
         HiGHS.Highs_destroy(h)
+        record["wall_seconds"]=time()-wall
+        messages=filter(line->occursin(r"(?i)^\s*(warning|error)\s*:",line),readlines(log_path))
+        record["native_warning_error_count"]=length(messages)
+        record["native_warning_error_excerpt"]=first(messages,min(20,length(messages)))
+        atomic_json(log_path*".json",record)
+        println("GO3_CORRECTION_NATIVE ",JSON.json(record));flush(stdout)
     end
 end
 
-function ac_linear_correction(model,point;deadline,max_rounds=8,lp_seconds=4.0,threads=4)
+function ac_linear_correction(model,point;deadline,max_rounds=8,lp_seconds=4.0,threads=4,log_dir=nothing)
     started=time();o=correction_oracle(model)
     point.variables==o.variables || error("Correction source variable mapping differs")
     x=copy(point.values);x=clamp.(x,o.lb,o.ub)
@@ -166,7 +246,7 @@ function ac_linear_correction(model,point;deadline,max_rounds=8,lp_seconds=4.0,t
         allowance=min(lp_seconds,deadline-time()-0.05)
         allowance>0 || (reason="correction_deadline";break)
         proposed,record=correction_native_lp(lin.A,o.c,lo,hi,lin.lower,lin.upper,x;
-            seconds=allowance,threads=threads)
+            seconds=allowance,threads=threads,log_dir=log_dir)
         merge!(record,Dict("round"=>round_id,"before_residual"=>residual,"trust_radius"=>radius))
         if proposed===nothing
             record["accepted"]=false;record["reason"]="no_feasible_linearized_point"

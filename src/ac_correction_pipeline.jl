@@ -119,7 +119,7 @@ end
 
 function compute_corrected_ac(working,source,i;on_status,real_power,reactive_power,curves,
         optimizer,deadline,interval_seed=nothing,slp_seconds=15.0,lp_seconds=4.0,
-        max_rounds=8,fallback_seconds=12.0,threads=4)
+        max_rounds=8,fallback_seconds=12.0,threads=4,diagnostic_dir=nothing)
     began=time()
     model,reserve=build_reserve_aware_ac(working,source,i;on_status,real_power,curves)
     set_optimizer(model,optimizer)
@@ -135,7 +135,7 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
     point=(variables=all_variables(model),values=Float64[start_value(v) for v in all_variables(model)])
     built=time()-began
     point,slp=ac_linear_correction(model,point;deadline=min(deadline,time()+slp_seconds),
-        max_rounds,lp_seconds,threads)
+        max_rounds,lp_seconds,threads,log_dir=diagnostic_dir)
     phases=Any[slp]
     if slp["max_primal_residual"]>AC_POINT_RESIDUAL_TOLERANCE && deadline-time()>3
         point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=fallback_seconds)
@@ -154,7 +154,7 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
             set_lower_bound(v,shunt_domains[u][1]);set_upper_bound(v,shunt_domains[u][2])
         end
         relaxed,phase=ac_linear_correction(model,point;deadline=min(deadline-3,time()+4),
-            max_rounds=3,lp_seconds,threads)
+            max_rounds=3,lp_seconds,threads,log_dir=diagnostic_dir)
         phase["phase"]="shunt_revisit_relaxation";push!(phases,phase)
         lookup=Dict(zip(relaxed.variables,relaxed.values))
         for u in source.shunt_ids
@@ -162,7 +162,7 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
             fix(v,step;force=true);lookup[v]=step;settings[u]=step
         end
         point=(variables=relaxed.variables,values=[lookup[v] for v in relaxed.variables])
-        point,phase=ac_linear_correction(model,point;deadline,max_rounds,lp_seconds,threads)
+        point,phase=ac_linear_correction(model,point;deadline,max_rounds,lp_seconds,threads,log_dir=diagnostic_dir)
         phase["phase"]="rounded_shunt_repair";push!(phases,phase)
         if phase["max_primal_residual"]>saved_residual
             point=saved_point;settings=saved_settings
