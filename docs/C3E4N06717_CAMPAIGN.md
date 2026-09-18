@@ -225,3 +225,56 @@ AC intervals. The cold-construction variant confirmed native MIP-start acceptanc
 and saved the scheduling timing snapshot. Gate evidence is
 `tmp/pilot002_component_gate_p_s3wu_s`, with its exact source inventory in
 `manifests/component_tests.json`. No full-case warmup or diagnostic solve occurred.
+
+## Completed r02: stopped early after prolonged post-LP processing
+
+Frozen revision `41d6157b3d79844d3650f5698f90eaa52ae77111` ran once cold.
+The supervisor stopped only its owned Julia worker; the controller remained
+alive to serialize the failed result. End-to-end time was **3,357.154322 s**
+(55 min 57.154 s), **not** the 7,200-second deadline. No other optimizer remains
+active. This is an incomplete attempt, not a proof of case infeasibility.
+
+| Item | Observed r02 result |
+| --- | ---: |
+| Status / full-case objective | NO_VERIFIED_INCUMBENT / unavailable |
+| Scheduling model build | 108.459 s |
+| Original variables / non-bound rows | 6,774,624 / 6,473,756 |
+| Auxiliary construction native MIP time | 49.78 s |
+| Auxiliary construction API solve time | 74.359328 s |
+| Construction `optimize!` wall time, including transfer | 310.291 s |
+| Auxiliary producer-online-hours objective | 35,088 |
+| Construction maximum original-model residual | 2.5011104e-12 |
+| Audited scheduling constraints, including bounds/integrality | 18,970,652 |
+| Fixed-commitment cost LP native time / iterations | 600.25 s / 32,711 |
+| Cost LP result | TIME_LIMIT; no feasible returned point |
+| AC intervals / exhaustive checks completed | 0 / 0 |
+| Peak sampled process-tree RSS | 19.825191 GiB |
+| End to end, including serialization | 3,357.154322 s |
+| Quality gate | FAIL: no complete candidate or verification |
+
+The construction maximized online hours, not source welfare. Its feasible point
+had source scheduling objective approximately **-24.676 billion**, so it was not
+an economically useful result by itself. The cost LP retained 266,326 primal
+infeasibilities at its native limit; its printed objective is not a valid primal
+score and is not reported as one here.
+
+More than 30 minutes then elapsed after the native LP's final log without a
+cost-phase completion record or the original economic MILP starting. The worker
+continued consuming CPU. Read-only samples showed stable memory and no paging
+reads, but do **not** identify the exact slow call. The uninstrumented interval
+includes native return/cleanup, statistics extraction, and original-domain
+restoration. It would be unjustified to attribute all of it to one of these.
+The supervisor ended the attempt to diagnose this transition instead of spending
+the remaining budget on it. No live code, limits, or tolerances were changed.
+
+The construction point was held in memory and its residual audit was written;
+no complete scheduling-candidate or GO3 solution file had been published before
+the stop. This motivates earlier checkpoint publication and finer transition
+events in the next revision. There was no verified incumbent to lose or archive.
+
+Hash-audited evidence is retained at
+`evidence/campaign/campaign_n06717_s002_r02/`, including the explicit supervisor
+stop reason. The full small run and console log remain on disk; no files were
+pruned. The result SHA256 is
+`f0fa34c9ba186b8cfec457afcbf4ed039db3b5efc3ca685aec8d693df42dd775`.
+The next network is still blocked by the 6,717-bus quality gate.

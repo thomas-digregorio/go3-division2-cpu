@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "stop_type": "supervised_early_stop_for_diagnosis",
+  "not_case_infeasibility": true,
+  "not_global_time_limit": true,
+  "requested_utc": "2026-09-18T15:32:09Z",
+  "worker_pid": 17624,
+  "controller_pid": 4368,
+  "pilot_id": "campaign_n06717_s002_r02",
+  "frozen_commit": "41d6157b3d79844d3650f5698f90eaa52ae77111",
+  "reason": "Native constructed-commitment cost LP printed TIME_LIMIT at 600.25 seconds and 32711 simplex iterations. More than 30 minutes then passed without the cost-phase completion record or original economic MIP starting, while the worker continued consuming CPU. Stop the owned worker, preserve controller finalization and evidence, then diagnose and test the transition. Exact slow call is not yet established.",
+  "last_sample": {
+    "elapsed_seconds": 3261.216990199988,
+    "remaining_seconds": 3938.78247820001,
+    "worker": {
+      "elapsed_worker_seconds": 485.60400009155273,
+      "stage": "scheduling_phase_complete",
+      "phase": "online_commitment_construction",
+      "primal_status": "FEASIBLE_POINT",
+      "remaining_work_seconds": 6073.802764892578
+    },
+    "peak_sampled_process_tree_rss_bytes": 21287137280
+  },
+  "controller_finalized": true,
+  "end_to_end_seconds": 3357.1543215999845,
+  "result_status": "NO_VERIFIED_INCUMBENT",
+  "full_case_objective": null,
+  "native_lp_status": "TIME_LIMIT",
+  "no_new_optimizer_active": true
+}

@@ -1,0 +1,118 @@
+{
+  "operation": "Post-run hash audit only; no solve or reevaluation",
+  "network": "C3E4N06717D2",
+  "scenario": "002",
+  "attempt": "campaign_n06717_s002_r02",
+  "implementation_commit": "41d6157b3d79844d3650f5698f90eaa52ae77111",
+  "input_sha256": "bccfff47a3f6de9d28117d8c76aabf47716afb92a16982067764dcc6f34f769e",
+  "status": "NO_VERIFIED_INCUMBENT",
+  "quality_gate": {
+    "pass": false,
+    "score": null,
+    "relative_shortfall_from_sixth": null,
+    "verification_pass": false,
+    "pipeline_completed": false,
+    "within_deadline": true,
+    "target": {
+      "network": "C3E4N06717D2",
+      "scenario": "002",
+      "division": 2,
+      "official_allow_switching": true,
+      "metric": "sixth_best_eligible_score",
+      "relative_shortfall_limit": 0.1,
+      "sixth_best_score": 755375223.938404,
+      "minimum_score": 679837701.5445635,
+      "top_six": [
+        {
+          "team": "YongOptimization",
+          "score": 798048810.83831,
+          "objective": 798048810.83831,
+          "runtime_seconds": 1781.0,
+          "source_row": 9897,
+          "uuid": "535-1693855412_c3E4"
+        },
+        {
+          "team": "GravityX",
+          "score": 798014001.114725,
+          "objective": 798014001.114725,
+          "runtime_seconds": 7215.0,
+          "source_row": 3876,
+          "uuid": "51-1693897156_c3E4"
+        },
+        {
+          "team": "GOT-BSI-OPF",
+          "score": 796752986.348886,
+          "objective": 796752986.348886,
+          "runtime_seconds": 1044.0,
+          "source_row": 3207,
+          "uuid": "504-1693849098_c3E4"
+        },
+        {
+          "team": "quasiGrad",
+          "score": 791263521.853814,
+          "objective": 791263521.853814,
+          "runtime_seconds": 6850.0,
+          "source_row": 7221,
+          "uuid": "1062-1693667274_c3E4"
+        },
+        {
+          "team": "TIM-GO",
+          "score": 789365501.736817,
+          "objective": 789365501.736817,
+          "runtime_seconds": 4116.0,
+          "source_row": 9228,
+          "uuid": "1054-1693622042_c3E4"
+        },
+        {
+          "team": "Occams razor",
+          "score": 755375223.938404,
+          "objective": 755375223.938404,
+          "runtime_seconds": 4416.0,
+          "source_row": 5214,
+          "uuid": "507-1693885200_c3E4"
+        }
+      ],
+      "eligible_competitors": 9,
+      "rejected": [
+        {
+          "source_row": 531,
+          "reason": "unmatched, inactive, infeasible or benchmark"
+        },
+        {
+          "source_row": 2538,
+          "reason": "unmatched, inactive, infeasible or benchmark"
+        },
+        {
+          "source_row": 5883,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 6552,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 7890,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 8559,
+          "reason": "missing comparison fields"
+        }
+      ],
+      "note": "Comparison with published scores, not a global-optimality certificate."
+    }
+  },
+  "objective": null,
+  "end_to_end_seconds": 3357.1543215999845,
+  "peak_sampled_process_tree_rss_gib": 19.825191497802734,
+  "solver_statistics": {
+    "ac_intervals": []
+  },
+  "timings": {
+    "completed_ac_interval_wall_seconds": 0
+  },
+  "worker_error": null,
+  "controller_error": null,
+  "final_certificate": null,
+  "completed_network_registration": null
+}
