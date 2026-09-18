@@ -34,8 +34,9 @@ and pushed before the next full cold attempt.
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
 | C3E4N02000D2 | 005 | 2e16d83 | 755,301,043.857519 | 754,720,348.826734 | 2,960.691 | 132,288 / 132,288 | PASS |
 | C3E4N04224D2 | 002 | da1d7ab | 493,989,736.571029 | 467,272,744.768504 | 2,477.004 | 111,024 / 111,024 | PASS |
+| C3E4N06049D2 | 003 | cfe7ea0 | 606,322,317.416927 | 597,463,992.571312 | 6,277.024 | 187,296 / 187,296 | PASS |
 
-Both completed within the registered 7,200-second end-to-end cap with official
+All completed within the registered 7,200-second end-to-end cap with official
 hard/physical feasibility and independent verification. These are separately
 frozen development milestones, **not** results from one identical final revision.
 No successful scenario is rerun automatically. Detailed failures, numerical

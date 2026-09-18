@@ -268,3 +268,83 @@ exercised the production stopping policy and independently agreed on objective
 within 6.37e-12. The source-feature pipeline exercised both guarded interruption
 and normal convergence. Evidence: `tmp/pilot002_component_gate_xf0tiesn`, with
 runtime and source hashes registered in `manifests/component_tests.json`.
+
+## Third attempt: complete, physically feasible, target passed
+
+`campaign_n06049_s003_r03` used frozen/pushed numerical revision
+`cfe7ea05d834e6f3344ee4a3176d31b2d4705811`. It completed all 48 AC intervals,
+final reserve allocation, official evaluation, independent exhaustive checking
+and result serialization in **6,277.023909 seconds (1 h 44 min 37.024 s)**.
+The worker exited normally and the controller's exact 48/48 coverage gate passed.
+
+| Final metric | Result |
+| --- | ---: |
+| Verified objective / eligible score | 606,322,317.416927 |
+| Sixth-best eligible published score | 597,463,992.571312 |
+| Required minimum (90% of sixth-best) | 537,717,593.314181 |
+| Above sixth-best | 1.482654% |
+| Official hard / physical feasibility | 1 / 1 |
+| Independent hard checks / objective agreement | PASS / PASS |
+| Complete contingency-hour checks | 187,296 / 187,296 |
+| Maximum independent hard residual | 2.67362e-10 |
+| Maximum P / Q imbalance (p.u.) | 1.96106e-9 / 8.95606e-9 |
+| Objective absolute discrepancy | 0.0593864 |
+| Maximum final local model residual | 8.86821e-9 |
+| Peak sampled process-tree RSS | 16.80550 GiB |
+| Campaign target | PASS |
+
+The score lies between the fifth- and sixth-best eligible published values.
+This is a source-matched score comparison, not an official competition placement,
+hardware-normalized speed comparison or global-optimality certificate. Source
+penalties remain in force: maximum contingency overload is 3.2826254 p.u., with
+nonzero base-thermal, contingency and reserve-shortfall penalties. Official
+physical feasibility does not mean zero permitted thermal/reserve penalties.
+
+| Recorded work | Time (s) |
+| --- | ---: |
+| Loading / preprocessing | 1.398 |
+| Scheduling stage | 491.762 |
+| HiGHS reported scheduling solve, inside that stage | 318.473 |
+| Initial reserve allocation | 39.081 |
+| Initial verification, incomplete at its own allowance | 238.520 |
+| AC-refinement stage, including checkpoints/overhead | 5,191.931 |
+| Sum of 48 hourly work records, inside AC stage | 5,148.858 |
+| Continuous-shunt phases, 48 calls | 2,792.606 |
+| Rounded-shunt phases, 48 calls | 1,995.267 |
+| Recovery phase, 1 call | 36.570 |
+| Callback feasibility-audit time, included in phases | 122.360 |
+| Final reserves and postprocessing | 64.435 |
+| Final independent checker | 138.766 |
+| Final official evaluator | 88.268 |
+| Final verification process wall | 228.750 |
+| Full end-to-end through result serialization | 6,277.024 |
+
+The scheduling MILP retained objective 621,291,337.175008, bound
+621,357,577.274144, relative gap 0.000106616808, 422,173 LP iterations and one
+search-tree node. That gap and bound apply to scheduling only, not the final
+nonlinear AC/security objective. The initial scheduling-candidate check reached
+its independent deadline and did not provide an incumbent; its cost is included
+in the end-to-end total. The final candidate passed every required gate.
+
+Twelve hourly outputs converged normally and 36 ended by the explicitly labelled
+feasible-point guard (35 rounded phases and one recovery). Continuous phases had
+28 normal, six almost-converged and 14 time-limited terminations; their native
+statuses remain recorded, not relabelled as optimal. Hour 20 alone required
+recovery: its rounded residual 6.88969e-7 failed, and 36.570 seconds of fresh-state
+recovery produced a guarded residual 6.09439e-10. Hour 31 reached a guarded point
+at iteration 485 near its rounded-phase limit, without recovery.
+
+For context, hour 17 took 84.027 s (r02: 339.829 s), hour 24 took 156.216 s
+(r02: 341.081 s), hour 31 took 336.058 s (r02: 402.898 s), and hour 34 took
+140.430 s (r02: 650.146 s). Hour 20 was harder in r03. These are observations
+from distinct cold algorithm attempts with different subsequent trajectories,
+not isolated repeated timing samples or proof that all savings came from the
+callback alone. No successful run was repeated.
+
+All full outputs and failed-attempt evidence are retained. The compact archive
+`evidence/campaign/campaign_n06049_s003_r03` hashes 1,072,978,999 retained bytes
+and deletes nothing. Result SHA256:
+`d98a8349c8dc776847b4c303c861792c0633a27f078a371063e7bd77ef3ff943`.
+Candidate SHA256:
+`ea8fcef56ece271269ab3e53be6ecfeed0376dcce35b4be58178069497d6402a`.
+The successful result/completion hashes now authorize progression to 6,717 buses.
