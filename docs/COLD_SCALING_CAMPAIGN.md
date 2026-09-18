@@ -86,3 +86,26 @@ verified evidence archive. Never delete active runs, historical latches or GO2.
 5. On verified target attainment, repeat this process for the next requested size.
 6. Report all attempts, final per-network scores/shortfalls, timings, verification
    and remaining penalties, without claiming official competition placement.
+
+## Pending controller integration: physically feasible incumbent preference
+
+A read-only audit during r04 found that the historical `Incumbent` class orders
+all hard-verified points by objective, even when the campaign additionally needs
+`phys_feas=1`. A higher-scoring hard-only candidate could therefore mask a lower-
+scoring physical candidate. The quality gate would correctly reject the retained
+hard-only point, but could miss an eligible result already produced by the run.
+This is a retention edge case, not a change to optimization or official scoring.
+
+`go3cpu/selection.py` prepares a pure ordering helper: after checking complete,
+exhaustive hard verification and objective agreement, prefer a physical point
+over a hard-only point, then maximize objective within each class. Ties retain
+the first point. Before a physical point exists, the best hard-only point remains
+useful failure evidence but never becomes campaign success. Historical non-
+campaign pilots retain objective-only ordering. Six fixture-only unit tests pass.
+
+The helper is **not imported by the frozen r04 controller** and does not affect
+that running experiment. Integrate it, test real snapshot retention and regenerate
+the complete source-inventory gate after r04 finishes, before any subsequent
+registered attempt. The existing inventory gate rejects launching newly added
+source files on an old test record. No saved solver point or solver call is used
+by these tests.
