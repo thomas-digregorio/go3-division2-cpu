@@ -307,7 +307,7 @@ for hour 5. Hour 5's native log says `Restoration Failed!`; its returned complet
 point nevertheless had a 5.10247e-11 model residual and passed the final independent
 and official checks. This warning is not reclassified as solver convergence.
 Acceptance establishes verified feasibility and the published-score threshold,
-not local stationarity at every hour or global optimality of the nonconvex MILP/NLP.
+not local stationarity at every hour or global optimality of the mixed-integer AC problem.
 
 | Timing component | Seconds |
 | --- | ---: |
