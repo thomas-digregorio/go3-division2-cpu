@@ -278,3 +278,46 @@ stop reason. The full small run and console log remain on disk; no files were
 pruned. The result SHA256 is
 `f0fa34c9ba186b8cfec457afcbf4ed039db3b5efc3ca685aec8d693df42dd775`.
 The next network is still blocked by the 6,717-bus quality gate.
+
+## Registered r03: cache-only transitions and explicit IPX cost LP
+
+This correction keeps the original scheduling rows, bounds, objective, reserves,
+AC method and acceptance tolerances. The attempt remains cold, with the same
+7,200-second end-to-end deadline and 180/600/600-second requested construction,
+fixed-commitment cost LP and original economic MILP limits.
+
+- Publish the audited construction schedule before the cost LP, not after it.
+  This is a within-attempt checkpoint, not a verified full GO3 incumbent or an
+  input to a subsequent cold attempt.
+- Empty the native optimizer while preserving JuMP's authoritative cached model
+  before fixed-pattern edits and before restoring integer domains. All edits
+  then apply only to the cache, followed by bulk transfer on the next solve.
+  This prevents per-variable changes to a resident native model. It addresses a
+  plausible overhead source, not an established attribution of r02's delay.
+- Use explicit HiGHS `solver="ipx"` with crossover off and IPM tolerance 1e-10
+  for the restricted cost LP. In the installed version, `solver="ipm"` selected
+  HiPO during a tiny probe; it therefore is not used as a synonym for IPX.
+  Main MILP options are restored and a fresh native model uses `solver="choose"`
+  with simplex MIP relaxations. No restricted-LP bound is a full-MILP bound.
+- Do not reconstruct LP dual bounds or gaps solely for logging. The installed
+  solver can report an unknown LP status following dual postsolve warnings even
+  when its primal is feasible. Such points require the unchanged independent
+  audit against the restored original scheduling model. They are not described
+  as optimal or as dual certificates. Full-case success still requires the
+  separate raw-input checks, official evaluation and sixth-place score gate.
+- Persist fine-grained solver-return, statistics, capture, cache-edit, audit and
+  checkpoint events and partial timings even if the worker stops mid-stage.
+
+The new tiny tests verify the native IPX log and nonzero barrier iterations,
+empty-native/cache-only domain edits, exact restoration including exceptions and
+forced LP timeout, early checkpoint ordering, skipped irrelevant LP dual queries,
+native economic-MIP start acceptance, and restored main-MILP solver options.
+Full-case execution is prohibited until the complete fixture-only gate passes
+for this revision and its configuration and the frozen revision is pushed.
+
+The full fixture gate subsequently passed: 75 Python tests, 859 Julia assertions,
+and eight independently/officially verified tiny pipelines. Evidence is
+`tmp/pilot002_component_gate_gpa88hnf`. Before any full r03 launch, the user
+redirected work to a separate 6,049-bus speedup experiment. **r03 has not run**;
+its one-run latch remains unclaimed. The larger-network campaign is paused,
+not completed. These tested corrections are preserved before branching.

@@ -49,7 +49,21 @@ def partial_worker_timings(worker_dir):
         path = directory / name
         if path.is_file():
             return json.loads(path.read_text())
-    return {}
+    return latest_snapshot(directory / "scheduling_events")
+
+
+def partial_scheduling_statistics(worker_dir):
+    """Retain completed phases and transition attribution after an interruption."""
+    directory = local_path(worker_dir) / "statistics"
+    phases = {}
+    for name in ("online_commitment_construction", "constructed_commitment_cost_lp",
+                 "original_economic_mip"):
+        path = directory / f"{name}.json"
+        if path.is_file():
+            phases[name] = json.loads(path.read_text())
+    events = [json.loads(path.read_text()) for path in sorted(
+        (directory / "scheduling_events").glob("*.json")) if path.stem.isdigit()]
+    return {"scheduling_phases": phases, "scheduling_events": events}
 
 
 def registered_latch(root, config):

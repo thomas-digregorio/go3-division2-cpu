@@ -9,7 +9,7 @@ import threading
 
 from go3cpu.controller import (Deadline, Incumbent, Snapshots, atomic_json, claim_pilot,
     latest_candidate, latest_snapshot, registered_latch, sha256, run_bounded,
-    partial_worker_timings)
+    partial_worker_timings, partial_scheduling_statistics)
 from go3cpu.official import configure_imports
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,12 +22,30 @@ class ControllerTests(unittest.TestCase):
             worker=Path(directory)
             self.assertEqual(partial_worker_timings(worker), {})
             timing=worker/"timing_snapshots"
+            progress={"loading_and_preprocessing":1.5,
+                      "scheduling_elapsed_to_last_event":20.0,
+                      "last_scheduling_event":"construction_audit_complete"}
+            atomic_json(timing/"scheduling_events/00000001.json",progress)
+            self.assertEqual(partial_worker_timings(worker),progress)
             early={"loading_and_preprocessing":1.5, "scheduling":42.0}
             atomic_json(timing/"scheduling.json",early)
             self.assertEqual(partial_worker_timings(worker),early)
             late={**early,"initial_reserves":3.0}
             atomic_json(timing/"initial.json",late)
             self.assertEqual(partial_worker_timings(worker),late)
+
+    def test_partial_scheduling_statistics_preserve_phases_and_ordered_events(self):
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as directory:
+            worker=Path(directory)
+            self.assertEqual(partial_scheduling_statistics(worker),
+                             {"scheduling_phases":{},"scheduling_events":[]})
+            atomic_json(worker/"statistics/online_commitment_construction.json",{"pass":True})
+            for n in (2,1):
+                atomic_json(worker/f"statistics/scheduling_events/{n:08d}.json",{"sequence":n})
+            atomic_json(worker/"statistics/scheduling_events/unrelated.json",{"ignore":True})
+            self.assertEqual(partial_scheduling_statistics(worker),{
+                "scheduling_phases":{"online_commitment_construction":{"pass":True}},
+                "scheduling_events":[{"sequence":1},{"sequence":2}]})
 
     def test_global_budget_not_reset_per_stage(self):
         now = [10.0]

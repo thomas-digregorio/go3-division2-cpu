@@ -121,11 +121,22 @@ def main():
     cold_seed_certificate=json.loads((evidence/"cold_seed_verification/certificate.json").read_text())
     seed_stats=json.loads((evidence/"cold_seed_worker/statistics/scheduling.json").read_text())
     start=seed_stats["cold_construction"]["mip_start"]
+    cost_phase=seed_stats["cold_construction"]["phases"][1]
+    seed_checkpoints=evidence/"cold_seed_worker/scheduling_seeds"
+    seed_event_files=sorted((evidence/"cold_seed_worker/statistics/scheduling_events").glob("*.json"))
+    seed_events=[json.loads(path.read_text())["event"] for path in seed_event_files]
     if (not start["complete"] or start["accepted_interface_count"]!=start["variable_count"]
         or start["native_acceptance"]!="native_log_confirms_feasible_start"
         or not seed_stats["selected_schedule"]["pass"]
         or seed_stats["highs_analysis_level"]!=128
-        or not (evidence/"cold_seed_worker/timing_snapshots/scheduling.json").is_file()):
+        or not (evidence/"cold_seed_worker/timing_snapshots/scheduling.json").is_file()
+        or seed_stats["cold_construction"]["policy"]!="cold_online_construction_cost_lp_v2"
+        or cost_phase["solver"]!="ipx" or cost_phase["run_crossover"]!="off"
+        or cost_phase["bound_and_gap_queried"] or cost_phase["bound"] is not None
+        or not (seed_checkpoints/"online_commitment_construction.json").is_file()
+        or not (seed_checkpoints/"constructed_commitment_cost_lp.json").is_file()
+        or "restore_cache_edits_complete" not in seed_events
+        or "economic_solve_returned" not in seed_events):
         raise RuntimeError("Cold scheduling construction/start/timing integration failed")
     feature_stats=json.loads((evidence/"source_features_worker/statistics/scheduling.json").read_text())
     source_ac_stats=json.loads((evidence/"source_features_worker/solver_statistics.json").read_text())["ac_intervals"]

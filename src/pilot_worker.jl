@@ -32,14 +32,15 @@ function safe_stat(f)
     end
 end
 
-function model_stats(model)
+function model_stats(model;include_bound_and_gap=true)
     has_primal = primal_status(model)==FEASIBLE_POINT
     Dict("termination" => string(termination_status(model)),
          "primal_status" => string(primal_status(model)),
          "objective" => has_primal ? safe_stat(() -> objective_value(model)) : nothing,
-         "bound" => safe_stat(() -> objective_bound(model)),
-         "relative_gap" => has_primal ? safe_stat(() -> relative_gap(model)) : nothing,
-         "native_relative_gap" => safe_stat(() -> relative_gap(model)),
+         "bound" => include_bound_and_gap ? safe_stat(() -> objective_bound(model)) : nothing,
+         "relative_gap" => include_bound_and_gap && has_primal ? safe_stat(() -> relative_gap(model)) : nothing,
+         "native_relative_gap" => include_bound_and_gap ? safe_stat(() -> relative_gap(model)) : nothing,
+         "bound_and_gap_queried"=>include_bound_and_gap,
          "solve_seconds" => safe_stat(() -> solve_time(model)),
          "simplex_iterations" => safe_stat(() -> MOI.get(model, MOI.SimplexIterations())),
          "barrier_iterations" => safe_stat(() -> MOI.get(model, MOI.BarrierIterations())),
@@ -150,6 +151,18 @@ function run_worker(case_path, output, config, work_deadline)
 
     progress("scheduling")
     stage = time()
+    scheduling_event_sequence=0
+    function scheduling_event(name,details)
+        scheduling_event_sequence+=1
+        event=merge(Dict("event"=>name,"elapsed_scheduling_seconds"=>time()-stage),details)
+        atomic_json(joinpath(output,"statistics","scheduling_events",
+            lpad(string(scheduling_event_sequence),8,'0')*".json"),event)
+        atomic_json(joinpath(output,"timing_snapshots","scheduling_events",
+            lpad(string(scheduling_event_sequence),8,'0')*".json"),
+            merge(timings,Dict("scheduling_elapsed_to_last_event"=>time()-stage,
+                              "last_scheduling_event"=>name)))
+        progress("scheduling_event";extra=event)
+    end
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, "threads"=>config["highs_threads"],
         "mip_rel_gap"=>config["scheduling_relative_gap"], "mip_feasibility_tolerance"=>1e-9,
         "primal_feasibility_tolerance"=>1e-9, "random_seed"=>0,
@@ -166,15 +179,20 @@ function run_worker(case_path, output, config, work_deadline)
         seed_policy=get(config,"scheduling_seed_policy","off"),
         construction_seconds=get(config,"scheduling_construction_seconds",0),
         cost_seconds=get(config,"scheduling_constructed_cost_seconds",0),
+        cost_lp_solver=get(config,"scheduling_constructed_cost_lp_solver","simplex"),
         deadline=work_deadline,
+        on_event=scheduling_event,
         native_log_path=joinpath(output,"statistics","scheduling_economic_native.log"),
         on_phase=record->begin
             atomic_json(joinpath(output,"statistics",record["phase"]*".json"),record)
             progress("scheduling_phase_complete";extra=Dict("phase"=>record["phase"],
                 "primal_status"=>record["primal_status"]))
         end,
-        on_seed=(schedule,audit)->atomic_json(joinpath(output,"scheduling_seed.json"),
-            Dict("source"=>"constructed_within_this_cold_attempt","schedule"=>schedule,"audit"=>audit)))
+        on_seed=(schedule,audit,label)->begin
+            atomic_json(joinpath(output,"scheduling_seeds",label*".json"),
+                Dict("source"=>"constructed_within_this_cold_attempt","schedule"=>schedule,"audit"=>audit))
+            scheduling_event("scheduling_seed_checkpoint_saved",Dict("label"=>label))
+        end)
     statistics["scheduling"] = model_stats(model)
     if haskey(model.ext,:selected_schedule_audit)
         statistics["scheduling"]["native_economic_mip_statistics"]=copy(statistics["scheduling"])

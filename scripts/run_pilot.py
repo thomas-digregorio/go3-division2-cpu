@@ -20,7 +20,7 @@ sys.path.insert(0,str(ROOT))
 from go3cpu.contract import load_case, case_manifest
 from go3cpu.controller import (Deadline, Incumbent, Snapshots, atomic_json, claim_pilot,
     latest_candidate, latest_snapshot, registered_latch, run_bounded, sha256, stop_process,
-    partial_worker_timings)
+    partial_worker_timings, partial_scheduling_statistics)
 from go3cpu.official import configure_imports
 from go3cpu.safety import GIB, local_path, storage_check
 from go3cpu.campaign import (sixth_best_target, quality_gate, registered_budget,
@@ -288,6 +288,7 @@ def execute(config_path,config,env,preflight_record):
             schedule_stats=worker_dir/"statistics/scheduling.json"
             if schedule_stats.exists():
                 result["solver_statistics"]["scheduling"]=json.loads(schedule_stats.read_text())
+        result["solver_statistics"].update(partial_scheduling_statistics(worker_dir))
         if "timings" not in result:
             result["timings"]=partial_worker_timings(worker_dir)
             result["timings"]["completed_ac_interval_wall_seconds"]=sum(

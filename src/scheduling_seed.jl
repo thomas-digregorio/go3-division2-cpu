@@ -1,5 +1,5 @@
 # Cold, within-attempt commitment construction. No saved or external solution.
-const SCHEDULING_SEED_POLICY = "cold_online_construction_cost_lp_v1"
+const SCHEDULING_SEED_POLICY = "cold_online_construction_cost_lp_v2"
 const SCHEDULING_POINT_TOLERANCE = 1e-8
 
 function capture_scheduling_point(model)
@@ -54,8 +54,18 @@ function audit_scheduling_point(model,point)
         "pass"=>maximum_residual<=SCHEDULING_POINT_TOLERANCE)
 end
 
-function with_fixed_scheduling_integers(f,model,point)
+function empty_native_scheduling_model!(model)
+    backend(model) isa MOI.Utilities.CachingOptimizer || error("Scheduling edits require a cached model")
+    MOI.Utilities.reset_optimizer(model)
+    MOI.Utilities.state(backend(model))==MOI.Utilities.EMPTY_OPTIMIZER ||
+        error("Native optimizer remained attached during scheduling domain edits")
+end
+
+function with_fixed_scheduling_integers(f,model,point;on_event=(name,details)->nothing)
     domains=NamedTuple[]
+    on_event("fixed_pattern_native_detach_begin",Dict())
+    empty_native_scheduling_model!(model)
+    on_event("fixed_pattern_cache_edits_begin",Dict())
     try
         for v in all_variables(model)
             binary,integer=is_binary(v),is_integer(v)
@@ -70,8 +80,12 @@ function with_fixed_scheduling_integers(f,model,point)
             integer && unset_integer(v)
             fixed || fix(v,round(x);force=true)
         end
+        on_event("fixed_pattern_cache_edits_complete",Dict("integer_variables"=>length(domains)))
         f()
     finally
+        on_event("restore_native_detach_begin",Dict())
+        empty_native_scheduling_model!(model)
+        on_event("restore_cache_edits_begin",Dict())
         for d in domains
             v=d.variable
             if !d.fixed
@@ -82,6 +96,7 @@ function with_fixed_scheduling_integers(f,model,point)
             d.binary && set_binary(v)
             d.integer && set_integer(v)
         end
+        on_event("restore_cache_edits_complete",Dict("integer_variables"=>length(domains)))
     end
 end
 
@@ -100,7 +115,9 @@ function supply_scheduling_primal!(model,point)
 end
 
 function construct_scheduling_seed!(model,input;construction_seconds,cost_seconds,
-        deadline=Inf,on_phase=record->nothing)
+        cost_lp_solver="simplex",deadline=Inf,on_phase=record->nothing,
+        on_seed=(point,audit,label)->nothing,on_event=(name,details)->nothing)
+    cost_lp_solver in ("simplex","ipx") || error("Unregistered constructed-cost LP solver")
     original=objective_function(model)
     sense=objective_sense(model)
     sense==MOI.MAX_SENSE || error("Cold scheduling construction expects maximization")
@@ -113,7 +130,9 @@ function construct_scheduling_seed!(model,input;construction_seconds,cost_second
             for uid in input.sdd_ids_producer for t in input.periods))
         set_time_limit_sec(model,bounded(construction_seconds))
         phase_started=time()
+        on_event("construction_solve_begin",Dict())
         optimize!(model)
+        on_event("construction_solve_returned",Dict("wall_seconds"=>time()-phase_started))
         construction_stats=merge(model_stats(model),Dict(
             "phase"=>"online_commitment_construction","wall_seconds"=>time()-phase_started,
             "objective_scope"=>"producer_online_hours_not_source_economics"))
@@ -123,29 +142,56 @@ function construct_scheduling_seed!(model,input;construction_seconds,cost_second
         set_objective_function(model,original)
     end
     if best!==nothing
+        on_event("construction_audit_begin",Dict())
         a=audit_scheduling_point(model,best)
         construction_stats["original_model_audit"]=a
         a["pass"] || (best=nothing)
+        on_event("construction_audit_complete",a)
+        best===nothing || on_seed(best,a,"online_commitment_construction")
     end
     push!(records,construction_stats);on_phase(construction_stats)
     if best!==nothing && bounded(cost_seconds)>0
         cost_point=nothing
         cost_stats=nothing
-        with_fixed_scheduling_integers(model,best) do
-            set_time_limit_sec(model,bounded(cost_seconds))
-            phase_started=time()
-            optimize!(model)
-            cost_stats=merge(model_stats(model),Dict("phase"=>"constructed_commitment_cost_lp",
-                "wall_seconds"=>time()-phase_started,
-                "bound_scope"=>"fixed_constructed_commitment_only_not_full_MIP"))
-            primal_status(model)==FEASIBLE_POINT && (cost_point=capture_scheduling_point(model))
+        original_options=Dict(k=>get_optimizer_attribute(model,k) for k in
+            ("solver","run_crossover","ipm_optimality_tolerance"))
+        try
+            with_fixed_scheduling_integers(model,best;on_event=on_event) do
+                set_optimizer_attribute(model,"solver",cost_lp_solver)
+                if cost_lp_solver=="ipx"
+                    set_optimizer_attribute(model,"run_crossover","off")
+                    set_optimizer_attribute(model,"ipm_optimality_tolerance",1e-10)
+                end
+                set_time_limit_sec(model,bounded(cost_seconds))
+                phase_started=time()
+                on_event("cost_lp_solve_begin",Dict("solver"=>cost_lp_solver))
+                optimize!(model)
+                on_event("cost_lp_solve_returned",Dict("wall_seconds"=>time()-phase_started))
+                # This restricted LP's dual bound is irrelevant to the full MIP.
+                # Avoid reconstructing LP dual objectives/gaps solely for logging.
+                cost_stats=merge(model_stats(model;include_bound_and_gap=false),Dict(
+                    "phase"=>"constructed_commitment_cost_lp","wall_seconds"=>time()-phase_started,
+                    "solver"=>get_optimizer_attribute(model,"solver"),
+                    "run_crossover"=>get_optimizer_attribute(model,"run_crossover"),
+                    "bound_scope"=>"not_queried_restricted_LP_not_full_MIP"))
+                on_event("cost_lp_statistics_complete",cost_stats)
+                primal_status(model)==FEASIBLE_POINT && (cost_point=capture_scheduling_point(model))
+                on_event("cost_lp_point_captured",Dict("complete_point"=>cost_point!==nothing))
+            end
+        finally
+            for (key,setting) in original_options
+                set_optimizer_attribute(model,key,setting)
+            end
         end
         # Original integer types, explicit bounds, existing fixes, and cost are restored.
         if cost_point!==nothing
+            on_event("cost_original_model_audit_begin",Dict())
             a=audit_scheduling_point(model,cost_point)
             cost_stats["original_model_audit"]=a
+            on_event("cost_original_model_audit_complete",a)
             if a["pass"] && a["objective"]>=construction_stats["original_model_audit"]["objective"]
                 best=cost_point
+                on_seed(best,a,"constructed_commitment_cost_lp")
             end
         end
         push!(records,cost_stats);on_phase(cost_stats)

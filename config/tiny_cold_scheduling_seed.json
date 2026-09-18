@@ -22,8 +22,9 @@
   "reserve_seconds_per_interval": 2,
   "reserve_finish_seconds": 10,
   "handshake": false,
-  "scheduling_seed_policy": "cold_online_construction_cost_lp_v1",
+  "scheduling_seed_policy": "cold_online_construction_cost_lp_v2",
   "scheduling_construction_seconds": 15,
   "scheduling_constructed_cost_seconds": 15,
-  "scheduling_analysis_level": 128
+  "scheduling_analysis_level": 128,
+  "scheduling_constructed_cost_lp_solver": "ipx"
 }

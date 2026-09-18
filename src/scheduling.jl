@@ -24,8 +24,9 @@ end
 
 function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
         include_reserves::Bool=true,consumer_dominance::Bool=false,
-        seed_policy="off",construction_seconds=0,cost_seconds=0,deadline=Inf,
-        native_log_path=nothing,on_phase=record->nothing,on_seed=(schedule,audit)->nothing)
+        seed_policy="off",construction_seconds=0,cost_seconds=0,cost_lp_solver="simplex",deadline=Inf,
+        native_log_path=nothing,on_phase=record->nothing,
+        on_seed=(schedule,audit,label)->nothing,on_event=(name,details)->nothing)
     seed_policy in ("off",SCHEDULING_SEED_POLICY) || error("Unknown scheduling seed policy")
     if seed_policy!= "off"
         include_reserves || error("Cold construction must retain joint source reserves")
@@ -50,6 +51,7 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
             model.ext[:consumer_online_dominance]
     end
     println("GO3_SCHEDULING_MODEL ",JSON.json(model.ext[:scheduling_formulation])); flush(stdout)
+    on_event("model_built",Dict("build_seconds"=>time()-started))
     set_optimizer(model,optimizer)
     set_time_limit_sec(model,time_limit)
     set_silent && JuMP.set_silent(model)
@@ -58,16 +60,18 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
     if seed_policy!= "off"
         best,phases=construct_scheduling_seed!(model,input;
             construction_seconds=construction_seconds,cost_seconds=cost_seconds,
-            deadline=deadline,on_phase=on_phase)
+            cost_lp_solver=cost_lp_solver,deadline=deadline,on_phase=on_phase,on_event=on_event,
+            on_seed=(point,audit,label)->on_seed(schedule_at_scheduling_point(input,model,point;
+                include_reserves=include_reserves),audit,label))
         model.ext[:scheduling_formulation]["cold_construction"]=Dict(
             "policy"=>seed_policy,"phases"=>phases,"external_initialization"=>false)
         if best!==nothing
             seed_audit=audit_scheduling_point(model,best)
-            on_seed(schedule_at_scheduling_point(input,model,best;include_reserves=include_reserves),seed_audit)
         end
         # Start a fresh native MIP with all original domains/costs. Do not carry
         # the restricted LP's basis, bound, or integrality relaxation into it.
         set_optimizer(model,optimizer)
+        get_optimizer_attribute(model,"solver")=="choose" || error("Economic MIP inherited an LP-only solver")
         set_silent && JuMP.set_silent(model)
         if native_log_path!==nothing
             occursin("onedrive",lowercase(abspath(native_log_path))) && error("OneDrive log forbidden")
@@ -76,15 +80,19 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
             set_optimizer_attribute(model,"log_file",abspath(native_log_path))
         end
         if best!==nothing
+            on_event("economic_mip_start_audit_begin",Dict())
             start=supply_scheduling_primal!(model,best)
             model.ext[:scheduling_formulation]["cold_construction"]["mip_start"]=start
             println("GO3_SCHEDULING_START ",JSON.json(start));flush(stdout)
+            on_event("economic_mip_start_ready",Dict("variable_count"=>start["variable_count"]))
         end
         set_time_limit_sec(model,max(0.0,min(Float64(time_limit),deadline-time()-1.0)))
     end
     # No saved starts, preceding pilot data, or external optimized solution.
     economic_started=time()
+    on_event("economic_solve_begin",Dict())
     optimize!(model)
+    on_event("economic_solve_returned",Dict("wall_seconds"=>time()-economic_started))
     schedule=nothing
     if seed_policy!= "off"
         native_stats=merge(model_stats(model),Dict("phase"=>"original_economic_mip",

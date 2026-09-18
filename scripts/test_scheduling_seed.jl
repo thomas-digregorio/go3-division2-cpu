@@ -21,12 +21,23 @@ domain(v)=(is_binary(v),is_integer(v),is_fixed(v) ? fix_value(v) : nothing,
     point=capture_scheduling_point(m)
     before=domain.(all_variables(m))
     @test audit_scheduling_point(m,point)["pass"]
-    with_fixed_scheduling_integers(m,point) do
+    events=String[]
+    observer=(name,details)->begin
+        push!(events,name)
+        if occursin("cache_edits",name)
+            @test MOI.Utilities.state(backend(m))==MOI.Utilities.EMPTY_OPTIMIZER
+            @test MOI.is_empty(backend(m).optimizer)
+        end
+    end
+    with_fixed_scheduling_integers(m,point;on_event=observer) do
         @test !any(is_binary,all_variables(m))
         @test !any(is_integer,all_variables(m))
         @test all(is_fixed,[b,j,f])
         @test !is_fixed(x)
     end
+    @test events==["fixed_pattern_native_detach_begin","fixed_pattern_cache_edits_begin",
+        "fixed_pattern_cache_edits_complete","restore_native_detach_begin",
+        "restore_cache_edits_begin","restore_cache_edits_complete"]
     @test domain.(all_variables(m))==before
     @test_throws ErrorException with_fixed_scheduling_integers(m,point) do
         error("Injected cost LP failure")
@@ -52,7 +63,15 @@ end
     domains=domain.(all_variables(m))
     constraints=[string.(all_constraints(m,F,S)) for (F,S) in list_of_constraint_types(m)]
     set_optimizer(m,OPT);set_silent(m)
-    seed,records=construct_scheduling_seed!(m,INPUT;construction_seconds=15,cost_seconds=15)
+    solver_options=Dict(k=>get_optimizer_attribute(m,k) for k in
+        ("solver","run_crossover","ipm_optimality_tolerance"))
+    checkpoints=String[];events=String[]
+    seed,records=construct_scheduling_seed!(m,INPUT;construction_seconds=15,cost_seconds=15,
+        cost_lp_solver="ipx",on_seed=(p,a,label)->push!(checkpoints,label),
+        on_event=(name,details)->begin
+            push!(events,name)
+            name=="cost_lp_solve_begin" && @test checkpoints==["online_commitment_construction"]
+        end)
     @test seed!==nothing
     @test length(records)==2
     @test objective_function(m)==original
@@ -68,6 +87,15 @@ end
     @test start["accepted_interface_count"]==num_variables(m)
     @test records[1]["objective_scope"]=="producer_online_hours_not_source_economics"
     @test records[2]["original_model_audit"]["pass"]
+    @test records[2]["solver"]=="ipx"
+    @test records[2]["run_crossover"]=="off"
+    @test !records[2]["bound_and_gap_queried"]
+    @test records[2]["bound"]===nothing
+    @test records[2]["relative_gap"]===nothing
+    @test records[2]["native_relative_gap"]===nothing
+    @test all(get_optimizer_attribute(m,k)==v for (k,v) in solver_options)
+    @test checkpoints==["online_commitment_construction","constructed_commitment_cost_lp"]
+    @test findfirst(==("cost_lp_solve_returned"),events)<findfirst(==("restore_native_detach_begin"),events)
     @test get_optimizer_attribute(m,"highs_analysis_level")==128
     retained,retained_audit,origin=select_scheduling_point(seed,audit,nothing,nothing)
     @test retained===seed && retained_audit===audit && origin=="within_run_constructed_commitment"
@@ -86,15 +114,17 @@ end
     phases=Any[];checkpoints=Any[]
     m,s=schedule_source_balances(INPUT;optimizer=OPT,time_limit=15,
         consumer_dominance=true,seed_policy=SCHEDULING_SEED_POLICY,
-        construction_seconds=15,cost_seconds=15,native_log_path=joinpath(dir,"native.log"),
-        on_phase=r->push!(phases,r),on_seed=(s,a)->push!(checkpoints,(;s,a)))
+        construction_seconds=15,cost_seconds=15,cost_lp_solver="ipx",native_log_path=joinpath(dir,"native.log"),
+        on_phase=r->push!(phases,r),on_seed=(s,a,label)->push!(checkpoints,(;s,a,label)))
     @test s!==nothing
     @test length(phases)==3
-    @test length(checkpoints)==1 && checkpoints[1].a["pass"]
+    @test length(checkpoints)==2 && all(c.a["pass"] for c in checkpoints)
+    @test checkpoints[1].label=="online_commitment_construction"
     seed=m.ext[:scheduling_formulation]["cold_construction"]
     @test seed["mip_start"]["native_acceptance"]=="native_log_confirms_feasible_start"
     @test m.ext[:selected_schedule_audit]["pass"]
     @test all(is_binary,m[:p_on_status])
+    @test get_optimizer_attribute(m,"solver")=="choose"
     # A zero-budget native solve may immediately accept the supplied point.
     # Either way, it must not erase it or import the restricted LP's bound.
     short=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>4,"presolve"=>"off",
@@ -111,4 +141,43 @@ end
     @test_throws ErrorException schedule_source_balances(INPUT;optimizer=OPT,time_limit=1,
         seed_policy=SCHEDULING_SEED_POLICY,include_reserves=false,
         construction_seconds=1,cost_seconds=1)
+end
+
+@testset "GO3 restricted IPX LP native proof and timeout restoration" begin
+    # Nontrivial tiny LP proves the installed IPX path actually executes.
+    m=Model(OPT)
+    ipx_log=joinpath(mktempdir(joinpath(ROOT,"tmp")),"ipx.log")
+    set_optimizer_attribute(m,"log_file",ipx_log)
+    set_optimizer_attribute(m,"log_to_console",false)
+    set_optimizer_attribute(m,"presolve","off")
+    set_optimizer_attribute(m,"solver","ipx")
+    set_optimizer_attribute(m,"run_crossover","off")
+    set_optimizer_attribute(m,"ipm_optimality_tolerance",1e-10)
+    @variable(m,0<=x[1:3]<=10)
+    @constraint(m,2x[1]+x[2]>=3)
+    @constraint(m,x[2]+3x[3]>=4)
+    @objective(m,Min,sum(x))
+    optimize!(m)
+    @test termination_status(m)==MOI.OPTIMAL
+    @test MOI.get(m,MOI.BarrierIterations())>0
+    @test occursin("IPX",read(ipx_log,String))
+    @test !occursin("Running HiPO",read(ipx_log,String))
+    @test audit_scheduling_point(m,capture_scheduling_point(m))["pass"]
+    m=source_balance_scheduling_model(INPUT;include_reserves=true,consumer_dominance=true)
+    set_optimizer(m,OPT);set_silent(m)
+    set_optimizer_attribute(m,"presolve","off")
+    before=domain.(all_variables(m));checkpoints=String[]
+    point,records=construct_scheduling_seed!(m,INPUT;construction_seconds=15,
+        cost_seconds=1e-12,cost_lp_solver="ipx",
+        on_seed=(p,a,label)->push!(checkpoints,label))
+    @test point!==nothing
+    @test records[2]["termination"]=="TIME_LIMIT"
+    @test records[2]["primal_status"]!="FEASIBLE_POINT"
+    @test !records[2]["bound_and_gap_queried"]
+    @test checkpoints==["online_commitment_construction"]
+    @test audit_scheduling_point(m,point)["pass"]
+    @test domain.(all_variables(m))==before
+    @test get_optimizer_attribute(m,"solver")=="choose"
+    @test get_optimizer_attribute(m,"run_crossover")=="on"
+    @test MOI.Utilities.state(backend(m))==MOI.Utilities.EMPTY_OPTIMIZER
 end
