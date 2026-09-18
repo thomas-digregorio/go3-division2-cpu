@@ -87,7 +87,7 @@ verified evidence archive. Never delete active runs, historical latches or GO2.
 6. Report all attempts, final per-network scores/shortfalls, timings, verification
    and remaining penalties, without claiming official competition placement.
 
-## Pending controller integration: physically feasible incumbent preference
+## Physically feasible incumbent preference after r04
 
 A read-only audit during r04 found that the historical `Incumbent` class orders
 all hard-verified points by objective, even when the campaign additionally needs
@@ -103,9 +103,12 @@ the first point. Before a physical point exists, the best hard-only point remain
 useful failure evidence but never becomes campaign success. Historical non-
 campaign pilots retain objective-only ordering. Six fixture-only unit tests pass.
 
-The helper is **not imported by the frozen r04 controller** and does not affect
-that running experiment. Integrate it, test real snapshot retention and regenerate
-the complete source-inventory gate after r04 finishes, before any subsequent
-registered attempt. The existing inventory gate rejects launching newly added
-source files on an old test record. No saved solver point or solver call is used
-by these tests.
+The helper was **not imported by the frozen r04 controller**. That completed run
+passed with a physical final point and is not repeated or retrospectively changed.
+After it finished, the helper was integrated into `Incumbent` and enabled only
+for quality-campaign callers. Fixture tests exercise actual hash-checked file
+retention, a lower-scoring physical point replacing a hard-only point, exhaustive
+coverage rejection, ties, subsequent improvements, and unchanged historical
+ordering. Previously retained files remain immutable. The complete matched-runtime
+component gate must be regenerated before a new registered attempt. No saved
+solver point or solver call is used by the retention tests.

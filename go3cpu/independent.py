@@ -34,6 +34,14 @@ def trajectories(g, ts, u, dt):
     return su, sd, psu, psd
 
 
+def startup_window_violations(windows, startups, dt):
+    """Counts at interval starts, with the official half-open time convention."""
+    starts = np.r_[0.0, np.cumsum(dt)[:-1]]
+    return [max(0.0, float(np.sum(np.asarray(startups)[
+        (starts >= begin-TIME_TOL) & (starts < end-TIME_TOL)])) - maximum)
+        for begin, end, maximum in windows]
+
+
 def branch_flow(branch, vf, vt, on=1, tm=1.0, ta=0.0):
     y = 1.0 / complex(branch["r"], branch["x"])
     charge = 0.5j * branch["b"]
@@ -114,6 +122,7 @@ def check(case, solution, *, deadline=float("inf"), exhaustive=True, violation_s
         discrete("commitment_integrality", u)
         bound("commitment_bounds", u, ts["on_status_lb"], ts["on_status_ub"])
         su, sd, psu, psd = trajectories(g, ts, u, dt)
+        record("maximum_startups", startup_window_violations(g["startups_ub"],su,dt))
         actual = p+psu+psd
         p_actual[uid] = actual
         active = ((u > 0.5) | (psu > 0) | (psd > 0)).astype(float)
@@ -150,6 +159,10 @@ def check(case, solution, *, deadline=float("inf"), exhaustive=True, violation_s
         record("offline_reserve_eligibility", dn_off if prod else nsyn+up_off)
         bound("reactive_reserve_headroom", q, active*np.asarray(ts["q_lb"])+(qd if prod else qu),
               active*np.asarray(ts["q_ub"])-(qu if prod else qd))
+        if g["q_bound_cap"]:
+            bound("reactive_power_capability", q,
+                  g["q_0_lb"]*active+g["beta_lb"]*actual+(qd if prod else qu),
+                  g["q_0_ub"]*active+g["beta_ub"]*actual-(qu if prod else qd))
         injection[buses[g["bus"]]] += (1 if prod else -1)*(actual+1j*q)
         costs["on"] += dt*u*g["on_cost"]
         costs["startup"] += su*g["startup_cost"]

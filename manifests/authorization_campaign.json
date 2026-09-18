@@ -28,6 +28,11 @@
       "network": "C3E4N02000D2",
       "scenario": "005",
       "input_sha256": "a0036576821f955e79fcf260b66fefbc9ab31127a48a788d0da84b0d8acd81bf"
+    },
+    "campaign_n04224_s002_r01": {
+      "network": "C3E4N04224D2",
+      "scenario": "002",
+      "input_sha256": "e61ef19ea11a20c88f44a3a2b69a4e6a7588e0df77c401766a495199f87e8855"
     }
   },
   "completed_networks": {

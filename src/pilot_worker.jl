@@ -4,6 +4,7 @@ const GO3 = GOC3Benchmark
 const MOI = JuMP.MOI
 LinearAlgebra.BLAS.set_num_threads(1)
 include(joinpath(@__DIR__,"consumer_dominance.jl"))
+include(joinpath(@__DIR__,"startup_windows.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
 

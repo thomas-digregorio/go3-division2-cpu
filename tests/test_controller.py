@@ -151,6 +151,45 @@ class ControllerTests(unittest.TestCase):
                 Incumbent(d/"retained").consider(source,{"pass":True,"complete":True,
                     "objective":float("nan"),"candidate_sha256":sha256(source)})
 
+    def test_campaign_preserves_physical_point_over_higher_scoring_hard_only(self):
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as directory:
+            d=Path(directory); source=d/"candidate.json"
+            inc=Incumbent(d/"retained",prefer_physical=True)
+            def submit(state,objective,physical,**extra):
+                atomic_json(source,{"state":state})
+                cert={"pass":True,"complete":True,"objective":objective,
+                    "candidate_sha256":sha256(source),"official_feas":1,
+                    "official_phys_feas":physical,"independent_hard_pass":True,
+                    "objective_agreement":True,"contingencies_required":9,
+                    "contingencies_completed":9,**extra}
+                return inc.consider(source,cert)
+            self.assertTrue(submit(1,100,0))
+            hard=Path(inc.record["retained_solution"])
+            hard_bytes=hard.read_bytes()
+            self.assertFalse(submit(2,200,1,contingencies_completed=8))
+            self.assertTrue(submit(3,90,1))
+            physical=Path(inc.record["retained_solution"])
+            self.assertFalse(submit(4,300,0))
+            self.assertFalse(submit(5,90,1))
+            self.assertEqual(physical,Path(inc.record["retained_solution"]))
+            self.assertTrue(submit(6,95,1))
+            self.assertEqual(hard.read_bytes(),hard_bytes)
+            self.assertEqual(json.loads(physical.read_text()),{"state":3})
+            for snapshot in (d/"retained").iterdir():
+                certificate=json.loads((snapshot/"certificate.json").read_text())
+                self.assertEqual(sha256(snapshot/"solution.json"),certificate["candidate_sha256"])
+            self.assertEqual(len(list((d/"retained").iterdir())),3)
+
+    def test_historical_objective_only_order_is_unchanged(self):
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as directory:
+            d=Path(directory); source=d/"candidate.json"; inc=Incumbent(d/"retained")
+            atomic_json(source,{"state":1})
+            self.assertTrue(inc.consider(source,{"pass":True,"complete":True,
+                "objective":100,"official_phys_feas":0,"candidate_sha256":sha256(source)}))
+            atomic_json(source,{"state":2})
+            self.assertFalse(inc.consider(source,{"pass":True,"complete":True,
+                "objective":90,"official_phys_feas":1,"candidate_sha256":sha256(source)}))
+
 
 if __name__ == "__main__":
     unittest.main()

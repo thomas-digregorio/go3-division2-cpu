@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import math
 from pathlib import Path
 
 from .safety import local_path
@@ -30,11 +31,21 @@ def require_supported(case):
     if len(dt) != t["general"]["time_periods"] or not dt or any(x <= 0 for x in dt):
         raise ValueError("Invalid interval durations")
     for g in n["simple_dispatchable_device"]:
-        for feature in ("energy_req_lb", "energy_req_ub", "startups_ub", "startup_states"):
+        for feature in ("energy_req_lb", "energy_req_ub", "startup_states"):
             if g[feature]:
                 raise NotImplementedError(f"{g['uid']}: {feature} not yet regression-tested")
-        if g["q_bound_cap"] or g["q_linear_cap"]:
-            raise NotImplementedError(f"{g['uid']}: coupled P-Q capability is not yet supported")
+        for window in g["startups_ub"]:
+            if (len(window) != 3 or not all(isinstance(x, (int, float)) and
+                    not isinstance(x, bool) and math.isfinite(x) for x in window) or
+                not 0 <= window[0] <= window[1] <= sum(dt) + 1e-6 or
+                window[2] < 0 or window[2] != int(window[2])):
+                raise ValueError(f"{g['uid']}: invalid source startup-count window")
+        if g["q_linear_cap"]:
+            raise NotImplementedError(f"{g['uid']}: equality P-Q capability is not yet regression-tested")
+        if g["q_bound_cap"]:
+            if g["q_bound_cap"] != 1 or any(not isinstance(g.get(k),(int,float)) or
+                    not math.isfinite(g[k]) for k in ("q_0_lb","q_0_ub","beta_lb","beta_ub")):
+                raise ValueError(f"{g['uid']}: invalid source P-Q capability coefficients")
     if n["dc_line"]:
         raise NotImplementedError("DC devices are not yet covered by independent validation")
     for b in n["ac_line"] + n["two_winding_transformer"]:

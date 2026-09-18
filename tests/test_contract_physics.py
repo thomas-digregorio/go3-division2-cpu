@@ -110,7 +110,7 @@ class PhysicsTests(unittest.TestCase):
         self.assertEqual(blocks,before)
 
     def test_unknown_required_features_rejected(self):
-        for field in ("energy_req_lb", "energy_req_ub", "startups_ub", "startup_states"):
+        for field in ("energy_req_lb", "energy_req_ub", "startup_states"):
             case = deepcopy(self.case)
             case["network"]["simple_dispatchable_device"][0][field] = [[0,1,1]]
             with self.assertRaises(NotImplementedError):

@@ -124,6 +124,41 @@ end
         Dict("g"=>1.0,"d"=>1.0),q,on,reserve_test_curves(input))
 end
 
+@testset "GO3 P-Q reserve capability cross-feasible source witnesses" begin
+    raw=JSON.parsefile(RES_TINY)
+    for d in raw["network"]["simple_dispatchable_device"]
+        d["q_bound_cap"]=1
+        d["q_0_ub"]=0.3; d["q_0_lb"]=-0.3
+        d["beta_ub"]=0.1; d["beta_lb"]=-0.1
+    end
+    input=GO3.process_input_data(raw)
+    for state in 1:4, i in input.periods
+        on=Dict("g"=>(state in (1,3) ? 1 : 0),"d"=>(state in (1,2) ? 1 : 0))
+        curves=reserve_test_curves(input;
+            su=state==2 ? Dict("g"=>0.15) : Dict(),
+            sd=state==3 ? Dict("d"=>0.1) : Dict())
+        p=Dict(u=>(on[u]==1 ? (u=="g" ? 0.7 : 0.5) : curves.p_su[u][i]+curves.p_sd[u][i])
+            for u in input.sdd_ids)
+        q=Dict(u=>(on[u]+curves.supc_status[u][i]+curves.sdpc_status[u][i]>0 ? 0.15 : 0.0)
+            for u in input.sdd_ids)
+        reference=reserve_reference(input,i,p,q,on,curves)
+        set_optimizer(reference,RES_OPT); optimize!(reference)
+        model=Model(RES_OPT)
+        r=add_source_reserve_allocation!(model,input,i,p,q,on,curves)
+        @objective(model,Min,r.cost); optimize!(model)
+        @test termination_status(reference)==MOI.OPTIMAL
+        @test termination_status(model)==MOI.OPTIMAL
+        @test objective_value(model)≈-objective_value(reference) atol=1e-7
+        byname=Dict(name(v)=>value(v) for v in all_variables(model))
+        @test isempty(primal_feasibility_report(reference,
+            Dict(v=>byname[name(v)] for v in all_variables(reference));atol=1e-8))
+        refvalues=Dict(name(v)=>value(v) for v in all_variables(reference))
+        back=Dict(v=>(haskey(refvalues,name(v)) ? refvalues[name(v)] : p["g"])
+            for v in all_variables(model))
+        @test isempty(primal_feasibility_report(model,back;atol=1e-8))
+    end
+end
+
 @testset "GO3 AC reserve source bounds and original inputs" begin
     raw=JSON.parsefile(RES_TINY)
     saved=deepcopy(raw)

@@ -10,6 +10,7 @@ import time
 import uuid
 
 from .safety import local_path
+from .selection import prefer_verified_candidate
 
 
 def atomic_json(path, data, *, exclusive=False):
@@ -141,8 +142,9 @@ def run_bounded(command, log_path, *, cwd, env, deadline, observer=None):
 
 
 class Incumbent:
-    def __init__(self, output):
+    def __init__(self, output, *, prefer_physical=False):
         self.output, self.record = local_path(output), None
+        self.prefer_physical = prefer_physical
 
     def consider(self, candidate, verification):
         if not verification.get("pass") or not verification.get("complete"):
@@ -153,7 +155,8 @@ class Incumbent:
         objective = verification["objective"]
         if not math.isfinite(objective):
             raise ValueError("Nonfinite verified objective")
-        if self.record is not None and objective <= self.record["objective"]:
+        if not prefer_verified_candidate(verification, self.record,
+                                         prefer_physical=self.prefer_physical):
             return False
         snapshot=self.output/verification["candidate_sha256"]
         snapshot.mkdir(parents=True,exist_ok=False)

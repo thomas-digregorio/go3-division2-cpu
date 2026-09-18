@@ -175,7 +175,8 @@ def execute(config_path,config,env,preflight_record):
     worker_dir=run/"worker"; worker_dir.mkdir()
     clock=Deadline(config["total_seconds"],reserve=config["evaluation_reserve_seconds"]+config["finalization_reserve_seconds"])
     monitor=Monitor(run,clock,config)
-    incumbent=Incumbent(run/"verified_incumbent")
+    incumbent=Incumbent(run/"verified_incumbent",
+        prefer_physical=bool(preflight_record.get("quality_target")))
     evaluations=[]
     result={"schema_version":1,"status":"INCOMPLETE","preflight":preflight_record,
         "run_directory":str(run),"global_optimality_certificate":False,

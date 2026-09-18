@@ -42,6 +42,8 @@ def main():
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_reserve_ac.jl"])
+    stage("source_feature_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_source_features.jl"])
     stage("tiny_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/problem.json",str(evidence/"worker"),"config/tiny_test.json",str(time.time()+120)],timeout=125)
     stage("tiny_final_check",[sys.executable,"scripts/verify_candidate.py","--input","tmp/official_tiny/problem.json",
@@ -85,6 +87,24 @@ def main():
         "--output",str(evidence/"reserve_ac_verification"),"--seconds","60"])
     reserve_ac_certificate=json.loads((evidence/"reserve_ac_verification/certificate.json").read_text())
     reserve_ac_stats=json.loads((evidence/"reserve_ac_worker/solver_statistics.json").read_text())
+    stage("tiny_source_features_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/source_features_problem.json",str(evidence/"source_features_worker"),
+        "config/tiny_source_features.json",str(time.time()+120)],timeout=125)
+    stage("tiny_source_features_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/source_features_problem.json",
+        "--solution",str(evidence/"source_features_worker/candidate_final.json"),
+        "--output",str(evidence/"source_features_verification"),"--seconds","60"])
+    source_features_certificate=json.loads((evidence/"source_features_verification/certificate.json").read_text())
+    feature_stats=json.loads((evidence/"source_features_worker/statistics/scheduling.json").read_text())
+    if (feature_stats["source_startup_windows"]["windows"]!=4 or
+        feature_stats["source_pq_bound_devices"]!=1 or
+        feature_stats["mip_lp_solver_option"]!="simplex"):
+        raise RuntimeError("New tiny integration did not exercise the registered source features")
+    for checked in (certificate,separated_certificate,hipo_certificate,dominance_certificate,
+                    reserve_ac_certificate,source_features_certificate):
+        if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
+                checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
+            raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
     ac_intervals=reserve_ac_stats["ac_intervals"]
     if len(ac_intervals)!=3 or any(
         s.get("reserve_policy")!="source_joint_reserves_in_ac_v1" or
@@ -94,7 +114,7 @@ def main():
         raise RuntimeError("Tiny AC integration did not exercise original-bound ten-product reserves")
     python_count=int(re.search(r"Ran (\d+) tests",(evidence/"python_tests.log").read_text()).group(1))
     julia_logs="\n".join((evidence/(name+".log")).read_text()
-        for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests"))
+        for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
@@ -108,6 +128,8 @@ def main():
         "tiny_consumer_dominance_certificate":dominance_certificate,
         "tiny_consumer_dominance_audit":dominance_audit,
         "tiny_reserve_aware_certificate":reserve_ac_certificate,
+        "tiny_source_features_certificate":source_features_certificate,
+        "tiny_source_features_scheduling":feature_stats,
         "tiny_reserve_aware_statistics":ac_intervals,"source_sha256":source_hashes()}
     atomic_json(ROOT/"manifests/component_tests.json",result)
 

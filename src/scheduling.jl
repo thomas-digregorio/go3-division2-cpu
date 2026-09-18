@@ -1,7 +1,7 @@
 # Project-owned adapter; pinned upstream code and source penalties are untouched.
 function source_balance_scheduling_model(input; include_reserves::Bool=true,
         consumer_dominance::Bool=false)
-    model = GO3.get_copperplate_scheduling_model(input;
+    model = GO3.get_copperplate_scheduling_model(without_upstream_startup_windows(input);
         include_reserves=include_reserves,relax_balances=true,relax_reserves=true,
         overcommitment_factor=1.0)
     original = objective_function(model)
@@ -17,6 +17,7 @@ function source_balance_scheduling_model(input; include_reserves::Bool=true,
             set_objective_coefficient(model,variable,-input.dt[t]*input.violation_cost[source_key])
         end
     end
+    add_source_startup_windows!(model,input)
     consumer_dominance && apply_consumer_online_dominance!(model,input)
     model
 end
@@ -33,6 +34,9 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
         "constraints_excluding_variable_bounds"=>num_constraints(model;count_variable_in_set_constraints=false),
         "reserve_policy"=>include_reserves ? "joint_scheduling_then_full_reallocation" :
             "candidate_schedule_only_then_full_reserve_allocation_and_evaluation")
+    model.ext[:scheduling_formulation]["source_startup_windows"]=model.ext[:source_startup_windows]
+    model.ext[:scheduling_formulation]["source_pq_bound_devices"]=
+        count(u->input.sdd_lookup[u]["q_bound_cap"]==1,input.sdd_ids)
     if consumer_dominance
         model.ext[:scheduling_formulation]["consumer_online_dominance"]=
             model.ext[:consumer_online_dominance]

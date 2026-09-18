@@ -95,3 +95,13 @@ def tiny_consumer_dominance_case():
                    "p_ramp_res_down_online_cost": [0.01]*nt,
                    "p_ramp_res_down_offline_cost": [0.02]*nt})
     return case
+
+
+def tiny_source_features_case():
+    """Source startup windows and producer P-Q limits, not competition data."""
+    case=tiny_consumer_dominance_case()
+    for d in case["network"]["simple_dispatchable_device"]:
+        d["startups_ub"]=[[0.0,0.5,0],[0.5,1.75,1]]
+        if d["device_type"]=="producer":
+            d.update(q_bound_cap=1,q_0_lb=-0.3,q_0_ub=0.3,beta_lb=-0.1,beta_ub=0.1)
+    return case

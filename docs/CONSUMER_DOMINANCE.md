@@ -1,7 +1,7 @@
 # Conservative flexible-load commitment dominance
 
-Status: registered for r04, **not used by completed attempt r03**. No new
-full-case experiment has used this reduction yet. All generator PMIN, commitment
+Status: used by the successfully verified 2,000-bus r04 attempt, **not used by
+completed attempt r03**. See its archived campaign report. All generator PMIN, commitment
 domains, source data and official checkers remain untouched.
 
 ## Sufficient conditions
@@ -66,8 +66,11 @@ The implemented guard was evaluated read-only on the raw C3E4N02000D2 scenario
 005 input (no model construction or solve): all 1,350 consumers qualify and none
 are rejected. The same full guard must be applied at runtime before fixing anything.
 There are 64,800 consumer on-status decisions over 48 intervals; startup/shutdown
-indicators become implied by the original evolution constraints. No runtime
-improvement has been measured yet.
+indicators become implied by the original evolution constraints. The completed
+r04 scheduling time fell, while its reserve-aware AC stage took longer; two
+algorithm changes occurred together, so the whole-run comparison does not
+isolate this reduction's speed effect. Nonnegative maximum-startup window bounds
+remain satisfied by the mapped all-online trajectory's zero starts.
 
 Syntax-tree checks passed for the dormant implementation and test script. All
 25 pure guard tests passed using `scripts/test_consumer_dominance.jl

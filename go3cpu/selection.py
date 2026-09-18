@@ -1,7 +1,7 @@
 """Ordering for independently verified candidates, without solving any model.
 
-Prepared separately from the frozen r04 controller. Not used by an experiment
-until its caller is integrated, component-tested and frozen in a later revision.
+Integrated after the frozen r04 experiment completed. Campaign callers prefer
+physical feasibility; historical pilots retain their objective-only ordering.
 Hash/immutable-file checks remain the retaining controller's responsibility.
 """
 
