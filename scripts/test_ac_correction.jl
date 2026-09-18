@@ -1,0 +1,118 @@
+using Test, JSON
+include(joinpath(@__DIR__,"..","src","pilot_worker.jl"))
+
+@testset "GO3 AC correction original equations, Jacobian, bounds, rollback" begin
+    m=Model();@variable(m,0.5<=v<=1.5,start=1.0)
+    @variable(m,-0.5<=a<=0.5,start=0.0)
+    @variable(m,0<=p<=2,start=1.0)
+    @constraint(m,v*sin(a)==0.1)
+    @constraint(m,v^2+p==2.0)
+    @constraint(m,p>=0.2)
+    @objective(m,Max,10p-v)
+    o=correction_oracle(m);x=[1.0,0.0,1.0]
+    pt=(variables=all_variables(m),values=x)
+    @test correction_residual(o,x)≈ac_primal_residual(m,pt)
+    lin=correction_linearization(o,x);d=[0.13,-0.11,0.02];h=1e-6
+    @test norm((correction_values(o,x+h*d)-correction_values(o,x-h*d))/(2h)-lin.J*d,Inf)<1e-8
+    @test all(lin.lower[1:length(o.al)].==o.al)
+    result,stats=ac_linear_correction(m,pt;deadline=time()+15,max_rounds=12,lp_seconds=2)
+    @test stats["max_primal_residual"]<=1e-8
+    @test stats["accepted_steps"]>0
+    @test all(r["native_stored_start"] for r in stats["rounds"])
+    @test lower_bound(v)==0.5 && upper_bound(v)==1.5
+    expired,record=ac_linear_correction(m,pt;deadline=time()-1)
+    @test record["termination"]=="correction_deadline"
+    @test expired.values==pt.values
+    @test isempty(record["rounds"])
+    # Inconsistent linearized subproblem never changes the original point/model.
+    bad=Model();@variable(bad,0<=z<=1,start=0.5)
+    @constraint(bad,z>=2);@objective(bad,Max,z)
+    point=(variables=all_variables(bad),values=[0.5])
+    stopped,record=ac_linear_correction(bad,point;deadline=time()+5)
+    @test stopped.values==point.values
+    @test record["termination"]=="linearized_solve_failed"
+    @test record["max_primal_residual"]>1e-8
+end
+
+@testset "GO3 source AC correction, discrete shunts, reserves and fallback" begin
+    raw=JSON.parsefile(joinpath(@__DIR__,"..","tmp","official_tiny","source_features_problem.json"))
+    for (j,b) in enumerate(raw["network"]["bus"])
+        b["initial_status"]["vm"]=1.0-0.005*j
+        b["initial_status"]["va"]=0.04+0.01*j
+    end
+    original=deepcopy(raw);input=GO3.process_input_data(raw)
+    scheduler=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>4,"mip_rel_gap"=>1e-6,
+        "primal_feasibility_tolerance"=>1e-9,"mip_feasibility_tolerance"=>1e-9)
+    _,schedule=schedule_source_balances(input;optimizer=scheduler,time_limit=10,
+        set_silent=true,include_reserves=true,consumer_dominance=true)
+    curves=fixed_schedule_power_curves(input,schedule)
+    working=GO3.tighten_bounds_using_ramp_limits(input,schedule.on_status,schedule.real_power)
+    opt=optimizer_with_attributes(Ipopt.Optimizer,"linear_solver"=>"mumps","print_level"=>0,
+        "bound_relax_factor"=>0.0,"honor_original_bounds"=>"yes","tol"=>1e-9,"constr_viol_tol"=>1e-9)
+    seed=nothing;previous=nothing
+    on0=Dict(u=>schedule.on_status[u][1] for u in input.sdd_ids)
+    p0=Dict(u=>schedule.real_power[u][1] for u in input.sdd_ids)
+    initial_model,_=build_reserve_aware_ac(working,input,1;on_status=on0,real_power=p0,curves)
+    set_optimizer(initial_model,opt)
+    initial_record=initialize_ac_correction!(initial_model,input,1,p0,
+        Dict(u=>schedule.reactive_power[u][1] for u in input.sdd_ids),nothing)
+    @test initial_record["branch_flow_starts_recomputed"]==3
+    @test initial_record["source_angle_reference_shift"]!=0
+    oracle=correction_oracle(initial_model)
+    gx=correction_values(oracle,[start_value(v) for v in oracle.variables])
+    balances=Set([c for group in (initial_model[:p_balance],initial_model[:q_balance]) for c in group])
+    branch_equalities=0
+    for (k,cref) in enumerate(oracle.nl_refs)
+        if constraint_object(cref).set isa MOI.EqualTo && !(cref in balances)
+            @test abs(gx[k]-oracle.nl_lower[k])<1e-10
+            branch_equalities+=1
+        end
+    end
+    @test branch_equalities==12
+    for i in input.periods
+        on=Dict(u=>schedule.on_status[u][i] for u in input.sdd_ids)
+        power=Dict(u=>schedule.real_power[u][i] for u in input.sdd_ids)
+        if i>1
+            GO3.tighten_bounds_at_interval_using_ramp_limits!(working,i,
+                Dict(u=>schedule.on_status[u][i-1] for u in input.sdd_ids),
+                Dict(u=>previous["simple_dispatchable_device"][u]["p_on"] for u in input.sdd_ids),on)
+        end
+        m,result=compute_corrected_ac(working,input,i;on_status=on,real_power=power,
+            reactive_power=Dict(u=>schedule.reactive_power[u][i] for u in input.sdd_ids),curves,
+            optimizer=opt,deadline=time()+40,interval_seed=seed,
+            max_rounds=i==2 ? 0 : 8,slp_seconds=8,fallback_seconds=10)
+        @test raw==original
+        @test !ac_requires_stop(m.ext[:reserve_ac],true)
+        @test all(isinteger,[d["step"] for d in values(result["shunt"])])
+        @test m.ext[:reserve_ac]["original_bounds"]
+        @test m.ext[:reserve_ac]["products"]==10
+        @test ac_primal_residual(m,m.ext[:correction_point])<=1e-8
+        if i==2
+            # A previous-hour point can already be valid, so explicitly perturb
+            # a voltage to exercise the bounded fallback without faking status.
+            valid=m.ext[:correction_point]
+            bad=(variables=valid.variables,values=copy(valid.values))
+            voltage=m[:vm][first(input.bus_ids)]
+            k=findfirst(==(voltage),bad.variables)
+            bad.values[k]=max(lower_bound(voltage),bad.values[k]-0.01)
+            @test ac_primal_residual(m,bad)>1e-8
+            repaired,phase=correction_ipopt_fallback!(m,opt,bad;deadline=time()+15,seconds=10)
+            @test phase["fallback"]
+            @test phase["max_primal_residual"]<=1e-8
+            @test phase["start"]["complete_primal_start"]["complete"]
+            @test ac_primal_residual(m,repaired)<=1e-8
+        end
+        for u in input.sdd_ids
+            p=result["simple_dispatchable_device"][u]["p_on"]
+            @test p>=input.sdd_ts_lookup[u]["p_lb"][i]*on[u]-1e-8
+            @test p<=input.sdd_ts_lookup[u]["p_ub"][i]*on[u]+1e-8
+        end
+        o=correction_oracle(m);point=m.ext[:correction_point]
+        @test correction_residual(o,point.values)≈ac_primal_residual(m,point) atol=1e-10
+        lin=correction_linearization(o,point.values)
+        direction=[sin(k) for k in eachindex(point.values)];h=1e-6
+        @test norm((correction_values(o,point.values+h*direction)-correction_values(o,point.values-h*direction))/(2h)-lin.J*direction,Inf)<1e-6
+        seed=capture_ac_interval_start(m,input,i;point)
+        previous=result
+    end
+end

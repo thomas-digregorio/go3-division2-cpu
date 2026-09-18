@@ -116,26 +116,7 @@ function fixed_schedule_power_curves(input,schedule)
     (supc_status=su,p_su=psu,sdpc_status=sd,p_sd=psd)
 end
 
-function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
-        optimizer,set_silent=false,shunt_primal_start="off",audit_phases=false,
-        rounded_seconds=nothing,work_deadline=Inf,rounded_max_iter=500,interval_seed=nothing,
-        numerical_recovery="off",recovery_seconds=360.0,recovery_max_iter=1000,
-        primal_guard="off")
-    shunt_primal_start in ("off","within_interval_complete_v1","within_interval_primal_dual_v1") ||
-        error("Unknown AC primal start policy")
-    shunt_primal_start=="within_interval_primal_dual_v1" && !audit_phases &&
-        error("Primal-dual transfer requires an audited first point")
-    numerical_recovery in ("off","adaptive_barrier_on_failed_residual_v1") ||
-        error("Unknown AC numerical recovery policy")
-    numerical_recovery=="off" || audit_phases || error("AC recovery requires phase residual audits")
-    primal_guard in ("off",AC_PRIMAL_GUARD_POLICY) || error("Unknown AC primal guard policy")
-    primal_guard=="off" || audit_phases || error("AC primal guard requires phase residual audits")
-    if numerical_recovery!="off"
-        recovery_seconds isa Real && !(recovery_seconds isa Bool) &&
-            isfinite(recovery_seconds) && recovery_seconds>0 || error("Invalid AC recovery budget")
-        recovery_max_iter isa Integer && !(recovery_max_iter isa Bool) &&
-            recovery_max_iter>0 || error("Invalid AC recovery iteration limit")
-    end
+function build_reserve_aware_ac(working,source,i;on_status,real_power,curves)
     args=Dict{String,Any}("on_status"=>on_status,"real_power"=>real_power,
         "penalize_power_deviation"=>true,"relax_power_balance"=>true,
         "relax_p_balance"=>true,"relax_q_balance"=>true,"fix_real_power"=>false,
@@ -162,6 +143,30 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         "original_bounds"=>true,"products"=>10,"endogenous_requirements"=>true,
         "physical_balance_policy"=>"zero_slack_candidate_restriction",
         "source_interval_duration"=>source.dt[i])
+    model,reserve
+end
+
+function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
+        optimizer,set_silent=false,shunt_primal_start="off",audit_phases=false,
+        rounded_seconds=nothing,work_deadline=Inf,rounded_max_iter=500,interval_seed=nothing,
+        numerical_recovery="off",recovery_seconds=360.0,recovery_max_iter=1000,
+        primal_guard="off")
+    shunt_primal_start in ("off","within_interval_complete_v1","within_interval_primal_dual_v1") ||
+        error("Unknown AC primal start policy")
+    shunt_primal_start=="within_interval_primal_dual_v1" && !audit_phases &&
+        error("Primal-dual transfer requires an audited first point")
+    numerical_recovery in ("off","adaptive_barrier_on_failed_residual_v1") ||
+        error("Unknown AC numerical recovery policy")
+    numerical_recovery=="off" || audit_phases || error("AC recovery requires phase residual audits")
+    primal_guard in ("off",AC_PRIMAL_GUARD_POLICY) || error("Unknown AC primal guard policy")
+    primal_guard=="off" || audit_phases || error("AC primal guard requires phase residual audits")
+    if numerical_recovery!="off"
+        recovery_seconds isa Real && !(recovery_seconds isa Bool) &&
+            isfinite(recovery_seconds) && recovery_seconds>0 || error("Invalid AC recovery budget")
+        recovery_max_iter isa Integer && !(recovery_max_iter isa Bool) &&
+            recovery_max_iter>0 || error("Invalid AC recovery iteration limit")
+    end
+    model,reserve=build_reserve_aware_ac(working,source,i;on_status,real_power,curves)
     set_optimizer(model,optimizer)
     set_silent && JuMP.set_silent(model)
     if interval_seed!==nothing

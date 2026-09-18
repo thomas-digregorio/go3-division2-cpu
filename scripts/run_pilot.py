@@ -25,6 +25,7 @@ from go3cpu.official import configure_imports
 from go3cpu.safety import GIB, local_path, storage_check
 from go3cpu.campaign import (sixth_best_target, quality_gate, registered_budget,
                              experiment_exit_code, pipeline_coverage)
+from go3cpu.speedup import skip_intermediate_verification, final_verification_required
 configure_imports(ROOT)
 import psutil
 
@@ -251,10 +252,15 @@ def execute(config_path,config,env,preflight_record):
                     break
                 initial=worker_dir/"candidate_schedule.json"
                 if initial.exists() and not initial_checked:
-                    verify(initial,"schedule",min(config["initial_verification_seconds"],clock.remaining(work=True)))
+                    if skip_intermediate_verification(config):
+                        result["intermediate_verification_skipped"]={
+                            "reason":"Aggregate schedule with source voltages is explicitly unverified; protect final exhaustive check",
+                            "candidate_sha256":sha256(initial),"incumbent_claimed":False}
+                    else:
+                        verify(initial,"schedule",min(config["initial_verification_seconds"],clock.remaining(work=True)))
                     initial_checked=True
                     # Generated handshake is not a solver start or a separate experiment.
-                    (worker_dir/"continue_after_schedule").write_text("initial candidate checked; continue within original deadline\n")
+                    (worker_dir/"continue_after_schedule").write_text("initial candidate policy handled; continue within original deadline\n")
                 time.sleep(0.1)
     except Exception:
         result["controller_error"]=traceback.format_exc()
@@ -268,7 +274,12 @@ def execute(config_path,config,env,preflight_record):
         # This is verification of an already-written checkpoint, never another solve.
         try:
             candidate=latest_candidate(worker_dir)
-            if candidate is not None and not any(e["certificate"]["candidate_sha256"]==sha256(candidate) for e in evaluations):
+            coverage_stats={"ac_intervals":[json.loads(p.read_text()) for p in sorted((worker_dir/"statistics").glob("ac_*.json"))]}
+            should_verify=final_verification_required(config,latest_snapshot(worker_dir/"progress"),
+                result.get("worker_returncode"),coverage_stats,len(preflight_record["case"]["interval_hours"]))
+            if not should_verify:
+                result["final_verification_skipped"]="Incomplete horizon/finalization: checkpoint retained as UNVERIFIED; no successful solution claimed"
+            if should_verify and candidate is not None and not any(e["certificate"]["candidate_sha256"]==sha256(candidate) for e in evaluations):
                 verify(candidate,"final",clock.remaining()-config["finalization_reserve_seconds"])
         except Exception:
             result["final_verification_error"]=traceback.format_exc()

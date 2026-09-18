@@ -19,7 +19,7 @@ def read(path):
 
 def collect(attempt, *, root=ROOT):
     root = local_path(root)
-    if not re.fullmatch(r"campaign_n\d{5}_s\d{3}_r\d{2}", attempt):
+    if not re.fullmatch(r"(?:campaign|speedup)_n\d{5}_s\d{3}_r\d{2}", attempt):
         raise ValueError("Invalid campaign attempt")
     latch = read(root / "runs" / (attempt + "_latch.json"))
     run = local_path(latch["run"])
@@ -46,7 +46,8 @@ def collect(attempt, *, root=ROOT):
     gate = quality_gate(certificate, result["quality_target"],
                         pipeline_completed=result["pipeline_completed"],
                         within_deadline=completion["within_local_deadline"])
-    output = local_path(root / "evidence/campaign" / attempt)
+    collection = "speedup" if attempt.startswith("speedup_") else "campaign"
+    output = local_path(root / "evidence" / collection / attempt)
     output.mkdir(parents=True, exist_ok=False)
     copied = []
     for relative in ("result.json", "completion.json", "preflight.json", "initial_record.json",

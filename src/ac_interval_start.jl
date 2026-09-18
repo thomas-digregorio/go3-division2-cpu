@@ -38,9 +38,16 @@ function ac_cost_block_map(model,input,i)
     blocks
 end
 
-function capture_ac_interval_start(model,input,i)
+function capture_ac_interval_start(model,input,i;point=nothing)
     ac_requires_stop(get(model.ext,:reserve_ac,Dict()),true) &&
         error("Cannot propagate an AC interval that failed its residual screen")
+    getter=if point===nothing
+        value
+    else
+        point.variables==all_variables(model) || error("Incomplete correction continuation mapping")
+        mapped=Dict(zip(point.variables,point.values))
+        v->mapped[v]
+    end
     cost_vars=Set(v for vs in values(ac_cost_block_map(model,input,i)) for v in vs)
     named=Dict{String,Float64}()
     for v in all_variables(model)
@@ -48,7 +55,7 @@ function capture_ac_interval_start(model,input,i)
         key=name(v)
         isempty(key) && error("Unidentified non-cost AC variable")
         haskey(named,key) && error("Ambiguous AC variable name $key")
-        x=Float64(value(v))
+        x=Float64(getter(v))
         isfinite(x) || error("Cannot propagate nonfinite AC state")
         named[key]=x
     end

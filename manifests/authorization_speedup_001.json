@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "user_authorization": "One separately reviewed cold 6049-bus scenario 003 speedup experiment, hard 1800-second end-to-end limit; stop for review afterward. No baseline repeat, replacements or campaign advancement.",
+  "maximum_full_runs": 1,
+  "identity": {
+    "pilot_id": "speedup_n06049_s003_r01",
+    "network": "C3E4N06049D2",
+    "scenario": "003",
+    "input_sha256": "312b066e51e4e058d0f2e1a96ea32c8f30a3f1dbfc9c4266b6d5d73af4206e41"
+  },
+  "baseline": {
+    "numerical_revision": "cfe7ea05d834e6f3344ee4a3176d31b2d4705811",
+    "result_path": "evidence/campaign/campaign_n06049_s003_r03/result.json",
+    "result_sha256": "d98a8349c8dc776847b4c303c861792c0633a27f078a371063e7bd77ef3ff943",
+    "completion_path": "evidence/campaign/campaign_n06049_s003_r03/completion.json",
+    "completion_sha256": "2801465d4e2ee1b996e6d0ab0d629fc243b62e1f1c616162122cb0f3b0623372",
+    "configuration_path": "config/campaign_n06049_s003_r03.json",
+    "configuration_sha256": "4e4e07cb690697fb73caadfbe00ddee3ec754dab8c8b208bce0e11eb91bb5b7a",
+    "comparison_path": "manifests/campaign/published_C3E4N06049D2_s003.json",
+    "comparison_sha256": "6dfec67611fe1bec26ee561cfc96463c0d204d9479e71eb1de74a8ac9659a7bf"
+  },
+  "sixth_best_eligible_score": 597463992.571312,
+  "required_minimum_score": 537717593.3141807,
+  "required_hours": 48,
+  "required_contingency_hours": 187296,
+  "saved_solution_may_initialize": false,
+  "commercial_solver_allowed": false,
+  "gpu_allowed": false
+}

@@ -12,6 +12,8 @@ include(joinpath(@__DIR__,"ac_interval_start.jl"))
 include(joinpath(@__DIR__,"ac_recovery.jl"))
 include(joinpath(@__DIR__,"ac_primal_guard.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
+include(joinpath(@__DIR__,"ac_correction.jl"))
+include(joinpath(@__DIR__,"ac_correction_pipeline.jl"))
 
 function atomic_json(path, object)
     occursin("onedrive", lowercase(abspath(path))) && error("OneDrive output forbidden")
@@ -148,6 +150,10 @@ function run_worker(case_path, output, config, work_deadline)
     ac_guard in ("off",AC_PRIMAL_GUARD_POLICY) || error("Unknown AC primal guard policy")
     ac_guard=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
         error("AC primal guard requires the reserve-aware adapter and local residual checks")
+    ac_correction=get(config,"ac_correction_policy","off")
+    ac_correction in ("off",AC_CORRECTION_POLICY) || error("Unknown network correction policy")
+    ac_correction=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
+        error("Network corrections require the full reserve-aware AC model and residual screen")
 
     progress("scheduling")
     stage = time()
@@ -224,10 +230,17 @@ function run_worker(case_path, output, config, work_deadline)
 
     stage = time()
     initial = candidate_from_schedule(input,schedule)
-    initial_reserves = GO3.calculate_reserves_from_generation(input,initial;
-        optimizer=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>config["highs_threads"],
-            "time_limit"=>available(config["reserve_seconds_per_interval"]),
-            "primal_feasibility_tolerance"=>1e-9))
+    initial_reserve_policy=get(config,"initial_reserve_policy","reallocate")
+    initial_reserve_policy in ("reallocate","use_joint_schedule_unverified") || error("Unknown initial reserve policy")
+    initial_reserves = if initial_reserve_policy=="use_joint_schedule_unverified"
+        get(config,"scheduling_include_reserves",false) || error("Initial reserve reuse requires joint scheduling")
+        schedule # This is explicitly unverified until the original full-case checks.
+    else
+        GO3.calculate_reserves_from_generation(input,initial;
+            optimizer=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>config["highs_threads"],
+                "time_limit"=>available(config["reserve_seconds_per_interval"]),
+                "primal_feasibility_tolerance"=>1e-9))
+    end
     put_reserves!(initial,initial_reserves)
     timings["initial_reserves"] = time()-stage
     atomic_json(joinpath(output,"candidate_schedule.json"),initial)
@@ -269,7 +282,18 @@ function run_worker(case_path, output, config, work_deadline)
             "max_wall_time"=>rounded_ac_time_limit(config["ac_seconds_per_solve"],refinement_deadline),
             "print_level"=>get(config,"ac_print_level",3))
         ac_start = time()
-        if ac_reserve_policy=="source_joint_reserves_in_ac_v1"
+        if ac_correction==AC_CORRECTION_POLICY
+            hour_deadline=min(refinement_deadline,ac_start+get(config,"ac_correction_hour_seconds",45.0))
+            ac_model,result=compute_corrected_ac(working,input,i;
+                on_status=current_on,real_power=current_p,
+                reactive_power=Dict(uid=>schedule.reactive_power[uid][i] for uid in input.sdd_ids),
+                curves=power_curves,optimizer=ipopt,deadline=hour_deadline,interval_seed=interval_seed,
+                slp_seconds=get(config,"ac_correction_seconds",15.0),
+                lp_seconds=get(config,"ac_correction_lp_seconds",4.0),
+                max_rounds=get(config,"ac_correction_max_rounds",8),
+                fallback_seconds=get(config,"ac_correction_fallback_seconds",12.0),
+                threads=config["highs_threads"])
+        elseif ac_reserve_policy=="source_joint_reserves_in_ac_v1"
             ac_model,result=compute_reserve_aware_ac(working,input,i;
                 on_status=current_on,real_power=current_p,curves=power_curves,
                 optimizer=ipopt,shunt_primal_start=ac_shunt_primal_start,
@@ -289,7 +313,19 @@ function run_worker(case_path, output, config, work_deadline)
                 penalize_power_deviation=true,fix_real_power=false)
         end
         results[i] = result
-        stats = model_stats(ac_model)
+        correction_point=get(ac_model.ext,:correction_point,nothing)
+        stats = if correction_point===nothing
+            model_stats(ac_model)
+        else
+            mapped=Dict(zip(correction_point.variables,correction_point.values))
+            Dict{String,Any}("termination"=>"HEURISTIC_CORRECTION_POINT",
+                "primal_status"=>ac_model.ext[:reserve_ac]["correction"]["final_model_residual"]<=AC_POINT_RESIDUAL_TOLERANCE ?
+                    "LOCALLY_FEASIBLE_CANDIDATE" : "FAILED_LOCAL_RESIDUAL",
+                "objective"=>value(v->mapped[v],objective_function(ac_model)),
+                "bound"=>nothing,"relative_gap"=>nothing,
+                "solve_seconds"=>nothing,"native_relative_gap"=>nothing,
+                "certificate_scope"=>"No local/global optimality claim; see individual native calls")
+        end
         stats["interval"] = i
         stats["wall_seconds"] = time()-ac_start
         stats["reserve_policy"] = ac_reserve_policy
@@ -302,6 +338,9 @@ function run_worker(case_path, output, config, work_deadline)
             "cold first AC solve; same-interval start policy $(ac_shunt_primal_start); exact primal/dual acceptance in reserve_ac log; no external, prior-interval or basis start"
         if ac_interval_start!="off"
             stats["warm_start"]="first interval cold; subsequent first phases use previous locally screened interval from this attempt; rounded phase uses $(ac_shunt_primal_start); no external solution or basis"
+        end
+        if correction_point!==nothing
+            stats["warm_start"]="source voltages and current cold schedule for first interval; later intervals use previous locally screened primal from this attempt; native LP start storage audited; fallback uses complete same-attempt primal only; no supplied dual, basis, or external solution"
         end
         push!(ac_stats,stats)
         statistics["ac_intervals"] = ac_stats
@@ -317,7 +356,7 @@ function run_worker(case_path, output, config, work_deadline)
             checkpoint_ac_interval!(output,input,schedule,results,i;must_stop=must_stop)
         end
         if ac_interval_start!="off"
-            interval_seed=capture_ac_interval_start(ac_model,input,i)
+            interval_seed=capture_ac_interval_start(ac_model,input,i;point=correction_point)
         end
     end
     timings["ac_optimization"] = time()-stage
