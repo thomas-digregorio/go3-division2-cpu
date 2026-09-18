@@ -227,3 +227,28 @@ source-bound and complete independent/official integration tests must all pass
 before freeze/push/launch. A complete source inventory rejects added, deleted or
 modified tested code/configuration; no-incumbent gaps/objectives are reported as
 null rather than a misleading native zero.
+
+### r04 live diagnostic: misleading native fallback message
+
+The single r04 attempt launched at 2026-09-18 04:24:57 UTC with frozen numerical
+commit `2e16d83d906f43bc5aa6f94ab80ee18cb78ed8b4`. During scheduling, the native
+console reported a HiPO solve error followed by the text `Try IPX`. This proves
+that HiPO failed in this attempt; it does not prove grid infeasibility or failure
+of the whole run. The cause inside HiPO is not exposed by this log and remains
+undetermined. No restart, altered setting or additional diagnostic solve was made.
+
+The exact matching native source, git `04024d701f`, contains a misleading string:
+[HighsLpRelaxation.cpp lines 1108-1128](https://github.com/ERGO-Code/HiGHS/blob/04024d701f/highs/mip/HighsLpRelaxation.cpp#L1108)
+prints that message, but sets the solver to simplex and calls it. Consequently,
+this particular observed path is **HiPO error -> simplex**, not HiPO -> IPX.
+Another path later in the same function can invoke IPX after an iteration-limit
+recovery; that has not been observed here and must not be inferred from this
+message. An initial live explanation based on the string alone was corrected
+after checking this exact source.
+
+Native presolve produced 728,558 rows, 1,144,255 columns, 3,717,854 nonzeros and
+56,245 binary columns, compared with 243,524 presolved binaries in r03. A smaller
+model is established; a speedup or score improvement is not established before
+the complete run and exhaustive verification finish. The final result will be
+reported separately. This documentation update does not change the active
+numerical implementation or its frozen input/configuration.
