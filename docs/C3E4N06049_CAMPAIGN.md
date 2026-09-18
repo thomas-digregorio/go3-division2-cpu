@@ -150,3 +150,69 @@ assertions**, plus seven independently and officially verified tiny pipelines
 physical feasibility; its objective matched the independent calculation within
 1.46e-11. Evidence: `tmp/pilot002_component_gate_0u4qvj0w` and the hash-registered
 `manifests/component_tests.json`. No full competition case was solved by the gate.
+
+## Second attempt: recovery works, but the full horizon exceeds the work budget
+
+`campaign_n06049_s003_r02` used frozen revision
+`f46aec890bcd4743cd2b6592fdc5a8035bd16a1d`. It finalized in **6,883.103710 seconds
+(1 h 54 min 43.104 s)**, inside the 7,200-second end-to-end cap. The campaign
+quality gate **failed**: only 41 of 48 AC intervals were refined, and the owned
+worker was stopped at its work deadline during final reserve allocation
+(return code 15). The saved pre-final-reserve candidate was independently checked;
+neither it nor its diagnostic objective is a completed physical solution.
+
+All 41 completed hourly points passed the unchanged 1e-8 explicit model screen.
+The maximum final hourly residual was **2.7043161e-9**. Hour 20, the previous
+stopping point, passed in its ordinary rounded phase; that improvement must not
+be attributed to a fallback that did not run there. Time-limited iterates can
+vary with execution timing and influence later within-attempt starts.
+
+The new recovery was exercised twice:
+
+| Hour | Rounded-phase residual before recovery | Recovery time (s) | Final residual | Recovery termination |
+| --- | ---: | ---: | ---: | --- |
+| 31 | 3.14087e-7 | 58.871 | 4.97140e-11 | Locally solved |
+| 34 | 6.44179e-8 | 363.164 | 2.43397e-9 | Time limit; explicit residual passed |
+
+Native phase limits are checked between solver operations and can overrun by a
+few seconds; all such time was charged to the strict global controller. Hour 34
+used 650.146 seconds overall. The local recovery prevented two premature stops,
+but did not eliminate the long convergence tails.
+
+| Recorded work | Time (s) |
+| --- | ---: |
+| Scheduling stage | 496.819 |
+| Initial reserve allocation | 39.054 |
+| Initial verification (incomplete at its separate cap) | 238.509 |
+| Continuous-shunt phases, 41 calls | 2,231.110 |
+| Rounded-shunt phases, 41 calls | 2,717.644 |
+| Recovery phases, 2 calls | 422.035 |
+| All completed hourly work, including model/audit overhead | 5,690.882 |
+| Final independent check | 222.095 |
+| Final official evaluation | 88.450 |
+| Final verification process wall | 312.515 |
+
+The independent and official checks completed all **187,296 / 187,296**
+contingency-hour evaluations. Source hard feasibility was 1, physical feasibility
+was 0, independent hard checks passed (maximum hard residual 3.15702e-9), and
+objective agreement passed (absolute discrepancy 0.053101). The incomplete
+diagnostic objective was **-6,055,396,393.806871** (official score clipped to zero),
+including large imbalance penalties from still-unrefined hours and zero final
+reserve awards. It is not an accepted score. Peak sampled process-tree RSS was
+16.76550 GiB. No source data or outputs were pruned; about 197.85 GiB remained free.
+
+The result was correctly recorded as
+`VERIFIED_HARD_FEASIBLE_INCOMPLETE_REFINEMENT`, with `pipeline_completed=false`.
+A separate code audit identified a latent completion-reporting edge case if a
+budget-limited worker finishes finalization normally: full-hour coverage must be
+checked, not inferred from a final `complete` stage alone. That edge case did not
+change r02's failed status. Reserve-finalization time also needs protection from
+the combined AC phases, not merely an entry check before an interval.
+
+Evidence is hash-archived in `evidence/campaign/campaign_n06049_s003_r02`.
+Result SHA256:
+`c98bddf90e7b1aa5f155ec17c70cc5d68161b2122bdab648aafc3da95e4f40f6`.
+Candidate SHA256:
+`640a58cda727d8c225c00adbbdd65d0cb3c3f47924479275fbe13ab29bd20576`.
+The 6,049-bus network remains unfinished; no larger network is authorized by a
+successful registration yet.
