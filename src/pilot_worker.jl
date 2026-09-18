@@ -6,6 +6,7 @@ LinearAlgebra.BLAS.set_num_threads(1)
 include(joinpath(@__DIR__,"consumer_dominance.jl"))
 include(joinpath(@__DIR__,"startup_windows.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
+include(joinpath(@__DIR__,"ac_primal_start.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
 
 function atomic_json(path, object)
@@ -88,6 +89,18 @@ function opf_view(solution, periods)
      for i in periods]
 end
 
+function checkpoint_ac_interval!(output,input,schedule,results,i;must_stop=false)
+    partial=GO3.construct_solution_dict(input,schedule;opf_data=results,
+        include_reserves=false,postprocess=true,print_projected_devices=false)
+    force_source_topology!(partial,input)
+    path=joinpath(output,"checkpoints","candidate_ac_"*lpad(string(i),4,'0')*".json")
+    atomic_json(path,partial)
+    # Save the diagnostic point BEFORE signalling failure. The controller can
+    # independently verify it and keep a better already-verified incumbent.
+    must_stop && error("AC interval $i failed the explicit $(AC_POINT_RESIDUAL_TOLERANCE) primal residual screen; checkpoint saved; no later intervals attempted")
+    path
+end
+
 function run_worker(case_path, output, config, work_deadline)
     started = time()
     timings, statistics = Dict{String,Any}(), Dict{String,Any}()
@@ -110,6 +123,13 @@ function run_worker(case_path, output, config, work_deadline)
     timings["loading_and_preprocessing"] = time()-started
     ac_reserve_policy=get(config,"ac_reserve_policy","off")
     ac_reserve_policy in ("off","source_joint_reserves_in_ac_v1") || error("Unknown AC reserve policy")
+    ac_shunt_primal_start=get(config,"ac_shunt_primal_start","off")
+    ac_shunt_primal_start in ("off","within_interval_complete_v1") || error("Unknown shunt start policy")
+    ac_fail_fast=get(config,"ac_fail_fast_on_infeasible",false)
+    ac_fail_fast isa Bool || error("AC fail-fast option must be Boolean")
+    (ac_shunt_primal_start=="off" && !ac_fail_fast) ||
+        ac_reserve_policy=="source_joint_reserves_in_ac_v1" ||
+        error("Explicit AC starts/audits require the reserve-aware adapter")
 
     progress("scheduling")
     stage = time()
@@ -187,7 +207,8 @@ function run_worker(case_path, output, config, work_deadline)
         if ac_reserve_policy=="source_joint_reserves_in_ac_v1"
             ac_model,result=compute_reserve_aware_ac(working,input,i;
                 on_status=current_on,real_power=current_p,curves=power_curves,
-                optimizer=ipopt)
+                optimizer=ipopt,shunt_primal_start=ac_shunt_primal_start,
+                audit_phases=ac_fail_fast || ac_shunt_primal_start!="off")
         else
             ac_model, result = GO3.compute_optimal_power_flow_at_interval(working,i;
                 on_status=current_on,real_power=current_p,optimizer=ipopt,
@@ -203,17 +224,21 @@ function run_worker(case_path, output, config, work_deadline)
         if haskey(ac_model.ext,:reserve_ac)
             stats["reserve_ac"] = ac_model.ext[:reserve_ac]
         end
-        stats["warm_start"] = "flat voltage and source shunt starts; within-run UC/deviation targets; no supplied primal, dual or basis start"
+        stats["warm_start"] = ac_shunt_primal_start=="off" ?
+            "flat voltage and source shunt starts; within-run UC/deviation targets; no supplied primal, dual or basis start" :
+            "cold first AC solve; complete same-interval primal transferred after shunt rounding; no external, prior-interval, dual or basis start"
         push!(ac_stats,stats)
         statistics["ac_intervals"] = ac_stats
         atomic_json(joinpath(output,"statistics","ac_"*lpad(string(i),4,'0')*".json"),stats)
         # Complete-horizon serialization includes still-scheduled future intervals;
         # it is a candidate only and must be rechecked after projection.
-        if i % get(config,"checkpoint_every_intervals",1) == 0 || i == length(input.periods)
-            partial = GO3.construct_solution_dict(input,schedule;opf_data=results,
-                include_reserves=false,postprocess=true,print_projected_devices=false)
-            force_source_topology!(partial,input)
-            atomic_json(joinpath(output,"checkpoints","candidate_ac_"*lpad(string(i),4,'0')*".json"),partial)
+        must_stop=ac_requires_stop(get(ac_model.ext,:reserve_ac,Dict()),ac_fail_fast)
+        if must_stop
+            progress("ac_refinement_failed";extra=Dict("interval"=>i,
+                "reason"=>"final AC point failed explicit primal residual screen"))
+        end
+        if must_stop || i % get(config,"checkpoint_every_intervals",1) == 0 || i == length(input.periods)
+            checkpoint_ac_interval!(output,input,schedule,results,i;must_stop=must_stop)
         end
     end
     timings["ac_optimization"] = time()-stage

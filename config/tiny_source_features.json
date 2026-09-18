@@ -8,6 +8,8 @@
   "scheduling_consumer_dominance": "guarded_online_v1",
   "scheduling_log_dev_level": 1,
   "ac_reserve_policy": "source_joint_reserves_in_ac_v1",
+  "ac_shunt_primal_start": "within_interval_complete_v1",
+  "ac_fail_fast_on_infeasible": true,
   "checkpoint_every_intervals": 1,
   "ac_seconds_per_solve": 10,
   "reserve_seconds_per_interval": 2,

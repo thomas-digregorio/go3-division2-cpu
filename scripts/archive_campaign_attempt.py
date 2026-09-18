@@ -50,6 +50,7 @@ def collect(attempt, *, root=ROOT):
     output.mkdir(parents=True, exist_ok=False)
     copied = []
     for relative in ("result.json", "completion.json", "preflight.json", "initial_record.json",
+            "agent_stop_reason.json",
             "worker/solver_statistics.json", "worker/worker_error.json", "worker/schedule_balance.json",
             "worker/statistics/scheduling.json", "worker/timings.json",
             "verification/schedule/certificate.json", "verification/final/certificate.json"):

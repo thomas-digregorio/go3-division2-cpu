@@ -117,7 +117,8 @@ function fixed_schedule_power_curves(input,schedule)
 end
 
 function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
-        optimizer,set_silent=false)
+        optimizer,set_silent=false,shunt_primal_start="off",audit_phases=false)
+    shunt_primal_start in ("off","within_interval_complete_v1") || error("Unknown AC primal start policy")
     args=Dict{String,Any}("on_status"=>on_status,"real_power"=>real_power,
         "penalize_power_deviation"=>true,"relax_power_balance"=>true,
         "relax_p_balance"=>true,"relax_q_balance"=>true,"fix_real_power"=>false,
@@ -148,14 +149,35 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
     set_silent && JuMP.set_silent(model)
     # Use the configured Ipopt accuracy/iteration/wall limits. Do not use the
     # upstream early callback, which may stop at a 1e-3 primal residual.
+    phase_started=time()
     optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
     has_values(model) || error("Reserve-aware AC solve returned no primal point")
+    point=(audit_phases || shunt_primal_start!="off") ? capture_complete_ac_primal(model) : nothing
+    phases=Any[]
+    function record_phase(name,phase_started,point)
+        audit_phases || return
+        phase=merge(model_stats(model),Dict("phase"=>name,
+            "wall_seconds"=>time()-phase_started,"complete_finite_point"=>true,
+            "max_primal_residual"=>ac_primal_residual(model,point)))
+        push!(phases,phase)
+        println("GO3_AC_PHASE ",JSON.json(merge(Dict("interval"=>i),phase)));flush(stdout)
+    end
+    record_phase("continuous_shunts",phase_started,point)
+    # Read all values before modifying bounds, which invalidates JuMP's result.
     rounded=Dict(uid=>round(value(model[:shunt_step][uid])) for uid in source.shunt_ids)
     for uid in source.shunt_ids
         fix(model[:shunt_step][uid],rounded[uid];force=true)
     end
+    if shunt_primal_start=="within_interval_complete_v1"
+        start_record=restore_complete_ac_primal!(model,point)
+        model.ext[:reserve_ac]["shunt_primal_start"]=start_record
+        println("GO3_AC_PRIMAL_START ",JSON.json(merge(Dict("interval"=>i),start_record)));flush(stdout)
+    end
+    phase_started=time()
     optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
     has_values(model) || error("Rounded-shunt reserve-aware AC solve returned no primal point")
+    audit_phases && record_phase("rounded_shunts",phase_started,capture_complete_ac_primal(model))
+    audit_phases && (model.ext[:reserve_ac]["phases"]=phases)
     model.ext[:reserve_ac]["reserve_cost_at_solution"]=value(reserve.cost)
     result=GO3.extract_data_from_model(model,working,on_status,real_power;
         tolerance=1e-6,allow_switching=false)

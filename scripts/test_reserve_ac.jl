@@ -175,11 +175,17 @@ end
     model,sol=compute_reserve_aware_ac(working,input,2;
         on_status=Dict(u=>1 for u in input.sdd_ids),
         real_power=Dict(u=>1.0 for u in input.sdd_ids),curves=curves,
-        optimizer=ipopt,set_silent=true)
+        optimizer=ipopt,set_silent=true,shunt_primal_start="within_interval_complete_v1",audit_phases=true)
     @test termination_status(model) in (MOI.LOCALLY_SOLVED,MOI.ALMOST_LOCALLY_SOLVED)
     @test model.ext[:reserve_ac]["original_bounds"]===true
     @test model.ext[:reserve_ac]["products"]==10
     @test model.ext[:reserve_ac]["physical_balance_policy"]=="zero_slack_candidate_restriction"
+    start_record=model.ext[:reserve_ac]["shunt_primal_start"]
+    @test start_record["complete"]===true
+    @test start_record["variable_count"]==num_variables(model)
+    @test start_record["accepted_interface_count"]==num_variables(model)
+    @test length(model.ext[:reserve_ac]["phases"])==2
+    @test !ac_requires_stop(model.ext[:reserve_ac],true)
     for key in (:p_balance_slack_pos,:p_balance_slack_neg,:q_balance_slack_pos,:q_balance_slack_neg)
         @test all(v->lower_bound(v)==0.0 && upper_bound(v)==0.0,model[key])
     end

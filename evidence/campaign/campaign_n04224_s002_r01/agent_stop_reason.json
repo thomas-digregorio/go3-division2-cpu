@@ -1,0 +1,15 @@
+{
+  "attempt": "campaign_n04224_s002_r01",
+  "frozen_commit": "87694c5040299e76ace622452bc429776f6507e3",
+  "reason": "Interval 3 rounded-shunt solve reached its 90-second internal cap with an infeasible iterate. The complete interval-4 checkpoint confirms physical balance violations in interval 3; this algorithm does not revisit earlier intervals and final reserve allocation cannot repair P/Q nodal balance.",
+  "interval_3_ipopt_constraint_violation": 0.005569886117290146,
+  "interval_3_checkpoint_p_balance_L1_pu": 0.06952159804851671,
+  "interval_3_checkpoint_q_balance_L1_pu": 0.11035729796495093,
+  "buses": 4224,
+  "required_maximum_bus_balance_tolerance_pu": 1e-8,
+  "diagnostic": "Independent raw-input base check only, exhaustive=false; zero contingency checks in this diagnostic. It is not a certificate or a separate solve.",
+  "action": "Terminate only the positively identified owned Julia worker PID 12752. Leave the controller alive to verify the last complete checkpoint and serialize its incomplete result.",
+  "global_deadline_reached": false,
+  "last_complete_checkpoint": "worker/checkpoints/candidate_ac_0004.json",
+  "no_retry_of_this_configuration": true
+}

@@ -33,6 +33,7 @@ class CampaignArchiveTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as d:
             root = Path(d)
             run = finished_fixture(root)
+            atomic_json(run/"agent_stop_reason.json",{"reason":"Synthetic scoped early stop"})
             original = (run/"result.json").read_bytes()
             report = collect(ATTEMPT,root=root)
             self.assertFalse(report["quality_gate"]["pass"])
@@ -42,6 +43,9 @@ class CampaignArchiveTests(unittest.TestCase):
             self.assertEqual(original,(run/"result.json").read_bytes())
             manifest = json.loads((root/"evidence/campaign"/ATTEMPT/"retained_manifest.json").read_text())
             self.assertEqual(manifest["files_deleted"],0)
+            self.assertIn("agent_stop_reason.json",manifest["compact_files_copied"])
+            self.assertEqual((run/"agent_stop_reason.json").read_bytes(),
+                (root/"evidence/campaign"/ATTEMPT/"agent_stop_reason.json").read_bytes())
             with self.assertRaises(FileExistsError):
                 collect(ATTEMPT,root=root)
 
