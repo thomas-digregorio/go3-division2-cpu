@@ -11,6 +11,8 @@
   "ac_shunt_primal_start": "within_interval_primal_dual_v1",
   "ac_fail_fast_on_infeasible": true,
   "ac_interval_primal_start": "previous_screened_interval_v1",
+  "ac_numerical_recovery": "adaptive_barrier_on_failed_residual_v1",
+  "ac_recovery_seconds_per_solve": 15,
   "checkpoint_every_intervals": 1,
   "ac_seconds_per_solve": 10,
   "ac_rounded_seconds_per_solve": 15,

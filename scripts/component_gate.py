@@ -48,6 +48,13 @@ def main():
         "scripts/test_ac_primal_start.jl"])
     stage("ac_interval_start_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_interval_start.jl"])
+    stage("ac_recovery_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_ac_recovery.jl",str(evidence/"recovery_fixture")])
+    stage("tiny_recovery_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dominance_problem.json",
+        "--solution",str(evidence/"recovery_fixture/candidate_final.json"),
+        "--output",str(evidence/"recovery_verification"),"--seconds","60"])
+    recovery_certificate=json.loads((evidence/"recovery_verification/certificate.json").read_text())
     stage("tiny_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/problem.json",str(evidence/"worker"),"config/tiny_test.json",str(time.time()+120)],timeout=125)
     stage("tiny_final_check",[sys.executable,"scripts/verify_candidate.py","--input","tmp/official_tiny/problem.json",
@@ -103,6 +110,11 @@ def main():
     source_ac_stats=json.loads((evidence/"source_features_worker/solver_statistics.json").read_text())["ac_intervals"]
     for interval in source_ac_stats:
         reserve=interval["reserve_ac"]
+        recovery=reserve["numerical_recovery"]
+        if (recovery["policy"]!="adaptive_barrier_on_failed_residual_v1" or
+            recovery["attempted"] or
+            recovery["reason"]!="rounded_point_passed_local_residual_screen"):
+            raise RuntimeError("A successful tiny interval incorrectly triggered numerical recovery")
         continuation=reserve["interval_primal_start"]
         if interval["interval"]==1:
             if continuation["policy"]!="cold_defaults":
@@ -127,7 +139,7 @@ def main():
         feature_stats["mip_lp_solver_option"]!="simplex"):
         raise RuntimeError("New tiny integration did not exercise the registered source features")
     for checked in (certificate,separated_certificate,hipo_certificate,dominance_certificate,
-                    reserve_ac_certificate,source_features_certificate):
+                    reserve_ac_certificate,source_features_certificate,recovery_certificate):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -141,7 +153,7 @@ def main():
     python_count=int(re.search(r"Ran (\d+) tests",(evidence/"python_tests.log").read_text()).group(1))
     julia_logs="\n".join((evidence/(name+".log")).read_text()
         for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests",
-                     "ac_primal_start_tests","ac_interval_start_tests"))
+                     "ac_primal_start_tests","ac_interval_start_tests","ac_recovery_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
@@ -156,6 +168,7 @@ def main():
         "tiny_consumer_dominance_audit":dominance_audit,
         "tiny_reserve_aware_certificate":reserve_ac_certificate,
         "tiny_source_features_certificate":source_features_certificate,
+        "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_source_features_scheduling":feature_stats,
         "tiny_source_features_ac_statistics":source_ac_stats,
         "tiny_reserve_aware_statistics":ac_intervals,"source_sha256":source_hashes()}

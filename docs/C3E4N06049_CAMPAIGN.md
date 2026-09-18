@@ -107,3 +107,46 @@ Evidence is hash-archived at `evidence/campaign/campaign_n06049_s003_r01`; all
 original files remain. Result SHA256:
 `4725bd0bbbb0e385c460e3d3881fab1762b4e68ee708949e7209505700b510b6`.
 The campaign remains on this network.
+
+## Registered second attempt: bounded numerical recovery
+
+`campaign_n06049_s003_r02` retains the raw input, complete mathematical model,
+source limits/costs, scheduling algorithm, normal AC phases, residual thresholds
+and two-hour end-to-end budget. It adds one fallback only when the rounded-shunt
+phase returns a finite point that fails the explicit 1e-8 residual screen:
+
+1. Keep that same within-attempt complete primal point and fixed shunt choices.
+2. Instantiate fresh Ipopt numerical state on the identical JuMP model, clear
+   all row/bound/nonlinear dual starts and disable primal-dual warm-start mode.
+3. Try Ipopt's adaptive barrier with its quality-function oracle and default-size
+   interior pushes. These affect initialization only; bound relaxation remains
+   zero and source limits stay exact. Recovery is capped at 360 seconds / 1,000
+   iterations and the remaining global work deadline, whichever is earlier.
+4. Apply the unchanged residual screen. If it fails, checkpoint and stop; there
+   is no unbounded recovery loop. Final independent/official checks and the
+   sixth-best score requirement remain mandatory.
+
+A successful ordinary interval, including a time-limited point whose explicit
+residual passes, does not trigger this fallback. No previous attempt, external
+primal, basis, dual or supplied optimized solution is read. The first hour still
+starts cold; later continuation remains confined to this attempt.
+
+Component tests cover new and legacy nonlinear constraints, both objective
+senses, fixed variables, stale dual clearing, native zero-iteration consumption
+of the supplied primal, mathematical-model identity, invalid inputs and three
+deliberately interrupted tiny hourly AC solves. A separate complete tiny pipeline
+checks that already-successful intervals do not invoke recovery. The full tiny
+gate independently and officially evaluates the recovered three-hour solution.
+
+This is a tested numerical fallback, not a guarantee of large-case convergence
+or a claim that the r01 case was mathematically infeasible. The relevant option
+semantics are documented in [Ipopt's options reference](https://coin-or.github.io/Ipopt/OPTIONS.html#OPT_mu_strategy).
+Final verification receives all remaining global time minus serialization,
+with 600 seconds reserved as a minimum, not as a fixed verification cap.
+
+The second-attempt component gate passed **69 Python tests and 663 Julia
+assertions**, plus seven independently and officially verified tiny pipelines
+(9/9 contingency-hour checks each). The forced-recovery output passed hard and
+physical feasibility; its objective matched the independent calculation within
+1.46e-11. Evidence: `tmp/pilot002_component_gate_0u4qvj0w` and the hash-registered
+`manifests/component_tests.json`. No full competition case was solved by the gate.

@@ -10,137 +10,149 @@
     "psutil": "7.0.0"
   },
   "python_test_count": 69,
-  "julia_test_count": 520,
+  "julia_test_count": 663,
   "stages": [
     {
       "name": "official_fixture",
       "returncode": 0,
-      "seconds": 0.8126095999905374,
+      "seconds": 0.7966775000095367,
       "log_sha256": "6514e813237fd20fd0e55b3365ae554da44e39894630f3d4979581a276ee0a38"
     },
     {
       "name": "python_tests",
       "returncode": 0,
-      "seconds": 2.00107240001671,
-      "log_sha256": "9204f5cf33b80d632a1012cb4f704a298a200b45d1b4dcdb65456c4679c0129d"
+      "seconds": 1.792966000008164,
+      "log_sha256": "3036a4c61c3116e034493e292132661100787dbfc857f558781aecde913dbf75"
     },
     {
       "name": "julia_tests",
       "returncode": 0,
-      "seconds": 38.56560920001357,
-      "log_sha256": "3fd2377901c94c5ab62555ecd8110b6e8a0608d2ab059eb27ceb8a276294c1ef"
+      "seconds": 33.125928399997065,
+      "log_sha256": "95d4742b63a7e6f6a9bd1a7fc4865f5e48c72416f35c6436289f4ade595ce3cf"
     },
     {
       "name": "consumer_dominance_tests",
       "returncode": 0,
-      "seconds": 21.24384499998996,
-      "log_sha256": "ad18537326d0b9b80ee9a407e19f989b3a5581b3d24247902af1bbd85213ff8c"
+      "seconds": 21.147801700019045,
+      "log_sha256": "01704fd58a5d50ebf8e7eaf2cb3578af4cf9daf7f9c24609b4e56ff121652200"
     },
     {
       "name": "reserve_ac_tests",
       "returncode": 0,
-      "seconds": 27.546440200007055,
-      "log_sha256": "8b58bf7c3dfcceded00370be3a5eb00d1e448bbfa70411d3bddc2c92209efb1f"
+      "seconds": 27.642963099991903,
+      "log_sha256": "0c09ed826c8e1daae714bba27a719dca8896545cd18671ce7e823575b23d2433"
     },
     {
       "name": "source_feature_tests",
       "returncode": 0,
-      "seconds": 16.84252400000696,
-      "log_sha256": "5e9ad85e3219291538734a4600bff690a72fa9c3f5724238b1d06686acc55b86"
+      "seconds": 16.984081700007664,
+      "log_sha256": "34e65c86711be4898a67e1f208b0daa228eb5bf964e4c3d914741e2b4e7bcdc6"
     },
     {
       "name": "ac_primal_start_tests",
       "returncode": 0,
-      "seconds": 17.667778700008057,
-      "log_sha256": "0fe484faec3ac752318cf6871daa11b3a0b7639fbe8139761e64c7a92d894ab8"
+      "seconds": 17.59394949997659,
+      "log_sha256": "d2a44fa12f5fe895b135fa95cf1fec22c01c9f19ab6834619a58a75a947b7573"
     },
     {
       "name": "ac_interval_start_tests",
       "returncode": 0,
-      "seconds": 23.155472999991616,
-      "log_sha256": "ef9038c65c501d6bc034c4380103af9329e27ecba2059087274de005395df2d3"
+      "seconds": 23.256937600002857,
+      "log_sha256": "b5665abe0c3f723d17d22eee91f8d94c415ab3859ece1761a9a30dacebbfc9f3"
+    },
+    {
+      "name": "ac_recovery_tests",
+      "returncode": 0,
+      "seconds": 27.493426899978658,
+      "log_sha256": "e0d4b6c7124885f880448ca0b785aeeb9a4b8c576a5ff95703f13008573aab7c"
+    },
+    {
+      "name": "tiny_recovery_check",
+      "returncode": 0,
+      "seconds": 0.8366709999972954,
+      "log_sha256": "7108c4c6927cd65cc769d510147805bb499b3f7f48429c3a7931187d9e25cfbb"
     },
     {
       "name": "tiny_worker",
       "returncode": 0,
-      "seconds": 36.39177909999853,
-      "log_sha256": "014808ff4f92f69f484da0032e3a1c50f0fb221d54f5ffbf66d9333ee7e3431a"
+      "seconds": 36.5948826999811,
+      "log_sha256": "c4e63b0c0d3e107fabef1dbb4387c564d3b406bc06b0bc6dc3e1ff580344b915"
     },
     {
       "name": "tiny_final_check",
       "returncode": 0,
-      "seconds": 0.8386272999923676,
-      "log_sha256": "c9b182934d5e902947571b1c98189b7c45e2d759e64d7eb9d426fd23c5fb31a8"
+      "seconds": 0.8500421000062488,
+      "log_sha256": "3f065974592c548bd928e639cd0b29b726c3aa862d7d44b36c09abc04e96e31d"
     },
     {
       "name": "tiny_separated_worker",
       "returncode": 0,
-      "seconds": 33.38821560001816,
-      "log_sha256": "2c9eafaceaa86cfab71aea0d5b6f23a4a05be703846596026bd2e28a32615e52"
+      "seconds": 33.620536600006744,
+      "log_sha256": "ec1d3f9ad64afee36413efe54b140088b03f437b4c5d31448d7ecd8d6c0700e5"
     },
     {
       "name": "tiny_separated_check",
       "returncode": 0,
-      "seconds": 0.8333331000176258,
-      "log_sha256": "8176986a9433df7999ab285ed03a6b9e1567df544b0a8e309fb85fc483fe03b0"
+      "seconds": 0.830058999999892,
+      "log_sha256": "d871614479ba9b0e96513c7a7a0ede98e2a90f96ed6382e72b9fe2a0022e2b95"
     },
     {
       "name": "tiny_hipo_worker",
       "returncode": 0,
-      "seconds": 36.65619040001184,
-      "log_sha256": "c5b1115b7eab306e9fd7dc47755673ff7b20e0bffa3e68a62703b937c704af90"
+      "seconds": 36.66907999999239,
+      "log_sha256": "d25b4dc81c7a1b2644054337887cfd1626137dd3919a66bc2b648d1e4392a61a"
     },
     {
       "name": "tiny_hipo_check",
       "returncode": 0,
-      "seconds": 0.831640399992466,
-      "log_sha256": "a603f4c19893875f99b9a569732c2ba6226f88f87d72bdd2374aafc2334c7a77"
+      "seconds": 0.8171759999822825,
+      "log_sha256": "749ac056d682b3d871bf0d9694c4bfb4ad04682c1bc477df03c0ea37bd30d9be"
     },
     {
       "name": "tiny_dominance_worker",
       "returncode": 0,
-      "seconds": 36.511441999988165,
-      "log_sha256": "eb10a67f25825b4156bbec489c4129803f6f3927e1057920959cff0314c21656"
+      "seconds": 36.67226270001265,
+      "log_sha256": "56e78765d932b7d08d688c7e0c27807e01798f719b4d165bf649fca1073bc53b"
     },
     {
       "name": "tiny_dominance_check",
       "returncode": 0,
-      "seconds": 0.8174354000075255,
-      "log_sha256": "fdf62db495e6df136a08b667293919dff6d8e674f4dce48ce38e67bb80e303dc"
+      "seconds": 0.8226529999810737,
+      "log_sha256": "68b4568bf73e623a77faee1543a04f71fee97989be1ce5db6661f698f4a01839"
     },
     {
       "name": "tiny_reserve_ac_worker",
       "returncode": 0,
-      "seconds": 37.6686020999914,
-      "log_sha256": "a2034b7116de843fbf5a8ec608cb49868dcbe3a9246d73a2b330b06acc719e0f"
+      "seconds": 38.16065029997844,
+      "log_sha256": "9976f5ba7e16fbb28e2b335526a9001a40c160229d5c415fb13d9a3c1aeb35b5"
     },
     {
       "name": "tiny_reserve_ac_check",
       "returncode": 0,
-      "seconds": 0.8172670000058133,
-      "log_sha256": "d132f272c5cd9bd140ffa7d13edd0fcb87c2e03b5090d965167237c698c4cadc"
+      "seconds": 0.8223480999877211,
+      "log_sha256": "fadbc0c488845241036f2ce04a7073e48e4119dc15f143f16c7a51d28210c5ed"
     },
     {
       "name": "tiny_source_features_worker",
       "returncode": 0,
-      "seconds": 44.15170610000496,
-      "log_sha256": "563b3a3a0af7c6d1d0a773af0250eeb1ea63ca253721cf72f1189488af2e6e04"
+      "seconds": 44.91225779999513,
+      "log_sha256": "a34915fc83e69b88b1448bc592ab46ffec9ed1d8bacee3a0a00ff9130749b6d8"
     },
     {
       "name": "tiny_source_features_check",
       "returncode": 0,
-      "seconds": 0.8353757000004407,
-      "log_sha256": "fd4212a82aae1166ded9674ab625c979c5584d86036c0e14f64b7ab61eddacf4"
+      "seconds": 0.8163861999928486,
+      "log_sha256": "8dc89763f05c4cd5ad3f0a7f6d16ec4bb5380a9eae79ee663a610aaa2814f4fe"
     }
   ],
-  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_7waw6df_",
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_0u4qvj0w",
   "tiny_integration_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
     "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
-    "independent_seconds": 0.01595230001839809,
-    "official_seconds": 0.5383476999995764,
+    "independent_seconds": 0.006677999976091087,
+    "official_seconds": 0.5640968999941833,
     "objective": 1732.0994148700997,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -168,16 +180,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_7waw6df_\\verification",
-    "total_verification_seconds": 0.5543084999953862
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_0u4qvj0w\\verification",
+    "total_verification_seconds": 0.5707822999975178
   },
   "tiny_separated_reserves_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
     "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
-    "independent_seconds": 0.016708400013158098,
-    "official_seconds": 0.5336601999879349,
+    "independent_seconds": 0.016478899982757866,
+    "official_seconds": 0.5371047999942675,
     "objective": 1732.0994148700997,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -205,16 +217,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_7waw6df_\\separated_verification",
-    "total_verification_seconds": 0.5503767000045627
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_0u4qvj0w\\separated_verification",
+    "total_verification_seconds": 0.5535911000042688
   },
   "tiny_hipo_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
     "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
-    "independent_seconds": 0.016048299992689863,
-    "official_seconds": 0.5376223000057507,
+    "independent_seconds": 0.006172900000819936,
+    "official_seconds": 0.5356281999847852,
     "objective": 1732.0994148700997,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -242,16 +254,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_7waw6df_\\hipo_verification",
-    "total_verification_seconds": 0.5536790000041947
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_0u4qvj0w\\hipo_verification",
+    "total_verification_seconds": 0.5418083999829832
   },
   "tiny_consumer_dominance_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "890148f29a91bf2034536a988d70bd99764815b0a7e5fef313307f4923763ac9",
     "input_sha256": "5a7dcaf54ca6890f946c9d812aa637c02e5461d9f0f7bf0bdaa6aedfbafc7e94",
-    "independent_seconds": 0.016659699991578236,
-    "official_seconds": 0.5341597000078764,
+    "independent_seconds": 0.0061707999848295,
+    "official_seconds": 0.5325212999887299,
     "objective": 1732.274418320436,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -279,8 +291,8 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_7waw6df_\\dominance_verification",
-    "total_verification_seconds": 0.5508266999968328
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_0u4qvj0w\\dominance_verification",
+    "total_verification_seconds": 0.5387008999823593
   },
   "tiny_consumer_dominance_audit": {
     "fixed_online_variables": 3,
@@ -298,8 +310,8 @@
     "complete": true,
     "candidate_sha256": "32f2caa302d29d35ddee8e5084ae9c4a7763b618a8f0d2c3323b16fab699f2bd",
     "input_sha256": "5a7dcaf54ca6890f946c9d812aa637c02e5461d9f0f7bf0bdaa6aedfbafc7e94",
-    "independent_seconds": 0.00792659999569878,
-    "official_seconds": 0.5357495000062045,
+    "independent_seconds": 0.006465200014645234,
+    "official_seconds": 0.5344610000029206,
     "objective": 1732.2744182160795,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -327,16 +339,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_7waw6df_\\reserve_ac_verification",
-    "total_verification_seconds": 0.5436835000000428
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_0u4qvj0w\\reserve_ac_verification",
+    "total_verification_seconds": 0.5409329000103753
   },
   "tiny_source_features_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "497b3c11f360cd6e23987a4f33fe9bdf90177fce00903f83e7cc6fb64aee9dc6",
     "input_sha256": "456f541c7dbaed7bb09347279d5b9865e2927bd6a85c423717704673a59b75a8",
-    "independent_seconds": 0.01630660000955686,
-    "official_seconds": 0.5370794000045862,
+    "independent_seconds": 0.0063599999994039536,
+    "official_seconds": 0.5288766000012401,
     "objective": 1732.2744183204181,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -364,11 +376,48 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_7waw6df_\\source_features_verification",
-    "total_verification_seconds": 0.5533933000115212
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_0u4qvj0w\\source_features_verification",
+    "total_verification_seconds": 0.5352436000248417
+  },
+  "tiny_forced_recovery_certificate": {
+    "pass": true,
+    "complete": true,
+    "candidate_sha256": "bafd6850ed0d1b4bb9b91b6794dd532bd8ec5dec5edcd6b33094343c31865aa7",
+    "input_sha256": "5a7dcaf54ca6890f946c9d812aa637c02e5461d9f0f7bf0bdaa6aedfbafc7e94",
+    "independent_seconds": 0.01634950001607649,
+    "official_seconds": 0.540917599981185,
+    "objective": 1732.274418323577,
+    "official_feas": 1,
+    "official_phys_feas": 1,
+    "independent_hard_pass": true,
+    "max_hard_residual": 0.0,
+    "objective_discrepancy": 1.4551915228366852e-11,
+    "objective_agreement": true,
+    "contingencies_completed": 9,
+    "contingencies_required": 9,
+    "max_p_imbalance_pu": 1.4432899320127035e-15,
+    "max_q_imbalance_pu": 1.121411991045207e-14,
+    "max_contingency_overload_pu": 0.0,
+    "costs_total": {
+      "production": 17.548476826601814,
+      "demand_benefit": 1749.9999999978786,
+      "on": 0.17500000000000002,
+      "startup": 0.0,
+      "shutdown": 0.0,
+      "reserve_awards": 0.0021048476826597577,
+      "switching": 0.0,
+      "real_imbalance": 3.6914915568786455e-12,
+      "reactive_imbalance": 2.7754491413456428e-11,
+      "base_overload": 0.0,
+      "reserve_shortfall": 0.0,
+      "contingency_worst": 0.0,
+      "contingency_average": 0.0
+    },
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_0u4qvj0w\\recovery_verification",
+    "total_verification_seconds": 0.5572750999999698
   },
   "tiny_source_features_scheduling": {
-    "build_seconds": 6.984999895095825,
+    "build_seconds": 6.966000080108643,
     "native_relative_gap": 0.0,
     "variables": 153,
     "reserve_policy": "joint_scheduling_then_full_reallocation",
@@ -385,7 +434,7 @@
       "source_values_changed": false,
       "windows": 4
     },
-    "solve_seconds": 0.006307125091552734,
+    "solve_seconds": 0.006304025650024414,
     "include_reserves": true,
     "objective": 1732.3229,
     "bound": 1732.3229,
@@ -408,18 +457,26 @@
   },
   "tiny_source_features_ac_statistics": [
     {
-      "solve_seconds": 0.006000041961669922,
+      "solve_seconds": 0.007999897003173828,
       "objective": 494.97169755727026,
       "bound": null,
       "native_relative_gap": null,
       "interval": 1,
       "interval_start_policy": "previous_screened_interval_v1",
-      "wall_seconds": 12.386000156402588,
+      "wall_seconds": 12.706000089645386,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
+        "numerical_recovery": {
+          "policy": "adaptive_barrier_on_failed_residual_v1",
+          "attempted": false,
+          "reason": "rounded_point_passed_local_residual_screen"
+        },
+        "endogenous_requirements": true,
+        "physical_balance_policy": "zero_slack_candidate_restriction",
+        "source_interval_duration": 0.5,
         "phases": [
           {
-            "solve_seconds": 2.00600004196167,
+            "solve_seconds": 2.060999870300293,
             "max_primal_residual": 1.7013820907685329e-13,
             "objective": 494.97169755727043,
             "termination": "LOCALLY_SOLVED",
@@ -431,12 +488,12 @@
             "wall_limit_seconds": 10.0,
             "primal_status": "FEASIBLE_POINT",
             "phase": "continuous_shunts",
-            "wall_seconds": 2.928999900817871,
+            "wall_seconds": 2.997999906539917,
             "complete_finite_point": true,
             "relative_gap": null
           },
           {
-            "solve_seconds": 0.006000041961669922,
+            "solve_seconds": 0.007999897003173828,
             "max_primal_residual": 6.609296443471635e-16,
             "objective": 494.97169755727026,
             "termination": "LOCALLY_SOLVED",
@@ -448,12 +505,14 @@
             "wall_limit_seconds": 15.0,
             "primal_status": "FEASIBLE_POINT",
             "phase": "rounded_shunts",
-            "wall_seconds": 0.006000041961669922,
+            "wall_seconds": 0.007999897003173828,
             "complete_finite_point": true,
             "relative_gap": null
           }
         ],
         "policy": "source_joint_reserves_in_ac_v1",
+        "original_bounds": true,
+        "reserve_cost_at_solution": 0.0006013945976648537,
         "shunt_primal_start": {
           "variable_count": 67,
           "dual_or_basis_start": true,
@@ -491,17 +550,12 @@
           "source_bounds_changed": false,
           "basis_start": false
         },
-        "original_bounds": true,
-        "physical_balance_policy": "zero_slack_candidate_restriction",
         "products": 10,
         "interval_primal_start": {
           "policy": "cold_defaults",
           "external_solution_read": false,
           "target_interval": 1
-        },
-        "reserve_cost_at_solution": 0.0006013945976648537,
-        "source_interval_duration": 0.5,
-        "endogenous_requirements": true
+        }
       },
       "termination": "LOCALLY_SOLVED",
       "simplex_iterations": null,
@@ -518,12 +572,20 @@
       "native_relative_gap": null,
       "interval": 2,
       "interval_start_policy": "previous_screened_interval_v1",
-      "wall_seconds": 0.3489999771118164,
+      "wall_seconds": 0.3539998531341553,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
+        "numerical_recovery": {
+          "policy": "adaptive_barrier_on_failed_residual_v1",
+          "attempted": false,
+          "reason": "rounded_point_passed_local_residual_screen"
+        },
+        "endogenous_requirements": true,
+        "physical_balance_policy": "zero_slack_candidate_restriction",
+        "source_interval_duration": 1.0,
         "phases": [
           {
-            "solve_seconds": 0.010999917984008789,
+            "solve_seconds": 0.023000001907348633,
             "max_primal_residual": 3.964710504344993e-15,
             "objective": 989.9430833805303,
             "termination": "LOCALLY_SOLVED",
@@ -535,7 +597,7 @@
             "wall_limit_seconds": 10.0,
             "primal_status": "FEASIBLE_POINT",
             "phase": "continuous_shunts",
-            "wall_seconds": 0.012000083923339844,
+            "wall_seconds": 0.023000001907348633,
             "complete_finite_point": true,
             "relative_gap": null
           },
@@ -558,6 +620,8 @@
           }
         ],
         "policy": "source_joint_reserves_in_ac_v1",
+        "original_bounds": true,
+        "reserve_cost_at_solution": 0.0012027891953297076,
         "shunt_primal_start": {
           "variable_count": 67,
           "dual_or_basis_start": true,
@@ -595,8 +659,6 @@
           "source_bounds_changed": false,
           "basis_start": false
         },
-        "original_bounds": true,
-        "physical_balance_policy": "zero_slack_candidate_restriction",
         "products": 10,
         "interval_primal_start": {
           "source_local_residual": 6.609296443471635e-16,
@@ -622,10 +684,7 @@
           "current_cost_blocks_initialized": 2,
           "reused_named_values": 65,
           "source_bounds_changed": false
-        },
-        "reserve_cost_at_solution": 0.0012027891953297076,
-        "source_interval_duration": 1.0,
-        "endogenous_requirements": true
+        }
       },
       "termination": "LOCALLY_SOLVED",
       "simplex_iterations": null,
@@ -636,18 +695,26 @@
       "relative_gap": null
     },
     {
-      "solve_seconds": 0.005000114440917969,
+      "solve_seconds": 0.006000041961669922,
       "objective": 247.48584877863516,
       "bound": null,
       "native_relative_gap": null,
       "interval": 3,
       "interval_start_policy": "previous_screened_interval_v1",
-      "wall_seconds": 0.02200007438659668,
+      "wall_seconds": 0.023000001907348633,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
+        "numerical_recovery": {
+          "policy": "adaptive_barrier_on_failed_residual_v1",
+          "attempted": false,
+          "reason": "rounded_point_passed_local_residual_screen"
+        },
+        "endogenous_requirements": true,
+        "physical_balance_policy": "zero_slack_candidate_restriction",
+        "source_interval_duration": 0.25,
         "phases": [
           {
-            "solve_seconds": 0.01100015640258789,
+            "solve_seconds": 0.012000083923339844,
             "max_primal_residual": 2.3626933742804113e-15,
             "objective": 247.48577084513346,
             "termination": "LOCALLY_SOLVED",
@@ -664,7 +731,7 @@
             "relative_gap": null
           },
           {
-            "solve_seconds": 0.005000114440917969,
+            "solve_seconds": 0.006000041961669922,
             "max_primal_residual": 2.1649348980190553e-15,
             "objective": 247.48584877863516,
             "termination": "LOCALLY_SOLVED",
@@ -676,12 +743,14 @@
             "wall_limit_seconds": 15.0,
             "primal_status": "FEASIBLE_POINT",
             "phase": "rounded_shunts",
-            "wall_seconds": 0.005000114440917969,
+            "wall_seconds": 0.006000041961669922,
             "complete_finite_point": true,
             "relative_gap": null
           }
         ],
         "policy": "source_joint_reserves_in_ac_v1",
+        "original_bounds": true,
+        "reserve_cost_at_solution": 0.0003006972988324273,
         "shunt_primal_start": {
           "variable_count": 67,
           "dual_or_basis_start": true,
@@ -719,8 +788,6 @@
           "source_bounds_changed": false,
           "basis_start": false
         },
-        "original_bounds": true,
-        "physical_balance_policy": "zero_slack_candidate_restriction",
         "products": 10,
         "interval_primal_start": {
           "source_local_residual": 1.4554329963445412e-15,
@@ -746,10 +813,7 @@
           "current_cost_blocks_initialized": 2,
           "reused_named_values": 65,
           "source_bounds_changed": false
-        },
-        "reserve_cost_at_solution": 0.0003006972988324273,
-        "source_interval_duration": 0.25,
-        "endogenous_requirements": true
+        }
       },
       "termination": "LOCALLY_SOLVED",
       "simplex_iterations": null,
@@ -762,17 +826,22 @@
   ],
   "tiny_reserve_aware_statistics": [
     {
-      "solve_seconds": 0.012000083923339844,
+      "solve_seconds": 0.011999845504760742,
       "objective": 494.97169755725764,
       "bound": null,
       "native_relative_gap": null,
       "interval": 1,
       "interval_start_policy": "off",
-      "wall_seconds": 7.119000196456909,
+      "wall_seconds": 7.289000034332275,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
         "policy": "source_joint_reserves_in_ac_v1",
         "original_bounds": true,
+        "numerical_recovery": {
+          "policy": "off",
+          "attempted": false,
+          "reason": "disabled"
+        },
         "physical_balance_policy": "zero_slack_candidate_restriction",
         "products": 10,
         "interval_primal_start": {
@@ -799,11 +868,16 @@
       "native_relative_gap": null,
       "interval": 2,
       "interval_start_policy": "off",
-      "wall_seconds": 0.026999950408935547,
+      "wall_seconds": 0.02700018882751465,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
         "policy": "source_joint_reserves_in_ac_v1",
         "original_bounds": true,
+        "numerical_recovery": {
+          "policy": "off",
+          "attempted": false,
+          "reason": "disabled"
+        },
         "physical_balance_policy": "zero_slack_candidate_restriction",
         "products": 10,
         "interval_primal_start": {
@@ -830,11 +904,16 @@
       "native_relative_gap": null,
       "interval": 3,
       "interval_start_policy": "off",
-      "wall_seconds": 0.023000001907348633,
+      "wall_seconds": 0.023999929428100586,
       "reserve_policy": "source_joint_reserves_in_ac_v1",
       "reserve_ac": {
         "policy": "source_joint_reserves_in_ac_v1",
         "original_bounds": true,
+        "numerical_recovery": {
+          "policy": "off",
+          "attempted": false,
+          "reason": "disabled"
+        },
         "physical_balance_policy": "zero_slack_candidate_restriction",
         "products": 10,
         "interval_primal_start": {
@@ -865,13 +944,14 @@
     "config/campaign_n04224_s002_r03.json": "507e45a18afe1ee1c90a6e1a398c4792bfb1e39ee0e1837cda352c89ff31c3d7",
     "config/campaign_n04224_s002_r04.json": "a8812c0806c8284d4645f5a5c007501c71835ec5d79df1d6e8ce3f120d741c3f",
     "config/campaign_n06049_s003_r01.json": "5646ff65c8791cbe026c1343cb68f6aaf5e747c629c9c67baee162989e2a0f60",
+    "config/campaign_n06049_s003_r02.json": "78adca45eef297e254d84345dfd13a4fc90e17189245b628fa1d24be9516b367",
     "config/pilot.json": "131fe843dfda8fa86737e388500b6ff9e81fc0b3da5082d38c6cbbe8699cbf86",
     "config/pilot_002.json": "15bfac31b4b4dda0efed3be2b8addb13a85e320665efa03417dc8158ef55eb0f",
     "config/tiny_consumer_dominance.json": "cc79ac84067ac84fcacdcc4c5c0bb63ed710ae96a8057f67e4c1e1c7b02d1077",
     "config/tiny_hipo.json": "fab9ccba823c6a78c6b5fe7832f592671dedfbe426326d9b11efd515c0589406",
     "config/tiny_reserve_aware.json": "72f7f6c8ab6073241d34e52fbc65cd78f0e01f8db831957f227129343a0241c0",
     "config/tiny_separated_reserves.json": "bdab7f74a5be2fd7a529a77e4fecc79757c915eb27da07c51bd21d870f01631f",
-    "config/tiny_source_features.json": "4266a01a32c655eed1e8c00b162140996d22d4cb6e1762b13114585b5e595b70",
+    "config/tiny_source_features.json": "3e7a4dcd34158c9b56d3279ba7a1954aa78124b707dbca9ba95cdc8972db7065",
     "config/tiny_test.json": "1fdde86815c02a085a868374f9d9c89c1a71fc477d078b7c28e93259042b367a",
     "go3cpu/__init__.py": "24960f6da5f3db9c3a5b144d85b1f2ece6605552ba2d6ddc899a64e976b8dc71",
     "go3cpu/campaign.py": "2e08b60c70f0b96e8c3c4206c2e5e60a225f602000ad05b18f965a1769a9288b",
@@ -883,7 +963,7 @@
     "go3cpu/safety.py": "52d7a0fa146fcedfb61e6b3ddcd087bb59812d2e5bce487c933a56d25eca45ee",
     "go3cpu/selection.py": "04deb83ba562fc7bbbb725c87a2bab663aa82b790ca2407a7df5c1c605f5cf02",
     "Manifest.toml": "5afc92f37c3e084af91394f264acbb2c002134142e615e826d82ff63d324e09f",
-    "manifests/authorization_campaign.json": "2b2a86eed6b03f027ddc14b8c0590bae177256016b319dfb1511c8d2e3c7d039",
+    "manifests/authorization_campaign.json": "d876d0272ffc0b3a8bbe35ac6a7299876fce1fcbdb7ff383fb1bf900966a2a75",
     "manifests/authorization_pilot_002.json": "fa99be6acba2cf44f4da13e506ae4d8618621cd162e610e97a49fe3bb65756b2",
     "manifests/campaign/case_C3E4N02000D2_s005.json": "8bdfd453ed5ce1f03b49dc576d65b9cca658f88054d38727dc04a3b3179f1f1d",
     "manifests/campaign/case_C3E4N04224D2_s002.json": "b62960f4ba1c942125f442d268591511a029d49687acddaa5d3a9f868c4346c9",
@@ -897,12 +977,13 @@
     "scripts/archive_campaign_attempt.py": "6109e5729bb74100946f58068e225a36d70952fddb52c5536e49ec71d4389a94",
     "scripts/archive_pilot_002.py": "e67159e4a9b9c259e273759a3f0fcaa61dce168d789738059d54c7b369177308",
     "scripts/audit_sources.py": "d7e6d911a77686f1401fc035293cf0c9ae42e046c5a9268458db2fe9cc7f9d06",
-    "scripts/component_gate.py": "5f3c9c1bae6aeff96fa574b19525c86101e153df8c6b0d15ea5c6c1868c0b826",
+    "scripts/component_gate.py": "8963b0a5626de90b029163e5055caa5e19993fb406f5352d2cfe49441257fa1c",
     "scripts/register_campaign_case.py": "79a9433eb84267def70b1762532e6d5264a389c6a1140a1f517dcb90d5dad132",
     "scripts/register_sources.py": "8e28b44c380f91253435b005bde9af869c64d0ef831b75379c470d87bec1209d",
     "scripts/run_pilot.py": "b126d6b2a752556bfa804248015dfa036f99acb338ffed7468485db4575c2471",
     "scripts/test_ac_interval_start.jl": "60a3b097f8c98a27a696ba48d2f6c577fa8853f0e0d86efef944c0f7bd9fa8a2",
     "scripts/test_ac_primal_start.jl": "574afa2b8a6aa11d5bd37dd6cafa63088dbe04f2b3ab30a045db31f5958799c9",
+    "scripts/test_ac_recovery.jl": "573827d79c1f35c7f1c87bece6b781fbe5f47c7ec30807cc9f12b168690670d0",
     "scripts/test_consumer_dominance.jl": "ca39f1e2837ea64c5455b276abe22afdd0867dd860492245c61490f8db31faad",
     "scripts/test_official_adapter.py": "12032be86483dbe050d02ab053f76cf4efb6c89db636b795099f9bee4170a9e8",
     "scripts/test_reserve_ac.jl": "2ba9e01b301489b2e7c556e3ed57c7faf1a61276ed850657b3883c6f2d1c087d",
@@ -911,9 +992,10 @@
     "scripts/verify_candidate.py": "faaa2370656c0eaf795653176568bb0cb62e9cb56661f5eaf73c30e0bc3fdb96",
     "src/ac_interval_start.jl": "ad2b99ea4b267f7c3cc5a232b7478f04d5b06f14c2c0326b081535a615c98a19",
     "src/ac_primal_start.jl": "e7f7a42beb918fde7c1ae7501f2918910cdee25bb9020d2d2235df4ba89e2b45",
+    "src/ac_recovery.jl": "e5d0891853df8a59c01119cd63f2533da3906b31b2196f085d43a800659f986e",
     "src/consumer_dominance.jl": "5602e982e169e847c7d19d0c865730d649d6f1bad7c10b7c65394d11c438cbc7",
-    "src/pilot_worker.jl": "f121a59b25f7356983dfc1ba7fc798e283d154635aa4759ebbbdc8a34b819a2e",
-    "src/reserve_ac.jl": "c408de704a4c3bfd3aa0f14e27ff3019ff158f5b9778276a6ddc22ff5586961b",
+    "src/pilot_worker.jl": "06d53af9cae4122c889610ee82d84c6e09e80539e446581450c5a91246f551c6",
+    "src/reserve_ac.jl": "29c82691b0a6b2adfe87f0cbfe58e7332a9be984f666dc36bbeef8d20d5ab1ef",
     "src/scheduling.jl": "43e760084b4deeae8d8ba0eacdb757f28d7f34477eda1de56d98177aa2e27dcc",
     "src/startup_windows.jl": "24426de087c3e9780c4c7d1bbd6a3852102afd7a1f0bd2e4ef148e31194c2867",
     "tests/fixtures.py": "cd4a045851d73139fe3b732269d9dfc4b8cf0f468e02946569151752efcf7012",

@@ -8,6 +8,7 @@ include(joinpath(@__DIR__,"startup_windows.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"ac_primal_start.jl"))
 include(joinpath(@__DIR__,"ac_interval_start.jl"))
+include(joinpath(@__DIR__,"ac_recovery.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
 
 function atomic_json(path, object)
@@ -136,6 +137,10 @@ function run_worker(case_path, output, config, work_deadline)
     ac_interval_start in ("off","previous_screened_interval_v1") || error("Unknown AC interval start policy")
     ac_interval_start=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
         error("AC interval continuation requires the reserve-aware adapter and local residual checks")
+    ac_recovery=get(config,"ac_numerical_recovery","off")
+    ac_recovery in ("off","adaptive_barrier_on_failed_residual_v1") || error("Unknown AC recovery policy")
+    ac_recovery=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
+        error("AC numerical recovery requires the reserve-aware adapter and local residual checks")
 
     progress("scheduling")
     stage = time()
@@ -219,7 +224,10 @@ function run_worker(case_path, output, config, work_deadline)
                 audit_phases=ac_fail_fast || ac_shunt_primal_start!="off",
                 rounded_seconds=get(config,"ac_rounded_seconds_per_solve",nothing),
                 rounded_max_iter=get(config,"ac_rounded_max_iterations",500),
-                work_deadline=work_deadline,interval_seed=interval_seed)
+                work_deadline=work_deadline,interval_seed=interval_seed,
+                numerical_recovery=ac_recovery,
+                recovery_seconds=get(config,"ac_recovery_seconds_per_solve",360.0),
+                recovery_max_iter=get(config,"ac_recovery_max_iterations",1000))
         else
             ac_model, result = GO3.compute_optimal_power_flow_at_interval(working,i;
                 on_status=current_on,real_power=current_p,optimizer=ipopt,
