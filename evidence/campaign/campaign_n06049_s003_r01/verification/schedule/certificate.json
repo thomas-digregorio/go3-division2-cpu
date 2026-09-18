@@ -1,0 +1,8 @@
+{
+  "pass": false,
+  "complete": false,
+  "candidate_sha256": "509648df5a56c81edae30712b9ea20ad9ba7c7f66e9753954251bdc2a9c09ba0",
+  "input_sha256": "312b066e51e4e058d0f2e1a96ea32c8f30a3f1dbfc9c4266b6d5d73af4206e41",
+  "error": "Traceback (most recent call last):\n  File \"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\scripts\\verify_candidate.py\", line 38, in main\n    independent = check(case,sol,deadline=begin+args.seconds-2,\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\go3cpu\\independent.py\", line 268, in check\n    tick()\n  File \"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\go3cpu\\independent.py\", line 100, in tick\n    raise TimeoutError(\"Independent exhaustive verification deadline\")\nTimeoutError: Independent exhaustive verification deadline\n",
+  "total_verification_seconds": 238.18270669999765
+}

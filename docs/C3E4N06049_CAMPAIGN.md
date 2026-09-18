@@ -72,3 +72,38 @@ All six tiny end-to-end pipelines passed official hard/physical feasibility and
 independent 9/9 contingency-interval verification. Evidence resides in
 `tmp/pilot002_component_gate_7waw6df_` and is hash-registered in
 `manifests/component_tests.json`. No full-size scenario was used by this gate.
+
+## First attempt: incomplete refinement, not a case-infeasibility proof
+
+`campaign_n06049_s003_r01` used frozen revision
+`cfb94c732c313acc9b0925d2c1335f259c513d45`. Its failure record finalized in
+**3,181.563656 seconds (53 min 1.564 s)**, below the two-hour limit. The scheduling
+MILP reached objective 621,291,337.175008, bound 621,357,577.274144 and relative
+gap 0.000106616808, with 422,173 LP iterations and one search-tree node.
+
+The initial scheduling-candidate verification exhausted its separate 240-second
+allowance (238.657 process seconds), so no initial verified incumbent was accepted.
+The worker then proceeded as registered. Hours 1-19 passed the local 1e-8 residual
+screen. Hour 17 used both local solver allowances but returned a 2.71310e-9
+residual and continued. Hours 18 and 19 recovered in the rounded phase, taking
+177.524 and 150.125 seconds overall. Hour 20 exhausted its 90/240-second phase
+allowances and returned a **3.80205e-5** residual. Its checkpoint was saved before
+refinement stopped. Hours 21-48 were not attempted.
+
+Final independent evaluation completed all **187,296 / 187,296** contingency-hour
+checks. Independent time was 320.003 seconds; official evaluation took 88.260
+seconds; process wall was 410.005 seconds. Official hard feasibility was 1,
+physical feasibility was 0, and independent hard checks/objective agreement
+passed. The incomplete objective **-22,240,695,382.414497** is not an accepted
+completed solution score: the quality gate correctly failed. Large physical
+imbalances include the unrefined future hours. Peak sampled process-tree RSS
+was 16.72855 GiB.
+
+The native log shows repeated large dual residuals, very small steps and
+occasional excursions away from feasible iterates. This supports investigating
+numerical recovery, but neither proves a unique cause nor proves the source case
+infeasible. No tolerance, source constraint, PMIN or penalty was relaxed.
+Evidence is hash-archived at `evidence/campaign/campaign_n06049_s003_r01`; all
+original files remain. Result SHA256:
+`4725bd0bbbb0e385c460e3d3881fab1762b4e68ee708949e7209505700b510b6`.
+The campaign remains on this network.
