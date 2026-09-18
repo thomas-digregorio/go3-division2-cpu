@@ -18,6 +18,10 @@ ARCHIVE = "https://data.openei.org/files/5997/C3E4N00617_20231002.zip"
 CASE_PATTERN = re.compile(r"D2/C3E4N00617D2/scenario_[0-9]{3}\.json\Z")
 NETWORKS = ("C3E4N00617D2", "C3E4N02000D2", "C3E4N04224D2", "C3E4N06049D2",
             "C3E4N06717D2", "C3E4N08316D2", "C3E4N23643D2")
+# The audited 6,717-bus raw scenarios are about 105 MB. This explicit exception
+# does not lift the 16 MiB compressed HTTP transfer limit or authorize other data.
+RAW_CASE_CAP_BYTES = {network: (128 if network == "C3E4N06717D2" else 64) * 1024 * 1024
+                      for network in NETWORKS}
 NS = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
 
 
@@ -93,11 +97,12 @@ def extract_case(entry, destination, network="C3E4N00617D2"):
     path = local_path(destination)
     if path.exists():
         raise FileExistsError(path)
-    storage_check(path, pending_bytes=64 * 1024 * 1024)
+    raw_cap = RAW_CASE_CAP_BYTES[network]
+    storage_check(path, pending_bytes=raw_cap)
     remote = RemoteZip(url)
     with zipfile.ZipFile(remote) as archive:
         info = archive.getinfo(entry)
-        if info.file_size > 64 * 1024 * 1024:
+        if not 0 < info.file_size <= raw_cap:
             raise RuntimeError("Case exceeds registered download cap")
         data = archive.read(info)  # zipfile verifies CRC
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -105,7 +110,8 @@ def extract_case(entry, destination, network="C3E4N00617D2"):
         stream.write(data)
     return {"entry": entry, "sha256": hashlib.sha256(data).hexdigest(),
             "bytes": len(data), "transferred_bytes": remote.transferred,
-            "archive_url": url, "archive_etag": remote.etag}
+            "archive_url": url, "archive_etag": remote.etag,
+            "raw_cap_bytes": raw_cap, "transfer_cap_bytes": remote.max_transfer}
 
 
 def workbook_rows(path, sheet_name):
