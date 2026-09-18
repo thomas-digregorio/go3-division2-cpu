@@ -45,6 +45,9 @@ def registered_latch(root, config):
     """Each explicit authorization has a separate immutable one-run latch."""
     root=local_path(root)
     pilot_id=config.get("pilot_id","pilot_001")
+    if pilot_id.startswith("campaign_"):
+        from .campaign import campaign_latch
+        return campaign_latch(root,config)
     if pilot_id=="pilot_001":
         return root/"runs/pilot_latch.json"
     if pilot_id!="pilot_002":

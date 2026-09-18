@@ -66,3 +66,22 @@ a cheap-imbalance commitment counterexample with reserve drivers isolated.
 
 All 23 retained files listed for pilot 001 were also rehashed unchanged before
 the replacement. That was an integrity check, not a rerun or re-evaluation.
+
+## Cold scaling campaign, first 2,000-bus registration
+
+On 2026-09-18 UTC, using the same Python 3.12.14 / NumPy 1.26.4 / SciPy 1.13.1
+runtime as the verified 617-bus pilot:
+
+- 44/44 Python tests passed, including sixth-place selection, matched switching,
+  benchmark/infeasible/inactive exclusions, duplicate rejection, complete physical
+  and hard-verification gates, sequential launch authorization, immutable attempt
+  latches, cold-start policy and the authorized 7,200-second maximum.
+- 25/25 Julia assertions passed for the unchanged numerical method.
+- The complete tiny three-interval worker passed both independent and official
+  verification of all 9 contingency-interval combinations.
+- Current code/configuration/case/comparison manifests and tested runtime identity
+  are frozen in `manifests/component_tests.json`.
+
+Only tiny fixtures were solved during setup. These tests do not establish a pass
+for the 2,000-bus scenario. Earlier exploratory component checks using the shell's
+different Python were superseded by this complete matched-runtime gate.

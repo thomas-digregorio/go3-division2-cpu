@@ -22,6 +22,7 @@ from go3cpu.controller import (Deadline, Incumbent, Snapshots, atomic_json, clai
     latest_candidate, latest_snapshot, registered_latch, run_bounded, sha256, stop_process)
 from go3cpu.official import configure_imports
 from go3cpu.safety import GIB, local_path, storage_check
+from go3cpu.campaign import sixth_best_target, quality_gate, registered_budget
 configure_imports(ROOT)
 import psutil
 
@@ -45,10 +46,17 @@ def runtime_environment():
     return env
 
 
+def runtime_identity():
+    import numpy, scipy, pydantic
+    return {"python_executable":str(local_path(sys.executable)),"python_version":platform.python_version(),
+            "numpy":numpy.__version__,"scipy":scipy.__version__,
+            "pydantic":pydantic.__version__,"psutil":psutil.__version__}
+
+
 def preflight(config_path):
     config=json.loads(local_path(config_path).read_text())
     if (config.get("pilot_ready") is not True or config["maximum_full_runs"]!=1 or
-        config["total_seconds"]!=1800 or not config["cold_start"] or config["allow_pop_solution"]):
+        not registered_budget(config) or not config["cold_start"] or config["allow_pop_solution"]):
         raise RuntimeError("Pilot registration is not ready or scope changed")
     latch=registered_latch(ROOT,config)
     if latch.exists():
@@ -69,13 +77,25 @@ def preflight(config_path):
     test_record=json.loads((ROOT/"manifests/component_tests.json").read_text())
     if not test_record.get("pass"):
         raise RuntimeError("Component test gate has not passed")
+    if test_record.get("runtime") != runtime_identity():
+        raise RuntimeError("Use the same Python/dependency runtime as the completed component tests")
     for file,digest in test_record["source_sha256"].items():
         if sha256(ROOT/file)!=digest:
             raise RuntimeError(f"Code/config changed since component tests: {file}")
     if sha256(ROOT/config["input_path"])!=config["input_sha256"]:
         raise RuntimeError("Registered input hash changed")
+    case_record=json.loads((ROOT/config.get("case_manifest_path","manifests/case.json")).read_text())
+    if any(case_record[k]!=config[k] for k in ("network","scenario","input_sha256")):
+        raise RuntimeError("Case identity manifest does not match configuration")
+    quality_target=None
+    if config.get("comparison_manifest_path"):
+        comparison=json.loads((ROOT/config["comparison_manifest_path"]).read_text())
+        if comparison["sha256"]!=sha256(ROOT/".cache/sources/results_20240506.xlsx"):
+            raise RuntimeError("Comparison workbook hash changed")
+        quality_target=sixth_best_target(comparison,network=config["network"],scenario=config["scenario"],
+            switching=config["official_allow_switching"])
     env=runtime_environment()
-    hardware={"platform":platform.platform(),"python":sys.version,
+    hardware={"platform":platform.platform(),"python":sys.version,"runtime":runtime_identity(),
         "physical_cpu_count":psutil.cpu_count(logical=False),"logical_cpu_count":psutil.cpu_count(),
         "ram_bytes":psutil.virtual_memory().total}
     if os.name=="nt":
@@ -86,12 +106,12 @@ def preflight(config_path):
         "pilot_id":config.get("pilot_id","pilot_001"),"authorization_latch":str(latch),
         "julia_manifest_sha256":sha256(ROOT/"Manifest.toml"),"source_manifest_sha256":sha256(ROOT/"manifests/sources.json"),
         "component_tests_sha256":sha256(ROOT/"manifests/component_tests.json"),
-        "config":config,"case":json.loads((ROOT/"manifests/case.json").read_text()),
+        "config":config,"case":case_record,"quality_target":quality_target,
         "hardware":hardware,"storage":storage_check(ROOT,pending_bytes=GIB,
              floor_bytes=int(config["minimum_free_gib"]*GIB)),
         "setup_exclusions":"Dependency installation, package precompilation, source registration, checkout and download only. Runtime process import/JIT, raw loading, preprocessing and case factors included.",
         "initialization":"Cold; source conditions only, no POP or saved optimized solutions",
-        "benchmark_kind":"One local 30-minute pilot, not an official competition submission"}
+        "benchmark_kind":f"One local cold attempt, {config['total_seconds']}-second end-to-end limit; not an official competition submission"}
     return config,env,record
 
 
@@ -148,7 +168,7 @@ class Monitor:
 def execute(config_path,config,env,preflight_record):
     stamp=dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     pilot_id=config.get("pilot_id","pilot_001")
-    run=ROOT/"runs"/f"C3E4N00617D2_s002_{pilot_id}_{stamp}"
+    run=ROOT/"runs"/f"{config['network']}_s{config['scenario']}_{pilot_id}_{stamp}"
     # Claim before any solver starts. An unsuccessful run still consumes the authorization.
     claim_pilot(registered_latch(ROOT,config),{"pilot_id":pilot_id,"run":str(run),
         "commit":preflight_record["commit"],"created_utc":stamp})
@@ -161,6 +181,8 @@ def execute(config_path,config,env,preflight_record):
     result={"schema_version":1,"status":"INCOMPLETE","preflight":preflight_record,
         "run_directory":str(run),"global_optimality_certificate":False,
         "full_GO3_certified_gap":None,"evaluations":evaluations}
+    if preflight_record.get("quality_target"):
+        result["quality_target"]=preflight_record["quality_target"]
     atomic_json(run/"initial_record.json",result,exclusive=True)
     worker=None
     finished=threading.Event()
@@ -273,6 +295,9 @@ def execute(config_path,config,env,preflight_record):
             result["timings"]["completed_ac_interval_wall_seconds"]=sum(
                 s["wall_seconds"] for s in result["solver_statistics"].get("ac_intervals",[]))
         serialization=time.perf_counter()
+        if "quality_target" in result:
+            result["quality_gate"]=quality_gate(incumbent.record,result["quality_target"],
+                pipeline_completed=result["pipeline_completed"],within_deadline=clock.remaining()>0)
         result["total_seconds_before_final_serialization"]=serialization-clock.start
         atomic_json(run/"result.json",result,exclusive=True)
         final_serialization_seconds=time.perf_counter()-serialization

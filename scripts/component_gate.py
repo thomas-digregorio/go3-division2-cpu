@@ -12,13 +12,14 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 sys.path.insert(0,str(ROOT/"scripts"))
 from go3cpu.controller import atomic_json, sha256
-from run_pilot import JULIA, runtime_environment
+from run_pilot import JULIA, runtime_environment, runtime_identity
 
 
 def source_hashes():
     files=[*ROOT.glob("go3cpu/*.py"),*ROOT.glob("scripts/*.py"),*ROOT.glob("scripts/*.jl"),
         *ROOT.glob("src/*.jl"),*ROOT.glob("tests/*.py"),*ROOT.glob("config/*.json"),
-        ROOT/"Project.toml",ROOT/"Manifest.toml",ROOT/"manifests/authorization_pilot_002.json"]
+        *ROOT.glob("manifests/authorization_*.json"),*ROOT.glob("manifests/campaign/*.json"),
+        ROOT/"Project.toml",ROOT/"Manifest.toml"]
     return {str(f.relative_to(ROOT)).replace("\\","/"):sha256(f) for f in sorted(files)}
 
 
@@ -50,6 +51,7 @@ def main():
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
     result={"pass":True,"scope":"Original synthetic 2-bus 3-interval fixture only; no competition-case solve",
+        "runtime":runtime_identity(),
         "python_test_count":python_count,"julia_test_count":sum(int(a) for a,b in julia_counts),"stages":stages,
         "evidence_directory":str(evidence),
         "tiny_integration_certificate":certificate,"source_sha256":source_hashes()}

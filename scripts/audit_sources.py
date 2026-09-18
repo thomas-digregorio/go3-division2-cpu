@@ -16,7 +16,17 @@ from go3cpu.safety import local_path, storage_check
 
 ARCHIVE = "https://data.openei.org/files/5997/C3E4N00617_20231002.zip"
 CASE_PATTERN = re.compile(r"D2/C3E4N00617D2/scenario_[0-9]{3}\.json\Z")
+NETWORKS = ("C3E4N00617D2", "C3E4N02000D2", "C3E4N04224D2", "C3E4N06049D2",
+            "C3E4N06717D2", "C3E4N08316D2", "C3E4N23643D2")
 NS = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+
+
+def archive_source(network):
+    if network not in NETWORKS:
+        raise ValueError("Network is outside the registered Division 2 scope")
+    stem = network if network == "C3E4N08316D2" else network[:-2]
+    return (f"https://data.openei.org/files/5997/{stem}_20231002.zip",
+            re.compile(r"D2/" + re.escape(network) + r"/scenario_[0-9]{3}\.json\Z"))
 
 
 class RemoteZip(io.RawIOBase):
@@ -64,25 +74,27 @@ class RemoteZip(io.RawIOBase):
         return data
 
 
-def archive_listing():
-    remote = RemoteZip(ARCHIVE)
+def archive_listing(network="C3E4N00617D2"):
+    url, pattern = archive_source(network)
+    remote = RemoteZip(url)
     with zipfile.ZipFile(remote) as archive:
         files = [{"path": f.filename, "bytes": f.file_size,
                   "compressed_bytes": f.compress_size, "crc32": f"{f.CRC:08x}"}
-                 for f in archive.infolist() if CASE_PATTERN.fullmatch(f.filename)]
-    return {"url": ARCHIVE, "etag": remote.etag,
+                 for f in archive.infolist() if pattern.fullmatch(f.filename)]
+    return {"url": url, "etag": remote.etag,
             "archive_bytes": remote.size, "transferred_bytes": remote.transferred,
             "scenario_entries_only": files}
 
 
-def extract_case(entry, destination):
-    if not CASE_PATTERN.fullmatch(entry):
-        raise ValueError("Only an exact 617-bus Division 2 raw scenario entry may be extracted")
+def extract_case(entry, destination, network="C3E4N00617D2"):
+    url, pattern = archive_source(network)
+    if not pattern.fullmatch(entry):
+        raise ValueError("Only an exact registered Division 2 raw scenario entry may be extracted")
     path = local_path(destination)
     if path.exists():
         raise FileExistsError(path)
     storage_check(path, pending_bytes=64 * 1024 * 1024)
-    remote = RemoteZip(ARCHIVE)
+    remote = RemoteZip(url)
     with zipfile.ZipFile(remote) as archive:
         info = archive.getinfo(entry)
         if info.file_size > 64 * 1024 * 1024:
@@ -93,7 +105,7 @@ def extract_case(entry, destination):
         stream.write(data)
     return {"entry": entry, "sha256": hashlib.sha256(data).hexdigest(),
             "bytes": len(data), "transferred_bytes": remote.transferred,
-            "archive_url": ARCHIVE, "archive_etag": remote.etag}
+            "archive_url": url, "archive_etag": remote.etag}
 
 
 def workbook_rows(path, sheet_name):
@@ -144,12 +156,13 @@ def main():
     parser.add_argument("--entry")
     parser.add_argument("--limit", type=int, default=12)
     parser.add_argument("--scenario", type=int, default=2)
+    parser.add_argument("--network", choices=NETWORKS, default="C3E4N00617D2")
     parser.add_argument("--output")
     args = parser.parse_args()
     if args.command == "archive":
-        print(json.dumps(archive_listing(), indent=2))
+        print(json.dumps(archive_listing(args.network), indent=2))
     elif args.command == "extract":
-        print(json.dumps(extract_case(args.entry, args.path), indent=2))
+        print(json.dumps(extract_case(args.entry, args.path, args.network), indent=2))
     elif args.command == "comparison":
         fields = ["team", "model", "scenario", "SW", "objective", "z", "score", "runtime",
                   "timelimit", "feas", "infeas", "uuid", "Div.", "scored", "allow_switching",
@@ -167,12 +180,12 @@ def main():
                 continue
             def value(name):
                 return cells.get(headers.get(name), {}).get("value")
-            if value("model") != "C3E4N00617D2" or value("scenario") != str(args.scenario):
+            if value("model") != args.network or value("scenario") != str(args.scenario):
                 continue
             selected.append({"source_row": row["row"], **{k: value(k) for k in fields}})
         report = {"source_url": "https://data.openei.org/files/5997/E4LB_Master_20240506.xlsx",
                   "sha256": hashlib.sha256(Path(args.path).read_bytes()).hexdigest(),
-                  "sheet": "data", "scenario": args.scenario, "records": selected}
+                  "sheet": "data", "network": args.network, "scenario": args.scenario, "records": selected}
         if args.output:
             path = local_path(args.output)
             path.parent.mkdir(parents=True, exist_ok=True)

@@ -1,9 +1,17 @@
 # GO3 Division 2 CPU prototype
 
-Source-audited, laptop-only development toward one public GO Competition
-Challenge 3 Final Event, Division 2, 617-bus pilot.
+Source-audited, laptop-only GO Competition Challenge 3 Final Event, Division 2
+optimization and independent evaluation.
 
 ## Status
+
+An explicitly authorized [cold scaling campaign](docs/COLD_SCALING_CAMPAIGN.md)
+now targets one scenario each on 2,000, 4,224, 6,049, 6,717, 8,316 and 23,643
+buses, sequentially. The target is within 10% of the sixth-best eligible published
+score with full independent and official verification. The first registered case
+is `C3E4N02000D2` scenario `005`. No result is yet claimed for it.
+Historical pilot-only restrictions below describe the completed 617-bus pilots;
+their latches and evidence are preserved, not reused for the new campaign.
 
 The authorized cold replacement at frozen commit `b8bbc66` completed in
 **554.844 seconds**, with **objective 163,770,857.23**. Independent and official
@@ -15,7 +23,8 @@ See [the complete replacement result and matched comparison](docs/PILOT_002_RESU
 The original failed pilot (`3ad6ef2`, 197.398 s, NO_VERIFIED_INCUMBENT) and its
 artifacts/latch remain unchanged. The replacement fixed independent cost ordering,
 Windows live-status publication, and underpriced scheduling imbalance; see
-[the correction registration](docs/REPLACEMENT_002.md). No further run is authorized.
+[the correction registration](docs/REPLACEMENT_002.md). That one-run authorization
+is exhausted; new attempts require their separate campaign registration.
 
 See [the complete first-pilot failure report](docs/PILOT_001_RESULTS_20260916.md)
 for timings, retained artifacts, initial-candidate penalties, matched published
