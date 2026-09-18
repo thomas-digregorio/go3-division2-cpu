@@ -74,10 +74,20 @@ def quality_gate(certificate, target, *, pipeline_completed, within_deadline):
         and certificate.get("contingencies_completed") == certificate.get("contingencies_required"))
     shortfall = None if score is None else max(0.0, (target["sixth_best_score"] - score) / target["sixth_best_score"])
     return {"pass": bool(verification and pipeline_completed and within_deadline
-                         and shortfall is not None and shortfall <= target["relative_shortfall_limit"]),
+                         and score is not None and score >=
+                         (1.0-target["relative_shortfall_limit"])*target["sixth_best_score"]),
             "score": score, "relative_shortfall_from_sixth": shortfall,
             "verification_pass": verification, "pipeline_completed": pipeline_completed,
             "within_deadline": within_deadline, "target": target}
+
+
+def experiment_exit_code(result, *, total_seconds, budget_seconds):
+    """A hard-feasible but low-quality campaign attempt is not campaign success."""
+    complete = (bool(result.get("verified_incumbent")) and result.get("pipeline_completed")
+                and total_seconds < budget_seconds)
+    if "quality_target" in result:
+        complete = complete and result.get("quality_gate", {}).get("pass", False)
+    return 0 if complete else 2
 
 
 def campaign_latch(root, config):

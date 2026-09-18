@@ -101,3 +101,18 @@ For the separated path: objective 1732.0994148700997; objective disagreement
 1.25e-11; maximum hard residual 0; P/Q imbalance 1.80e-13/2.20e-14 pu; official
 `feas=1`, `phys_feas=1`; zero reserve shortfall. These are fixture tests, not extra
 competition-case runs or evidence that the 2,000-bus attempt will succeed.
+
+## Campaign r03: joint scheduling with CPU HiPO root option
+
+The 2026-09-18 UTC matched-runtime gate passed **48 Python tests and 52 Julia
+assertions**. A three-variable LP with presolve disabled forced execution of
+HiPO: the native log reports `Running HiPO`, 8 HiPO iterations, and objective 1.5.
+A separate tiny binary triangle verified the accepted `mip_lp_solver=hipo`
+configuration and the known integer optimum of 2. No commercial/GPU solver was
+loaded. This checks backend availability before the full attempt, not its scaling.
+
+Complete original, separated-reserve and HiPO-configured tiny pipelines each
+passed independent and official checks of all 9 outage-interval combinations.
+The new campaign-exit test rejects a hard-feasible result that misses the target;
+boundary assertions accept exactly 90% of the reference and reject the immediately
+smaller representable score. No score threshold or feasibility tolerance changed.

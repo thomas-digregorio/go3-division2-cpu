@@ -22,7 +22,7 @@ from go3cpu.controller import (Deadline, Incumbent, Snapshots, atomic_json, clai
     latest_candidate, latest_snapshot, registered_latch, run_bounded, sha256, stop_process)
 from go3cpu.official import configure_imports
 from go3cpu.safety import GIB, local_path, storage_check
-from go3cpu.campaign import sixth_best_target, quality_gate, registered_budget
+from go3cpu.campaign import sixth_best_target, quality_gate, registered_budget, experiment_exit_code
 configure_imports(ROOT)
 import psutil
 
@@ -308,8 +308,9 @@ def execute(config_path,config,env,preflight_record):
             "within_local_deadline":total_seconds<config["total_seconds"]},exclusive=True)
         finished.set()
     print("PILOT_COMPLETE "+json.dumps({"status":result["status"],"run":str(run),
-        "total_seconds":total_seconds,"objective":(incumbent.record or {}).get("objective")}),flush=True)
-    return 0 if incumbent.record and total_seconds<config["total_seconds"] and result["pipeline_completed"] else 2
+        "total_seconds":total_seconds,"objective":(incumbent.record or {}).get("objective"),
+        "quality_target_pass":result.get("quality_gate",{}).get("pass")}),flush=True)
+    return experiment_exit_code(result,total_seconds=total_seconds,budget_seconds=config["total_seconds"])
 
 
 def main():

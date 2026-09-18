@@ -108,13 +108,16 @@ function run_worker(case_path, output, config, work_deadline)
     stage = time()
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, "threads"=>config["highs_threads"],
         "mip_rel_gap"=>config["scheduling_relative_gap"], "mip_feasibility_tolerance"=>1e-9,
-        "primal_feasibility_tolerance"=>1e-9, "random_seed"=>0)
+        "primal_feasibility_tolerance"=>1e-9, "random_seed"=>0,
+        "mip_lp_solver"=>get(config,"scheduling_mip_lp_solver","choose"))
     get(config,"scheduling_balance_penalties","")=="source_pq_duration_weighted" || error("Missing registered scheduling penalty policy")
     model, schedule = schedule_source_balances(input; optimizer=optimizer,
         time_limit=available(config["scheduling_seconds"]),
         include_reserves=get(config,"scheduling_include_reserves",true))
     statistics["scheduling"] = model_stats(model)
     merge!(statistics["scheduling"],model.ext[:scheduling_formulation])
+    statistics["scheduling"]["mip_lp_solver_requested"]=get(config,"scheduling_mip_lp_solver","choose")
+    statistics["scheduling"]["mip_lp_solver_option"]=get_optimizer_attribute(model,"mip_lp_solver")
     statistics["scheduling"]["bound_scope"] = "approximate_copperplate_subproblem_only_not_full_GO3"
     timings["scheduling"] = time()-stage
     atomic_json(joinpath(output,"statistics","scheduling.json"),statistics["scheduling"])

@@ -5,6 +5,31 @@ const CASE = joinpath(ROOT,"tmp","official_tiny","problem.json")
 # This path is generated only from tests/fixtures.py, never a competition case.
 @assert occursin("official_tiny",CASE)
 input = GOC3Benchmark.process_input_data(JSON.parsefile(CASE))
+@testset "GO3 CPU HiPO backend and root option" begin
+    # Presolve is disabled only on these three-variable synthetic probes, so
+    # acceptance of an option alone cannot masquerade as an available backend.
+    lp=Model(optimizer_with_attributes(HiGHS.Optimizer,"threads"=>4,
+        "solver"=>"hipo","presolve"=>"off","ipm_optimality_tolerance"=>1e-9,
+        "time_limit"=>15.0))
+    @variable(lp,0 <= x[1:3] <= 1)
+    @constraint(lp,[i=1:3],x[i]+x[mod1(i+1,3)] >= 1)
+    @objective(lp,Min,sum(x))
+    optimize!(lp)
+    @test termination_status(lp)==MOI.OPTIMAL
+    @test objective_value(lp) ≈ 1.5 atol=1e-8
+    @test MOI.get(lp,MOI.BarrierIterations()) > 0
+    @test get_optimizer_attribute(lp,"solver")=="hipo"
+    mip=Model(optimizer_with_attributes(HiGHS.Optimizer,"threads"=>4,
+        "mip_lp_solver"=>"hipo","presolve"=>"off","time_limit"=>15.0))
+    @variable(mip,y[1:3],Bin)
+    @constraint(mip,[i=1:3],y[i]+y[mod1(i+1,3)] >= 1)
+    @objective(mip,Min,sum(y))
+    optimize!(mip)
+    @test termination_status(mip)==MOI.OPTIMAL
+    @test objective_value(mip) ≈ 2.0 atol=1e-8
+    @test get_optimizer_attribute(mip,"mip_lp_solver")=="hipo"
+end
+
 @testset "GO3 tiny whole-horizon UC" begin
     opt = optimizer_with_attributes(HiGHS.Optimizer,"threads"=>4,"mip_rel_gap"=>1e-6,
         "mip_feasibility_tolerance"=>1e-9,"primal_feasibility_tolerance"=>1e-9)

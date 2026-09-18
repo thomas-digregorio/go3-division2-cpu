@@ -1,8 +1,10 @@
 from pathlib import Path
 import tempfile
 import unittest
+import math
 
-from go3cpu.campaign import NETWORK_ORDER, sixth_best_target, quality_gate, registered_budget
+from go3cpu.campaign import (NETWORK_ORDER, sixth_best_target, quality_gate,
+                            registered_budget, experiment_exit_code)
 from go3cpu.controller import atomic_json, registered_latch, claim_pilot
 from scripts.audit_sources import archive_source
 
@@ -72,6 +74,20 @@ class CampaignTests(unittest.TestCase):
         self.assertFalse(gate(certificate,completed=False))
         self.assertFalse(gate(certificate,deadline=False))
         self.assertFalse(gate(None))
+        # Exactly 90% is accepted; dividing to form a shortfall can round above 0.1.
+        boundary=dict(certificate,objective=target["minimum_score"])
+        self.assertTrue(gate(boundary))
+        self.assertFalse(gate(dict(boundary,objective=math.nextafter(target["minimum_score"],0.0))))
+
+    def test_campaign_process_success_requires_quality_not_only_feasibility(self):
+        result={"verified_incumbent":{"pass":True},"pipeline_completed":True,
+                "quality_target":{},"quality_gate":{"pass":False}}
+        self.assertEqual(experiment_exit_code(result,total_seconds=100,budget_seconds=7200),2)
+        result["quality_gate"]["pass"]=True
+        self.assertEqual(experiment_exit_code(result,total_seconds=100,budget_seconds=7200),0)
+        self.assertEqual(experiment_exit_code(result,total_seconds=7200,budget_seconds=7200),2)
+        result["pipeline_completed"]=False
+        self.assertEqual(experiment_exit_code(result,total_seconds=100,budget_seconds=7200),2)
 
     def test_campaign_identity_cold_policy_and_unique_attempt_latch(self):
         with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as d:

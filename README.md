@@ -13,7 +13,10 @@ is `C3E4N02000D2` scenario `005`. Its first attempt stopped at the scheduling
 stage without an incumbent after 978.300 seconds, not proven infeasibility.
 The [attempt report and registered reserve-decomposition correction](docs/C3E4N02000_CAMPAIGN.md)
 retain the failed evidence and describe the next cold attempt. No passing result
-is yet claimed for this network.
+is yet claimed for this network. The second attempt completed in 1368.964 seconds
+and passed physical/hard verification, but severe reserve penalties produced a
+zero competition score. The next registered correction restores joint reserve
+scheduling and tests the CPU HiPO root relaxation; see the same attempt report.
 Historical pilot-only restrictions below describe the completed 617-bus pilots;
 their latches and evidence are preserved, not reused for the new campaign.
 

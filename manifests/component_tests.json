@@ -9,60 +9,72 @@
     "pydantic": "1.10.24",
     "psutil": "7.0.0"
   },
-  "python_test_count": 47,
-  "julia_test_count": 45,
+  "python_test_count": 48,
+  "julia_test_count": 52,
   "stages": [
     {
       "name": "official_fixture",
       "returncode": 0,
-      "seconds": 0.7933681000140496,
+      "seconds": 0.7913373000046704,
       "log_sha256": "6514e813237fd20fd0e55b3365ae554da44e39894630f3d4979581a276ee0a38"
     },
     {
       "name": "python_tests",
       "returncode": 0,
-      "seconds": 1.4877442000142764,
-      "log_sha256": "040758ae6dcb87bfbbb7eab3ffb861469c68a172035dcf832850946809df8528"
+      "seconds": 1.4827222999883816,
+      "log_sha256": "6b1372a47a358accf230ec323805d8f69e9edab9229dabb5065e10d981d1c173"
     },
     {
       "name": "julia_tests",
       "returncode": 0,
-      "seconds": 31.29995400001644,
-      "log_sha256": "353d92b839c5838780bbbe343857b7dc972712c55f2f79c298f49677443a2893"
+      "seconds": 32.47316150000552,
+      "log_sha256": "aafc990aab1183d48bbfb99c8fc4db7e90624520ac140dba8020d2fea0878680"
     },
     {
       "name": "tiny_worker",
       "returncode": 0,
-      "seconds": 34.4218661999912,
-      "log_sha256": "89a88011ef639a6ed2267f314e40a8a8004ba26b6e78973f86263435f4e3571b"
+      "seconds": 34.44823780001025,
+      "log_sha256": "e917ef9d05b3486ebddf246da6a26eabc9a896700f4cd9084609b1b7a5e05fc8"
     },
     {
       "name": "tiny_final_check",
       "returncode": 0,
-      "seconds": 0.8221813999989536,
-      "log_sha256": "2d9df44dfa25d587204959d7a0238118a4f2effe9f8ed18e6b314a8724319be4"
+      "seconds": 0.8673092999961227,
+      "log_sha256": "4882569b979a90a6d08df9a6efad2940d27df4c8b458b30bd121161e6490ec3e"
     },
     {
       "name": "tiny_separated_worker",
       "returncode": 0,
-      "seconds": 31.17025389999617,
-      "log_sha256": "50de8fa5252bc27f3ef4f448d6b71608ec6dc89a98e1cda8b84c246818ed0cf7"
+      "seconds": 31.58248410001397,
+      "log_sha256": "f1ac449dd88d24e9a621df73dee8bc1163e40a9c868453932a5586820b4f0cb4"
     },
     {
       "name": "tiny_separated_check",
       "returncode": 0,
-      "seconds": 0.8293045000173151,
-      "log_sha256": "7c30e0ecdfb288aada061957d0d089b4fa92130ff542af7d771f1b4eeb4a98e3"
+      "seconds": 0.8177230999863241,
+      "log_sha256": "b08c6a0e793fce751943f89b5b51162b9c118f9ed5b89cfe7a8c2b52740598a3"
+    },
+    {
+      "name": "tiny_hipo_worker",
+      "returncode": 0,
+      "seconds": 34.41248510000878,
+      "log_sha256": "76fdceea35a186d6b7a0123db190402f707d4c8b3c9c8257ff3799be408b1ba8"
+    },
+    {
+      "name": "tiny_hipo_check",
+      "returncode": 0,
+      "seconds": 0.8276072000153363,
+      "log_sha256": "d4485b90fa7d0cc0655800645c9ca55a78fbc8ab67c920ecda46a87270906328"
     }
   ],
-  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_ty6hatjb",
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_zs7jjnjk",
   "tiny_integration_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
     "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
-    "independent_seconds": 0.006635099998675287,
-    "official_seconds": 0.5337900999875274,
+    "independent_seconds": 0.01675570002407767,
+    "official_seconds": 0.5619596999895293,
     "objective": 1732.0994148700997,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -90,16 +102,16 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_ty6hatjb\\verification",
-    "total_verification_seconds": 0.5404318000073545
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_zs7jjnjk\\verification",
+    "total_verification_seconds": 0.5787254000024404
   },
   "tiny_separated_reserves_certificate": {
     "pass": true,
     "complete": true,
     "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
     "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
-    "independent_seconds": 0.01587369997287169,
-    "official_seconds": 0.5356512000143994,
+    "independent_seconds": 0.0070334000047296286,
+    "official_seconds": 0.5359941000060644,
     "objective": 1732.0994148700997,
     "official_feas": 1,
     "official_phys_feas": 1,
@@ -127,25 +139,64 @@
       "contingency_worst": 0.0,
       "contingency_average": 0.0
     },
-    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_ty6hatjb\\separated_verification",
-    "total_verification_seconds": 0.5515320999838877
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_zs7jjnjk\\separated_verification",
+    "total_verification_seconds": 0.5430345000058878
+  },
+  "tiny_hipo_certificate": {
+    "pass": true,
+    "complete": true,
+    "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
+    "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
+    "independent_seconds": 0.016422800021246076,
+    "official_seconds": 0.5391709000105038,
+    "objective": 1732.0994148700997,
+    "official_feas": 1,
+    "official_phys_feas": 1,
+    "independent_hard_pass": true,
+    "max_hard_residual": 0.0,
+    "objective_discrepancy": 1.2505552149377763e-11,
+    "objective_agreement": true,
+    "contingencies_completed": 9,
+    "contingencies_required": 9,
+    "max_p_imbalance_pu": 1.800781745942004e-13,
+    "max_q_imbalance_pu": 2.2020607320496416e-14,
+    "max_contingency_overload_pu": 0.0,
+    "costs_total": {
+      "production": 17.548480281330683,
+      "demand_benefit": 1750.0,
+      "on": 0.35000000000000003,
+      "startup": 0.0,
+      "shutdown": 0.0,
+      "reserve_awards": 0.0021048480281330682,
+      "switching": 0.0,
+      "real_imbalance": 4.993505609007798e-10,
+      "reactive_imbalance": 2.918980439673792e-11,
+      "base_overload": 0.0,
+      "reserve_shortfall": 0.0,
+      "contingency_worst": 0.0,
+      "contingency_average": 0.0
+    },
+    "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_zs7jjnjk\\hipo_verification",
+    "total_verification_seconds": 0.5556015000038315
   },
   "source_sha256": {
     "config/campaign_n02000_s005_r01.json": "d25c9ceaac8cfb274825941cdab60542fa9c3e62c3c875c2d47aca67a700e897",
     "config/campaign_n02000_s005_r02.json": "06c22e955a31ef401b9faea0b61c9259f8a6ce6efb78aebf6409496e30595490",
+    "config/campaign_n02000_s005_r03.json": "c42a5c00cfa6ac3ec5698ffbdbab6490c52001f9612051113fff3b7e6dc43b93",
     "config/pilot.json": "131fe843dfda8fa86737e388500b6ff9e81fc0b3da5082d38c6cbbe8699cbf86",
     "config/pilot_002.json": "15bfac31b4b4dda0efed3be2b8addb13a85e320665efa03417dc8158ef55eb0f",
+    "config/tiny_hipo.json": "fab9ccba823c6a78c6b5fe7832f592671dedfbe426326d9b11efd515c0589406",
     "config/tiny_separated_reserves.json": "bdab7f74a5be2fd7a529a77e4fecc79757c915eb27da07c51bd21d870f01631f",
     "config/tiny_test.json": "1fdde86815c02a085a868374f9d9c89c1a71fc477d078b7c28e93259042b367a",
     "go3cpu/__init__.py": "24960f6da5f3db9c3a5b144d85b1f2ece6605552ba2d6ddc899a64e976b8dc71",
-    "go3cpu/campaign.py": "d46ec5c5b4079954d389908e6edc0a854efa04c56cdf308f158e4109eea31540",
+    "go3cpu/campaign.py": "2e08b60c70f0b96e8c3c4206c2e5e60a225f602000ad05b18f965a1769a9288b",
     "go3cpu/contract.py": "7e862d8f5ad72a484fbeb3c25755475aef2695154e966b1300601eec7e0299b8",
     "go3cpu/controller.py": "6a9b2ab45a5e79789dd221713befb411436a12d9a3a9c9701c09ff395c201138",
     "go3cpu/independent.py": "45bad52f2a58b2d758ed8a702f4f57871b243595a9d0f0dcd995bc2b429573b2",
     "go3cpu/official.py": "e32d4affe04aaa85db97a6dd2d540a43391ca3b53244cdec05139171b6b8f719",
     "go3cpu/safety.py": "52d7a0fa146fcedfb61e6b3ddcd087bb59812d2e5bce487c933a56d25eca45ee",
     "Manifest.toml": "5afc92f37c3e084af91394f264acbb2c002134142e615e826d82ff63d324e09f",
-    "manifests/authorization_campaign.json": "622f904c3693db2b84dcf206985b5b1f48cc30d2e2e620647741ab7f05371fca",
+    "manifests/authorization_campaign.json": "55901edffaa2bbca68911045330c3b442647623830a4ec9a9183afd7cd53932d",
     "manifests/authorization_pilot_002.json": "fa99be6acba2cf44f4da13e506ae4d8618621cd162e610e97a49fe3bb65756b2",
     "manifests/campaign/case_C3E4N02000D2_s005.json": "8bdfd453ed5ce1f03b49dc576d65b9cca658f88054d38727dc04a3b3179f1f1d",
     "manifests/campaign/published_C3E4N02000D2_s005.json": "26d1e8ff6d479e2ee0b8d9a1f7ac37c985f93cf2f9749509d02318fb23c0d435",
@@ -153,17 +204,17 @@
     "scripts/archive_campaign_attempt.py": "e2d77c50cc28cbb45ca8af477e1102fe8a7b46916d6b9a2a4d83c03c466fb246",
     "scripts/archive_pilot_002.py": "e67159e4a9b9c259e273759a3f0fcaa61dce168d789738059d54c7b369177308",
     "scripts/audit_sources.py": "d7e6d911a77686f1401fc035293cf0c9ae42e046c5a9268458db2fe9cc7f9d06",
-    "scripts/component_gate.py": "22a4ecade0909f69570efc206bbbf0496a50339e7e433aee1ece187a1e44ce81",
+    "scripts/component_gate.py": "3e1398a42a30d91b75ad25d9ba96473fe443f715c6294bbdb549898715687937",
     "scripts/register_campaign_case.py": "79a9433eb84267def70b1762532e6d5264a389c6a1140a1f517dcb90d5dad132",
     "scripts/register_sources.py": "8e28b44c380f91253435b005bde9af869c64d0ef831b75379c470d87bec1209d",
-    "scripts/run_pilot.py": "c306f102d5a2a5e6f803a7a9c1b72e73e8e5319ccd0a883a2d2182468d1f6319",
+    "scripts/run_pilot.py": "d8acf5cc06d1dff35a79f78c1dff1a54726c11b759702f8d39e37e4c104df2d6",
     "scripts/test_official_adapter.py": "144c7d2cb0b83f792de52a00ad4e8f7543fb00ca1c0b1e0d39fc1c08c2d41785",
-    "scripts/test_solver.jl": "ee783d56dbc9315c1a8f57a5e4f854d7e764dc42def087c293bc3a6e797e27fd",
+    "scripts/test_solver.jl": "6ff3f87fba10650b992dc71b8eccd47863fddf6afb6f776856a5222ae4fbfe31",
     "scripts/verify_candidate.py": "faaa2370656c0eaf795653176568bb0cb62e9cb56661f5eaf73c30e0bc3fdb96",
-    "src/pilot_worker.jl": "6faa77e32b46e62036aa7b0ee4d81268d4ecb8b67779972a3bc9f9491596e44c",
+    "src/pilot_worker.jl": "b500379f824e1fafd0a9ae7d64299fcada0d852d3c58486d45069fc1eccc0f31",
     "src/scheduling.jl": "b54e5e87cebf618fb69df0743956a505d572a21581eb1306340b4e0a9849dc0e",
     "tests/fixtures.py": "617ec0a8840c06da399b9af82c584c790abf269218f4447fb0bacefb6fba6e7e",
-    "tests/test_campaign.py": "5e2ab9d1603035db649705c82a5633d98dedba2e7ca1810be2fa33be46ae5d61",
+    "tests/test_campaign.py": "b9157fe1e7dacd33f59116a05d3f84632bd295e90e6d957fdb80568322a92513",
     "tests/test_campaign_archive.py": "f3bfd6dca368f90d093eca23965616b67f4fbe240aaef064da02413ee3e171a0",
     "tests/test_contract_physics.py": "9f77c230bdd1ddfce262b4036710689d54d33da19a41c4733433633c47c04e4c",
     "tests/test_controller.py": "e128726e4e666508e3290b7ea0fd82ffe0ea4ad08b919f172edef640121d7862",

@@ -48,3 +48,71 @@ scheduling model after extracting the within-run schedule and statistics, before
 AC/evaluation work, to avoid retaining its large memory allocation unnecessarily.
 Test both historical and separated reserve paths on original tiny fixtures before
 freezing and launching the new attempt. A new permanent latch prevents repetition.
+
+## Attempt r02 result: physically feasible, score target failed
+
+Frozen implementation `496d6a0` completed in **1368.964 seconds** (22 m 49 s).
+The candidate-generation reduction accelerated scheduling, but removing reserves
+from commitment selection was economically unsuccessful for this source case.
+
+| Measured item | r02 result |
+|---|---:|
+| Scheduling HiGHS API solve time | 124.164 s |
+| Scheduling wall time, including model construction/JIT | 164.215 s |
+| Scheduling relative gap (subproblem only) | 5.051e-8 |
+| AC refinement, all 48 intervals | 1030.517 s |
+| Initial candidate verification process wall time | 63.724 s |
+| Final verification process wall time | 62.401 s |
+| End-to-end, through result serialization | 1368.964 s |
+| Sampled peak process-tree RSS | 7.718 GiB |
+| Independent and official objective | -7,968,428,047.719683 |
+| Competition scoring rule, max(objective, 0) | 0 |
+| Official hard / physical feasibility | 1 / 1 |
+| Final exhaustive outage-interval checks | 132,288 / 132,288 |
+| Maximum hard residual | 5.907e-12 |
+| Maximum P / Q imbalance, pu | 1.952e-10 / 1.766e-9 |
+| Reserve shortfall penalty | 8,724,568,748.696962 |
+| Base thermal penalty | 481,271.780779 |
+| Worst plus average contingency thermal penalty | 1,342,987.007553 |
+
+The frozen official sixth-place target was **not met**: the relative score
+shortfall is 100%, not <=10%. `VERIFIED_HARD_FEASIBLE` is a factual constraint
+status, not a claim of campaign success or zero overloads. All 48 Ipopt interval
+solves reported `LOCALLY_SOLVED`; none is a global optimality certificate.
+Independent/official objective disagreement was 0.000200272 (well inside the
+registered relative agreement tolerance at this objective magnitude).
+
+The initial check's dominant reserve penalties were synchronous-reserve shortages.
+The source REG_UP coefficients in zones prz_0 and prz_2 are 0.6507880128 and
+0.8350812864; SYN multipliers on the largest producer are 8.496399056 and
+10.90245013. These are preserved source parameters, not adjusted or normalized.
+The energy-only schedule committed all 544 producers at interval 1, but only 347
+at interval 13, 360 at interval 25, and 346 at interval 48. Subsequent reserve
+allocation cannot change those commitments. AC refinement repaired physical
+balance but did not resolve the resulting economic reserve shortage.
+
+Complete first/best verified solutions and compact evidence are retained in
+`evidence/campaign/campaign_n02000_s005_r02/` and its hashed original run. No data
+was pruned; the next network is not authorized to advance by the quality gate.
+
+## Registered correction: r03, joint reserves with a CPU HiPO root relaxation
+
+Restore the full joint commitment-and-reserve scheduling formulation used by r01,
+including all source reserve requirements and costs. Change its root LP method
+through HiGHS `mip_lp_solver=hipo`. HiPO is the open-source CPU interior-point
+backend; this is still the HiGHS branch-and-cut MILP solver, not an interior-point
+algorithm for integer variables. LPs with a useful basis can still use simplex.
+See the [primary HiGHS solver documentation](https://ergo-code.github.io/HiGHS/dev/solvers/).
+
+Keep presolve enabled, four HiGHS threads, the original 1e-3 scheduling gap,
+source data, cold-start policy, AC pipeline, evaluator and acceptance tolerances.
+No prior schedule, solution or basis is imported. Allow up to 3,600 seconds for
+scheduling under the same 7,200-second overall limit; measured r02 AC/final checks
+required about 20 minutes, leaving a practical reserve for those later stages.
+This is a registered hypothesis about root-LP performance, not a promised speedup.
+Tiny forced-HiPO LP and MIP probes must pass before a full attempt is permitted.
+
+Campaign process exit status now also requires the quality gate, so a physically
+feasible zero-score result cannot be mistaken for target success by automation.
+The quality boundary is compared as `score >= 0.9*S6`, avoiding a roundoff-only
+rejection of the exact threshold; the threshold itself is not relaxed.
