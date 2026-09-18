@@ -91,3 +91,81 @@ and physical feasibility. All six normal worker variants had exact 3/3 AC
 interval coverage. Evidence: `tmp/pilot002_component_gate_cm9yu1_y` and the
 hash-indexed `manifests/component_tests.json`. No competition-case solve was used
 as a test or warmup.
+
+## Completed r01: scheduling timed out without an integer incumbent
+
+Frozen revision `f4fae8e021dd9e9728db7eb1ed2cc5a716b2bc4a` ran once cold.
+The attempt ended normally under controller supervision after **4,526.428029 s**
+(75 min 26.428 s), inside the two-hour end-to-end limit. The worker returned an
+error because scheduling supplied no feasible integer point. AC refinement and
+verification were not started. This is **not a proof of case infeasibility**.
+
+| Measured item | r01 result |
+| --- | ---: |
+| Run status | NO_VERIFIED_INCUMBENT |
+| Scheduling termination / primal status | TIME_LIMIT / NO_SOLUTION |
+| Full objective / certified gap | unavailable / unavailable |
+| Scheduling upper bound, subproblem only | 799,405,661.053180 |
+| HiGHS API solve time | 4,130.641710 s |
+| Native MIP report time | 4,099.02 s |
+| Requested native scheduling time limit | 3,600 s |
+| Reported scheduling model build | 110.757 s |
+| Original variables / non-bound constraints | 6,774,624 / 6,473,756 |
+| Presolved columns / rows | 2,870,631 / 1,351,501 |
+| Presolved binary / continuous columns | 62,005 / 2,808,626 |
+| LP iterations / processed nodes | 307,097 / 0 |
+| AC intervals / exhaustive checks completed | 0 / 0 |
+| Peak sampled process-tree RSS | 21.954704 GiB |
+| End to end, including result serialization | 4,526.428029 s |
+| Quality target | FAIL: no candidate, no verification |
+
+The solver's native report prints `Gap 0%` alongside an infinite primal bound and
+no solution. It is **not** a gap certificate. The project wrapper already guards
+against this: objective, relative gap and native relative gap are null in the
+saved scheduling record. No complete or feasible result is inferred from the
+native gap line. The reported bound applies only to candidate scheduling, not to
+the complete AC/security-constrained GO3 problem.
+
+### Measured delay and timing limits
+
+The native MIP progress trace was:
+
+| Native elapsed (s) | Scheduling bound | Incumbent | LP iterations | Cut pool / LP cuts |
+| --- | ---: | --- | ---: | ---: |
+| 332.2 | 799,446,995.0375 | none | 297,244 | 0 / 0 |
+| 1,771.2 | 799,411,665.1988 | none | 301,718 | 3,811 / 510 |
+| 3,049.8 | 799,405,661.0532 | none | 307,097 | 6,464 / 739 |
+| 4,099.0 | 799,405,661.0532 | none | 307,097 | 8,376 / 839 |
+
+The intervals between these records were 1,439.0, 1,278.6 and 1,049.2 seconds.
+The final interval increased cuts without completing additional LP iterations.
+The native end profile attributes 217.10 s to one basis-free dual-simplex call
+and 118.93 s to ten basis-based calls: about 8.2% of the native MIP time. An
+analytic-centre IPX call on another thread took 277.15 s; concurrent timings must
+not simply be summed as sequential wall time. Most delay was therefore in
+non-LP root work, with the trace pointing to cut generation and associated root
+processing. Finer internal timers are needed to separate those components.
+There was no explored branch-and-bound tree.
+
+The requested native limit was exceeded by about 499 s in the native MIP report
+(531 s in the API runtime). Native limits are checkpoint-based, not a substitute
+for the controller's external deadline. The global hard limit was not reached or
+relaxed. Stage build/import/cleanup overhead also counts in the end-to-end time.
+The worker did not persist its accumulated stage-timing dictionary before the
+no-schedule exception, so no exact overall scheduling-stage wall subtotal is
+invented from that missing artifact. Build, API, native and end-to-end values
+above are separately measured.
+
+The audited source for this installed HiGHS revision shows display lines around
+root-separation calls and a `highs_analysis_level` MIP-timing flag of 128:
+[root processing](https://github.com/ERGO-Code/HiGHS/blob/04024d701f/highs/mip/HighsMipSolverData.cpp),
+[analysis flags](https://github.com/ERGO-Code/HiGHS/blob/04024d701f/highs/lp_data/HConst.h).
+This source audit did not change the running solver or launch a diagnostic solve.
+
+Complete failure evidence was hash-audited and retained at
+`evidence/campaign/campaign_n06717_s002_r01/`; the full run occupies 305,843 bytes.
+No data was deleted. Result SHA256:
+`51d5dc952fc828d65fb732aadd961e0a2b1fa5d685bcca13fbf4b42937c6a820`.
+Completion SHA256:
+`89fd9f5b62bd4bd767d5ad45533292c46b3bba4774cdbfa447e1586dab930373`.
+The 6,717-bus network is not marked complete, and the next network is not started.

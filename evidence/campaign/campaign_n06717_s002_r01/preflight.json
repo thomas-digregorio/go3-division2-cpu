@@ -1,0 +1,263 @@
+{
+  "commit": "f4fae8e021dd9e9728db7eb1ed2cc5a716b2bc4a",
+  "branch": "codex/go3-cold-scaling",
+  "config_sha256": "8bc1e28120e33cbb49af957b92dc4827d3d30cc235134f78161ba80c454a3c55",
+  "pilot_id": "campaign_n06717_s002_r01",
+  "authorization_latch": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\campaign_n06717_s002_r01_latch.json",
+  "julia_manifest_sha256": "5afc92f37c3e084af91394f264acbb2c002134142e615e826d82ff63d324e09f",
+  "source_manifest_sha256": "c3e0f10ef33c25e0ab91b1dd991274cdd9968e82d041aad44720204fd4b4b6b9",
+  "component_tests_sha256": "30ffbee6621928854285b91fe6ac1c04ee0efc52f0881d26f0cc26d4e21de60e",
+  "config": {
+    "schema_version": 3,
+    "pilot_id": "campaign_n06717_s002_r01",
+    "network": "C3E4N06717D2",
+    "scenario": "002",
+    "input_path": "data/raw/C3E4N06717D2_s002/scenario.json",
+    "input_sha256": "bccfff47a3f6de9d28117d8c76aabf47716afb92a16982067764dcc6f34f769e",
+    "case_manifest_path": "manifests/campaign/case_C3E4N06717D2_s002.json",
+    "comparison_manifest_path": "manifests/campaign/published_C3E4N06717D2_s002.json",
+    "official_allow_switching": true,
+    "total_seconds": 7200,
+    "evaluation_reserve_seconds": 600,
+    "initial_verification_seconds": 240,
+    "finalization_reserve_seconds": 30,
+    "minimum_free_gib": 30,
+    "maximum_full_runs": 1,
+    "cold_start": true,
+    "allow_pop_solution": false,
+    "highs_threads": 4,
+    "julia_threads": 1,
+    "blas_threads": 1,
+    "scheduling_relative_gap": 0.001,
+    "scheduling_seconds": 3600,
+    "scheduling_balance_penalties": "source_pq_duration_weighted",
+    "scheduling_include_reserves": true,
+    "scheduling_mip_lp_solver": "simplex",
+    "scheduling_consumer_dominance": "guarded_online_v1",
+    "scheduling_log_dev_level": 1,
+    "ac_reserve_policy": "source_joint_reserves_in_ac_v1",
+    "ac_shunt_primal_start": "within_interval_primal_dual_v1",
+    "ac_fail_fast_on_infeasible": true,
+    "ac_seconds_per_solve": 90,
+    "ac_rounded_seconds_per_solve": 240,
+    "ac_rounded_max_iterations": 1000,
+    "ac_print_level": 5,
+    "reserve_seconds_per_interval": 2,
+    "reserve_finish_seconds": 90,
+    "checkpoint_every_intervals": 4,
+    "candidate_topology": "fixed_source_heuristic",
+    "candidate_transformer_controls": "fixed_source_heuristic",
+    "handshake": true,
+    "pilot_ready": true,
+    "ac_interval_primal_start": "previous_screened_interval_v1",
+    "ac_numerical_recovery": "adaptive_barrier_on_failed_residual_v1",
+    "ac_recovery_seconds_per_solve": 360,
+    "ac_recovery_max_iterations": 1000,
+    "ac_primal_guard": "verified_stable_rounded_primal_v1"
+  },
+  "case": {
+    "schema_version": 1,
+    "network": "C3E4N06717D2",
+    "scenario": "002",
+    "input_sha256": "bccfff47a3f6de9d28117d8c76aabf47716afb92a16982067764dcc6f34f769e",
+    "input_bytes": 104661506,
+    "archive_url": "https://data.openei.org/files/5997/C3E4N06717_20231002.zip",
+    "archive_entry": "D2/C3E4N06717D2/scenario_002.json",
+    "selection_rule": "Smallest numeric public D2 scenario, selected before solve-quality inspection.",
+    "initialization": "Cold from raw source conditions only; no supplied POP or saved solution.",
+    "official_allow_switching": true,
+    "unsupported_required_features_present": [],
+    "base_mva": 100.0,
+    "interval_hours": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "horizon_hours": 48.0,
+    "interval_count": 48,
+    "counts": {
+      "ac_line": 7173,
+      "active_zonal_reserve": 9,
+      "bus": 6717,
+      "dc_line": 0,
+      "reactive_zonal_reserve": 12,
+      "shunt": 634,
+      "simple_dispatchable_device": 5826,
+      "two_winding_transformer": 1967
+    },
+    "producers": 731,
+    "consumers": 5095,
+    "contingencies_per_interval": 2670,
+    "required_contingency_evaluations": 128160
+  },
+  "quality_target": {
+    "network": "C3E4N06717D2",
+    "scenario": "002",
+    "division": 2,
+    "official_allow_switching": true,
+    "metric": "sixth_best_eligible_score",
+    "relative_shortfall_limit": 0.1,
+    "sixth_best_score": 755375223.938404,
+    "minimum_score": 679837701.5445635,
+    "top_six": [
+      {
+        "team": "YongOptimization",
+        "score": 798048810.83831,
+        "objective": 798048810.83831,
+        "runtime_seconds": 1781.0,
+        "source_row": 9897,
+        "uuid": "535-1693855412_c3E4"
+      },
+      {
+        "team": "GravityX",
+        "score": 798014001.114725,
+        "objective": 798014001.114725,
+        "runtime_seconds": 7215.0,
+        "source_row": 3876,
+        "uuid": "51-1693897156_c3E4"
+      },
+      {
+        "team": "GOT-BSI-OPF",
+        "score": 796752986.348886,
+        "objective": 796752986.348886,
+        "runtime_seconds": 1044.0,
+        "source_row": 3207,
+        "uuid": "504-1693849098_c3E4"
+      },
+      {
+        "team": "quasiGrad",
+        "score": 791263521.853814,
+        "objective": 791263521.853814,
+        "runtime_seconds": 6850.0,
+        "source_row": 7221,
+        "uuid": "1062-1693667274_c3E4"
+      },
+      {
+        "team": "TIM-GO",
+        "score": 789365501.736817,
+        "objective": 789365501.736817,
+        "runtime_seconds": 4116.0,
+        "source_row": 9228,
+        "uuid": "1054-1693622042_c3E4"
+      },
+      {
+        "team": "Occams razor",
+        "score": 755375223.938404,
+        "objective": 755375223.938404,
+        "runtime_seconds": 4416.0,
+        "source_row": 5214,
+        "uuid": "507-1693885200_c3E4"
+      }
+    ],
+    "eligible_competitors": 9,
+    "rejected": [
+      {
+        "source_row": 531,
+        "reason": "unmatched, inactive, infeasible or benchmark"
+      },
+      {
+        "source_row": 2538,
+        "reason": "unmatched, inactive, infeasible or benchmark"
+      },
+      {
+        "source_row": 5883,
+        "reason": "missing comparison fields"
+      },
+      {
+        "source_row": 6552,
+        "reason": "missing comparison fields"
+      },
+      {
+        "source_row": 7890,
+        "reason": "missing comparison fields"
+      },
+      {
+        "source_row": 8559,
+        "reason": "missing comparison fields"
+      }
+    ],
+    "note": "Comparison with published scores, not a global-optimality certificate."
+  },
+  "hardware": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "runtime": {
+      "python_executable": "C:\\Users\\thoma\\Documents\\goc2-ac-score-check\\evaluator-venv\\Scripts\\python.exe",
+      "python_version": "3.12.14",
+      "numpy": "1.26.4",
+      "scipy": "1.13.1",
+      "pydantic": "1.10.24",
+      "psutil": "7.0.0"
+    },
+    "physical_cpu_count": 24,
+    "logical_cpu_count": 24,
+    "ram_bytes": 33752997888,
+    "windows_inventory": {
+      "cpu": {
+        "Name": "Intel(R) Core(TM) Ultra 9 275HX",
+        "NumberOfCores": 24,
+        "NumberOfLogicalProcessors": 24
+      },
+      "computer": {
+        "Manufacturer": "LENOVO",
+        "Model": "83F5",
+        "TotalPhysicalMemory": 33752997888
+      }
+    }
+  },
+  "storage": {
+    "physical_path": "C:\\",
+    "free_bytes": 209553715200,
+    "floor_bytes": 32212254720,
+    "pending_bytes": 1073741824,
+    "target": "C:\\Users\\thoma\\Documents\\go3-division2-cpu"
+  },
+  "setup_exclusions": "Dependency installation, package precompilation, source registration, checkout and download only. Runtime process import/JIT, raw loading, preprocessing and case factors included.",
+  "initialization": "Cold; source conditions only, no POP or saved optimized solutions",
+  "benchmark_kind": "One local cold attempt, 7200-second end-to-end limit; not an official competition submission"
+}
