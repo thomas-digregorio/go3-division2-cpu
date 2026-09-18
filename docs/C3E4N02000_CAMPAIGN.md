@@ -116,3 +116,19 @@ Campaign process exit status now also requires the quality gate, so a physically
 feasible zero-score result cannot be mistaken for target success by automation.
 The quality boundary is compared as `score >= 0.9*S6`, avoiding a roundoff-only
 rejection of the exact threshold; the threshold itself is not relaxed.
+
+### Root-solver observability limitation
+
+A read-only audit of the installed HiGHS source revision `04024d701f` shows that
+the internal LP relaxation suppresses iteration output. With no valid basis,
+`mip_lp_solver=hipo` selects HiPO, but an IPM error can trigger an internal simplex
+fallback. The fallback message uses development logging, disabled by default.
+Therefore r03 is a **HiPO-requested strategy**, not evidence that every second of
+its root solve was spent in HiPO. A quiet native log does not prove a stalled
+process, nor does the MIP's exposed barrier counter establish internal attribution.
+See [the matching source implementation](https://github.com/ERGO-Code/HiGHS/blob/04024d701f/highs/mip/HighsLpRelaxation.cpp#L1048).
+
+Future registered attempts should enable the supported `log_dev_level=1` option
+to expose fallback diagnostics; this alone does not enable the internally disabled
+IPM iteration log. No active r03 code, solver option, input or tolerance was changed
+as part of this audit, and no additional full-case diagnostic solve was launched.
