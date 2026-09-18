@@ -46,6 +46,8 @@ def main():
         "scripts/test_source_features.jl"])
     stage("ac_primal_start_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_primal_start.jl"])
+    stage("ac_interval_start_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_ac_interval_start.jl"])
     stage("tiny_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/problem.json",str(evidence/"worker"),"config/tiny_test.json",str(time.time()+120)],timeout=125)
     stage("tiny_final_check",[sys.executable,"scripts/verify_candidate.py","--input","tmp/official_tiny/problem.json",
@@ -101,6 +103,15 @@ def main():
     source_ac_stats=json.loads((evidence/"source_features_worker/solver_statistics.json").read_text())["ac_intervals"]
     for interval in source_ac_stats:
         reserve=interval["reserve_ac"]
+        continuation=reserve["interval_primal_start"]
+        if interval["interval"]==1:
+            if continuation["policy"]!="cold_defaults":
+                raise RuntimeError("First tiny AC interval was not cold")
+        elif (continuation["policy"]!="previous_screened_interval_v1" or
+            continuation["source_interval"]!=interval["interval"]-1 or
+            not continuation["complete_current_primal_vector"] or
+            continuation["reused_named_values"]<=0):
+            raise RuntimeError("Tiny pipeline did not exercise within-run interval continuation")
         start=reserve["shunt_primal_start"]
         phases=reserve["phases"]
         if (not start["complete"] or start["variable_count"]<=0 or
@@ -130,7 +141,7 @@ def main():
     python_count=int(re.search(r"Ran (\d+) tests",(evidence/"python_tests.log").read_text()).group(1))
     julia_logs="\n".join((evidence/(name+".log")).read_text()
         for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests",
-                     "ac_primal_start_tests"))
+                     "ac_primal_start_tests","ac_interval_start_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")

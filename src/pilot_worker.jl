@@ -7,6 +7,7 @@ include(joinpath(@__DIR__,"consumer_dominance.jl"))
 include(joinpath(@__DIR__,"startup_windows.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"ac_primal_start.jl"))
+include(joinpath(@__DIR__,"ac_interval_start.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
 
 function atomic_json(path, object)
@@ -131,6 +132,10 @@ function run_worker(case_path, output, config, work_deadline)
     (ac_shunt_primal_start=="off" && !ac_fail_fast) ||
         ac_reserve_policy=="source_joint_reserves_in_ac_v1" ||
         error("Explicit AC starts/audits require the reserve-aware adapter")
+    ac_interval_start=get(config,"ac_interval_primal_start","off")
+    ac_interval_start in ("off","previous_screened_interval_v1") || error("Unknown AC interval start policy")
+    ac_interval_start=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
+        error("AC interval continuation requires the reserve-aware adapter and local residual checks")
 
     progress("scheduling")
     stage = time()
@@ -185,6 +190,7 @@ function run_worker(case_path, output, config, work_deadline)
     power_curves = ac_reserve_policy=="off" ? nothing : fixed_schedule_power_curves(input,schedule)
     results = opf_view(initial,input.periods)
     ac_stats = Any[]
+    interval_seed=nothing
     for i in input.periods
         if work_deadline-time() < config["reserve_finish_seconds"] + 3
             progress("ac_budget_exhausted";extra=Dict("intervals_finished"=>i-1))
@@ -213,7 +219,7 @@ function run_worker(case_path, output, config, work_deadline)
                 audit_phases=ac_fail_fast || ac_shunt_primal_start!="off",
                 rounded_seconds=get(config,"ac_rounded_seconds_per_solve",nothing),
                 rounded_max_iter=get(config,"ac_rounded_max_iterations",500),
-                work_deadline=work_deadline)
+                work_deadline=work_deadline,interval_seed=interval_seed)
         else
             ac_model, result = GO3.compute_optimal_power_flow_at_interval(working,i;
                 on_status=current_on,real_power=current_p,optimizer=ipopt,
@@ -226,12 +232,16 @@ function run_worker(case_path, output, config, work_deadline)
         stats["interval"] = i
         stats["wall_seconds"] = time()-ac_start
         stats["reserve_policy"] = ac_reserve_policy
+        stats["interval_start_policy"] = ac_interval_start
         if haskey(ac_model.ext,:reserve_ac)
             stats["reserve_ac"] = ac_model.ext[:reserve_ac]
         end
         stats["warm_start"] = ac_shunt_primal_start=="off" ?
             "flat voltage and source shunt starts; within-run UC/deviation targets; no supplied primal, dual or basis start" :
             "cold first AC solve; same-interval start policy $(ac_shunt_primal_start); exact primal/dual acceptance in reserve_ac log; no external, prior-interval or basis start"
+        if ac_interval_start!="off"
+            stats["warm_start"]="first interval cold; subsequent first phases use previous locally screened interval from this attempt; rounded phase uses $(ac_shunt_primal_start); no external solution or basis"
+        end
         push!(ac_stats,stats)
         statistics["ac_intervals"] = ac_stats
         atomic_json(joinpath(output,"statistics","ac_"*lpad(string(i),4,'0')*".json"),stats)
@@ -244,6 +254,9 @@ function run_worker(case_path, output, config, work_deadline)
         end
         if must_stop || i % get(config,"checkpoint_every_intervals",1) == 0 || i == length(input.periods)
             checkpoint_ac_interval!(output,input,schedule,results,i;must_stop=must_stop)
+        end
+        if ac_interval_start!="off"
+            interval_seed=capture_ac_interval_start(ac_model,input,i)
         end
     end
     timings["ac_optimization"] = time()-stage

@@ -218,3 +218,63 @@ All six tiny pipelines passed official hard/physical feasibility and independent
 9/9 exhaustive verification. The source-feature pipeline transferred complete
 primal and dual mappings in every interval. Evidence is hash-registered from
 `tmp/pilot002_component_gate_u6np0plw` in `manifests/component_tests.json`.
+
+## Third attempt: interval 3 recovered; interval 4 still failed
+
+`campaign_n04224_s002_r03` used frozen revision
+`9483df263b773e94e76c66aa421a4056b7aee5c8`. Its failure record finalized in
+**1,011.194437 seconds**. Scheduling again obtained the same objective/bound and
+gap, in 100.709141 solver seconds. The first two rounded AC phases converged in
+7.258 and 7.108 seconds, with complete primal/dual coverage. These observations
+are from a combined workflow/settings change, not a controlled single-factor
+speedup measurement.
+
+Interval 3's first phase hit 90 seconds, so its nonconverged duals were correctly
+skipped. The primal-only rounded phase recovered in 69.840 seconds, returning
+a 5.04532e-11 maximum model residual. Thus the earlier failure was not an
+infeasibility proof. Interval 4 then exhausted both the 90-second continuous
+phase and 240-second rounded phase. Final model residual: 4.88675e-6, above the
+unchanged 1e-8 local screen. The interval took 335.075 seconds including model
+work, diagnostics and both phases. The worker saved the complete-horizon
+interval-4 checkpoint and stopped; the independent final check covered all
+111,024 pairs but official physical feasibility was 0. The incomplete objective
+-32,198,475,393.99063 is not an accepted completed score. Evidence is archived
+under `evidence/campaign/campaign_n04224_s002_r03`, with original outputs retained.
+
+## Registered fourth attempt: continuation inside the cold attempt
+
+The preceding implementation reinitialized every hour's AC model with flat
+voltages. `campaign_n04224_s002_r04` instead leaves **hour 1 cold** and seeds each
+subsequent hour from the immediately preceding hour's locally residual-screened
+primal, generated in this same attempt. It cannot load another attempt or a
+competitor solution. Only scalar named-variable values are retained, not old
+models, column positions, bases or previous-hour duals.
+
+The project-owned adapter maps current voltage, angle, flow, device, shunt and
+reserve variables by their unique names. It projects only start values onto
+the **current** bounds, leaving source PMIN and every constraint unchanged.
+Anonymous PWL variables are not matched by column position across hours: their
+device balance rows, source widths and source objective coefficients are
+validated, then a feasible block allocation is rebuilt for current-hour P and
+prices. Scheduling-deviation starts are likewise recomputed. New variables get
+current defaults; every current variable receives a finite primal start. Counts,
+adjustments and the full model residual of the resulting start are logged.
+The start may be infeasible under the new hour's conditions; it still must be
+resolved and independently verified, and is never accepted merely by inheritance.
+
+For these subsequent-hour first phases, ordinary primal/slack interior pushes
+are 1e-8 and `mu_init` is 1e-6. `warm_start_init_point=no`: no previous-hour duals
+are asserted valid. The same-interval rounded-shunt primal-dual policy is retained.
+All source constraints, score penalties, acceptance limits, 90/240-second local
+caps and the global 7,200-second deadline remain unchanged. This is another
+registered numerical workflow experiment, not a new initialization from saved
+results. Tiny tests exercise shrinking/expanding hourly limits and changes in
+PWL block counts/prices, as well as invalid-state rejection and raw-input
+immutability. Full component verification and a frozen push precede its one run.
+
+The completed gate passed **69 Python tests and 520 Julia assertions**. All six
+tiny pipelines again passed official hard/physical feasibility and independent
+9/9 exhaustive verification. The continuation integration confirms hour 1 uses
+cold defaults, with complete current primal vectors and matching immediate-prior
+interval identities thereafter. Evidence is hash-registered from
+`tmp/pilot002_component_gate_tc7_e26f` in `manifests/component_tests.json`.

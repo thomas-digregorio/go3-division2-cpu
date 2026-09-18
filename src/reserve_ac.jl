@@ -118,7 +118,7 @@ end
 
 function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         optimizer,set_silent=false,shunt_primal_start="off",audit_phases=false,
-        rounded_seconds=nothing,work_deadline=Inf,rounded_max_iter=500)
+        rounded_seconds=nothing,work_deadline=Inf,rounded_max_iter=500,interval_seed=nothing)
     shunt_primal_start in ("off","within_interval_complete_v1","within_interval_primal_dual_v1") ||
         error("Unknown AC primal start policy")
     shunt_primal_start=="within_interval_primal_dual_v1" && !audit_phases &&
@@ -151,6 +151,14 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         "source_interval_duration"=>source.dt[i])
     set_optimizer(model,optimizer)
     set_silent && JuMP.set_silent(model)
+    if interval_seed!==nothing
+        record=apply_ac_interval_start!(model,source,i,interval_seed,real_power)
+        model.ext[:reserve_ac]["interval_primal_start"]=record
+        println("GO3_AC_INTERVAL_START ",JSON.json(record));flush(stdout)
+    else
+        model.ext[:reserve_ac]["interval_primal_start"]=Dict("policy"=>"cold_defaults",
+            "target_interval"=>i,"external_solution_read"=>false)
+    end
     # Use the configured Ipopt accuracy/iteration/wall limits. Do not use the
     # upstream early callback, which may stop at a 1e-3 primal residual.
     phase_started=time()
