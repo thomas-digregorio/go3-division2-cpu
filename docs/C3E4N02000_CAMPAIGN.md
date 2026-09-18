@@ -132,3 +132,51 @@ Future registered attempts should enable the supported `log_dev_level=1` option
 to expose fallback diagnostics; this alone does not enable the internally disabled
 IPM iteration log. No active r03 code, solver option, input or tolerance was changed
 as part of this audit, and no additional full-case diagnostic solve was launched.
+
+## Completed r03: physical pass, quality target not met
+
+Frozen numerical implementation `55d5c1f1ab74933d0d0642e40d6dd297b5e318dd` ran
+once cold. No previous schedule or solution was supplied. The process completed
+normally within the two-hour cap; the campaign exit was unsuccessful because
+its score missed the explicitly registered quality target, not because of
+infeasibility or a deadline kill.
+
+| Measured item | r03 result |
+|---|---:|
+| Scheduling HiGHS API solve time | 3,046.205 s |
+| Scheduling wall time, including construction/JIT | 3,102.584 s |
+| Scheduling objective / upper bound | 755,996,627.351 / 756,047,801.575 |
+| Scheduling relative gap, subproblem only | 6.7691e-5 (0.00677%) |
+| Native reported LP iterations / processed nodes | 1,142,345 / 1 |
+| AC refinement, all 48 intervals locally solved | 760.640 s |
+| Initial / final verification process wall time | 58.457 / 57.696 s |
+| End-to-end through result serialization | 4,030.028 s (67 min 10 s) |
+| Final objective and competition score | 508,365,479.216719 |
+| Sixth-best eligible published score | 754,720,348.826734 |
+| Relative shortfall from sixth best | 32.6419% |
+| Required minimum score | 679,248,313.944061 |
+| Official hard / physical feasibility | 1 / 1 |
+| Final exhaustive outage-interval checks | 132,288 / 132,288 |
+| Maximum hard residual | 1.9515e-11 |
+| Maximum P / Q imbalance, pu | 1.5515e-10 / 1.4676e-9 |
+| Final reserve-shortfall penalty | 248,153,682.334027 |
+| Base thermal penalty | 30,389.365352 |
+| Worst plus average contingency thermal penalty | 133,344.513067 |
+
+The initial joint schedule's reserve penalty was only 1,064,801.400757.
+The AC stage repaired nodal P/Q balance but increased reserve penalties to
+248,153,682.334027. Its objective only used a generic scheduled-P deviation
+penalty, not the actual reserve allocation costs and endogenous requirements.
+This is the measured next quality bottleneck: reserve headroom and requirements
+must be considered while AC dispatch moves, not only recomputed afterward.
+
+`mip_lp_solver=hipo` was accepted, but the native log reported substantial LP
+iteration work and the MIP barrier counter was zero. The observability caveat
+above still applies; these data do not establish a pure HiPO execution time.
+The scheduling gap is not a global GO3 optimality certificate. Final thermal
+penalties remain, so this is not a zero-overload claim.
+
+Complete solutions and compact hashed evidence are retained under the original
+run and `evidence/campaign/campaign_n02000_s005_r03/`. The archive operation only
+checked/captured hashes: it did not repeat a solve or evaluation. No case data
+was pruned. The next network remains unstarted because the quality gate failed.
