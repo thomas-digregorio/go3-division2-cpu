@@ -252,3 +252,59 @@ model is established; a speedup or score improvement is not established before
 the complete run and exhaustive verification finish. The final result will be
 reported separately. This documentation update does not change the active
 numerical implementation or its frozen input/configuration.
+
+## Completed r04: target passed
+
+The single cold attempt at frozen numerical commit
+`2e16d83d906f43bc5aa6f94ab80ee18cb78ed8b4` completed in **2,960.691 seconds
+(49 minutes 21 seconds)**, including independent verification and serialization.
+It passed the registered 10%-of-sixth-place gate. No repeat of this successful
+attempt is planned. The next network is now eligible for source registration.
+
+| Measured item | r04 result |
+|---|---:|
+| Scheduling HiGHS API solve / full scheduling wall time | 1,262.573 / 1,319.476 s |
+| Scheduling objective / upper bound | 756,008,331.337601 / 756,047,907.216109 |
+| Scheduling relative gap, subproblem only | 5.23485e-5 (0.005235%) |
+| Native reported LP iterations / processed nodes | 683,132 / 1 |
+| AC refinement, all 48 intervals locally solved | 1,472.490 s |
+| Initial / final reserve allocation and postprocessing | 21.507 / 17.076 s |
+| Initial / final verification process wall time | 58.839 / 57.379 s |
+| End-to-end through result serialization | 2,960.690835 s |
+| Final objective and score | 755,301,043.857519 |
+| Sixth-best eligible published score | 754,720,348.826734 |
+| Required minimum score | 679,248,313.944061 |
+| Official hard / physical feasibility | 1 / 1 |
+| Final exhaustive outage-interval checks | 132,288 / 132,288 |
+| Maximum hard residual | 4.64756e-12 |
+| Maximum P / Q imbalance, pu | 5.87092e-11 / 9.32028e-10 |
+| Independent / official objective discrepancy | 0.000297189 |
+| Reserve-shortfall penalty | 1,054,039.205234 |
+| Base thermal penalty | 30,879.367998 |
+| Worst / average contingency thermal penalties | 121,982.036949 / 11,751.256279 |
+| Maximum contingency overload, pu | 4.328664 |
+| Peak sampled process-tree RSS | 11.1383 GiB |
+
+The reserve-aware AC correction reduced the previous attempt's 248.154 million
+reserve-shortfall penalty to 1.054 million. Its AC models took longer, but total
+time fell from 4,030.028 to 2,960.691 seconds. This is a single-run comparison of
+two registered algorithm changes, not an isolated ablation or statistical speedup.
+All source constraints, costs, PMIN, tolerances and cold-start restrictions were
+preserved. Penalized thermal/reserve violations remain part of the official
+objective; physical feasibility is not a zero-overload guarantee.
+
+The observed HiPO error and automatic simplex fallback described above occurred
+inside this completed scheduling call. A separate native end profile also names
+an IPX call on another thread. These overlapping native timers do not isolate
+the exact time spent in the failed HiPO call, so no pure-IPM timing is claimed.
+The scheduling bound certifies only that subproblem, not global GO3 optimality.
+
+The score is above the sixth-best reference (and above all but the highest of
+the selected published scores), but this was not an official submission and
+hardware/runtime boundaries differ. Source comparisons remain tied to the exact
+workbook hash and row identities in the frozen manifest.
+
+Full solutions remain in the original run. Compact verified evidence and a
+manifest hashing every retained run file are in
+`evidence/campaign/campaign_n02000_s005_r04/`. Archival was a hash/copy audit only:
+no solver, evaluator rerun, deletion, or source modification occurred.
