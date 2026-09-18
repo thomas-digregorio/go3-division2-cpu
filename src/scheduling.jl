@@ -1,5 +1,6 @@
 # Project-owned adapter; pinned upstream code and source penalties are untouched.
-function source_balance_scheduling_model(input; include_reserves::Bool=true)
+function source_balance_scheduling_model(input; include_reserves::Bool=true,
+        consumer_dominance::Bool=false)
     model = GO3.get_copperplate_scheduling_model(input;
         include_reserves=include_reserves,relax_balances=true,relax_reserves=true,
         overcommitment_factor=1.0)
@@ -16,13 +17,15 @@ function source_balance_scheduling_model(input; include_reserves::Bool=true)
             set_objective_coefficient(model,variable,-input.dt[t]*input.violation_cost[source_key])
         end
     end
+    consumer_dominance && apply_consumer_online_dominance!(model,input)
     model
 end
 
 function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
-        include_reserves::Bool=true)
+        include_reserves::Bool=true,consumer_dominance::Bool=false)
     started=time()
-    model=source_balance_scheduling_model(input;include_reserves=include_reserves)
+    model=source_balance_scheduling_model(input;include_reserves=include_reserves,
+        consumer_dominance=consumer_dominance)
     model.ext[:scheduling_formulation]=Dict(
         "include_reserves"=>include_reserves,
         "build_seconds"=>time()-started,
@@ -30,6 +33,10 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
         "constraints_excluding_variable_bounds"=>num_constraints(model;count_variable_in_set_constraints=false),
         "reserve_policy"=>include_reserves ? "joint_scheduling_then_full_reallocation" :
             "candidate_schedule_only_then_full_reserve_allocation_and_evaluation")
+    if consumer_dominance
+        model.ext[:scheduling_formulation]["consumer_online_dominance"]=
+            model.ext[:consumer_online_dominance]
+    end
     println("GO3_SCHEDULING_MODEL ",JSON.json(model.ext[:scheduling_formulation])); flush(stdout)
     set_optimizer(model,optimizer)
     set_time_limit_sec(model,time_limit)

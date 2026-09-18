@@ -30,6 +30,20 @@ input = GOC3Benchmark.process_input_data(JSON.parsefile(CASE))
     @test get_optimizer_attribute(mip,"mip_lp_solver")=="hipo"
 end
 
+@testset "GO3 no-incumbent gap reporting" begin
+    m=Model(optimizer_with_attributes(HiGHS.Optimizer,"threads"=>4,
+        "presolve"=>"off","time_limit"=>0.0,"output_flag"=>false))
+    @variable(m,x[1:3],Bin)
+    @constraint(m,[i=1:3],x[i]+x[mod1(i+1,3)] >= 1)
+    @objective(m,Min,sum(x))
+    optimize!(m)
+    @test termination_status(m)==MOI.TIME_LIMIT
+    @test primal_status(m)==MOI.NO_SOLUTION
+    stats=model_stats(m)
+    @test stats["relative_gap"]===nothing
+    @test stats["objective"]===nothing
+end
+
 @testset "GO3 tiny whole-horizon UC" begin
     opt = optimizer_with_attributes(HiGHS.Optimizer,"threads"=>4,"mip_rel_gap"=>1e-6,
         "mip_feasibility_tolerance"=>1e-9,"primal_feasibility_tolerance"=>1e-9)

@@ -180,3 +180,50 @@ Complete solutions and compact hashed evidence are retained under the original
 run and `evidence/campaign/campaign_n02000_s005_r03/`. The archive operation only
 checked/captured hashes: it did not repeat a solve or evaluation. No case data
 was pruned. The next network remains unstarted because the quality gate failed.
+
+## Registered r04 correction: reserve-aware AC and consumer dominance
+
+Keep the raw case, 48-hour temporal/commitment constraints, joint scheduling
+reserves, source costs/PMIN, 1e-3 scheduling gap, fixed source topology/taps and
+all acceptance/score tolerances. Keep the HiPO-requested root option rather than
+claiming a new pure-IPM benchmark. Enable supported development logging to expose
+fallback messages where the native solver supplies them.
+
+Two algorithm changes are registered, not separate full-case ablations:
+
+1. Apply the conservative, proved flexible-consumer commitment dominance rule in
+   `docs/CONSUMER_DOMINANCE.md`. It tests each consumer at runtime; it never changes
+   a generator's commitment domain or any source bound. The read-only source
+   audit found 1,350 eligible consumers, or 64,800 implied on-status decisions.
+   Runtime benefit remains unmeasured until this attempt.
+2. Include all ten source reserve allocations and eight zonal shortage costs
+   inside each fixed-commitment AC interval model. Use original source headroom
+   bounds, never the ramp-tightened working limits. Endogenous regulation demand
+   follows the current consumer dispatch, and SYN/NSYN requirements follow the
+   current maximum producer dispatch. Recompute and independently check all
+   reserves again after whole-horizon projection as before.
+
+The reserve-aware candidate search requires zero P/Q imbalance slacks. This is a
+disclosed restriction to physically balanced candidates, not a modification of
+the original official model, which allows penalized imbalances. It is important
+here: source SYN penalties can have marginal effects above the 1,000,000-per-pu
+bus-imbalance penalty (SYN coefficient 10.90245013 times 500,000 in prz_2).
+Simply adding reserve costs to a soft-balance AC objective could therefore trade
+physical balance for score. The independent raw-input checker and official
+`phys_feas=1` gate remain authoritative. Thermal/reserve shortage penalties are
+still allowed and fully reported; zero overloads are not promised.
+
+The project-owned AC wrapper follows the pinned upstream model and two-solve
+shunt-rounding workflow. It omits the upstream early-acceptance callback and uses
+the registered Ipopt tolerance, wall-time and iteration limits. It does not read
+previous run solutions or initialize from competitors/POPs. Per-interval logs
+record the reserve policy, source duration and reserve cost at the solved point.
+
+The total remains 7,200 seconds, including verification/serialization; scheduling
+receives at most 3,600 seconds and each AC solve 45 seconds. The permanent r04
+latch permits exactly one full cold attempt. Tiny reserve LP equivalence,
+cross-feasible witness mappings, unequal-duration costs, endogenous requirement,
+source-bound and complete independent/official integration tests must all pass
+before freeze/push/launch. A complete source inventory rejects added, deleted or
+modified tested code/configuration; no-incumbent gaps/objectives are reported as
+null rather than a misleading native zero.

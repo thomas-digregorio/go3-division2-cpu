@@ -116,3 +116,29 @@ passed independent and official checks of all 9 outage-interval combinations.
 The new campaign-exit test rejects a hard-feasible result that misses the target;
 boundary assertions accept exactly 90% of the reference and reject the immediately
 smaller representable score. No score threshold or feasibility tolerance changed.
+
+## Campaign r04: reserve-aware physical AC and consumer dominance
+
+The matched-runtime gate passed **56 Python tests and 250 Julia assertions** on
+2026-09-18 UTC. All five complete tiny pipelines (historical joint, separated
+reserve, HiPO, consumer dominance, reserve-aware AC) passed independent and
+official verification with `feas=1`, `phys_feas=1` and 9/9 outage-interval checks.
+No competition-case diagnostic or warmup was run.
+
+The 86 dominance assertions include guard failures, all eight tiny binary
+commitment patterns, fractional witnesses, original-model feasibility mappings,
+unchanged source input and equal unrestricted/reduced optimal objectives. The
+108 reserve/AC assertions compare every reserve product and zonal penalty against
+the pinned reference LP across unequal durations, online/offline and power-curve
+states, map optimal points in both directions, test variable-dispatch reserve
+requirements, original versus tightened headroom bounds, and zero P/Q balance
+slack bounds. Four new assertions reject reporting a native zero gap as a
+meaningful MIP gap when no incumbent exists. Eight Python provenance tests cover
+new/deleted/renamed/modified sources that must invalidate an old test gate.
+
+The reserve-aware integration objective was 1732.2744182160795 with hard residual
+zero, P/Q imbalance 3.89e-12/5.41e-11 pu, objective discrepancy 5.00e-12, and no
+thermal/reserve shortage penalty on this tiny fixture. These are development
+checks, not evidence of full-case performance or global GO3 optimality.
+The complete hashed record is `manifests/component_tests.json`, with detailed
+logs retained in its named local evidence directory.

@@ -79,9 +79,8 @@ def preflight(config_path):
         raise RuntimeError("Component test gate has not passed")
     if test_record.get("runtime") != runtime_identity():
         raise RuntimeError("Use the same Python/dependency runtime as the completed component tests")
-    for file,digest in test_record["source_sha256"].items():
-        if sha256(ROOT/file)!=digest:
-            raise RuntimeError(f"Code/config changed since component tests: {file}")
+    from go3cpu.provenance import assert_tested_sources_unchanged
+    assert_tested_sources_unchanged(ROOT,test_record["source_sha256"])
     if sha256(ROOT/config["input_path"])!=config["input_sha256"]:
         raise RuntimeError("Registered input hash changed")
     case_record=json.loads((ROOT/config.get("case_manifest_path","manifests/case.json")).read_text())

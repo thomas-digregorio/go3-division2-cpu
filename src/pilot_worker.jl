@@ -3,7 +3,9 @@ using GOC3Benchmark, JuMP, HiGHS, Ipopt, JSON, LinearAlgebra
 const GO3 = GOC3Benchmark
 const MOI = JuMP.MOI
 LinearAlgebra.BLAS.set_num_threads(1)
+include(joinpath(@__DIR__,"consumer_dominance.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
+include(joinpath(@__DIR__,"reserve_ac.jl"))
 
 function atomic_json(path, object)
     occursin("onedrive", lowercase(abspath(path))) && error("OneDrive output forbidden")
@@ -25,11 +27,13 @@ function safe_stat(f)
 end
 
 function model_stats(model)
+    has_primal = primal_status(model)==FEASIBLE_POINT
     Dict("termination" => string(termination_status(model)),
          "primal_status" => string(primal_status(model)),
-         "objective" => safe_stat(() -> objective_value(model)),
+         "objective" => has_primal ? safe_stat(() -> objective_value(model)) : nothing,
          "bound" => safe_stat(() -> objective_bound(model)),
-         "relative_gap" => safe_stat(() -> relative_gap(model)),
+         "relative_gap" => has_primal ? safe_stat(() -> relative_gap(model)) : nothing,
+         "native_relative_gap" => safe_stat(() -> relative_gap(model)),
          "solve_seconds" => safe_stat(() -> solve_time(model)),
          "simplex_iterations" => safe_stat(() -> MOI.get(model, MOI.SimplexIterations())),
          "barrier_iterations" => safe_stat(() -> MOI.get(model, MOI.BarrierIterations())),
@@ -103,21 +107,28 @@ function run_worker(case_path, output, config, work_deadline)
     case = JSON.parsefile(case_path)
     input = GO3.process_input_data(case)
     timings["loading_and_preprocessing"] = time()-started
+    ac_reserve_policy=get(config,"ac_reserve_policy","off")
+    ac_reserve_policy in ("off","source_joint_reserves_in_ac_v1") || error("Unknown AC reserve policy")
 
     progress("scheduling")
     stage = time()
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, "threads"=>config["highs_threads"],
         "mip_rel_gap"=>config["scheduling_relative_gap"], "mip_feasibility_tolerance"=>1e-9,
         "primal_feasibility_tolerance"=>1e-9, "random_seed"=>0,
-        "mip_lp_solver"=>get(config,"scheduling_mip_lp_solver","choose"))
+        "mip_lp_solver"=>get(config,"scheduling_mip_lp_solver","choose"),
+        "log_dev_level"=>get(config,"scheduling_log_dev_level",0))
     get(config,"scheduling_balance_penalties","")=="source_pq_duration_weighted" || error("Missing registered scheduling penalty policy")
+    dominance_policy=get(config,"scheduling_consumer_dominance","off")
+    dominance_policy in ("off","guarded_online_v1") || error("Unknown consumer dominance policy")
     model, schedule = schedule_source_balances(input; optimizer=optimizer,
         time_limit=available(config["scheduling_seconds"]),
-        include_reserves=get(config,"scheduling_include_reserves",true))
+        include_reserves=get(config,"scheduling_include_reserves",true),
+        consumer_dominance=dominance_policy=="guarded_online_v1")
     statistics["scheduling"] = model_stats(model)
     merge!(statistics["scheduling"],model.ext[:scheduling_formulation])
     statistics["scheduling"]["mip_lp_solver_requested"]=get(config,"scheduling_mip_lp_solver","choose")
     statistics["scheduling"]["mip_lp_solver_option"]=get_optimizer_attribute(model,"mip_lp_solver")
+    statistics["scheduling"]["log_dev_level"]=get_optimizer_attribute(model,"log_dev_level")
     statistics["scheduling"]["bound_scope"] = "approximate_copperplate_subproblem_only_not_full_GO3"
     timings["scheduling"] = time()-stage
     atomic_json(joinpath(output,"statistics","scheduling.json"),statistics["scheduling"])
@@ -149,6 +160,7 @@ function run_worker(case_path, output, config, work_deadline)
     stage = time()
     working = GO3.tighten_bounds_using_ramp_limits(input,schedule.on_status,schedule.real_power)
     working = deepcopy(working)
+    power_curves = ac_reserve_policy=="off" ? nothing : fixed_schedule_power_curves(input,schedule)
     results = opf_view(initial,input.periods)
     ac_stats = Any[]
     for i in input.periods
@@ -171,15 +183,25 @@ function run_worker(case_path, output, config, work_deadline)
             "acceptable_constr_viol_tol"=>1e-9,"max_iter"=>500,
             "max_wall_time"=>available(config["ac_seconds_per_solve"]),"print_level"=>3)
         ac_start = time()
-        ac_model, result = GO3.compute_optimal_power_flow_at_interval(working,i;
-            on_status=current_on,real_power=current_p,optimizer=ipopt,
-            allow_switching=false,resolve_rounded_shunts=true,fix_shunt_steps=false,
-            relax_power_balance=true,relax_thermal_limits=true,
-            penalize_power_deviation=true,fix_real_power=false)
+        if ac_reserve_policy=="source_joint_reserves_in_ac_v1"
+            ac_model,result=compute_reserve_aware_ac(working,input,i;
+                on_status=current_on,real_power=current_p,curves=power_curves,
+                optimizer=ipopt)
+        else
+            ac_model, result = GO3.compute_optimal_power_flow_at_interval(working,i;
+                on_status=current_on,real_power=current_p,optimizer=ipopt,
+                allow_switching=false,resolve_rounded_shunts=true,fix_shunt_steps=false,
+                relax_power_balance=true,relax_thermal_limits=true,
+                penalize_power_deviation=true,fix_real_power=false)
+        end
         results[i] = result
         stats = model_stats(ac_model)
         stats["interval"] = i
         stats["wall_seconds"] = time()-ac_start
+        stats["reserve_policy"] = ac_reserve_policy
+        if haskey(ac_model.ext,:reserve_ac)
+            stats["reserve_ac"] = ac_model.ext[:reserve_ac]
+        end
         stats["warm_start"] = "flat voltage and source shunt starts; within-run UC/deviation targets; no supplied primal, dual or basis start"
         push!(ac_stats,stats)
         statistics["ac_intervals"] = ac_stats

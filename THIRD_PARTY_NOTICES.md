@@ -8,7 +8,11 @@
   at `.cache/upstream/GOC3Benchmark.jl/LICENSE.md` and in the tracked
   `licenses/GOC3Benchmark.BSD-3.txt`. The project-owned `src/scheduling.jl`
   adapter calls the pinned model/extraction functions and adapts their objective
-  coefficients without modifying the upstream checkout. Reference: Parker and Coffrin, *Managing Power Balance
+  coefficients without modifying the upstream checkout. The project-owned
+  `src/reserve_ac.jl` follows the reserve rows in upstream `reserves.jl` and the
+  two-solve shunt-rounding workflow in `opf.jl`; it uses their pinned helpers to
+  co-optimize source reserve allocations inside each fixed-commitment AC solve.
+  Reference: Parker and Coffrin, *Managing Power Balance
   and Reserve Feasibility in the AC Unit Commitment Problem*, 2024,
   https://doi.org/10.1016/j.epsr.2024.110670.
 - GO-3-data-model: NREL/Alliance for Sustainable Energy LLC and Battelle Memorial

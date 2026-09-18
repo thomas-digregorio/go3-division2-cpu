@@ -76,3 +76,22 @@ def tiny_solution(case):
         out["simple_dispatchable_device"].append({"uid": uid, "on_status": [1]*nt,
             "p_on": [1.0]*nt, "q": [0.0]*nt, **{key: [0.0]*nt for key in RESERVES}})
     return {"time_series_output": out}
+
+
+def tiny_consumer_dominance_case():
+    """An eligible flexible consumer, for a full independent/official pipeline."""
+    case = tiny_case()
+    device = next(d for d in case["network"]["simple_dispatchable_device"] if d["uid"] == "d")
+    series = next(d for d in case["time_series_input"]["simple_dispatchable_device"] if d["uid"] == "d")
+    nt = case["time_series_input"]["general"]["time_periods"]
+    device.update({"on_cost": 0.0, "startup_cost": 0.0, "shutdown_cost": 0.0,
+                   "in_service_time_lb": 0.0, "down_time_lb": 0.0,
+                   "p_ramp_up_ub": 8.0, "p_ramp_down_ub": 8.0,
+                   "p_startup_ramp_ub": 8.0, "p_shutdown_ramp_ub": 8.0,
+                   "p_ramp_res_down_online_ub": 0.5,
+                   "p_ramp_res_down_offline_ub": 0.5})
+    series.update({"p_lb": [0.0]*nt, "on_status_lb": [0]*nt,
+                   "q_lb": [-1.0]*nt, "q_ub": [1.0]*nt,
+                   "p_ramp_res_down_online_cost": [0.01]*nt,
+                   "p_ramp_res_down_offline_cost": [0.02]*nt})
+    return case
