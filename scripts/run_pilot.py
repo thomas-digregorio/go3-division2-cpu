@@ -22,7 +22,8 @@ from go3cpu.controller import (Deadline, Incumbent, Snapshots, atomic_json, clai
     latest_candidate, latest_snapshot, registered_latch, run_bounded, sha256, stop_process)
 from go3cpu.official import configure_imports
 from go3cpu.safety import GIB, local_path, storage_check
-from go3cpu.campaign import sixth_best_target, quality_gate, registered_budget, experiment_exit_code
+from go3cpu.campaign import (sixth_best_target, quality_gate, registered_budget,
+                             experiment_exit_code, pipeline_coverage)
 configure_imports(ROOT)
 import psutil
 
@@ -272,9 +273,6 @@ def execute(config_path,config,env,preflight_record):
             result["final_verification_error"]=traceback.format_exc()
         result["verified_incumbent"]=incumbent.record
         result["progress"]=latest_snapshot(worker_dir/"progress")
-        result["pipeline_completed"]=(result["progress"].get("stage")=="complete" and result.get("worker_returncode")==0)
-        result["status"]=("VERIFIED_HARD_FEASIBLE" if result["pipeline_completed"] else
-            "VERIFIED_HARD_FEASIBLE_INCOMPLETE_REFINEMENT") if incumbent.record else "NO_VERIFIED_INCUMBENT"
         result["penalized_violations_allowed_by_official_rules"]=True
         result["peak_sampled_process_tree_rss_bytes"]=monitor.peak_rss
         result["cpu_seconds_by_pid_sampled"]=monitor.cpu_by_pid
@@ -294,6 +292,12 @@ def execute(config_path,config,env,preflight_record):
             result["timings"]=json.loads(partial.read_text()) if partial.exists() else {}
             result["timings"]["completed_ac_interval_wall_seconds"]=sum(
                 s["wall_seconds"] for s in result["solver_statistics"].get("ac_intervals",[]))
+        result["pipeline_coverage"]=pipeline_coverage(result["progress"],
+            result.get("worker_returncode"), result["solver_statistics"],
+            len(preflight_record["case"]["interval_hours"]))
+        result["pipeline_completed"]=result["pipeline_coverage"]["complete"]
+        result["status"]=("VERIFIED_HARD_FEASIBLE" if result["pipeline_completed"] else
+            "VERIFIED_HARD_FEASIBLE_INCOMPLETE_REFINEMENT") if incumbent.record else "NO_VERIFIED_INCUMBENT"
         serialization=time.perf_counter()
         if "quality_target" in result:
             result["quality_gate"]=quality_gate(incumbent.record,result["quality_target"],

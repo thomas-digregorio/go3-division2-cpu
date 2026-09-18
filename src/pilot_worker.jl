@@ -9,6 +9,7 @@ include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"ac_primal_start.jl"))
 include(joinpath(@__DIR__,"ac_interval_start.jl"))
 include(joinpath(@__DIR__,"ac_recovery.jl"))
+include(joinpath(@__DIR__,"ac_primal_guard.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
 
 function atomic_json(path, object)
@@ -141,6 +142,10 @@ function run_worker(case_path, output, config, work_deadline)
     ac_recovery in ("off","adaptive_barrier_on_failed_residual_v1") || error("Unknown AC recovery policy")
     ac_recovery=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
         error("AC numerical recovery requires the reserve-aware adapter and local residual checks")
+    ac_guard=get(config,"ac_primal_guard","off")
+    ac_guard in ("off",AC_PRIMAL_GUARD_POLICY) || error("Unknown AC primal guard policy")
+    ac_guard=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
+        error("AC primal guard requires the reserve-aware adapter and local residual checks")
 
     progress("scheduling")
     stage = time()
@@ -196,8 +201,9 @@ function run_worker(case_path, output, config, work_deadline)
     results = opf_view(initial,input.periods)
     ac_stats = Any[]
     interval_seed=nothing
+    refinement_deadline=ac_refinement_deadline(work_deadline,config["reserve_finish_seconds"])
     for i in input.periods
-        if work_deadline-time() < config["reserve_finish_seconds"] + 3
+        if refinement_deadline-time() < 3
             progress("ac_budget_exhausted";extra=Dict("intervals_finished"=>i-1))
             break
         end
@@ -214,7 +220,7 @@ function run_worker(case_path, output, config, work_deadline)
             "honor_original_bounds"=>"yes", "bound_relax_factor"=>0.0,
             "tol"=>1e-9,"constr_viol_tol"=>1e-9,"acceptable_tol"=>1e-8,
             "acceptable_constr_viol_tol"=>1e-9,"max_iter"=>500,
-            "max_wall_time"=>available(config["ac_seconds_per_solve"]),
+            "max_wall_time"=>rounded_ac_time_limit(config["ac_seconds_per_solve"],refinement_deadline),
             "print_level"=>get(config,"ac_print_level",3))
         ac_start = time()
         if ac_reserve_policy=="source_joint_reserves_in_ac_v1"
@@ -224,10 +230,11 @@ function run_worker(case_path, output, config, work_deadline)
                 audit_phases=ac_fail_fast || ac_shunt_primal_start!="off",
                 rounded_seconds=get(config,"ac_rounded_seconds_per_solve",nothing),
                 rounded_max_iter=get(config,"ac_rounded_max_iterations",500),
-                work_deadline=work_deadline,interval_seed=interval_seed,
+                work_deadline=refinement_deadline,interval_seed=interval_seed,
                 numerical_recovery=ac_recovery,
                 recovery_seconds=get(config,"ac_recovery_seconds_per_solve",360.0),
-                recovery_max_iter=get(config,"ac_recovery_max_iterations",1000))
+                recovery_max_iter=get(config,"ac_recovery_max_iterations",1000),
+                primal_guard=ac_guard)
         else
             ac_model, result = GO3.compute_optimal_power_flow_at_interval(working,i;
                 on_status=current_on,real_power=current_p,optimizer=ipopt,
@@ -284,7 +291,11 @@ function run_worker(case_path, output, config, work_deadline)
     timings["worker_total"] = time()-started
     atomic_json(joinpath(output,"timings.json"),timings)
     atomic_json(joinpath(output,"solver_statistics.json"),statistics)
-    progress("complete")
+    full_coverage=length(ac_stats)==length(input.periods) &&
+        [s["interval"] for s in ac_stats]==collect(input.periods)
+    progress(full_coverage ? "complete" : "partial_complete";
+        extra=Dict("intervals_finished"=>length(ac_stats),
+            "intervals_required"=>length(input.periods),"all_intervals_refined"=>full_coverage))
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__

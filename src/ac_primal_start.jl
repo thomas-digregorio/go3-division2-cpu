@@ -2,6 +2,15 @@
 # solution is used. Source bounds are never changed to accommodate a start.
 const AC_POINT_RESIDUAL_TOLERANCE = 1e-8
 
+function ac_refinement_deadline(work_deadline,reserve_finish_seconds)
+    work_deadline isa Real && !(work_deadline isa Bool) && !isnan(work_deadline) &&
+        work_deadline != -Inf || error("Invalid work deadline")
+    reserve_finish_seconds isa Real && !(reserve_finish_seconds isa Bool) &&
+        isfinite(reserve_finish_seconds) && reserve_finish_seconds>0 ||
+        error("Invalid reserve-finalization allowance")
+    work_deadline-Float64(reserve_finish_seconds)
+end
+
 function capture_complete_ac_primal(model)
     has_values(model) || error("Cannot capture an AC start without a primal point")
     variables=all_variables(model)

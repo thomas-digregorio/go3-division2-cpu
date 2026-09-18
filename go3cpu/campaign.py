@@ -90,6 +90,21 @@ def experiment_exit_code(result, *, total_seconds, budget_seconds):
     return 0 if complete else 2
 
 
+def pipeline_coverage(progress, returncode, statistics, expected_intervals):
+    """A normal finalization exit is not proof that every AC interval ran."""
+    if type(expected_intervals) is not int or expected_intervals <= 0:
+        raise ValueError("Invalid expected AC interval count")
+    entries = statistics.get("ac_intervals", [])
+    indices = [row.get("interval") for row in entries]
+    valid = all(type(i) is int for i in indices)
+    coverage = (valid and len(indices) == expected_intervals
+                and sorted(indices) == list(range(1, expected_intervals+1)))
+    complete = (progress.get("stage") == "complete" and returncode == 0 and coverage)
+    return {"complete": bool(complete), "intervals_required": expected_intervals,
+            "interval_records": len(entries), "exact_interval_coverage": bool(coverage),
+            "worker_final_stage": progress.get("stage"), "worker_returncode": returncode}
+
+
 def campaign_latch(root, config):
     """Explicitly registered attempts only; preceding networks must have verified evidence."""
     root = local_path(root)

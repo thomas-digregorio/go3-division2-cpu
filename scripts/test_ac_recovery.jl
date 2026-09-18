@@ -98,7 +98,8 @@ end
             optimizer=opt,set_silent=true,shunt_primal_start="within_interval_primal_dual_v1",
             audit_phases=true,rounded_seconds=10.0,rounded_max_iter=0,
             numerical_recovery=RECOVERY_POLICY,recovery_seconds=20.0,
-            recovery_max_iter=1000,work_deadline=time()+60.0)
+            recovery_max_iter=1000,work_deadline=time()+60.0,
+            primal_guard=AC_PRIMAL_GUARD_POLICY)
         push!(results,sol)
         info=m.ext[:reserve_ac]
         @test length(info["phases"])==3
@@ -106,6 +107,9 @@ end
         @test info["phases"][3]["phase"]=="numerical_recovery"
         @test info["phases"][3]["max_primal_residual"]<=1e-8
         @test info["numerical_recovery"]["attempted"]===true
+        @test info["primal_guard"]["policy"]==AC_PRIMAL_GUARD_POLICY
+        @test length(info["primal_guard"]["phases"])==2
+        @test info["primal_guard"]["phases"][2]["callback_count"]>0
         @test !ac_requires_stop(info,true)
         @test raw==original
         @test all(isinteger,value.(m[:shunt_step]))

@@ -4,7 +4,7 @@ import unittest
 import math
 
 from go3cpu.campaign import (NETWORK_ORDER, sixth_best_target, quality_gate,
-                            registered_budget, experiment_exit_code)
+                            registered_budget, experiment_exit_code, pipeline_coverage)
 from go3cpu.controller import atomic_json, registered_latch, claim_pilot
 from scripts.audit_sources import archive_source
 
@@ -19,6 +19,19 @@ def rows():
 
 
 class CampaignTests(unittest.TestCase):
+    def test_pipeline_requires_exact_hour_coverage_not_only_finalization(self):
+        def check(ids, stage="complete", rc=0):
+            return pipeline_coverage({"stage":stage}, rc,
+                {"ac_intervals":[{"interval":i} for i in ids]}, 3)["complete"]
+        self.assertTrue(check([1, 2, 3]))
+        self.assertTrue(check([3, 1, 2]))
+        for ids in ([], [1, 2], [1, 2, 2], [1, 2, 4], [True, 2, 3], [1.0, 2, 3]):
+            self.assertFalse(check(ids))
+        self.assertFalse(check([1, 2, 3], stage="partial_complete"))
+        self.assertFalse(check([1, 2, 3], rc=15))
+        with self.assertRaises(ValueError):
+            pipeline_coverage({}, 0, {}, 0)
+
     def test_two_hour_campaign_cap_preserves_old_pilot_limit(self):
         for seconds in (1800, 7200):
             self.assertTrue(registered_budget({"pilot_id":"campaign_test", "total_seconds":seconds}))

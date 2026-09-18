@@ -216,3 +216,55 @@ Candidate SHA256:
 `640a58cda727d8c225c00adbbdd65d0cb3c3f47924479275fbe13ab29bd20576`.
 The 6,049-bus network remains unfinished; no larger network is authorized by a
 successful registration yet.
+
+## Registered third attempt: audited feasible-point stopping and finalization protection
+
+`campaign_n06049_s003_r03` keeps the identical raw input, mathematical model,
+source bounds/costs, scheduling settings, recovery policy and acceptance tests.
+It adds `verified_stable_rounded_primal_v1` to the rounded-shunt and recovery
+phases only. The continuous-shunt phase is unchanged. After at least 20 native
+iterations, a window of eight ordinary (non-restoration) objective values must
+have relative range at most 1e-7. A small native primal residual is only a cheap
+trigger; it is never sufficient for acceptance.
+
+At a trigger the adapter reads Ipopt's current **unscaled** iterate through
+`GetIpoptCurrentIterate`, validates an exact complete native-to-JuMP variable
+mapping, and independently evaluates every model constraint and variable bound.
+Only a complete finite point whose maximum violation is at most the unchanged
+1e-8 local screen may request a stop. The objective is independently evaluated
+on that same point. The actually returned point is audited again; changed or
+infeasible output still invokes the existing recovery/fail-fast policy.
+Callback errors fail closed. Neither a cached trial point nor a solver status
+alone is used as evidence of feasibility.
+
+This is an explicitly **heuristic feasible-point stopping rule**, not a KKT,
+local-optimality or global-optimality certificate. Its native `INTERRUPTED`
+termination is preserved in the logs. The final physical-feasibility,
+independent exhaustive checks, objective agreement and minimum score of
+537,717,593.3141807 remain mandatory. A stable local objective does not prove
+that target will be met. Full attempts remain cold; all starts originate inside
+the current attempt.
+
+Two control corrections accompany the numerical change:
+
+- All AC phase budgets now exclude the 90-second final reserve allowance, rather
+  than merely checking that allowance before entering an hour. Native operation
+  overruns still count against the unchanged strict global watchdog.
+- Both worker and controller require exactly the 48 distinct expected interval
+  records, successful finalization and a normal worker exit before declaring the
+  pipeline complete. A normally finalized partial horizon is explicitly partial.
+
+The end-to-end limit remains 7,200 seconds, including raw loading, process/JIT,
+optimization, verification and serialization. Final exhaustive verification
+retains its 600-second reserved allowance and serialization its 30 seconds.
+No source tolerance is relaxed, no contingency is omitted, and no full-case
+warmup or duplicate run is authorized by this registration.
+
+The r03 component gate passed **70 Python tests and 776 Julia assertions**.
+All seven tiny pipelines passed official hard/physical feasibility and complete
+independent 9/9 contingency-hour verification. All six normal worker pipelines
+also passed the new exact-interval-coverage check. The forced-recovery fixture
+exercised the production stopping policy and independently agreed on objective
+within 6.37e-12. The source-feature pipeline exercised both guarded interruption
+and normal convergence. Evidence: `tmp/pilot002_component_gate_xf0tiesn`, with
+runtime and source hashes registered in `manifests/component_tests.json`.

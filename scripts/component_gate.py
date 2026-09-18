@@ -13,6 +13,7 @@ sys.path.insert(0,str(ROOT))
 sys.path.insert(0,str(ROOT/"scripts"))
 from go3cpu.controller import atomic_json, sha256
 from go3cpu.provenance import source_hashes as complete_source_hashes
+from go3cpu.campaign import pipeline_coverage
 from run_pilot import JULIA, runtime_environment, runtime_identity
 
 
@@ -48,6 +49,8 @@ def main():
         "scripts/test_ac_primal_start.jl"])
     stage("ac_interval_start_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_interval_start.jl"])
+    stage("ac_primal_guard_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_ac_primal_guard.jl"])
     stage("ac_recovery_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_recovery.jl",str(evidence/"recovery_fixture")])
     stage("tiny_recovery_check",[sys.executable,"scripts/verify_candidate.py",
@@ -110,6 +113,12 @@ def main():
     source_ac_stats=json.loads((evidence/"source_features_worker/solver_statistics.json").read_text())["ac_intervals"]
     for interval in source_ac_stats:
         reserve=interval["reserve_ac"]
+        guard=reserve["primal_guard"]
+        if (guard["policy"]!="verified_stable_rounded_primal_v1" or
+            len(guard["phases"])!=1 or not guard["phases"][0]["enabled"] or
+            guard["phases"][0]["callback_count"]<=0 or
+            guard["phases"][0].get("callback_error")):
+            raise RuntimeError("Tiny pipeline did not exercise the rounded-point guard")
         recovery=reserve["numerical_recovery"]
         if (recovery["policy"]!="adaptive_barrier_on_failed_residual_v1" or
             recovery["attempted"] or
@@ -143,6 +152,17 @@ def main():
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
+    coverage_records={}
+    for name in ("worker","separated_worker","hipo_worker","dominance_worker",
+                 "reserve_ac_worker","source_features_worker"):
+        from go3cpu.controller import latest_snapshot
+        stats=json.loads((evidence/name/"solver_statistics.json").read_text())
+        progress=latest_snapshot(evidence/name/"progress")
+        coverage=pipeline_coverage(progress,0,stats,3)
+        if (not coverage["complete"] or progress.get("all_intervals_refined") is not True or
+            progress.get("intervals_finished")!=3 or progress.get("intervals_required")!=3):
+            raise RuntimeError(f"Tiny worker did not certify exact full-hour coverage: {name}")
+        coverage_records[name]=coverage
     ac_intervals=reserve_ac_stats["ac_intervals"]
     if len(ac_intervals)!=3 or any(
         s.get("reserve_policy")!="source_joint_reserves_in_ac_v1" or
@@ -153,7 +173,8 @@ def main():
     python_count=int(re.search(r"Ran (\d+) tests",(evidence/"python_tests.log").read_text()).group(1))
     julia_logs="\n".join((evidence/(name+".log")).read_text()
         for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests",
-                     "ac_primal_start_tests","ac_interval_start_tests","ac_recovery_tests"))
+                     "ac_primal_start_tests","ac_interval_start_tests","ac_recovery_tests",
+                     "ac_primal_guard_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
@@ -169,6 +190,7 @@ def main():
         "tiny_reserve_aware_certificate":reserve_ac_certificate,
         "tiny_source_features_certificate":source_features_certificate,
         "tiny_forced_recovery_certificate":recovery_certificate,
+        "tiny_worker_exact_interval_coverage":coverage_records,
         "tiny_source_features_scheduling":feature_stats,
         "tiny_source_features_ac_statistics":source_ac_stats,
         "tiny_reserve_aware_statistics":ac_intervals,"source_sha256":source_hashes()}

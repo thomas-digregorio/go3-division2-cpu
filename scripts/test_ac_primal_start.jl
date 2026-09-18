@@ -85,6 +85,13 @@ end
 end
 
 @testset "GO3 rounded solve allowance respects remaining work deadline" begin
+    @test ac_refinement_deadline(1000.0,90.0)==910.0
+    @test rounded_ac_time_limit(240.0,ac_refinement_deadline(200.0,90.0);now=0.0)==109.0
+    @test ac_refinement_deadline(Inf,90.0)==Inf
+    for budget in (0,-1,NaN,Inf,true)
+        @test_throws ErrorException ac_refinement_deadline(1000.0,budget)
+    end
+    @test_throws ErrorException ac_refinement_deadline(NaN,90.0)
     @test rounded_ac_time_limit(240.0,1000.0;now=0.0)==240.0
     @test rounded_ac_time_limit(240.0,101.0;now=0.0)==100.0
     @test rounded_ac_time_limit(240.0,Inf;now=0.0)==240.0
