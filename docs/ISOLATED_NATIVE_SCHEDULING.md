@@ -122,3 +122,19 @@ fixture tests and 28 isolated-interface tests passed after that adjustment.
 The compacted 2-bus full pipeline independently passed 9/9 source checks and
 produced the exact same final-solution hash listed above. A fresh complete
 regression gate is still required before the first new full cold attempt.
+
+## Complete pre-run gate
+
+The fresh gate `tmp/pilot002_component_gate_tl85vedi` completed successfully:
+**63/63 stages, 129 Python tests and 13,923 Julia assertions**, with 1,586.006
+seconds summed stage time. Its source inventory matches the current code and
+registered configuration. Both isolated and exact-compacted integration paths
+passed independent and official verification for all 3/3 intervals and 9/9
+source outage-hour checks. The compacted path's reconstructed scheduling point
+has zero original-model residual. Its final solution is byte-identical to the
+previous disk-backed tiny baseline listed above.
+
+The complete manifest, all stage logs and the new compact certificates are
+hash-verified copies in `evidence/components/isolated_compaction_20260919/`.
+This gate permits r04 to start; it does not establish that the large native
+solver will fit in memory or that the full GO3 case will pass.

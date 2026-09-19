@@ -1,0 +1,2 @@
+Test Summary:                                   | Pass  Total  Time
+GO3 isolated native option and status contracts |   28     28  0.1s

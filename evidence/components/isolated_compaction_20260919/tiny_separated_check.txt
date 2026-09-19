@@ -1,0 +1,41 @@
+C:\Users\thoma\Documents\go3-division2-cpu\.cache\upstream\C3DataUtilities\datautilities\ctgmodel.py:126: SparseEfficiencyWarning: splu converted its input to CSC format
+  a_factors = scipy.sparse.linalg.splu(a_mat)
+C:\Users\thoma\Documents\go3-division2-cpu\.cache\upstream\C3DataUtilities\datautilities\ctgmodel.py:379: SparseEfficiencyWarning: splu converted its input to CSC format
+  a_factors_t = scipy.sparse.linalg.splu(a_mat_t)
+{
+  "pass": true,
+  "complete": true,
+  "candidate_sha256": "0aacae30fffeaeb59b83390c620ac142d1d5b01e6c0bc03512206632ebcb1a91",
+  "input_sha256": "e58bbf0a9dd6e540161d013ca7db11ba9a2e30701d9eadd01634580e89eb84e1",
+  "independent_seconds": 0.016965500020887703,
+  "official_seconds": 0.5369189999764785,
+  "objective": 1732.0994148700997,
+  "official_feas": 1,
+  "official_phys_feas": 1,
+  "independent_hard_pass": true,
+  "max_hard_residual": 0.0,
+  "objective_discrepancy": 1.2505552149377763e-11,
+  "objective_agreement": true,
+  "contingencies_completed": 9,
+  "contingencies_required": 9,
+  "max_p_imbalance_pu": 1.800781745942004e-13,
+  "max_q_imbalance_pu": 2.2020607320496416e-14,
+  "max_contingency_overload_pu": 0.0,
+  "costs_total": {
+    "production": 17.548480281330683,
+    "demand_benefit": 1750.0,
+    "on": 0.35000000000000003,
+    "startup": 0.0,
+    "shutdown": 0.0,
+    "reserve_awards": 0.0021048480281330682,
+    "switching": 0.0,
+    "real_imbalance": 4.993505609007798e-10,
+    "reactive_imbalance": 2.918980439673792e-11,
+    "base_overload": 0.0,
+    "reserve_shortfall": 0.0,
+    "contingency_worst": 0.0,
+    "contingency_average": 0.0
+  },
+  "verification_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_tl85vedi\\separated_verification",
+  "total_verification_seconds": 0.5538916000514291
+}
