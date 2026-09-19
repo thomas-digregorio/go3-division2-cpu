@@ -123,3 +123,38 @@ tiny fixtures, not a competition-case solve; stage times totaled 923.800 seconds
   previous solution is a start. The r01 one-use latch was still absent.
 
 These are pre-run checks, not evidence that the full 8,316-bus case has passed.
+
+### r01 measured result: stopped for host memory pressure
+
+Frozen implementation `cc27679d34c46a24953acf1cdb2c561c8b44bc03` was pushed,
+passed preflight and ran once cold. It stopped at **517.085 seconds (8m 37s)**,
+well before the two-hour limit, with **NO_VERIFIED_INCUMBENT**. No AC hour or
+full-case verification completed. This is neither a successful solution nor
+a proof of infeasibility.
+
+The unreduced scheduling model had 6,194,016 variables and 6,327,922 non-bound
+constraints. Construction took 86.099 seconds; additional native model transfer
+preceded HiGHS presolve. Native presolve took about 123 seconds and reduced it
+to 1,701,087 columns, 806,476 rows and 4,577,161 nonzeros, including 132,540
+binaries. The last logged scheduling bound was 1,226,874,664.853 with no incumbent;
+that is not a bound certificate for the full GO3 AC/security problem.
+
+The controller sampled a peak process-tree RSS of **21.013 GiB**. At the manual
+safety-stop decision, Windows reported 48 MiB available physical memory, 98%
+memory commitment, 3,820 pages input/s and 1,000 page reads/s. The owned Julia
+worker had most recently reported about 22.67 GiB private memory. After checking
+its PID and controller parent, only that worker was terminated. The controller
+remained alive to serialize result and completion records. No unrelated process
+was stopped, no file was deleted, and no automatic retry occurred. Afterwards,
+Windows reported 22,213 MiB available and 45% commitment.
+
+HiGHS also emitted large-cost/small-bound scaling warnings, retained verbatim in
+the native log. They were not treated as an infeasibility diagnosis or permission
+to change source values. The next correction must address storage pressure
+before another cold attempt, with fixture tests and a separately frozen config.
+
+Compact evidence: `evidence/campaign/campaign_n08316_s103_r01/`. The collector
+checked the completion/result hashes, copied the explicit stop reason, hashed
+all retained run files and preserved the originals. Result SHA256:
+`2aa78780308ca99948bfc8b1a4e2b0f121e833bbbc211ab945c6c82034eba1df`.
+The 23,643-bus solve remains unstarted behind this case's success gate.

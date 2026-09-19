@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "classification": "HOST_MEMORY_PRESSURE_STOP",
+  "action_utc": "2026-09-19T03:50:30Z",
+  "attempt": "campaign_n08316_s103_r01",
+  "implementation_commit": "cc27679d34c46a24953acf1cdb2c561c8b44bc03",
+  "observed_system_available_mib": 48,
+  "observed_system_committed_percent": 98,
+  "observed_system_pages_input_per_second": 3820,
+  "observed_system_page_reads_per_second": 1000,
+  "observed_worker_private_gib_rounded": 22.67,
+  "terminated_owned_worker_pid": 17704,
+  "verified_controller_parent_pid": 16980,
+  "action": "Terminate only the verified owned Julia worker; leave the controller to preserve partial status and write result/completion records.",
+  "scope": "Prevent exhausting the laptop's memory commitment; not an infeasibility proof, not a two-hour timeout, and not a solved scheduling or AC result.",
+  "automatic_retry": false,
+  "other_user_processes_terminated": false,
+  "source_constraints_or_values_changed": false
+}
