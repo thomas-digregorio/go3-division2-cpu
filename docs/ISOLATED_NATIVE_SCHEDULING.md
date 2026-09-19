@@ -168,3 +168,11 @@ reduction, not any source constraint. It may leave a larger root problem and is
 not a guarantee of lower peak memory or faster completion. Tiny feasible and
 infeasible MIP fixtures compare this setting with default presolve; the complete
 compacted integration must also pass exhaustive verification before launch.
+
+The fresh r05 gate `tmp/pilot002_component_gate_ci844yb8` passed **63/63 stages,
+130 Python tests and 13,948 Julia assertions**, with 1,581.266 seconds summed
+stage time. HiGHS accepted/read back the rule mask. The compacted pipeline
+passed all 3/3 AC intervals and 9/9 source checks, independent hard feasibility,
+official `feas=1` and `phys_feas=1`, with zero original scheduling residual.
+Its final objective and solution SHA256 remain identical to the tiny baseline.
+Compact hash-verified evidence is in `evidence/components/native_presolve_20260919/`.

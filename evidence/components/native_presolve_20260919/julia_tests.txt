@@ -1,0 +1,177 @@
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 3 rows; 3 cols; 6 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [1e+00, 1e+00]
+  Bound   [1e+00, 1e+00]
+  RHS     [1e+00, 1e+00]
+Not presolved: solving the LP
+
+Running HiPO
+Threads:                        4
+Rows:                           3.0e+00
+Cols:                           6.0e+00
+Nnz A:                          9.0e+00
+Range of A:                     [1.0e+00, 1.0e+00]
+Range of b:                     [1.0e+00, 1.0e+00]
+Range of c:                     [1.0e+00, 1.0e+00]
+Range of bound intervals:       [1.0e+00, 1.0e+00]
+Scaling coefficients:           [1.0e+00, 1.0e+00]
+Newton system:                  NE preferred
+Parallelism:                    Node preferred
+Analyse time:                   0.00
+
+Factorisation statistics
+Size:                           3.00e+00
+Nnz:                            6.00e+00
+Fill-in:                        1.00
+Serial memory:                  7.2e+01 B
+Flops:                          5.0e+00
+
+ iter       primal obj         dual obj       pinf       dinf       gap    time
+    0   1.20000000e+00  -3.78526490e+00   1.02e+00   8.81e-01  2.17e+00     0.0
+    1   2.87527157e+00  -2.67500018e+00   1.02e-04   8.81e-05  5.05e+00     0.0
+    2   2.80125317e+00   5.98524187e-01   1.02e-08   3.20e-05  8.16e-01     0.0
+    3   2.15541713e+00   1.13260812e+00   1.02e-12   3.20e-09  3.87e-01     0.0
+    4   1.50339253e+00   1.40459103e+00   6.02e-14   1.18e-13  4.03e-02     0.0
+    5   1.50012477e+00   1.49912698e+00   1.57e-14   1.11e-15  3.99e-04     0.0
+    6   1.50000332e+00   1.49999324e+00   8.50e-17   5.55e-17  4.03e-06     0.0
+    7   1.50000003e+00   1.49999993e+00   5.40e-17   2.00e-17  4.07e-08     0.0
+    8   1.50000000e+00   1.50000000e+00   1.09e-17   9.36e-18  4.11e-10     0.0
+=== Primal-dual feasible point found
+=== Ready for crossover
+
+Running crossover with IPX
+Input
+    Number of variables:                                3
+    Number of free variables:                           0
+    Number of constraints:                              3
+    Number of equality constraints:                     0
+    Number of matrix entries:                           6
+    Matrix range:                                       [1e+00, 1e+00]
+    RHS range:                                          [1e+00, 1e+00]
+    Objective range:                                    [1e+00, 1e+00]
+    Bounds range:                                       [1e+00, 1e+00]
+Preprocessing
+    Dualized model:                                     no
+    Number of dense columns:                            0
+    Range of scaling factors:                           [1.00e+00, 1.00e+00]
+    Scaled cost norm:                                   1
+    Scaled bounds norm:                                 1
+IPX version 1.0
+Interior point solve
+ Using starting point provided by user. Skipping initial iterations.
+ Constructing starting basis...
+ Iter       primal obj         dual obj       pinf       dinf       gap      time
+Running crossover as requested
+    Primal residual before push phase:                  2.28e-10
+    Dual residual before push phase:                    2.55e-15
+    Number of dual pushes required:                     0
+    Number of primal pushes required:                   0
+Summary
+    Runtime:                                            0.00s
+    Status interior point solve:                        optimal
+    Status crossover:                                   optimal
+    objective value:                                    1.50000000e+00
+    interior solution primal residual (abs/rel):        0.00e+00 / 0.00e+00
+    interior solution dual residual (abs/rel):          0.00e+00 / 0.00e+00
+    interior solution objective gap (abs/rel):          1.03e-09 / 4.11e-10
+    basic solution primal infeasibility:                0.00e+00
+    basic solution dual infeasibility:                  0.00e+00
+IPX reports: ipm optimal, crossover optimal
+
+Summary
+HiPO runtime:                   0.00
+Status:                         crossover optimal
+HiPO iterations:                8
+IPX iterations:                 0
+Hipo: Solved
+Hipo: Crossover optimal
+
+Model status        : Optimal
+IPM       iterations: 8
+Objective value     :  1.5000000000e+00
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+MIP has 3 rows; 3 cols; 6 nonzeros; 3 integer variables (3 binary)
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [1e+00, 1e+00]
+  Bound   [1e+00, 1e+00]
+  RHS     [1e+00, 1e+00]
+
+Presolve is switched off
+Objective function is integral with scale 1
+
+Solving MIP model with:
+   3 rows
+   3 cols (3 binary, 0 integer, 0 implied int., 0 continuous, 0 domain fixed)
+   6 nonzeros
+   Thread count 4 (of 24 threads). Using 1 max workers. Parallel search off
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ u       0       0         0   0.00%   -inf            3                  Large        0      0      0         0     0.0s
+ J       0       0         0   0.00%   -inf            2                  Large        0      0      0         0     0.0s
+         1       0         1 100.00%   1.5             2                 25.00%        0      0      0         0     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      2
+  Dual bound        2
+  Gap               0% (tolerance: 0.01%)
+  P-D integral      0.000496745109558
+  Solution status   feasible
+                    2 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01
+                    0.00 (Presolve)
+                    0.01 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     0
+Test Summary:                        | Pass  Total  Time
+GO3 CPU HiPO backend and root option |    7      7  1.8s
+Test Summary:                  | Pass  Total  Time
+GO3 no-incumbent gap reporting |    4      4  0.4s
+GO3_SCHEDULING_MODEL {"reserve_policy":"joint_scheduling_then_full_reallocation","constraints_excluding_variable_bounds":171,"source_pq_bound_devices":0,"variables":153,"build_seconds":6.909999847412109,"include_reserves":true,"source_startup_windows":{"membership":"begin-tol <= interval_start < end-tol","time_equality_tolerance":1.0e-6,"source_values_changed":false,"windows":0}}
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Rounded shunt steps:
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+TINY_IPOPT_STATUS LOCALLY_SOLVED
+Test Summary:             | Pass  Total   Time
+GO3 tiny whole-horizon UC |    8      8  25.7s
+GO3_SCHEDULING_MODEL {"reserve_policy":"candidate_schedule_only_then_full_reserve_allocation_and_evaluation","constraints_excluding_variable_bounds":96,"source_pq_bound_devices":0,"variables":66,"build_seconds":0.0009999275207519531,"include_reserves":false,"source_startup_windows":{"membership":"begin-tol <= interval_start < end-tol","time_equality_tolerance":1.0e-6,"source_values_changed":false,"windows":0}}
+Rounded shunt steps:
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+Test Summary:                              | Pass  Total  Time
+GO3 separated reserve candidate scheduling |   19     19  1.3s
+Test Summary:                            | Pass  Total  Time
+GO3 source penalty duration coefficients |   13     13  0.0s
+GO3_SCHEDULING_MODEL {"reserve_policy":"joint_scheduling_then_full_reallocation","constraints_excluding_variable_bounds":171,"source_pq_bound_devices":0,"variables":153,"build_seconds":0.0010001659393310547,"include_reserves":true,"source_startup_windows":{"membership":"begin-tol <= interval_start < end-tol","time_equality_tolerance":1.0e-6,"source_values_changed":false,"windows":0}}
+GO3_SCHEDULING_MODEL {"reserve_policy":"candidate_schedule_only_then_full_reserve_allocation_and_evaluation","constraints_excluding_variable_bounds":96,"source_pq_bound_devices":0,"variables":66,"build_seconds":0.0010001659393310547,"include_reserves":false,"source_startup_windows":{"membership":"begin-tol <= interval_start < end-tol","time_equality_tolerance":1.0e-6,"source_values_changed":false,"windows":0}}
+Test Summary:                             | Pass  Total  Time
+GO3 cheap slack cannot replace commitment |    5      5  0.4s
