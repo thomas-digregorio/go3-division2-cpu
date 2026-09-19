@@ -184,3 +184,10 @@ the registration test now calls the actual latch-resolution validator as well
 as comparing the exact identity dictionary. No full attempt was launched or
 consumed by this failure. Numerical code and configuration were not changed;
 a fresh complete gate is nevertheless required for the corrected registration.
+
+That fresh gate, `tmp/pilot002_component_gate_grc49423`, passed all 63 stages,
+130 Python tests and 13,948 Julia assertions, including the real registration
+validator and the full compacted pipeline. All 9/9 source checks, independent
+hard feasibility and official physical feasibility passed; final objective and
+solution hash are unchanged. Hash-verified evidence is retained under
+`evidence/components/native_presolve_registration_20260919/`.

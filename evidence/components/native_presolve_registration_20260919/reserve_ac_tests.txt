@@ -1,0 +1,18 @@
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Test Summary:                                      | Pass  Total  Time
+GO3 source reserve LP equivalence and all products |   85     85  8.5s
+Test Summary:                                | Pass  Total  Time
+GO3 reserve demand tracks optimized dispatch |    7      7  0.6s
+Test Summary:                                              | Pass  Total  Time
+GO3 P-Q reserve capability cross-feasible source witnesses |   60     60  0.6s
+GO3_AC_PHASE {"solve_seconds":2.0310001373291016,"bound_and_gap_queried":true,"max_primal_residual":1.7561080627864767e-11,"objective":989.9433951145188,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":52,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":15.0,"interval":2,"primal_status":"FEASIBLE_POINT","phase":"continuous_shunts","wall_seconds":2.9539999961853027,"complete_finite_point":true,"relative_gap":null}
+GO3_AC_PRIMAL_START {"requested_policy":"within_interval_primal_dual_v1","policy":"within_interval_complete_v1","variable_count":67,"external_solution_read":false,"dual_start":{"options":{"warm_start_init_point":"yes","warm_start_bound_push":1.0e-8,"warm_start_slack_bound_push":1.0e-8,"warm_start_same_structure":"no","compl_inf_tol":1.0e-8,"warm_start_slack_bound_frac":1.0e-8,"warm_start_mult_bound_push":1.0e-8,"warm_start_bound_frac":1.0e-8,"mu_init":1.0e-6},"new_fixed_shunt_zero_duals":1,"largest_transferred_absolute_dual":1.1407676601616746e7,"reused_dual_count":174,"source":"same_interval_continuous_shunt_solve","accepted_interface_count":175,"constraint_count":175,"complete_current_mapping":true,"removed_shunt_bound_duals":2,"legacy_nonlinear_count":0},"acceptance_scope":"MOI primal attributes set and read back; installed Ipopt wrapper copies them into native x","interval":2,"source":"continuous_shunt_solve_in_same_interval_and_attempt","dual_or_basis_start":true,"bounds_adjusted_start_count":3,"dual_transfer_used":true,"accepted_interface_count":67,"complete":true,"source_bounds_changed":false,"basis_start":false}
+GO3_AC_PHASE {"solve_seconds":0.006000041961669922,"bound_and_gap_queried":true,"max_primal_residual":2.5049406993105094e-15,"objective":989.9433951145405,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":25,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":15.0,"interval":2,"primal_status":"FEASIBLE_POINT","phase":"rounded_shunts","wall_seconds":0.006000041961669922,"complete_finite_point":true,"relative_gap":null}
+Test Summary:                                    | Pass  Total   Time
+GO3 AC reserve source bounds and original inputs |   24     24  14.5s

@@ -1,0 +1,17 @@
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Rounded shunt steps:
+Test Summary:                                           | Pass  Total  Time
+GO3 DC source initialization and exact terminal domains |   18     18  9.2s
+GO3_AC_PHASE {"solve_seconds":2.0980000495910645,"bound_and_gap_queried":true,"max_primal_residual":3.375263124549832e-10,"objective":494.9982967878291,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":54,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":15.0,"interval":1,"primal_status":"FEASIBLE_POINT","phase":"continuous_shunts","wall_seconds":3.1670000553131104,"complete_finite_point":true,"relative_gap":null}
+GO3_AC_PRIMAL_START {"requested_policy":"within_interval_primal_dual_v1","policy":"within_interval_complete_v1","variable_count":71,"external_solution_read":false,"dual_start":{"options":{"warm_start_init_point":"yes","warm_start_bound_push":1.0e-8,"warm_start_slack_bound_push":1.0e-8,"warm_start_same_structure":"no","compl_inf_tol":1.0e-8,"warm_start_slack_bound_frac":1.0e-8,"warm_start_mult_bound_push":1.0e-8,"warm_start_bound_frac":1.0e-8,"mu_init":1.0e-6},"new_fixed_shunt_zero_duals":1,"largest_transferred_absolute_dual":8.304666417845622e6,"reused_dual_count":183,"source":"same_interval_continuous_shunt_solve","accepted_interface_count":184,"constraint_count":184,"complete_current_mapping":true,"removed_shunt_bound_duals":2,"legacy_nonlinear_count":0},"acceptance_scope":"MOI primal attributes set and read back; installed Ipopt wrapper copies them into native x","interval":1,"source":"continuous_shunt_solve_in_same_interval_and_attempt","dual_or_basis_start":true,"bounds_adjusted_start_count":3,"dual_transfer_used":true,"accepted_interface_count":71,"complete":true,"source_bounds_changed":false,"basis_start":false}
+GO3_AC_PHASE {"solve_seconds":0.005000114440917969,"bound_and_gap_queried":true,"max_primal_residual":7.712395895531632e-10,"objective":494.9982967901704,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":20,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":15.0,"interval":1,"primal_status":"FEASIBLE_POINT","phase":"rounded_shunts","wall_seconds":0.006000041961669922,"complete_finite_point":true,"relative_gap":null}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":3,"policy":"exact_source_intersections_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":0.0,"enforced":true,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+Test Summary:                                                  | Pass  Total   Time
+GO3 optimized DC link survives AC export and within-run starts |   13     13  13.5s
