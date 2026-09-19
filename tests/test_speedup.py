@@ -35,6 +35,20 @@ class SpeedupTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     registered_latch(root,{**config,**change})
 
+    def test_hot_repair_registration_preserves_cold_scope(self):
+        config=json.loads((ROOT/"config/speedup_n06049_s003_r05.json").read_text())
+        self.assertTrue(registered_budget(config))
+        self.assertEqual(config["ac_correction_policy"],"network_slp_continuous_hot_repair_v3")
+        self.assertEqual(config["ac_correction_lp_solver"],"ipx")
+        self.assertTrue(config["cold_start"])
+        self.assertFalse(config["allow_pop_solution"])
+        latch=registered_latch(ROOT,config)
+        self.assertEqual(latch.name,"speedup_n06049_s003_r05_latch.json")
+        for change in ({"ac_correction_policy":"network_slp_continuous_then_round_v2"},
+                       {"ac_correction_lp_solver":"simplex"},{"cold_start":False}):
+            with self.assertRaises(ValueError):
+                registered_latch(ROOT,{**config,**change})
+
     def test_ongoing_iterations_remain_cold_and_one_execution_per_registration(self):
         config=json.loads((ROOT/"config/speedup_n06049_s003_r03.json").read_text())
         auth=json.loads((ROOT/"manifests/authorization_speedup_003.json").read_text())

@@ -139,6 +139,39 @@ def main():
         "--output",str(evidence/"continuous_correction_verification"),"--seconds","60"])
     continuous_correction_certificate=json.loads((evidence/"continuous_correction_verification/certificate.json").read_text())
     continuous_correction_stats=json.loads((evidence/"continuous_correction_worker/solver_statistics.json").read_text())
+    stage("tiny_hot_repair_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/source_features_problem.json",str(evidence/"hot_repair_worker"),
+        "config/tiny_ac_correction_hot_repair.json",str(time.time()+120)],timeout=125)
+    stage("tiny_hot_repair_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/source_features_problem.json",
+        "--solution",str(evidence/"hot_repair_worker/candidate_final.json"),
+        "--output",str(evidence/"hot_repair_verification"),"--seconds","60"])
+    hot_repair_certificate=json.loads((evidence/"hot_repair_verification/certificate.json").read_text())
+    hot_repair_stats=json.loads((evidence/"hot_repair_worker/solver_statistics.json").read_text())
+    used_transfers=0
+    for interval in hot_repair_stats["ac_intervals"]:
+        correction=interval["reserve_ac"]["correction"]
+        if (correction["policy"]!="network_slp_continuous_hot_repair_v3"
+            or correction["final_model_residual"]>1e-8 or correction["internal_primal_target"]!=1e-10
+            or any(x!=round(x) for x in correction["final_discrete_settings"].values())
+            or "no dual certificate claimed" not in interval["warm_start"]):
+            raise RuntimeError("Hot repair did not preserve discrete/original-model acceptance")
+        for phase in interval["reserve_ac"]["phases"]:
+            if phase["phase"]=="continuous_shunt_fallback":
+                guard=phase["native_primal_guard"]
+                if (guard["policy"]!="verified_continuous_shunt_candidate_v1"
+                    or not guard["candidate_only"] or guard["discrete_solution_claimed"]):
+                    raise RuntimeError("Continuous candidate guard made an invalid discrete claim")
+            if phase["phase"]=="rounded_shunt_fallback" and phase["start"]["dual_transfer_used"]:
+                used_transfers+=1
+                start=phase["start"]
+                if (not start["dual_start"]["complete_current_mapping"]
+                    or start["dual_start"]["accepted_interface_count"]!=start["dual_start"]["constraint_count"]
+                    or not start["complete_primal_start"]["complete"] or start["dual_certificate_claimed"]
+                    or start["options"]["warm_start_init_point"]!="yes"):
+                    raise RuntimeError("Same-hour primal/dual transfer was not fully audited")
+    if used_transfers==0:
+        raise RuntimeError("Tiny hot-repair pipeline never exercised its registered transfer")
     continuous_native=list((evidence/"continuous_correction_worker/native_correction").rglob("*.json"))
     if not continuous_native:
         raise RuntimeError("Missing native IPX correction records")
@@ -239,14 +272,14 @@ def main():
         raise RuntimeError("New tiny integration did not exercise the registered source features")
     for checked in (certificate,separated_certificate,hipo_certificate,dominance_certificate,
                     reserve_ac_certificate,source_features_certificate,recovery_certificate,cold_seed_certificate,
-                    correction_certificate,continuous_correction_certificate):
+                    correction_certificate,continuous_correction_certificate,hot_repair_certificate):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
     coverage_records={}
     for name in ("worker","separated_worker","hipo_worker","dominance_worker",
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
-                 "continuous_correction_worker"):
+                 "continuous_correction_worker","hot_repair_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -288,6 +321,8 @@ def main():
         "tiny_network_correction_statistics":correction_stats,
         "tiny_continuous_correction_certificate":continuous_correction_certificate,
         "tiny_continuous_correction_statistics":continuous_correction_stats,
+        "tiny_hot_repair_certificate":hot_repair_certificate,
+        "tiny_hot_repair_statistics":hot_repair_stats,
         "tiny_worker_exact_interval_coverage":coverage_records,
         "tiny_source_features_scheduling":feature_stats,
         "tiny_source_features_ac_statistics":source_ac_stats,

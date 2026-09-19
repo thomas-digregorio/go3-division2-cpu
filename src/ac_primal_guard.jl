@@ -1,8 +1,9 @@
-# Feasibility-first termination on a fixed rounded-shunt model. This is an
-# explicitly labelled heuristic stopping rule, NOT a KKT/optimality certificate.
+# Audited early termination for fixed-shunt repair or an explicitly candidate-only
+# continuous-shunt search. This is NOT a KKT/global-optimality certificate.
 # No source/model changes, external starts, or reliance on native inf_pr alone.
 
 const AC_PRIMAL_GUARD_POLICY="verified_stable_rounded_primal_v1"
+const AC_CANDIDATE_GUARD_POLICY="verified_continuous_shunt_candidate_v1"
 
 function ac_objective_stable(history,tolerance)
     length(history)>=2 && all(isfinite,history) || return false
@@ -12,7 +13,7 @@ end
 function install_ac_primal_guard!(model;policy="off",phase,
         min_iterations=20,window=8,objective_relative_range=1e-7,
         primal_tolerance=AC_POINT_RESIDUAL_TOLERANCE)
-    policy in ("off",AC_PRIMAL_GUARD_POLICY) || error("Unknown AC primal guard policy")
+    policy in ("off",AC_PRIMAL_GUARD_POLICY,AC_CANDIDATE_GUARD_POLICY) || error("Unknown AC primal guard policy")
     primal_tolerance isa Real && isfinite(primal_tolerance) &&
         0<primal_tolerance<=AC_POINT_RESIDUAL_TOLERANCE || error("Invalid internal primal target")
     record=Dict{String,Any}("policy"=>policy,"phase"=>phase,"enabled"=>policy!="off",
@@ -23,15 +24,23 @@ function install_ac_primal_guard!(model;policy="off",phase,
     accepted=Ref{Any}(nothing)
     state=(record=record,point=accepted)
     policy=="off" && return state
-    phase in ("rounded_shunts","numerical_recovery") ||
-        error("Primal guard is restricted to fixed rounded-shunt solves")
+    candidate_only=policy==AC_CANDIDATE_GUARD_POLICY
+    if candidate_only
+        phase=="continuous_shunt_candidate" || error("Candidate guard requires explicitly relaxed-shunt phase")
+        record["certificate_scope"]="continuous-shunt candidate only; not an admissible discrete solution, KKT certificate or global bound"
+    else
+        phase in ("rounded_shunts","numerical_recovery") ||
+            error("Primal guard is restricted to fixed rounded-shunt solves")
+    end
+    record["candidate_only"]=candidate_only
+    record["discrete_solution_claimed"]=false # Full final verification is always separate.
     min_iterations isa Integer && !(min_iterations isa Bool) && min_iterations>=0 ||
         error("Invalid primal guard minimum iterations")
     window isa Integer && !(window isa Bool) && window>=2 || error("Invalid primal guard window")
     objective_relative_range isa Real && !(objective_relative_range isa Bool) &&
         isfinite(objective_relative_range) && objective_relative_range>=0 ||
         error("Invalid primal guard objective window tolerance")
-    if haskey(object_dictionary(model),:shunt_step)
+    if !candidate_only && haskey(object_dictionary(model),:shunt_step)
         all(is_fixed,model[:shunt_step]) || error("Primal guard requires fixed shunt steps")
     end
     variables=all_variables(model)

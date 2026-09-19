@@ -96,3 +96,28 @@ end
     @test r["audit_count"]==0
     @test value(x)≈2.0 atol=1e-8
 end
+
+@testset "GO3 unfixed-shunt guard certifies only an intermediate candidate" begin
+    m=Model(optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,
+        "tol"=>1e-12,"constr_viol_tol"=>1e-12,"bound_relax_factor"=>0.0))
+    @variable(m,0<=shunt_step[["s"]]<=2,start=0.1)
+    @variable(m,0<=p<=3,start=0.0)
+    @constraint(m,shunt_step["s"]==0.4)
+    @constraint(m,p+shunt_step["s"]==1.4)
+    @objective(m,Max,-p)
+    @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,
+        phase="rounded_shunts")
+    @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_CANDIDATE_GUARD_POLICY,
+        phase="rounded_shunts")
+    guard=install_ac_primal_guard!(m;policy=AC_CANDIDATE_GUARD_POLICY,phase="continuous_shunt_candidate",
+        min_iterations=0,window=2,objective_relative_range=1e100,primal_tolerance=1e-10)
+    optimize!(m)
+    record=finish_ac_primal_guard!(m,guard)
+    @test record["stop_requested"] && record["candidate_only"]
+    @test !record["discrete_solution_claimed"]
+    @test occursin("not an admissible discrete solution",record["certificate_scope"])
+    @test record["returned_point_passed_internal_target"]
+    @test !is_fixed(shunt_step["s"]) && !isinteger(value(shunt_step["s"]))
+    @test value(shunt_step["s"])≈0.4 atol=1e-10
+    @test lower_bound(shunt_step["s"])==0 && upper_bound(shunt_step["s"])==2
+end

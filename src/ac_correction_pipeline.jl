@@ -138,12 +138,13 @@ end
 
 function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,
         phase="fixed_shunt_fallback",max_iter=120,allow_unfixed_shunts=false,barrier_strategy="adaptive",
-        primal_target=AC_POINT_RESIDUAL_TOLERANCE)
+        primal_target=AC_POINT_RESIDUAL_TOLERANCE,continuous_candidate_guard=false,dual_seed=nothing)
     started=time()
     barrier_strategy in ("adaptive","monotone") || error("Unknown correction barrier strategy")
     isfinite(primal_target) && 0<primal_target<=AC_POINT_RESIDUAL_TOLERANCE || error("Invalid correction fallback target")
     fixed_shunts=!haskey(object_dictionary(model),:shunt_step) || all(is_fixed,model[:shunt_step])
     fixed_shunts || allow_unfixed_shunts || error("Unfixed shunts require candidate-only fallback")
+    dual_seed===nothing || fixed_shunts || error("Rounded dual seed cannot initialize unfixed shunts")
     correction_phase_event(phase,"begin";details=Dict("requested_seconds"=>seconds,
         "remaining_hour_seconds"=>deadline-started,"max_iterations"=>max_iter,
         "fixed_shunts"=>fixed_shunts,"barrier_strategy"=>barrier_strategy))
@@ -162,9 +163,28 @@ function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,
             set_optimizer_attribute(model,key,val);record["options"][key]=val
         end
     end
+    record["dual_transfer_used"]=dual_seed!==nothing
+    if dual_seed!==nothing
+        # Finite approximate multipliers initialize the current same-hour model.
+        # Their mapping is audited; they are NOT used as a lower-bound proof.
+        fixed=Set(FixRef(v) for v in model[:shunt_step])
+        dual_record=restore_complete_ac_dual!(model,dual_seed.point;
+            new_fixed=fixed,removed_bounds=dual_seed.removed_bounds)
+        record["dual_start"]=dual_record
+        merge!(record["options"],dual_record["options"])
+        record["policy"]="same_interval_primal_dual_rounded_repair_v1"
+        record["complete_primal_start"]["dual_or_basis_start"]=true
+        record["complete_primal_start"]["basis_start"]=false
+        record["dual_certificate_claimed"]=false
+        record["dual_source_residual"]=dual_seed.primal_residual
+    end
     set_optimizer_attribute(model,"max_wall_time",rounded_ac_time_limit(seconds,deadline))
-    guard=install_ac_primal_guard!(model;policy=fixed_shunts ? AC_PRIMAL_GUARD_POLICY : "off",phase="rounded_shunts",
-        min_iterations=0,window=2,objective_relative_range=1.0,primal_tolerance=primal_target)
+    guard_policy=fixed_shunts ? AC_PRIMAL_GUARD_POLICY :
+        (continuous_candidate_guard ? AC_CANDIDATE_GUARD_POLICY : "off")
+    guard_phase=fixed_shunts ? "rounded_shunts" : "continuous_shunt_candidate"
+    guard=install_ac_primal_guard!(model;policy=guard_policy,phase=guard_phase,
+        min_iterations=0,window=2,objective_relative_range=fixed_shunts ? 1.0 : 1e-7,
+        primal_tolerance=primal_target)
     optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
     guard_record=finish_ac_primal_guard!(model,guard)
     has_values(model) || return point,Dict("phase"=>phase,"complete_finite_point"=>true,
@@ -185,6 +205,21 @@ function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,
         "rollback"=>!accept,"certificate_scope"=>"primal feasibility only, not optimality"))
 end
 
+function correction_dual_seed(model,point;primal_target=1e-10)
+    has_values(model) && has_duals(model) || return nothing
+    residual=ac_primal_residual(model,point)
+    residual<=primal_target || return nothing
+    native_point=capture_complete_ac_primal(model)
+    native_point.variables==point.variables && native_point.values==point.values || return nothing
+    multipliers=capture_complete_ac_dual(model)
+    removed=Set{ConstraintRef}()
+    for v in model[:shunt_step]
+        has_lower_bound(v) && push!(removed,LowerBoundRef(v))
+        has_upper_bound(v) && push!(removed,UpperBoundRef(v))
+    end
+    (point=multipliers,removed_bounds=removed,primal_residual=residual)
+end
+
 function round_correction_shunts!(model,point,shunt_domains)
     point.variables==all_variables(model) || error("Incomplete shunt-rounding point")
     lookup=Dict(zip(point.variables,point.values));settings=Dict{String,Float64}()
@@ -199,7 +234,8 @@ function round_correction_shunts!(model,point,shunt_domains)
 end
 
 function continuous_then_rounded_correction(model,optimizer,point,shunt_domains;
-        deadline,slp_seconds,lp_seconds,max_rounds,fallback_seconds,threads,diagnostic_dir,lp_solver)
+        deadline,slp_seconds,lp_seconds,max_rounds,fallback_seconds,threads,diagnostic_dir,lp_solver,
+        hot_repair=false)
     phases=Any[]
     primal_target=1e-10 # stricter internal search target, not a changed final tolerance
     function linear_stage(point,name,seconds)
@@ -220,20 +256,31 @@ function continuous_then_rounded_correction(model,optimizer,point,shunt_domains;
     if ac_primal_residual(model,point)>primal_target && deadline-time()>8
         seconds=min(fallback_seconds,0.6*max(0.0,deadline-time()-2.0))
         point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds,max_iter=600,
-            phase="continuous_shunt_fallback",allow_unfixed_shunts=true,barrier_strategy="monotone",primal_target)
+            phase="continuous_shunt_fallback",allow_unfixed_shunts=true,barrier_strategy="monotone",primal_target,
+            continuous_candidate_guard=hot_repair)
         push!(phases,phase)
     end
     continuous_residual=ac_primal_residual(model,point)
+    dual_seed=hot_repair ? correction_dual_seed(model,point;primal_target) : nothing
     point,settings=round_correction_shunts!(model,point,shunt_domains)
     correction_phase_event("round_shunts","complete";details=Dict("count"=>length(settings),
         "continuous_candidate_residual"=>continuous_residual,
         "rounded_candidate_residual"=>ac_primal_residual(model,point),
-        "continuous_candidate_is_final"=>false))
-    point=linear_stage(point,"rounded_shunt_correction",min(slp_seconds,max(0.0,0.4*(deadline-time()))))
+        "continuous_candidate_is_final"=>false,"same_interval_dual_seed_available"=>dual_seed!==nothing))
+    if dual_seed===nothing
+        point=linear_stage(point,"rounded_shunt_correction",min(slp_seconds,max(0.0,0.4*(deadline-time()))))
+    else
+        # The two preceding full attempts obtained no accepted rounded LP step.
+        # Use the already-audited same-hour NLP initialization directly instead.
+        push!(phases,Dict("phase"=>"rounded_shunt_correction","wall_seconds"=>0.0,
+            "termination"=>"skipped_for_same_interval_primal_dual_repair",
+            "max_primal_residual"=>ac_primal_residual(model,point),"accepted_steps"=>0,"rounds"=>Any[],
+            "dual_certificate_claimed"=>false))
+    end
     if ac_primal_residual(model,point)>primal_target && deadline-time()>5
         seconds=correction_fallback_budget(fallback_seconds,deadline)
         point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds,max_iter=600,
-            phase="rounded_shunt_fallback",barrier_strategy="monotone",primal_target)
+            phase="rounded_shunt_fallback",barrier_strategy="monotone",primal_target,dual_seed)
         push!(phases,phase)
     end
     point,phases,settings
@@ -261,9 +308,10 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
     point=(variables=all_variables(model),values=Float64[start_value(v) for v in all_variables(model)])
     built=time()-began
     revisited=false
-    if policy==AC_CORRECTION_CONTINUOUS_POLICY
+    if policy in (AC_CORRECTION_CONTINUOUS_POLICY,AC_CORRECTION_HOT_REPAIR_POLICY)
         point,phases,settings=continuous_then_rounded_correction(model,optimizer,point,shunt_domains;
-            deadline,slp_seconds,lp_seconds,max_rounds,fallback_seconds,threads,diagnostic_dir,lp_solver)
+            deadline,slp_seconds,lp_seconds,max_rounds,fallback_seconds,threads,diagnostic_dir,lp_solver,
+            hot_repair=policy==AC_CORRECTION_HOT_REPAIR_POLICY)
     else
     correction_phase_event("linearized_correction","begin";details=Dict(
         "budget_seconds"=>slp_seconds,"remaining_hour_seconds"=>deadline-time()))
@@ -329,7 +377,7 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
     model.ext[:reserve_ac]["phases"]=phases
     model.ext[:reserve_ac]["interval_primal_start"]=start_record
     model.ext[:reserve_ac]["correction"]=Dict("policy"=>policy,"lp_solver"=>lp_solver,
-        "internal_primal_target"=>(policy==AC_CORRECTION_CONTINUOUS_POLICY ? 1e-10 : AC_POINT_RESIDUAL_TOLERANCE),
+        "internal_primal_target"=>(policy==AC_CORRECTION_POLICY ? AC_POINT_RESIDUAL_TOLERANCE : 1e-10),
         "final_acceptance_tolerance"=>AC_POINT_RESIDUAL_TOLERANCE,
         "model_build_and_initialization_seconds"=>built,"total_seconds"=>time()-began,
         "shunts_revisited"=>revisited,"final_discrete_settings"=>settings,

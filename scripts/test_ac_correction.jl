@@ -257,3 +257,38 @@ end
         previous=result
     end
 end
+
+@testset "GO3 same-hour primal dual repair maps only shunt domain changes" begin
+    m=Model();@variable(m,0<=shunt_step[["s"]]<=2,start=0.0)
+    @variable(m,0<=p<=3,start=0.0)
+    @constraint(m,p+shunt_step["s"]==1.4)
+    @objective(m,Max,-p)
+    start=(variables=all_variables(m),values=[start_value(v) for v in all_variables(m)])
+    opt=optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,"bound_relax_factor"=>0.0)
+    original_objective=objective_function(m)
+    result,phases,settings=continuous_then_rounded_correction(m,opt,start,Dict("s"=>(0.0,2.0));
+        deadline=time()+25,slp_seconds=5.0,lp_seconds=3.0,max_rounds=0,
+        fallback_seconds=10.0,threads=4,diagnostic_dir=nothing,lp_solver="ipx",hot_repair=true)
+    continuous=only(p for p in phases if p["phase"]=="continuous_shunt_fallback")
+    repair=only(p for p in phases if p["phase"]=="rounded_shunt_fallback")
+    skipped=only(p for p in phases if p["phase"]=="rounded_shunt_correction")
+    @test continuous["native_primal_guard"]["policy"]==AC_CANDIDATE_GUARD_POLICY
+    @test continuous["native_primal_guard"]["candidate_only"]
+    @test repair["start"]["dual_transfer_used"]
+    @test repair["start"]["dual_start"]["complete_current_mapping"]
+    @test repair["start"]["dual_start"]["new_fixed_shunt_zero_duals"]==1
+    @test repair["start"]["dual_start"]["removed_shunt_bound_duals"]==2
+    @test repair["start"]["complete_primal_start"]["complete"]
+    @test !repair["start"]["complete_primal_start"]["basis_start"]
+    @test !repair["start"]["dual_certificate_claimed"]
+    @test repair["start"]["options"]["warm_start_init_point"]=="yes"
+    @test skipped["termination"]=="skipped_for_same_interval_primal_dual_repair"
+    @test settings["s"]==1.0
+    @test ac_primal_residual(m,result)<=1e-10
+    @test result.values[findfirst(==(p),result.variables)]≈0.4 atol=1e-10
+    @test JuMP.isequal_canonical(objective_function(m),original_objective)
+    @test lower_bound(p)==0 && upper_bound(p)==3
+    bad=(variables=result.variables,values=copy(result.values))
+    bad.values[findfirst(==(p),bad.variables)]+=0.1
+    @test correction_dual_seed(m,bad)===nothing
+end
