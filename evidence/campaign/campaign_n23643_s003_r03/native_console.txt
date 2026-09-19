@@ -1,0 +1,20 @@
+GO3_PROGRESS {"elapsed_worker_seconds":0.08999991416931152,"stage":"loading","remaining_work_seconds":3835.5978348255157}
+GO3_PROGRESS {"elapsed_worker_seconds":3.674999952316284,"stage":"scheduling","remaining_work_seconds":3832.012834787369}
+GO3_PROGRESS {"elapsed_scheduling_seconds":4.831000089645386,"event":"disk_handoff_begin","elapsed_worker_seconds":8.569999933242798,"stage":"scheduling_event","remaining_work_seconds":3827.1178348064423}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+GO3_PROGRESS {"elapsed_scheduling_seconds":17.6010000705719,"event":"disk_handoff_complete","constraint_inventory":{"VariableRef in MathOptInterface.ZeroOne":2592720,"AffExpr in MathOptInterface.EqualTo{Float64}":4346392,"AffExpr in MathOptInterface.GreaterThan{Float64}":2037696,"VariableRef in MathOptInterface.GreaterThan{Float64}":16167648,"VariableRef in MathOptInterface.LessThan{Float64}":16159392,"VariableRef in MathOptInterface.EqualTo{Float64}":1427328,"AffExpr in MathOptInterface.LessThan{Float64}":13827840},"builder_solve_calls":0,"load_verify_and_gc_seconds":12.736999988555908,"policy":"disk_backed_native_v1","names_policy":"Complete original names and stable indices retained in binary sidecars; numeric solver uses positions","stage":"scheduling_event","rows_or_columns_eliminated":0,"source_values_changed":false,"cold_unsolved":true,"manifest_sha256":"d6032ccb73cd4166b6e668f07258452428f4010d43578ca937f092bb00284de6","whole_model_copy":true,"builder_exited_before_native_load":true,"variables":19323456,"elapsed_worker_seconds":21.310999870300293,"nonzeros":78597478,"rows":20211928,"export_seconds":353.87400007247925,"native_julia_per_row_metadata":false,"remaining_work_seconds":3814.3768348693848}
+GO3_PROGRESS {"elapsed_scheduling_seconds":17.746000051498413,"event":"economic_solve_begin","elapsed_worker_seconds":21.42799997329712,"stage":"scheduling_event","actual_solver_limit_seconds":3600.0,"remaining_work_seconds":3814.259834766388}
+ MIP      : 
+Rows      : 20211928
+Cols      : 19323456
+Nonzeros  : 78597478
+Integer   : 2592720 (2592720 binary)
+Coefficient ranges:
+  Matrix  [1e-05, 6e+03]
+  Cost    [1e-01, 1e+06]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-05, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds

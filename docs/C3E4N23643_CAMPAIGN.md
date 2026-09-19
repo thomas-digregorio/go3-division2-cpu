@@ -382,3 +382,45 @@ baseline: `1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`.
 The exit-0 builder record proves it exited before native loading. Compact
 hash-verified evidence is in `evidence/components/scheduling_spool_20260919/`.
 These tests establish the transfer contract, not full-case resource feasibility.
+
+## r03 result: transfer succeeds; native solve startup reaches RAM floor
+
+One cold run used frozen commit **044f3f571901feaa48c2e5b6b274b62e479a32ea**
+and configuration SHA256
+`7cad0265a6c3789fcf7d02d508904ede54a2148d2bf4d8bc75a0453f97f7f03d`.
+It stopped after **962.395 seconds (16 min 2.395 s)** with
+`NO_VERIFIED_INCUMBENT`. This was a host-memory safety stop, not infeasibility
+and not expiration of the 7,200-second deadline.
+
+The targeted transfer bottleneck is resolved in this attempt:
+
+- The unchanged model contains **19,323,456 columns, 20,211,928 affine rows,
+  78,597,478 nonzeros and 2,592,720 binary variables**.
+- Construction took 522.094 s, metadata cleanup 8.607 s, and binary export
+  353.874 s. The builder process completed in 916.445 s without a solve.
+- The hash-bound spool is 3,378,184,995 bytes. The builder exited with code 0;
+  host available RAM rose from about 9.1 to 19.7 GiB before native loading.
+- Complete native loading, hash validation and GC took 12.737 s. HiGHS accepted
+  all recorded dimensions/nonzeros. `disk_handoff_complete` and subsequently
+  `economic_solve_begin` were both recorded; neither event was reached in r01/r02.
+
+Immediately after entering the **native HiGHS solve**, memory grew again.
+The guard observed only **2,030,616,576 bytes (1.891 GiB)** available, below the
+unchanged 2 GiB floor, and stopped the owned process tree. Sampled peak process-
+tree RSS was **18.854 GiB**. The stop was approximately 5.6 s after native solve
+entry. The console had printed model dimensions/coefficient ranges and small-
+bound warnings, but no completed presolve or optimization result. The evidence
+does **not** identify a particular internal HiGHS allocation or prove a numerical
+failure; it identifies a new native-startup resource boundary after a successful
+transfer. No numerical bound or tolerance was modified in response to warnings.
+
+No objective, bound, gap, schedule, AC incumbent or full-case security certificate
+was produced. The registered quality target is still unmet. All owned processes
+exited, and no automatic replacement was launched. The successful 8,316-bus
+result remains unchanged. Raw inputs, the full spool and run artifacts remain
+local; compact hash-checked evidence is in
+`evidence/campaign/campaign_n23643_s003_r03/`.
+
+Remaining work is to diagnose/reduce native HiGHS startup memory, or obtain more
+available RAM, before authorizing another full attempt. It would be incorrect
+to claim that fixing the JuMP-to-HiGHS overlap alone made the full solve fit.
