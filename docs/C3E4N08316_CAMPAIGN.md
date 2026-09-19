@@ -228,3 +228,92 @@ and quality remain to be measured, not inferred from this fixture.
 The tested correction was already pushed as `b657dce`; the final pre-run freeze
 also includes this complete gate record. No settings or source constraints are
 changed between the freeze and the r02 run.
+
+### r02 measured result: complete and within time, physical gate failed
+
+The single cold attempt at `63dc169b561c1ffb66850740c2330903c0dd1fd3` finished
+in **6,562.206 seconds (109.37 minutes)**. All 48 AC intervals and all 301,872
+contingency-hour checks completed. Native handoff addressed the preceding
+memory failure: sampled peak process-tree RSS was 13.282 GiB. No run was repeated.
+
+| Gate or measurement | r02 result |
+| --- | ---: |
+| Official objective | 1,153,496,520.291184 |
+| Target (90% of sixth-best eligible score) | 923,018,777.350128 |
+| Scheduling gap (not a full AC global gap) | 0.00028949511116229 |
+| Independent hard-feasibility check | PASS |
+| Maximum independent hard residual | 9.2146e-11 |
+| Independent / official objective difference | 0.010201 |
+| Official `feas` / `phys_feas` | 1 / **0** |
+| Maximum absolute real-power imbalance | 1.39572e-8 p.u. |
+| Maximum absolute reactive-power imbalance | 4.62205e-10 p.u. |
+| Campaign acceptance | **FAIL: physical-feasibility gate** |
+
+The archived `VERIFIED_HARD_FEASIBLE` status refers to the separate hard-constraint
+check. It is not a campaign pass: `quality_gate.pass=false`, and the completed
+network registration is null. The 23,643-bus attempt remains unstarted.
+
+| Measured stage | Seconds |
+| --- | ---: |
+| Loading/preprocessing | 1.956 |
+| Scheduling | 803.285 |
+| Initial reserves | 96.312 |
+| AC refinement | 4,705.193 |
+| Final reserves/postprocessing | 183.014 |
+| Independent final verification | 292.668 |
+| Official final verification | 210.930 |
+| Total end to end, including other controller/JIT/wait/serialization work | 6,562.206 |
+
+The preliminary schedule check exhausted its approximately 240-second allowance
+without a complete certificate; that was not an infeasibility proof. Final
+independent and official verification both completed. Penalized source thermal
+overloads and reserve shortages remain in the objective; no zero-overload claim
+is made.
+
+Compact evidence is retained in `evidence/campaign/campaign_n08316_s103_r02/`;
+all original solutions and logs remain local, and nothing was pruned. The
+completed result SHA256 is
+`bfafc1ee3a980cd2aaed589f035350e36d09a00fff01a83552131becc6fccd5a`.
+Candidate SHA256 is
+`ed633818eda73ff71228b4991a49702459839edb6955a09920ae8f1949f5cfc0`.
+
+### Failure mechanism and r03 correction
+
+The official physical check uses the pinned evaluator's `hard_constr_tol=1e-8`
+for the maximum absolute bus P/Q imbalance. Its worst r02 P value was
+`-1.395718562946513e-8` at `bus_7606`, zero-based time index 2 (hour 3).
+On this case's 100 MVA base, the magnitude is about 1.396 W, versus the 1 W
+acceptance limit. The limit is not changed or waived.
+
+That bus has producers `sd_0445` and `sd_0446`. Their first-hour dispatches
+were each approximately 6.98e-9 p.u. above the forward-propagated ramp-down
+lower bound. The pinned upstream bound-tightening functions skip changes
+smaller than 1e-8, but its final exporter applies the exact ramp intersections.
+Two such adjustments at the same bus can therefore accumulate past the physical
+threshold. Local pre-export AC residuals do not detect that later injection
+change. The old unprojected full hourly vector was not retained, so the precise
+per-device pre/post comparison is inferred from source/log evidence and tested
+with a synthetic reproduction, not presented as a saved original-vector audit.
+
+The separately registered r03 opts into `exact_source_intersections_v1`:
+
+- Apply every source/ramp-bound intersection during horizon preparation and
+  sequential AC preparation. The bound-bookkeeping threshold is zero, not a
+  relaxation of any solver/evaluator feasibility tolerance. Empty intersections
+  fail explicitly; they are never averaged or repaired by relaxing PMIN/PMAX.
+- Retain the unchanged source exporter and log its signed dispatch adjustments
+  by bus/hour. Save each candidate before rejecting export drift greater than
+  1e-9 p.u. on already-refined hours. Unfinished future placeholders are logged
+  separately and cannot be mislabeled complete. This diagnostic is not a
+  replacement for exhaustive independent/official verification.
+- Skip only the known-unverified preliminary schedule evaluation, using the
+  existing `skip_unverified_schedule_v1` controller policy. Every final hour
+  and contingency must still pass both complete checks inside the same 7,200
+  seconds. The initial schedule remains saved and is never called verified.
+
+All other r02 configuration fields, raw input, gap, solver/evaluator tolerances,
+source costs/penalties and cold-start policy are unchanged. The original CPU
+HiGHS plus Ipopt/MUMPS route remains selected; correction/SLP is off. A config
+regression enforces this exact difference. The full new tiny component gate,
+hash-matched source inventory, pushed frozen revision and clean preflight must
+pass before r03 can claim its one-use full-run authorization.
