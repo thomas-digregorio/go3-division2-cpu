@@ -89,6 +89,14 @@ function candidate_from_schedule(input, schedule)
         b["vm"] = fill(source["initial_status"]["vm"],length(input.periods))
         b["va"] = fill(source["initial_status"]["va"],length(input.periods))
     end
+    # A cold candidate uses source initial terminal flows, not an imported
+    # optimized point. AC refinement keeps each DC link freely controllable.
+    for link in solution["time_series_output"]["dc_line"]
+        prior = input.dc_line_lookup[link["uid"]]["initial_status"]
+        for field in ("pdc_fr", "qdc_fr", "qdc_to")
+            link[field] = fill(prior[field],length(input.periods))
+        end
+    end
     solution
 end
 

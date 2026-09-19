@@ -21,6 +21,26 @@ def source_hashes():
     return complete_source_hashes(ROOT)
 
 
+def dc_pipeline_audit(evidence):
+    """Prove the small integration actually optimized and exported the link."""
+    solution=json.loads((evidence/"dc_worker/candidate_final.json").read_text())
+    rows=solution["time_series_output"]["dc_line"]
+    if (len(rows)!=1 or rows[0]["uid"]!="dc0" or len(rows[0]["pdc_fr"])!=3
+            or any(p<=0.05 for p in rows[0]["pdc_fr"])
+            or all(abs(p-0.35)<=1e-4 for p in rows[0]["pdc_fr"])):
+        raise RuntimeError("Tiny DC pipeline did not optimize and export nonzero DC flow")
+    certificate=json.loads((evidence/"dc_verification/certificate.json").read_text())
+    stats=json.loads((evidence/"dc_worker/solver_statistics.json").read_text())
+    if (not certificate["pass"] or not certificate["complete"] or certificate["official_phys_feas"]!=1
+            or certificate["contingencies_completed"]!=9 or certificate["contingencies_required"]!=9):
+        raise RuntimeError("Tiny DC pipeline failed complete physical/exhaustive verification")
+    from go3cpu.controller import latest_snapshot
+    coverage=pipeline_coverage(latest_snapshot(evidence/"dc_worker/progress"),0,stats,3)
+    if not coverage["complete"]:
+        raise RuntimeError("Tiny DC pipeline did not refine all three intervals")
+    return {"certificate":certificate,"terminal_flows":rows[0],"coverage":coverage}
+
+
 def main():
     env=runtime_environment()
     evidence=Path(tempfile.mkdtemp(prefix="pilot002_component_gate_",dir=ROOT/"tmp"))
@@ -49,6 +69,8 @@ def main():
         "scripts/test_reserve_ac.jl"])
     stage("source_feature_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_source_features.jl"])
+    stage("dc_device_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_dc_devices.jl"])
     stage("ac_primal_start_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_primal_start.jl"])
     stage("ac_interval_start_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -157,6 +179,14 @@ def main():
                 or audit["maximum_refined_bus_injection_change_pu"]>1e-9
                 or audit["source_bounds_changed"] or audit["official_tolerance_changed"]):
             raise RuntimeError("Exported refined dispatch exceeded the unchanged physical contract")
+    stage("tiny_dc_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/dc_problem.json",str(evidence/"dc_worker"),
+        "config/tiny_ac_exact_ramp.json",str(time.time()+120)],timeout=125)
+    stage("tiny_dc_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dc_problem.json",
+        "--solution",str(evidence/"dc_worker/candidate_final.json"),
+        "--output",str(evidence/"dc_verification"),"--seconds","60"])
+    dc_audit=dc_pipeline_audit(evidence)
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -436,7 +466,7 @@ def main():
                     reserve_ac_certificate,source_features_certificate,recovery_certificate,cold_seed_certificate,
                     correction_certificate,continuous_correction_certificate,hot_repair_certificate,
                     continuation_certificate,original_guard_certificate,guarded_recovery_certificate,
-                    native_scheduling_certificate,exact_ramp_certificate):
+                    native_scheduling_certificate,exact_ramp_certificate,dc_audit["certificate"]):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -444,7 +474,7 @@ def main():
     for name in ("worker","separated_worker","hipo_worker","dominance_worker",
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
                  "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
-                 "guarded_recovery_worker","native_scheduling_worker","exact_ramp_worker"):
+                 "guarded_recovery_worker","native_scheduling_worker","exact_ramp_worker","dc_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -464,7 +494,8 @@ def main():
     julia_logs="\n".join((evidence/(name+".log")).read_text()
         for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests",
                      "ac_primal_start_tests","ac_interval_start_tests","ac_ramp_bound_tests","ac_recovery_tests",
-                     "ac_primal_guard_tests","scheduling_seed_tests","scheduling_storage_tests","ac_correction_tests"))
+                     "ac_primal_guard_tests","scheduling_seed_tests","scheduling_storage_tests","ac_correction_tests",
+                     "dc_device_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
@@ -483,6 +514,7 @@ def main():
         "tiny_native_scheduling_statistics":native_scheduling_stats,
         "tiny_exact_ramp_certificate":exact_ramp_certificate,
         "tiny_exact_ramp_statistics":exact_ramp_stats,
+        "tiny_dc_pipeline":dc_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,
         "tiny_cold_seed_scheduling":seed_stats,

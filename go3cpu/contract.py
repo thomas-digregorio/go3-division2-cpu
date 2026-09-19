@@ -25,6 +25,43 @@ def load_case(path, expected_hash=None):
     return case, digest
 
 
+def _validate_dc_links(network):
+    """Lossless controllable links with the original GO3 terminal domains.
+
+    A DC link is not an AC admittance branch and has no on/off output. Outages
+    remain separately restricted to the regression-tested AC contingency set.
+    """
+    buses = {b["uid"] for b in network["bus"]}
+    other_ids = {x["uid"] for section in SECTIONS if section != "dc_line"
+                 for x in network[section]}
+    seen = set()
+    for link in network["dc_line"]:
+        uid = link["uid"]
+        if uid in seen or uid in other_ids:
+            raise ValueError(f"{uid}: duplicate DC device identity")
+        seen.add(uid)
+        if (link["fr_bus"] not in buses or link["to_bus"] not in buses or
+                link["fr_bus"] == link["to_bus"]):
+            raise ValueError(f"{uid}: invalid DC terminal buses")
+        fields = ("pdc_ub", "qdc_fr_lb", "qdc_fr_ub", "qdc_to_lb", "qdc_to_ub")
+        initial_fields = ("pdc_fr", "qdc_fr", "qdc_to")
+        initial = link["initial_status"]
+        values = [link.get(k) for k in fields] + [initial.get(k) for k in initial_fields]
+        if any(not isinstance(v, (int, float)) or isinstance(v, bool) or
+               not math.isfinite(v) for v in values):
+            raise ValueError(f"{uid}: nonfinite or nonnumeric DC source data")
+        if (link["pdc_ub"] < 0 or
+                not link["qdc_fr_lb"] <= 0 <= link["qdc_fr_ub"] or
+                not link["qdc_to_lb"] <= 0 <= link["qdc_to_ub"]):
+            raise ValueError(f"{uid}: invalid DC source bounds")
+        limits = (("pdc_fr", -link["pdc_ub"], link["pdc_ub"]),
+                  ("qdc_fr", link["qdc_fr_lb"], link["qdc_fr_ub"]),
+                  ("qdc_to", link["qdc_to_lb"], link["qdc_to_ub"]))
+        for field, lo, hi in limits:
+            if not lo <= initial[field] <= hi:
+                raise ValueError(f"{uid}: source initial {field} outside original bounds")
+
+
 def require_supported(case):
     n, t = case["network"], case["time_series_input"]
     dt = t["general"]["interval_duration"]
@@ -46,8 +83,7 @@ def require_supported(case):
             if g["q_bound_cap"] != 1 or any(not isinstance(g.get(k),(int,float)) or
                     not math.isfinite(g[k]) for k in ("q_0_lb","q_0_ub","beta_lb","beta_ub")):
                 raise ValueError(f"{g['uid']}: invalid source P-Q capability coefficients")
-    if n["dc_line"]:
-        raise NotImplementedError("DC devices are not yet covered by independent validation")
+    _validate_dc_links(n)
     for b in n["ac_line"] + n["two_winding_transformer"]:
         if b["additional_shunt"]:
             raise NotImplementedError(f"{b['uid']}: additional branch shunt is not yet supported")

@@ -68,13 +68,47 @@ There are no DC-device outages. The one source DC link is `dcl_0`, from
 15 p.u. and its reactive bounds at each terminal are -1.5 to 4.5 p.u.
 All three source initial terminal-flow values are zero.
 
-The current feature gate **correctly refuses this input** because independent
-DC-device validation is not implemented. The other previously gated features
+The initial feature gate **correctly refused this input** because independent
+DC-device validation was not implemented. The other previously gated features
 (energy windows, startup-state costs, startup-count windows, P-Q equality or
 affine bounds, and additional branch shunts) are absent here. The DC link must
 be modeled, serialized, and independently checked with its original source
 bounds; it must not be discarded to make the gate pass. No full-case solver
-has started. This audit is not a successful feature-support registration.
+has started. The subsequent component evidence below addresses this feature;
+the original audit did not itself prove feature support.
+
+## DC support: tested component milestone, not a full-case result
+
+The pinned upstream AC solver already includes the lossless DC-link model,
+with `p_to = -p_from` and independent reactive power at its two terminals.
+Project-owned changes add source-domain and identity checks, independent
+terminal-bound checks, and the signed DC injections to both the AC balance
+and every explicit post-outage solve. Exported reports retain p.u., MW and
+Mvar terminal values. Cold schedule candidates preserve source initial DC
+values; AC optimization does not fix the link to those values or to zero.
+No upstream model/evaluator file, source limit, tolerance or penalty changed.
+DC-device outages remain explicitly unsupported; this source has none.
+
+The focused gate `tmp/dc_feature_gate_7c426sjo` passed all five stages:
+103 Python tests, 31 Julia assertions, and a complete original two-bus,
+three-interval DC integration. All nine outage-interval checks completed;
+independent hard feasibility, objective agreement, official `feas=1` and
+`phys_feas=1` passed. Maximum P/Q imbalance was respectively
+1.525059246e-10 / 2.306201823e-9 p.u.; objective disagreement was
+5.229594535e-12. Tests cover both active-flow directions, all six terminal
+limits, invalid/missing data, nonzero initial powers, optimized flow export,
+and within-run primal transfer. Initial test-fixture mistakes (an incomplete
+mock schedule, an inadmissible transformer control combination, and an
+exact-equality floating-point assertion) were corrected before this gate.
+They did not require a change to solver tolerances or source physics.
+
+The raw 23,643-bus input was subsequently reread and hash-checked without
+solving. Its feature gate passes and its initial AC network is connected
+without relying on the DC link. The raw hash is unchanged. Compact component
+evidence is retained under `evidence/components/dc_support_20260919/`.
+This focused gate is **not** the complete full-case preflight gate: a final
+configuration, meaningful score reference, complete component regression,
+clean frozen/pushed revision, and resource preflight are still required.
 
 ## Comparison target requires a user decision
 

@@ -113,3 +113,25 @@ def tiny_primal_continuation_case():
     consumer = next(d for d in case["time_series_input"]["simple_dispatchable_device"] if d["uid"] == "d")
     consumer["p_ub"] = [1.0, 0.7, 0.9]
     return case
+
+
+def tiny_dc_case():
+    """One controllable lossless link, with nonzero source terminal powers."""
+    case = tiny_case()
+    case["network"]["dc_line"] = [{
+        "uid": "dc0", "fr_bus": "b0", "to_bus": "b1", "pdc_ub": 0.8,
+        "qdc_fr_lb": -0.3, "qdc_fr_ub": 0.4,
+        "qdc_to_lb": -0.2, "qdc_to_ub": 0.5,
+        "initial_status": {"pdc_fr": 0.35, "qdc_fr": 0.12, "qdc_to": -0.08}}]
+    return case
+
+
+def tiny_dc_solution(case):
+    """A checker witness, not a feasible/optimized AC solution."""
+    solution = tiny_solution(case)
+    nt = case["time_series_input"]["general"]["time_periods"]
+    solution["time_series_output"]["dc_line"] = [
+        {"uid": d["uid"], **{key: [d["initial_status"][key]]*nt
+                            for key in ("pdc_fr", "qdc_fr", "qdc_to")}}
+        for d in case["network"]["dc_line"]]
+    return solution

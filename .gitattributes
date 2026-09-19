@@ -1,3 +1,4 @@
 # Preserve the exact bytes covered by this new archive's SHA256 attestations.
 # Older archives retain their existing checkout behavior.
 /evidence/campaign/campaign_n08316_s103_r03/** -text
+/evidence/components/dc_support_20260919/** -text

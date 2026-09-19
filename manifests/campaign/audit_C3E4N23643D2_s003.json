@@ -34,7 +34,12 @@
   "contingencies_per_interval": 26870,
   "required_contingency_evaluations": 1289760,
   "contingency_scope": "All source contingencies contain exactly one existing AC-line or transformer identity; zero DC-device outages.",
-  "unsupported_required_features_present": ["dc_line: independent validation not implemented"],
+  "unsupported_required_features_present": [],
+  "initial_feature_gate_rejection": "DC devices were not independently validated at the original audit; subsequently implemented and component-tested.",
+  "source_feature_gate_pass": true,
+  "initial_ac_connected_components": 1,
+  "dc_component_evidence": "evidence/components/dc_support_20260919/result.json",
+  "complete_full_case_preflight_pending": true,
   "other_feature_counts": {
     "energy_req_lb": 0,
     "energy_req_ub": 0,

@@ -79,6 +79,8 @@ def check(case, solution, *, deadline=float("inf"), exhaustive=True, violation_s
         if len(maps[section]) != len(records) or set(maps[section]) != {r["uid"] for r in n[section]}:
             raise ValueError(f"Missing, duplicate or extra {section} identities")
         for r in records:
+            if section == "dc_line" and set(r) != {"uid", "pdc_fr", "qdc_fr", "qdc_to"}:
+                raise ValueError(f"{r['uid']}: missing or extra DC output fields")
             for key, values in r.items():
                 if key == "uid":
                     continue
@@ -180,6 +182,25 @@ def check(case, solution, *, deadline=float("inf"), exhaustive=True, violation_s
         bound("shunt_bounds", k, sh["step_lb"], sh["step_ub"])
         b = buses[sh["bus"]]
         injection[b] -= k*np.abs(voltage[b])**2*complex(sh["gs"], -sh["bs"])
+    dc_details = []
+    for link in n["dc_line"]:
+        tick()
+        x = maps["dc_line"][link["uid"]]
+        p, qfr, qto = (np.asarray(x[k], dtype=float) for k in ("pdc_fr", "qdc_fr", "qdc_to"))
+        bound("dc_active_power", p, -link["pdc_ub"], link["pdc_ub"])
+        bound("dc_reactive_from", qfr, link["qdc_fr_lb"], link["qdc_fr_ub"])
+        bound("dc_reactive_to", qto, link["qdc_to_lb"], link["qdc_to_ub"])
+        # Terminal powers are withdrawals from each bus. The GO3 link is
+        # lossless in P (p_to = -p_from); Q at each terminal is independent.
+        # Include these injections in BOTH the AC residual and outage RHS.
+        injection[buses[link["fr_bus"]]] -= p + 1j*qfr
+        injection[buses[link["to_bus"]]] -= -p + 1j*qto
+        base = n["general"]["base_norm_mva"]
+        dc_details.append({"uid": link["uid"], "fr_bus": link["fr_bus"], "to_bus": link["to_bus"],
+            "p_fr_pu": p.tolist(), "p_to_pu": (-p).tolist(),
+            "q_fr_pu": qfr.tolist(), "q_to_pu": qto.tolist(),
+            "p_fr_mw": (p*base).tolist(), "p_to_mw": (-p*base).tolist(),
+            "q_fr_mvar": (qfr*base).tolist(), "q_to_mvar": (qto*base).tolist()})
     residual = injection.copy()
     branches = n["ac_line"] + n["two_winding_transformer"]
     nl = len(branches)
@@ -307,7 +328,7 @@ def check(case, solution, *, deadline=float("inf"), exhaustive=True, violation_s
         "costs_by_interval": {k: v.tolist() for k,v in costs.items()},
         "costs_total": {k: float(v.sum()) for k,v in costs.items()},
         "base_mva": n["general"]["base_norm_mva"], "interval_hours": dt.tolist(),
-        "devices": device_details, "branch_flows": flow_details,
+        "devices": device_details, "branch_flows": flow_details, "dc_flows": dc_details,
         "reserve_shortfalls": reserve_shortfalls, "contingencies": violations,
         "timing": {"base_and_temporal": base_seconds,
                    "exhaustive_contingencies": time.perf_counter()-begin-base_seconds}}
