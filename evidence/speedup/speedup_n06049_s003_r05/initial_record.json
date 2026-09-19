@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "status": "INCOMPLETE",
+  "preflight": {
+    "commit": "d2f44e47d549e77ade630df4259f57c578eac054",
+    "branch": "codex/go3-network-correction-speedup",
+    "config_sha256": "1f04525f174a75864c6ebe587fdfa1c1293211ba5d41b4a8156ecc80a1564b56",
+    "pilot_id": "speedup_n06049_s003_r05",
+    "authorization_latch": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\speedup_n06049_s003_r05_latch.json",
+    "julia_manifest_sha256": "5afc92f37c3e084af91394f264acbb2c002134142e615e826d82ff63d324e09f",
+    "source_manifest_sha256": "c3e0f10ef33c25e0ab91b1dd991274cdd9968e82d041aad44720204fd4b4b6b9",
+    "component_tests_sha256": "2cfbfc8cac9379486d3ea89c5d66e15c233eaf5bfc96210618c1d70e8617e627",
+    "config": {
+      "schema_version": 3,
+      "pilot_id": "speedup_n06049_s003_r05",
+      "network": "C3E4N06049D2",
+      "scenario": "003",
+      "input_path": "data/raw/C3E4N06049D2_s003/scenario.json",
+      "input_sha256": "312b066e51e4e058d0f2e1a96ea32c8f30a3f1dbfc9c4266b6d5d73af4206e41",
+      "case_manifest_path": "manifests/campaign/case_C3E4N06049D2_s003.json",
+      "comparison_manifest_path": "manifests/campaign/published_C3E4N06049D2_s003.json",
+      "official_allow_switching": true,
+      "total_seconds": 7200,
+      "target_seconds": 1800,
+      "evaluation_reserve_seconds": 450,
+      "initial_verification_seconds": 0,
+      "intermediate_verification": "skip_unverified_schedule_v1",
+      "initial_reserve_policy": "use_joint_schedule_unverified",
+      "finalization_reserve_seconds": 30,
+      "minimum_free_gib": 30,
+      "maximum_full_runs": 1,
+      "cold_start": true,
+      "allow_pop_solution": false,
+      "highs_threads": 4,
+      "julia_threads": 1,
+      "blas_threads": 1,
+      "scheduling_relative_gap": 0.001,
+      "scheduling_seconds": 600,
+      "scheduling_balance_penalties": "source_pq_duration_weighted",
+      "scheduling_include_reserves": true,
+      "scheduling_mip_lp_solver": "simplex",
+      "scheduling_consumer_dominance": "guarded_online_v1",
+      "scheduling_log_dev_level": 1,
+      "scheduling_seed_policy": "off",
+      "ac_reserve_policy": "source_joint_reserves_in_ac_v1",
+      "ac_shunt_primal_start": "within_interval_primal_dual_v1",
+      "ac_fail_fast_on_infeasible": true,
+      "ac_interval_primal_start": "previous_screened_interval_v1",
+      "ac_numerical_recovery": "adaptive_barrier_on_failed_residual_v1",
+      "ac_primal_guard": "verified_stable_rounded_primal_v1",
+      "ac_seconds_per_solve": 120,
+      "ac_rounded_seconds_per_solve": 120,
+      "ac_rounded_max_iterations": 600,
+      "ac_print_level": 5,
+      "ac_correction_policy": "network_slp_continuous_hot_repair_v3",
+      "ac_correction_lp_solver": "ipx",
+      "ac_correction_budget_policy": "remaining_horizon_v1",
+      "ac_correction_hour_seconds": 600,
+      "ac_correction_min_hour_seconds": 60,
+      "ac_correction_share_multiplier": 1.5,
+      "ac_correction_future_hour_floor_seconds": 20,
+      "ac_correction_seconds": 45,
+      "ac_correction_lp_seconds": 15,
+      "ac_correction_max_rounds": 8,
+      "ac_correction_fallback_seconds": 120,
+      "reserve_seconds_per_interval": 2,
+      "reserve_finish_seconds": 90,
+      "checkpoint_every_intervals": 12,
+      "candidate_topology": "fixed_source_heuristic",
+      "candidate_transformer_controls": "fixed_source_heuristic",
+      "handshake": true,
+      "pilot_ready": true
+    },
+    "case": {
+      "schema_version": 1,
+      "network": "C3E4N06049D2",
+      "scenario": "003",
+      "input_sha256": "312b066e51e4e058d0f2e1a96ea32c8f30a3f1dbfc9c4266b6d5d73af4206e41",
+      "input_bytes": 64038939,
+      "archive_url": "https://data.openei.org/files/5997/C3E4N06049_20231002.zip",
+      "archive_entry": "D2/C3E4N06049D2/scenario_003.json",
+      "selection_rule": "Smallest numeric public D2 scenario, selected before solve-quality inspection.",
+      "initialization": "Cold from raw source conditions only; no supplied POP or saved solution.",
+      "official_allow_switching": true,
+      "unsupported_required_features_present": [],
+      "base_mva": 100.0,
+      "interval_hours": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "horizon_hours": 48.0,
+      "interval_count": 48,
+      "counts": {
+        "ac_line": 4920,
+        "active_zonal_reserve": 6,
+        "bus": 6049,
+        "dc_line": 0,
+        "reactive_zonal_reserve": 6,
+        "shunt": 236,
+        "simple_dispatchable_device": 3774,
+        "two_winding_transformer": 3086
+      },
+      "producers": 406,
+      "consumers": 3368,
+      "contingencies_per_interval": 3902,
+      "required_contingency_evaluations": 187296
+    },
+    "quality_target": {
+      "network": "C3E4N06049D2",
+      "scenario": "003",
+      "division": 2,
+      "official_allow_switching": true,
+      "metric": "sixth_best_eligible_score",
+      "relative_shortfall_limit": 0.1,
+      "sixth_best_score": 597463992.571312,
+      "minimum_score": 537717593.3141807,
+      "top_six": [
+        {
+          "team": "TIM-GO",
+          "score": 609159208.76225,
+          "objective": 609159208.76225,
+          "runtime_seconds": 3996.0,
+          "source_row": 9107,
+          "uuid": "1054-1693622042_c3E4"
+        },
+        {
+          "team": "YongOptimization",
+          "score": 609001575.1081,
+          "objective": 609001575.1081,
+          "runtime_seconds": 2288.0,
+          "source_row": 9776,
+          "uuid": "535-1693855412_c3E4"
+        },
+        {
+          "team": "GOT-BSI-OPF",
+          "score": 608909921.153217,
+          "objective": 608909921.153217,
+          "runtime_seconds": 625.0,
+          "source_row": 3086,
+          "uuid": "504-1693849098_c3E4"
+        },
+        {
+          "team": "GravityX",
+          "score": 608584286.38793,
+          "objective": 608584286.38793,
+          "runtime_seconds": 7213.0,
+          "source_row": 3755,
+          "uuid": "51-1693897156_c3E4"
+        },
+        {
+          "team": "LLGoMax",
+          "score": 608563770.630885,
+          "objective": 608563770.630885,
+          "runtime_seconds": 7163.0,
+          "source_row": 4424,
+          "uuid": "393-1693875700_c3E4"
+        },
+        {
+          "team": "Electric-Stampede",
+          "score": 597463992.571312,
+          "objective": 597463992.571312,
+          "runtime_seconds": 1852.0,
+          "source_row": 1748,
+          "uuid": "673-1693620838_c3E4"
+        }
+      ],
+      "eligible_competitors": 10,
+      "rejected": [
+        {
+          "source_row": 410,
+          "reason": "unmatched, inactive, infeasible or benchmark"
+        },
+        {
+          "source_row": 5762,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 6431,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 7769,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 8438,
+          "reason": "missing comparison fields"
+        }
+      ],
+      "note": "Comparison with published scores, not a global-optimality certificate."
+    },
+    "hardware": {
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+      "runtime": {
+        "python_executable": "C:\\Users\\thoma\\Documents\\goc2-ac-score-check\\evaluator-venv\\Scripts\\python.exe",
+        "python_version": "3.12.14",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pydantic": "1.10.24",
+        "psutil": "7.0.0"
+      },
+      "physical_cpu_count": 24,
+      "logical_cpu_count": 24,
+      "ram_bytes": 33752997888,
+      "windows_inventory": {
+        "cpu": {
+          "Name": "Intel(R) Core(TM) Ultra 9 275HX",
+          "NumberOfCores": 24,
+          "NumberOfLogicalProcessors": 24
+        },
+        "computer": {
+          "Manufacturer": "LENOVO",
+          "Model": "83F5",
+          "TotalPhysicalMemory": 33752997888
+        }
+      }
+    },
+    "storage": {
+      "physical_path": "C:\\",
+      "free_bytes": 206086029312,
+      "floor_bytes": 32212254720,
+      "pending_bytes": 1073741824,
+      "target": "C:\\Users\\thoma\\Documents\\go3-division2-cpu"
+    },
+    "setup_exclusions": "Dependency installation, package precompilation, source registration, checkout and download only. Runtime process import/JIT, raw loading, preprocessing and case factors included.",
+    "initialization": "Cold; source conditions only, no POP or saved optimized solutions",
+    "runtime_target": {
+      "target_seconds": 1800,
+      "hard_safety_limit_seconds": 7200,
+      "within_target": true,
+      "within_hard_limit": true,
+      "target_is_hard_deadline": false
+    },
+    "benchmark_kind": "One local cold attempt, 1800-second target and 7200-second safety limit; not an official competition submission"
+  },
+  "run_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N06049D2_s003_speedup_n06049_s003_r05_20260919T003508Z",
+  "global_optimality_certificate": false,
+  "full_GO3_certified_gap": null,
+  "evaluations": [],
+  "quality_target": {
+    "network": "C3E4N06049D2",
+    "scenario": "003",
+    "division": 2,
+    "official_allow_switching": true,
+    "metric": "sixth_best_eligible_score",
+    "relative_shortfall_limit": 0.1,
+    "sixth_best_score": 597463992.571312,
+    "minimum_score": 537717593.3141807,
+    "top_six": [
+      {
+        "team": "TIM-GO",
+        "score": 609159208.76225,
+        "objective": 609159208.76225,
+        "runtime_seconds": 3996.0,
+        "source_row": 9107,
+        "uuid": "1054-1693622042_c3E4"
+      },
+      {
+        "team": "YongOptimization",
+        "score": 609001575.1081,
+        "objective": 609001575.1081,
+        "runtime_seconds": 2288.0,
+        "source_row": 9776,
+        "uuid": "535-1693855412_c3E4"
+      },
+      {
+        "team": "GOT-BSI-OPF",
+        "score": 608909921.153217,
+        "objective": 608909921.153217,
+        "runtime_seconds": 625.0,
+        "source_row": 3086,
+        "uuid": "504-1693849098_c3E4"
+      },
+      {
+        "team": "GravityX",
+        "score": 608584286.38793,
+        "objective": 608584286.38793,
+        "runtime_seconds": 7213.0,
+        "source_row": 3755,
+        "uuid": "51-1693897156_c3E4"
+      },
+      {
+        "team": "LLGoMax",
+        "score": 608563770.630885,
+        "objective": 608563770.630885,
+        "runtime_seconds": 7163.0,
+        "source_row": 4424,
+        "uuid": "393-1693875700_c3E4"
+      },
+      {
+        "team": "Electric-Stampede",
+        "score": 597463992.571312,
+        "objective": 597463992.571312,
+        "runtime_seconds": 1852.0,
+        "source_row": 1748,
+        "uuid": "673-1693620838_c3E4"
+      }
+    ],
+    "eligible_competitors": 10,
+    "rejected": [
+      {
+        "source_row": 410,
+        "reason": "unmatched, inactive, infeasible or benchmark"
+      },
+      {
+        "source_row": 5762,
+        "reason": "missing comparison fields"
+      },
+      {
+        "source_row": 6431,
+        "reason": "missing comparison fields"
+      },
+      {
+        "source_row": 7769,
+        "reason": "missing comparison fields"
+      },
+      {
+        "source_row": 8438,
+        "reason": "missing comparison fields"
+      }
+    ],
+    "note": "Comparison with published scores, not a global-optimality certificate."
+  }
+}
