@@ -13,6 +13,8 @@ include(joinpath(@__DIR__,"..","src","pilot_worker.jl"))
     m=Model(Ipopt.Optimizer)
     @variable(m,0<=shunt_step[["s"]]<=2)
     @test_throws ErrorException install_ac_primal_guard!(m;policy="unknown",phase="rounded_shunts")
+    @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,
+        phase="rounded_shunts",residual_screen="unknown")
     @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="continuous_shunts")
     @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts")
     fix(shunt_step["s"],1;force=true)
@@ -25,6 +27,61 @@ include(joinpath(@__DIR__,"..","src","pilot_worker.jl"))
     off=install_ac_primal_guard!(m;policy="off",phase="rounded_shunts")
     @test !off.record["enabled"]
     @test !off.record["stop_requested"]
+end
+
+@testset "GO3 original residual probe does not confuse internal slack feasibility" begin
+    for legacy in (false,true)
+        m=Model(optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,
+            "tol"=>1e-12,"constr_viol_tol"=>1e-12,"bound_relax_factor"=>0.0,
+            "honor_original_bounds"=>"yes","max_iter"=>100))
+        @variable(m,deleted);delete(m,deleted)
+        @variable(m,0<=x<=5,start=1.2)
+        @variable(m,fixed==1.0)
+        legacy ? @NLconstraint(m,x^2<=16.0) : @constraint(m,x^2<=16.0)
+        @objective(m,Min,(x-3)^2)
+        bounds=ac_variable_bounds(m);rows=all_constraints(m;include_variable_in_set_constraints=true)
+        objective=objective_function(m)
+        # This tiny fixture relaxes ONLY the objective stability trigger. It
+        # deliberately has feasible x while Ipopt's inequality slack has not
+        # converged to x^2. All primal tolerances remain unchanged.
+        g=install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts",
+            min_iterations=0,window=2,objective_relative_range=1e100,primal_tolerance=1e-10,
+            residual_screen="native_original_unscaled")
+        optimize!(m);r=finish_ac_primal_guard!(m,g)
+        @test termination_status(m)==MOI.INTERRUPTED
+        @test r["stop_requested"] && r["returned_point_passed_internal_target"]
+        @test r["native_original_probe_count"]>=1 && r["audit_count"]>=1
+        @test r["native_original_row_count"]==1
+        @test r["native_mapping_complete"] && r["native_variable_count"]==2
+        @test r["last_native_original_residual"]<=1e-10
+        @test r["model_residual_at_stop"]<=1e-10
+        @test r["returned_model_residual"]<=1e-10
+        @test r["callback_internal_gate_would_reject"]
+        @test r["native_primal_residual_at_stop"]>1e-10
+        @test r["residual_screen"]=="native_original_unscaled"
+        @test r["returned_point_max_change"]<=1e-10
+        @test value(fixed)==1.0
+        @test ac_variable_bounds(m)==bounds
+        @test all_constraints(m;include_variable_in_set_constraints=true)==rows
+        @test JuMP.isequal_canonical(objective_function(m),objective)
+        @test !r["source_bounds_changed"] && !r["model_structure_changed"]
+    end
+end
+
+@testset "GO3 original residual screen rejects infeasible original points" begin
+    m=Model(optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,"max_iter"=>50,
+        "bound_relax_factor"=>0.0,"honor_original_bounds"=>"yes"))
+    @variable(m,0<=x<=1,start=0.5)
+    @constraint(m,x==2.0)
+    @objective(m,Min,x)
+    g=install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts",
+        min_iterations=0,window=2,objective_relative_range=1e100,
+        residual_screen="native_original_unscaled")
+    optimize!(m);r=finish_ac_primal_guard!(m,g)
+    @test !r["stop_requested"]
+    @test r["native_original_probe_count"]>=1
+    @test r["last_native_original_residual"]>1e-8
+    @test r["audit_count"]==0
 end
 
 @testset "GO3 native guarded stop returns the audited complete primal" begin

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "user_authorization": "The user said 'you can do way more than one-run today' and 'continue to iterate i said'. Continue tested, frozen cold attempts on the 6049-bus speedup route; larger-network campaign remains paused. r06 passed 17 hours but failed hour 18. Correct the guard's trigger: query native original unscaled bound and constraint violations rather than requiring scaled internal callback infeasibility to be small. Keep the complete original-model audit and all current tolerances, equations, costs, penalties, temporal/reactive/reserve constraints, scheduling settings and final exhaustive acceptance unchanged. No prior-run optimized solution or cross-hour duals. Two-hour ceiling and 30-minute soft target.",
+  "ongoing_iteration_authorized": true,
+  "maximum_full_runs": 1,
+  "maximum_full_runs_scope": "This registered attempt only, not the overall iterative work",
+  "target_seconds": 1800,
+  "hard_safety_limit_seconds": 7200,
+  "correction_policy": "network_slp_original_residual_guard_v5",
+  "correction_lp_solver": "ipx",
+  "identity": {
+    "pilot_id": "speedup_n06049_s003_r07",
+    "network": "C3E4N06049D2",
+    "scenario": "003",
+    "input_sha256": "312b066e51e4e058d0f2e1a96ea32c8f30a3f1dbfc9c4266b6d5d73af4206e41"
+  },
+  "baseline": {
+    "numerical_revision": "cfe7ea05d834e6f3344ee4a3176d31b2d4705811",
+    "result_path": "evidence/campaign/campaign_n06049_s003_r03/result.json",
+    "result_sha256": "d98a8349c8dc776847b4c303c861792c0633a27f078a371063e7bd77ef3ff943",
+    "completion_path": "evidence/campaign/campaign_n06049_s003_r03/completion.json",
+    "completion_sha256": "2801465d4e2ee1b996e6d0ab0d629fc243b62e1f1c616162122cb0f3b0623372",
+    "configuration_path": "config/campaign_n06049_s003_r03.json",
+    "configuration_sha256": "4e4e07cb690697fb73caadfbe00ddee3ec754dab8c8b208bce0e11eb91bb5b7a",
+    "comparison_path": "manifests/campaign/published_C3E4N06049D2_s003.json",
+    "comparison_sha256": "6dfec67611fe1bec26ee561cfc96463c0d204d9479e71eb1de74a8ac9659a7bf"
+  },
+  "previous_attempt": {
+    "result_path": "evidence/speedup/speedup_n06049_s003_r06/result.json",
+    "result_sha256": "f0689c1a010bd81fb9d331083fa6a236b2848bee038c6d0cef24d0e883353f45",
+    "completion_path": "evidence/speedup/speedup_n06049_s003_r06/completion.json",
+    "completion_sha256": "67917f95962404ad51c3d5a5f1d7af46c438e726a047bbeb452f8ff479fe86b9"
+  },
+  "sixth_best_eligible_score": 597463992.571312,
+  "required_minimum_score": 537717593.3141807,
+  "required_hours": 48,
+  "required_contingency_hours": 187296,
+  "saved_solution_may_initialize": false,
+  "commercial_solver_allowed": false,
+  "gpu_allowed": false
+}

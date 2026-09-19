@@ -12,13 +12,15 @@ end
 
 function install_ac_primal_guard!(model;policy="off",phase,
         min_iterations=20,window=8,objective_relative_range=1e-7,
-        primal_tolerance=AC_POINT_RESIDUAL_TOLERANCE,expected_start=nothing)
+        primal_tolerance=AC_POINT_RESIDUAL_TOLERANCE,expected_start=nothing,
+        residual_screen="callback_internal")
     policy in ("off",AC_PRIMAL_GUARD_POLICY,AC_CANDIDATE_GUARD_POLICY) || error("Unknown AC primal guard policy")
+    residual_screen in ("callback_internal","native_original_unscaled") || error("Unknown primal residual screen")
     primal_tolerance isa Real && isfinite(primal_tolerance) &&
         0<primal_tolerance<=AC_POINT_RESIDUAL_TOLERANCE || error("Invalid internal primal target")
     record=Dict{String,Any}("policy"=>policy,"phase"=>phase,"enabled"=>policy!="off",
         "stop_requested"=>false,"callback_count"=>0,"audit_count"=>0,
-        "audit_seconds"=>0.0,"source_bounds_changed"=>false,
+        "audit_seconds"=>0.0,"source_bounds_changed"=>false,"residual_screen"=>residual_screen,
         "model_structure_changed"=>false,"external_solution_read"=>false,
         "certificate_scope"=>"local model feasibility only; objective stagnation is heuristic; no KKT or global optimality claim")
     accepted=Ref{Any}(nothing)
@@ -60,7 +62,7 @@ function install_ac_primal_guard!(model;policy="off",phase,
     history=Float64[]
     native_columns=Int[]
     native_values=Float64[]
-    function current_native_point()
+    function current_native_backend()
         native=unsafe_backend(model)
         native isa Ipopt.Optimizer || error("Unexpected AC guard optimizer")
         inner=native.inner
@@ -74,11 +76,47 @@ function install_ac_primal_guard!(model;policy="off",phase,
         end
         all_variables(model)==variables && length(native_values)==inner.n ||
             error("AC primal guard variable identities changed")
+        inner
+    end
+    function current_native_point()
+        inner=current_native_backend()
         Ipopt.GetIpoptCurrentIterate(inner,false,inner.n,native_values,C_NULL,C_NULL,
             inner.m,C_NULL,C_NULL)
         point=(variables=variables,values=native_values[native_columns])
         all(isfinite,point.values) || error("Nonfinite current native iterate")
         point
+    end
+    original_lower=Float64[];original_upper=Float64[];original_rows=Float64[]
+    original_initialized=Ref(false)
+    record["native_original_probe_count"]=0
+    record["native_original_probe_seconds"]=0.0
+    function current_original_residual()
+        began=time();inner=current_native_backend()
+        if !original_initialized[]
+            resize!(original_lower,inner.n);resize!(original_upper,inner.n)
+            resize!(original_rows,inner.m);original_initialized[]=true
+        end
+        length(original_lower)==inner.n && length(original_upper)==inner.n &&
+            length(original_rows)==inner.m || error("Native original-residual dimensions changed")
+        # The callback's inf_pr is the scaled INTERNAL slack formulation, not
+        # the original-NLP residual printed by default. It cannot veto an audit
+        # of a primal-feasible original point. Query original unrelaxed bounds
+        # and unscaled row violations; the complete JuMP audit below is still
+        # mandatory and alone authorizes an early stop. No dual/KKT claim.
+        for buffer in (original_lower,original_upper,original_rows)
+            fill!(buffer,NaN)
+        end
+        Ipopt.GetIpoptCurrentViolations(inner,false,inner.n,original_lower,original_upper,
+            C_NULL,C_NULL,C_NULL,inner.m,original_rows,C_NULL)
+        all(buffer->all(v->isfinite(v) && v>=0.0,buffer),
+            (original_lower,original_upper,original_rows)) || error("Invalid native original violations")
+        residual=max(maximum(original_lower;init=0.0),maximum(original_upper;init=0.0),
+            maximum(original_rows;init=0.0))
+        record["native_original_probe_count"]+=1
+        record["native_original_probe_seconds"]+=time()-began
+        record["last_native_original_residual"]=residual
+        record["native_original_row_count"]=inner.m
+        residual
     end
     last_audit=-5
     function callback(alg_mode,iteration,obj,inf_pr,args...)
@@ -100,9 +138,19 @@ function install_ac_primal_guard!(model;policy="off",phase,
             push!(history,Float64(obj))
             length(history)>window && popfirst!(history)
             (iteration>=min_iterations && length(history)==window &&
-                isfinite(inf_pr) && 0<=inf_pr<=primal_tolerance &&
+                isfinite(inf_pr) && 0<=inf_pr &&
                 iteration-last_audit>=5 &&
                 ac_objective_stable(history,objective_relative_range)) || return true
+            if residual_screen=="native_original_unscaled"
+                last_audit=iteration # Throttle even unsuccessful cheap probes.
+                original=current_original_residual()
+                record["last_probed_iteration"]=Int(iteration)
+                record["callback_internal_residual_at_probe"]=inf_pr
+                original<=primal_tolerance || return true
+                record["callback_internal_gate_would_reject"]=inf_pr>primal_tolerance
+            else
+                inf_pr<=primal_tolerance || return true
+            end
             last_audit=iteration
             began=time()
             # Read the accepted CURRENT native iterate, not the wrapper's last
@@ -124,6 +172,7 @@ function install_ac_primal_guard!(model;policy="off",phase,
             record["model_objective_at_stop"]=actual_objective
             record["native_objective_at_stop"]=obj
             record["native_primal_residual_at_stop"]=inf_pr
+            record["native_primal_residual_at_stop_scope"]="scaled internal Ipopt formulation; not the audited original residual"
             record["objective_window_relative_range"]=
                 (maximum(history)-minimum(history))/max(1.0,maximum(abs,history))
             record["stop_reason"]="complete_model_feasible_and_objective_stable"

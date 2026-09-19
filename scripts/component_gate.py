@@ -157,6 +157,39 @@ def main():
         "--output",str(evidence/"continuation_verification"),"--seconds","60"])
     continuation_certificate=json.loads((evidence/"continuation_verification/certificate.json").read_text())
     continuation_stats=json.loads((evidence/"continuation_worker/solver_statistics.json").read_text())
+    stage("tiny_original_guard_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/primal_continuation_problem.json",str(evidence/"original_guard_worker"),
+        "config/tiny_ac_correction_original_guard.json",str(time.time()+120)],timeout=125)
+    stage("tiny_original_guard_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/primal_continuation_problem.json",
+        "--solution",str(evidence/"original_guard_worker/candidate_final.json"),
+        "--output",str(evidence/"original_guard_verification"),"--seconds","60"])
+    original_guard_certificate=json.loads((evidence/"original_guard_verification/certificate.json").read_text())
+    original_guard_stats=json.loads((evidence/"original_guard_worker/solver_statistics.json").read_text())
+    original_probes=0
+    original_audits=0
+    for interval in original_guard_stats["ac_intervals"]:
+        correction=interval["reserve_ac"]["correction"]
+        if (correction["policy"]!="network_slp_original_residual_guard_v5"
+                or correction["final_model_residual"]>1e-8
+                or correction["internal_primal_target"]!=1e-10
+                or any(x!=round(x) for x in correction["final_discrete_settings"].values())):
+            raise RuntimeError("Original-residual guard changed local/discrete acceptance")
+        for phase in interval["reserve_ac"]["phases"]:
+            if not phase.get("fallback"):
+                continue
+            guard=phase["native_primal_guard"]
+            if (guard["residual_screen"]!="native_original_unscaled"
+                    or not guard["native_initialization"]["complete_mapping"]
+                    or guard["primal_residual_limit"]!=1e-10):
+                raise RuntimeError("Missing original-residual probe policy or native initialization audit")
+            original_probes+=guard["native_original_probe_count"]
+            original_audits+=guard["audit_count"]
+            if guard["stop_requested"] and (guard["model_residual_at_stop"]>1e-10
+                    or not guard["returned_point_passed_internal_target"]):
+                raise RuntimeError("Native probe incorrectly replaced complete original-model audit")
+    if not original_probes or not original_audits:
+        raise RuntimeError("Tiny original-residual pipeline never exercised its native/full audits")
     preserved_starts=0
     for interval in continuation_stats["ac_intervals"]:
         correction=interval["reserve_ac"]["correction"]
@@ -308,14 +341,14 @@ def main():
     for checked in (certificate,separated_certificate,hipo_certificate,dominance_certificate,
                     reserve_ac_certificate,source_features_certificate,recovery_certificate,cold_seed_certificate,
                     correction_certificate,continuous_correction_certificate,hot_repair_certificate,
-                    continuation_certificate):
+                    continuation_certificate,original_guard_certificate):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
     coverage_records={}
     for name in ("worker","separated_worker","hipo_worker","dominance_worker",
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
-                 "continuous_correction_worker","hot_repair_worker","continuation_worker"):
+                 "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -361,6 +394,8 @@ def main():
         "tiny_hot_repair_statistics":hot_repair_stats,
         "tiny_primal_continuation_certificate":continuation_certificate,
         "tiny_primal_continuation_statistics":continuation_stats,
+        "tiny_original_residual_guard_certificate":original_guard_certificate,
+        "tiny_original_residual_guard_statistics":original_guard_stats,
         "tiny_worker_exact_interval_coverage":coverage_records,
         "tiny_source_features_scheduling":feature_stats,
         "tiny_source_features_ac_statistics":source_ac_stats,

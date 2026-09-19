@@ -346,10 +346,14 @@ function run_worker(case_path, output, config, work_deadline)
         end
         if correction_point!==nothing
             stats["warm_start"]="source voltages and current cold schedule for first interval; later intervals use previous locally screened primal from this attempt; fresh presolved native LP without primal/basis start; fallback uses complete same-attempt primal only; no supplied dual, basis, or external solution"
-            if ac_correction in (AC_CORRECTION_HOT_REPAIR_POLICY,AC_CORRECTION_CONTINUATION_POLICY)
+            if ac_correction in (AC_CORRECTION_HOT_REPAIR_POLICY,AC_CORRECTION_CONTINUATION_POLICY,
+                    AC_CORRECTION_ORIGINAL_GUARD_POLICY)
                 stats["warm_start"]="source voltages and current cold schedule; previous locally screened primal only within this attempt; fresh presolved native LP without primal/basis; rounded repair conditionally reuses audited complete same-interval primal/dual mapping; no external solution, cross-run start or basis; no dual certificate claimed"
-                if ac_correction==AC_CORRECTION_CONTINUATION_POLICY
+                if ac_correction in (AC_CORRECTION_CONTINUATION_POLICY,AC_CORRECTION_ORIGINAL_GUARD_POLICY)
                     stats["warm_start"]*="; previous-hour primal initialization options preserved through fallback rebuild; first native Ipopt iterate audited"
+                end
+                if ac_correction==AC_CORRECTION_ORIGINAL_GUARD_POLICY
+                    stats["warm_start"]*="; early-stop audit triggered by native original unscaled violations, not internal callback residual"
                 end
             end
         end
