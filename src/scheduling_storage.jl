@@ -2,7 +2,8 @@
 # retain mapped extraction references, then release JuMP's disposable cache.
 # No row/column elimination, presolve, coefficient change, or external start.
 
-const SCHEDULING_STORAGE_POLICIES=("cached_model_v1","native_handoff_v1")
+const SCHEDULING_STORAGE_POLICIES=("cached_model_v1","native_handoff_v1",
+    "native_handoff_trimmed_metadata_v1")
 const SCHEDULING_EXTRACTION_SYMBOLS=(
     :p_on_status,:p,:q,:p_balance_slack_pos,:p_balance_slack_neg,
     :q_balance_slack_pos,:q_balance_slack_neg,
@@ -18,6 +19,54 @@ end
 function scheduling_constraint_inventory(model)
     Dict(string(F)*" in "*string(S)=>num_constraints(model,F,S)
         for (F,S) in list_of_constraint_types(model))
+end
+
+function release_scheduling_construction_metadata!(cached)
+    mode(cached)==DIRECT && error("Metadata release requires an unsolved cached model")
+    termination_status(cached)==MOI.OPTIMIZE_NOT_CALLED ||
+        error("Metadata release must occur before a solve")
+    scheduling_plain_metadata(cached.ext) ||
+        error("Scheduling metadata contains references that would retain construction storage")
+    dictionary=object_dictionary(cached)
+    all(s->haskey(dictionary,s),SCHEDULING_EXTRACTION_SYMBOLS[1:7]) ||
+        error("Incomplete scheduling extraction dictionary before metadata release")
+    started=time()
+    nvariables=num_variables(cached)
+    inventory=scheduling_constraint_inventory(cached)
+    sense=objective_sense(cached)
+    live_before=Base.gc_live_bytes()
+    removed=String[]
+    removed_container_entries=0
+    # unregister() removes only symbolic lookup entries; JuMP documents that
+    # it does NOT delete their variables/constraints. Affine construction
+    # expressions have already been assembled into the original objective.
+    # The complete MOI model, all names and extraction references stay intact.
+    for symbol in collect(keys(dictionary))
+        symbol in SCHEDULING_EXTRACTION_SYMBOLS && continue
+        entry=dictionary[symbol]
+        removed_container_entries+=applicable(length,entry) ? length(entry) : 1
+        push!(removed,string(symbol))
+        unregister(cached,symbol)
+        entry=nothing
+    end
+    GC.gc(true)
+    num_variables(cached)==nvariables || error("Metadata cleanup changed variable count")
+    scheduling_constraint_inventory(cached)==inventory ||
+        error("Metadata cleanup changed mathematical constraint inventory")
+    objective_sense(cached)==sense || error("Metadata cleanup changed objective sense")
+    record=Dict("policy"=>"unregister_disposable_construction_containers_v1",
+        "removed_lookup_symbols"=>sort!(removed),
+        "removed_container_entries"=>removed_container_entries,
+        "retained_lookup_symbols"=>sort!(string.(collect(keys(dictionary)))),
+        "mathematical_variables"=>nvariables,"constraint_inventory"=>inventory,
+        "rows_or_columns_eliminated"=>0,"source_values_changed"=>false,
+        "mathematical_names_changed"=>false,
+        "gc_reported_live_bytes_before"=>live_before,
+        "gc_reported_live_bytes_after"=>Base.gc_live_bytes(),
+        "cleanup_and_gc_seconds"=>time()-started,
+        "scope"=>"Symbolic lookup containers only; complete MOI model and names retained")
+    cached.ext[:scheduling_metadata_release]=record
+    record
 end
 
 function native_scheduling_handoff!(cached,optimizer;on_copied=(a,b,m)->nothing)

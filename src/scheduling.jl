@@ -30,7 +30,7 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
         on_seed=(schedule,audit,label)->nothing,on_event=(name,details)->nothing)
     seed_policy in ("off",SCHEDULING_SEED_POLICY) || error("Unknown scheduling seed policy")
     storage_policy in SCHEDULING_STORAGE_POLICIES || error("Unknown scheduling storage policy")
-    storage_policy=="native_handoff_v1" && seed_policy!="off" &&
+    storage_policy!="cached_model_v1" && seed_policy!="off" &&
         error("Native handoff is supported only for the original cold scheduling route")
     if seed_policy!= "off"
         include_reserves || error("Cold construction must retain joint source reserves")
@@ -56,9 +56,18 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
     end
     println("GO3_SCHEDULING_MODEL ",JSON.json(model.ext[:scheduling_formulation])); flush(stdout)
     on_event("model_built",Dict("build_seconds"=>time()-started))
-    if storage_policy=="native_handoff_v1"
+    if storage_policy!="cached_model_v1"
+        if storage_policy=="native_handoff_trimmed_metadata_v1"
+            on_event("native_metadata_release_begin",Dict("variables"=>num_variables(model)))
+            cleanup=release_scheduling_construction_metadata!(model)
+            on_event("native_metadata_release_complete",cleanup)
+        end
         on_event("native_handoff_begin",Dict("variables"=>num_variables(model)))
         model=native_scheduling_handoff!(model,optimizer)
+        model.ext[:scheduling_storage]["policy"]=storage_policy
+        if haskey(model.ext,:scheduling_metadata_release)
+            model.ext[:scheduling_storage]["pre_handoff_cleanup"]=model.ext[:scheduling_metadata_release]
+        end
         gc_started=time()
         GC.gc(true)
         model.ext[:scheduling_storage]["post_handoff_gc_seconds"]=time()-gc_started

@@ -12,6 +12,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ReferenceOverrideTests(unittest.TestCase):
+    def test_23k_r02_changes_only_scheduling_storage_and_attempt_identity(self):
+        original=json.loads((ROOT/"config/campaign_n23643_s003_r01.json").read_text())
+        current=json.loads((ROOT/"config/campaign_n23643_s003_r02.json").read_text())
+        changed={"pilot_id","scheduling_storage_policy"}
+        self.assertEqual({k:v for k,v in original.items() if k not in changed},
+                         {k:v for k,v in current.items() if k not in changed})
+        self.assertEqual(current["scheduling_storage_policy"],"native_handoff_trimmed_metadata_v1")
+        auth=json.loads((ROOT/"manifests/authorization_campaign.json").read_text())
+        self.assertEqual(auth["attempts"][current["pilot_id"]],
+                         {k:current[k] for k in ("network","scenario","input_sha256")})
+        tiny=json.loads((ROOT/"config/tiny_trimmed_scheduling.json").read_text())
+        baseline=json.loads((ROOT/"config/tiny_reserve_bounded.json").read_text())
+        self.assertEqual({k:v for k,v in tiny.items() if k!="scheduling_storage_policy"},
+                         {k:v for k,v in baseline.items() if k!="scheduling_storage_policy"})
+
     def test_registered_23k_preserves_8316_numerical_route(self):
         baseline=json.loads((ROOT/"config/campaign_n08316_s103_r03.json").read_text())
         current=json.loads((ROOT/"config/campaign_n23643_s003_r01.json").read_text())

@@ -265,7 +265,7 @@ started one cold attempt. It stopped and finalized after **745.168658 seconds
 
 The scheduling model was built in **538.001 seconds**, with **19,323,456
 variables** before solver presolve. During the whole-model native handoff,
-available host memory fell to **1.856629 GiB**, below the registered **2 GiB**
+available host memory fell to **1.857 GiB**, below the registered **2 GiB**
 safety floor. Sampled peak process-tree RSS was **18.954803 GiB**. The controller
 recorded `HostMemoryPressureError` and `NO_VERIFIED_INCUMBENT`.
 
@@ -281,3 +281,23 @@ results and all r01 artifacts remain intact. No successful 8,316-bus run was
 repeated. The next storage-only investigation is to discard unused construction
 lookup containers before the native copy; this must not remove mathematical
 rows, columns, names, coefficients, bounds or source values.
+
+### r02 storage-only correction under the existing iteration authorization
+
+The opt-in `native_handoff_trimmed_metadata_v1` policy unregisters only unused
+JuMP construction lookup containers and invokes garbage collection before the
+same public whole-model `MOI.copy_to`. The complete cached mathematical model,
+every backend variable/constraint name, extraction references and plain metadata
+remain intact. No mathematical row/column is deleted, no model-side presolve is
+performed, and no upstream source is modified. The previous policy stays the
+default for every existing configuration. The cleanup logs removed lookup names,
+container-entry counts, GC-reported live bytes before/after and its elapsed time;
+these GC figures are not claimed to be process RSS measurements.
+
+Focused Julia tests pass 2,644 new assertions, including exact whole-model
+coefficient/domain/objective comparisons with an untouched construction, all
+names, objective agreement after solves, cold-start scope, exception guards and
+the production event sequence. All 2,214 existing scheduling-storage assertions
+also pass. Registered r02 differs from r01 only in attempt ID and the storage
+policy. Full tiny pipeline regressions and a fresh freeze/push/preflight remain
+required before its one cold full-case attempt.

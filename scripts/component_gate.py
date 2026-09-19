@@ -223,6 +223,26 @@ def main():
             or batch_audit["max_batch_columns"]!=2 or len(batch_audit["batches"])!=2
             or abs(batched_dc["certificate"]["objective"]-bounded_reserve_dc["certificate"]["objective"])>1e-8):
         raise RuntimeError("Batched official integration changed objective or omitted source contingencies")
+    stage("tiny_trimmed_scheduling_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/dc_problem.json",str(evidence/"trimmed_scheduling_worker"),
+        "config/tiny_trimmed_scheduling.json",str(time.time()+120)],timeout=125)
+    stage("tiny_trimmed_scheduling_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dc_problem.json",
+        "--solution",str(evidence/"trimmed_scheduling_worker/candidate_final.json"),
+        "--output",str(evidence/"trimmed_scheduling_verification"),"--seconds","60",
+        "--official-contingency-batch-size","2"])
+    trimmed_dc=dc_pipeline_audit(evidence,"trimmed_scheduling_worker","trimmed_scheduling_verification")
+    trimmed_reserves=bounded_reserve_pipeline_audit(evidence,"trimmed_scheduling_worker")
+    trimmed_stats=json.loads((evidence/"trimmed_scheduling_worker/solver_statistics.json").read_text())
+    trimmed_storage=trimmed_stats["scheduling"]["storage"]
+    trimmed_cleanup=trimmed_storage["pre_handoff_cleanup"]
+    if (trimmed_storage["policy"]!="native_handoff_trimmed_metadata_v1"
+            or not trimmed_storage["whole_model_copy"] or not trimmed_storage["cached_model_emptied"]
+            or trimmed_cleanup["rows_or_columns_eliminated"]!=0 or trimmed_cleanup["source_values_changed"]
+            or trimmed_cleanup["mathematical_names_changed"] or trimmed_cleanup["removed_container_entries"]<=0
+            or not trimmed_dc["certificate"]["official_contingency_batch_audit"]["complete"]
+            or abs(trimmed_dc["certificate"]["objective"]-bounded_reserve_dc["certificate"]["objective"])>1e-8):
+        raise RuntimeError("Trimmed scheduling integration changed mathematics or failed exhaustive verification")
     bounded_reserve_audit=bounded_reserve_pipeline_audit(evidence)
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
@@ -556,6 +576,9 @@ def main():
         "tiny_dc_pipeline":dc_audit,
         "tiny_bounded_reserve_pipeline":bounded_reserve_dc,
         "tiny_batched_official_pipeline":batched_dc,
+        "tiny_trimmed_scheduling_pipeline":trimmed_dc,
+        "tiny_trimmed_scheduling_storage":trimmed_storage,
+        "tiny_trimmed_scheduling_reserve_storage":trimmed_reserves,
         "tiny_bounded_reserve_storage":bounded_reserve_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,

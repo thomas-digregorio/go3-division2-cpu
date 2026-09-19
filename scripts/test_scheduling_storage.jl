@@ -23,6 +23,65 @@ function assert_exact_native_copy(old,new,index_map)
     end
 end
 
+@testset "GO3 disposable scheduling containers are not mathematical rows" begin
+    raw=JSON.parsefile(STORAGE_TINY); saved=deepcopy(raw)
+    input=GO3.process_input_data(raw)
+    for reserves in (false,true)
+        pristine=source_balance_scheduling_model(input;include_reserves=reserves,consumer_dominance=true)
+        cached=source_balance_scheduling_model(input;include_reserves=reserves,consumer_dominance=true)
+        variable_names=[name(v) for v in all_variables(cached)]
+        constraint_names=Dict((F,S)=>[name(c) for c in all_constraints(cached,F,S)]
+            for (F,S) in list_of_constraint_types(cached))
+        record=release_scheduling_construction_metadata!(cached)
+        @test !isempty(record["removed_lookup_symbols"])
+        @test record["removed_container_entries"]>0
+        @test record["rows_or_columns_eliminated"]==0
+        @test !record["source_values_changed"]
+        @test !record["mathematical_names_changed"]
+        @test !haskey(object_dictionary(cached),:cost_block_p)
+        @test all(s->s in SCHEDULING_EXTRACTION_SYMBOLS,keys(object_dictionary(cached)))
+        @test [name(v) for v in all_variables(cached)]==variable_names
+        @test all([name(c) for c in all_constraints(cached,F,S)]==names
+            for ((F,S),names) in constraint_names)
+        native=native_scheduling_handoff!(cached,STORAGE_OPT;
+            on_copied=(old,new,index_map)->begin
+                assert_exact_native_copy(old,new,index_map)
+                assert_exact_native_copy(pristine,new,index_map)
+            end)
+        @test raw==saved
+        set_time_limit_sec(native,15.0);optimize!(native)
+        set_optimizer(pristine,STORAGE_OPT);set_time_limit_sec(pristine,15.0);optimize!(pristine)
+        @test termination_status(native)==termination_status(pristine)==MOI.OPTIMAL
+        @test objective_value(native)≈objective_value(pristine) atol=1e-7 rtol=1e-10
+        @test schedule_balance_summary(input,native)["penalty_cost"]≈
+            schedule_balance_summary(input,pristine)["penalty_cost"] atol=1e-8
+    end
+    cached=source_balance_scheduling_model(input)
+    original_symbols=Set(keys(object_dictionary(cached)))
+    cached.ext[:bad_reference]=cached[:p]["g",1]
+    @test_throws ErrorException release_scheduling_construction_metadata!(cached)
+    @test Set(keys(object_dictionary(cached)))==original_symbols
+end
+
+@testset "GO3 trimmed metadata production route preserves cold scheduling" begin
+    input=GO3.process_input_data(JSON.parsefile(STORAGE_TINY))
+    events=Any[]
+    native,schedule=schedule_source_balances(input;optimizer=STORAGE_OPT,time_limit=15.0,
+        consumer_dominance=true,storage_policy="native_handoff_trimmed_metadata_v1",set_silent=true,
+        on_event=(event,details)->push!(events,event))
+    @test schedule!==nothing
+    @test termination_status(native)==MOI.OPTIMAL
+    @test events==["model_built","native_metadata_release_begin","native_metadata_release_complete",
+        "native_handoff_begin","native_handoff_complete","economic_solve_begin","economic_solve_returned"]
+    audit=native.ext[:scheduling_storage]
+    @test audit["policy"]=="native_handoff_trimmed_metadata_v1"
+    @test audit["cached_model_emptied"]
+    @test audit["whole_model_copy"]
+    @test audit["pre_handoff_cleanup"]["rows_or_columns_eliminated"]==0
+    @test_throws ErrorException schedule_source_balances(input;optimizer=STORAGE_OPT,time_limit=1,
+        storage_policy="native_handoff_trimmed_metadata_v1",seed_policy=SCHEDULING_SEED_POLICY)
+end
+
 @testset "GO3 native scheduling production route and ownership guards" begin
     input=GO3.process_input_data(JSON.parsefile(STORAGE_TINY))
     events=Any[]
