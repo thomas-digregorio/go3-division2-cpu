@@ -7,6 +7,7 @@ include(joinpath(@__DIR__,"consumer_dominance.jl"))
 include(joinpath(@__DIR__,"startup_windows.jl"))
 include(joinpath(@__DIR__,"scheduling_seed.jl"))
 include(joinpath(@__DIR__,"scheduling_storage.jl"))
+include(joinpath(@__DIR__,"scheduling_spool.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"ac_primal_start.jl"))
 include(joinpath(@__DIR__,"ac_interval_start.jl"))
@@ -124,7 +125,9 @@ end
 function run_worker(case_path, output, config, work_deadline)
     started = time()
     timings, statistics = Dict{String,Any}(), Dict{String,Any}()
-    progress_sequence=0
+    progress_sequence=maximum([0;[parse(Int,splitext(f)[1]) for f in
+        (isdir(joinpath(output,"progress")) ? readdir(joinpath(output,"progress")) : String[])
+        if occursin(r"^\d+\.json$",f)]])
     function progress(stage; extra=Dict())
         progress_sequence+=1
         message = merge(Dict("stage"=>stage, "elapsed_worker_seconds"=>time()-started,
@@ -141,6 +144,16 @@ function run_worker(case_path, output, config, work_deadline)
     case = JSON.parsefile(case_path)
     input = GO3.process_input_data(case)
     timings["loading_and_preprocessing"] = time()-started
+    disk_scheduling=get(config,"scheduling_storage_policy","cached_model_v1")=="disk_backed_native_v1"
+    spool_path=joinpath(output,"scheduling_spool")
+    if disk_scheduling
+        spool=JSON.parsefile(joinpath(spool_path,"manifest.json"))
+        spool["identity"]["input_sha256"]==spool_sha(case_path) && spool["identity"]["config"]==config ||
+            error("Disk scheduling source/config identity mismatch")
+        timings["scheduling_builder"]=JSON.parsefile(joinpath(output,"scheduling_builder.json"))
+        timings["scheduling_builder"]["process_wall_seconds"]=
+            JSON.parsefile(joinpath(spool_path,"builder_exit.json"))["process_wall_seconds"]
+    end
     ac_reserve_policy=get(config,"ac_reserve_policy","off")
     ac_reserve_policy in ("off","source_joint_reserves_in_ac_v1") || error("Unknown AC reserve policy")
     ac_shunt_primal_start=get(config,"ac_shunt_primal_start","off")
@@ -177,7 +190,10 @@ function run_worker(case_path, output, config, work_deadline)
 
     progress("scheduling")
     stage = time()
-    scheduling_event_sequence=0
+    scheduling_event_sequence=maximum([0;[parse(Int,splitext(f)[1]) for f in
+        (isdir(joinpath(output,"statistics","scheduling_events")) ?
+         readdir(joinpath(output,"statistics","scheduling_events")) : String[])
+        if occursin(r"^\d+\.json$",f)]])
     function scheduling_event(name,details)
         scheduling_event_sequence+=1
         event=merge(Dict("event"=>name,"elapsed_scheduling_seconds"=>time()-stage),details)
@@ -204,6 +220,7 @@ function run_worker(case_path, output, config, work_deadline)
         consumer_dominance=dominance_policy=="guarded_online_v1",
         seed_policy=get(config,"scheduling_seed_policy","off"),
         storage_policy=get(config,"scheduling_storage_policy","cached_model_v1"),
+        spool_path=disk_scheduling ? spool_path : nothing,
         construction_seconds=get(config,"scheduling_construction_seconds",0),
         cost_seconds=get(config,"scheduling_constructed_cost_seconds",0),
         cost_lp_solver=get(config,"scheduling_constructed_cost_lp_solver","simplex"),
@@ -240,6 +257,10 @@ function run_worker(case_path, output, config, work_deadline)
     statistics["scheduling"]["highs_analysis_level"]=get_optimizer_attribute(model,"highs_analysis_level")
     statistics["scheduling"]["bound_scope"] = "approximate_copperplate_subproblem_only_not_full_GO3"
     timings["scheduling"] = time()-stage
+    if disk_scheduling
+        timings["scheduling_native_phase"]=timings["scheduling"]
+        timings["scheduling"]+=timings["scheduling_builder"]["process_wall_seconds"]
+    end
     atomic_json(joinpath(output,"statistics","scheduling.json"),statistics["scheduling"])
     atomic_json(joinpath(output,"timing_snapshots","scheduling.json"),timings)
     schedule === nothing && error("No feasible whole-horizon UC schedule; no fixed-initial fallback")

@@ -273,6 +273,9 @@ def execute(config_path,config,env,preflight_record):
         work_epoch=time.time()+clock.remaining(work=True)
         command=[str(JULIA),"--startup-file=no",f"--project={ROOT}",str(ROOT/"src/pilot_worker.jl"),
             str(ROOT/config["input_path"]),str(worker_dir),str(local_path(config_path)),str(work_epoch)]
+        if config.get("scheduling_storage_policy")=="disk_backed_native_v1":
+            command=[sys.executable,str(ROOT/"scripts/run_disk_worker.py"),str(JULIA),
+                str(ROOT/config["input_path"]),str(worker_dir),str(local_path(config_path)),str(work_epoch)]
         initial_checked=False
         with (worker_dir/"console.log").open("w",encoding="utf-8") as log:
             worker=subprocess.Popen(command,cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT,

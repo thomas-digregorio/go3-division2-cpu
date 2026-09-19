@@ -352,3 +352,22 @@ MOI `CleverDict` rehashes its dense vector into a dictionary on the first
 deletion. A genuinely bounded or disk-backed transfer therefore needs a
 separate, exactly audited adapter design; it is not implemented or proven by
 the current changes. No r03 has been registered or launched.
+
+## r03: approved disk-backed native scheduling transfer
+
+The subsequent user request, "ya fix the memory issue and then proceed with a
+run", authorizes the storage-only redesign documented in
+`docs/DISK_SCHEDULING_TRANSFER.md`. r03 is separately registered and differs
+from r02 only in attempt identity and `scheduling_storage_policy`.
+
+The unsolved model is exported to hash-bound FP64 binary CSR, with original
+names and extraction mappings retained. The builder process must exit before
+native HiGHS loading. No whole-model MOI copy, per-row/per-column native Julia
+metadata, external start, matrix reduction or mathematical constraint change
+is introduced. All scheduling, AC and verification policies remain unchanged.
+
+Focused tiny transfer tests passed 5,663 assertions, and a separate tiny pipeline
+completed all three AC intervals with scheduling objective/bound 1,732.1479
+and zero scheduling gap. These are component results, not a 23,643-bus success.
+The fresh full component gate also includes infeasible-row and lifecycle tests,
+and independent plus official exhaustive checks before r03 may be launched.

@@ -22,9 +22,27 @@ function source_balance_scheduling_model(input; include_reserves::Bool=true,
     model
 end
 
+function build_source_scheduling(input;include_reserves=true,consumer_dominance=false)
+    started=time()
+    model=source_balance_scheduling_model(input;include_reserves=include_reserves,
+        consumer_dominance=consumer_dominance)
+    model.ext[:scheduling_formulation]=Dict(
+        "include_reserves"=>include_reserves,"build_seconds"=>time()-started,
+        "variables"=>num_variables(model),
+        "constraints_excluding_variable_bounds"=>num_constraints(model;count_variable_in_set_constraints=false),
+        "reserve_policy"=>include_reserves ? "joint_scheduling_then_full_reallocation" :
+            "candidate_schedule_only_then_full_reserve_allocation_and_evaluation",
+        "source_startup_windows"=>model.ext[:source_startup_windows],
+        "source_pq_bound_devices"=>count(u->input.sdd_lookup[u]["q_bound_cap"]==1,input.sdd_ids))
+    if consumer_dominance
+        model.ext[:scheduling_formulation]["consumer_online_dominance"]=model.ext[:consumer_online_dominance]
+    end
+    model
+end
+
 function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
         include_reserves::Bool=true,consumer_dominance::Bool=false,
-        storage_policy="cached_model_v1",
+        storage_policy="cached_model_v1",spool_path=nothing,
         seed_policy="off",construction_seconds=0,cost_seconds=0,cost_lp_solver="simplex",deadline=Inf,
         native_log_path=nothing,on_phase=record->nothing,
         on_seed=(schedule,audit,label)->nothing,on_event=(name,details)->nothing)
@@ -32,28 +50,19 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
     storage_policy in SCHEDULING_STORAGE_POLICIES || error("Unknown scheduling storage policy")
     storage_policy!="cached_model_v1" && seed_policy!="off" &&
         error("Native handoff is supported only for the original cold scheduling route")
+    if storage_policy=="disk_backed_native_v1"
+        spool_path===nothing && error("Disk-backed scheduling requires an exited, unsolved builder")
+        return solve_scheduling_spool(input,spool_path;optimizer=optimizer,time_limit=time_limit,
+            deadline=deadline,set_silent=set_silent,include_reserves=include_reserves,on_event=on_event)
+    end
     if seed_policy!= "off"
         include_reserves || error("Cold construction must retain joint source reserves")
         all(x->isfinite(x) && x>0,(construction_seconds,cost_seconds)) ||
             error("Cold construction requires positive finite phase budgets")
     end
     started=time()
-    model=source_balance_scheduling_model(input;include_reserves=include_reserves,
+    model=build_source_scheduling(input;include_reserves=include_reserves,
         consumer_dominance=consumer_dominance)
-    model.ext[:scheduling_formulation]=Dict(
-        "include_reserves"=>include_reserves,
-        "build_seconds"=>time()-started,
-        "variables"=>num_variables(model),
-        "constraints_excluding_variable_bounds"=>num_constraints(model;count_variable_in_set_constraints=false),
-        "reserve_policy"=>include_reserves ? "joint_scheduling_then_full_reallocation" :
-            "candidate_schedule_only_then_full_reserve_allocation_and_evaluation")
-    model.ext[:scheduling_formulation]["source_startup_windows"]=model.ext[:source_startup_windows]
-    model.ext[:scheduling_formulation]["source_pq_bound_devices"]=
-        count(u->input.sdd_lookup[u]["q_bound_cap"]==1,input.sdd_ids)
-    if consumer_dominance
-        model.ext[:scheduling_formulation]["consumer_online_dominance"]=
-            model.ext[:consumer_online_dominance]
-    end
     println("GO3_SCHEDULING_MODEL ",JSON.json(model.ext[:scheduling_formulation])); flush(stdout)
     on_event("model_built",Dict("build_seconds"=>time()-started))
     if storage_policy!="cached_model_v1"
