@@ -7,6 +7,23 @@ C3E4N08316D2, C3E4N23643D2. They clarified the comparison reference is the
 This supersedes the old pilot-only authorization for these new registered attempts.
 Both historical 617-bus pilot latches, solutions and reports remain unchanged.
 
+### Updated direction after the 6,049-bus speedup tests
+
+The user explicitly requested **8,316 (one scenario), then 23,643 (one scenario)**,
+setting aside the recent DAYZER-style sequential-linear-correction route and
+returning to the original iterative HiGHS + Ipopt/MUMPS algorithm. The new
+`original_route_after_6049_v1` policy preserves prior success evidence but
+defers 6,717; it does not relabel that network as passed. It still requires a
+verified target-passing 8,316 result before advancing to 23,643. Historical
+registrations keep their original predecessor rules. The sixth-best reference,
+cold/source-only starts, full source constraints and exhaustive verification,
+and 7,200-second hard end-to-end limit are unchanged. Every changed full attempt
+still requires its own frozen registration and permanent single-use latch.
+
+The first selected larger case is C3E4N08316D2 scenario 103, the smallest numeric
+public Division 2 scenario. Its source audit and protocol are in
+[the 8,316-bus report](C3E4N08316_CAMPAIGN.md). Speedup r08 remains unrun.
+
 ## Acceptance and order
 
 For each network, select the smallest numeric public Division 2 scenario before

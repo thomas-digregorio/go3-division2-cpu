@@ -8,6 +8,8 @@ from .safety import local_path
 
 NETWORK_ORDER = ("C3E4N02000D2", "C3E4N04224D2", "C3E4N06049D2",
                  "C3E4N06717D2", "C3E4N08316D2", "C3E4N23643D2")
+LARGER_NETWORK_ORDER = ("C3E4N08316D2", "C3E4N23643D2")
+LARGER_NETWORK_POLICY = "original_route_after_6049_v1"
 
 
 def registered_budget(config):
@@ -125,8 +127,26 @@ def campaign_latch(root, config):
     identity = {k: config[k] for k in ("network", "scenario", "input_sha256")}
     if registered != identity or not config["cold_start"] or config["allow_pop_solution"]:
         raise ValueError("Attempt not explicitly registered, or not cold")
-    index = NETWORK_ORDER.index(network)
-    for preceding in NETWORK_ORDER[:index]:
+    order_policy = config.get("campaign_order_policy", "original_order_v1")
+    if order_policy == "original_order_v1":
+        required = NETWORK_ORDER[:NETWORK_ORDER.index(network)]
+    elif order_policy == LARGER_NETWORK_POLICY:
+        continuation = auth.get("larger_network_continuation", {})
+        if (network not in LARGER_NETWORK_ORDER
+                or continuation.get("policy") != LARGER_NETWORK_POLICY
+                or continuation.get("explicit_user_authorization") is not True
+                or continuation.get("network_order") != list(LARGER_NETWORK_ORDER)
+                or continuation.get("deferred_networks") != ["C3E4N06717D2"]
+                or continuation.get("baseline_network") != "C3E4N06049D2"
+                or config.get("ac_correction_policy", "off") != "off"):
+            raise ValueError("Larger-network continuation differs from explicit user direction")
+        # The user explicitly deferred 6,717 and set aside the SLP speedup route.
+        # Preserve all earlier success evidence; require 8,316 to pass before
+        # 23,643. Deferral is never recorded as a successful 6,717 result.
+        required = NETWORK_ORDER[:3] + LARGER_NETWORK_ORDER[:LARGER_NETWORK_ORDER.index(network)]
+    else:
+        raise ValueError("Unknown campaign order policy")
+    for preceding in required:
         evidence = auth["completed_networks"].get(preceding)
         if not evidence:
             raise ValueError(f"Preceding network has not passed: {preceding}")

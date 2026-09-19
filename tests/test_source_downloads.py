@@ -11,14 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SourceDownloadTests(unittest.TestCase):
-    def test_only_audited_6717_network_has_larger_raw_cap(self):
+    def test_only_audited_6717_and_8316_networks_have_larger_raw_cap(self):
         self.assertEqual(set(RAW_CASE_CAP_BYTES), set(NETWORKS))
         for network in NETWORKS:
             self.assertEqual(RAW_CASE_CAP_BYTES[network],
-                             (128 if network == "C3E4N06717D2" else 64) * 1024**2)
+                             (128 if network in ("C3E4N06717D2", "C3E4N08316D2") else 64) * 1024**2)
 
     def test_oversized_member_rejected_before_read_or_output(self):
-        for network in ("C3E4N06049D2", "C3E4N06717D2"):
+        for network in ("C3E4N06049D2", "C3E4N06717D2", "C3E4N08316D2"):
             with self.subTest(network=network), tempfile.TemporaryDirectory(dir=ROOT/"tmp") as d:
                 destination = Path(d)/"raw.json"
                 with patch("scripts.audit_sources.storage_check") as storage, \

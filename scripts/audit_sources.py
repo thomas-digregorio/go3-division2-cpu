@@ -18,9 +18,9 @@ ARCHIVE = "https://data.openei.org/files/5997/C3E4N00617_20231002.zip"
 CASE_PATTERN = re.compile(r"D2/C3E4N00617D2/scenario_[0-9]{3}\.json\Z")
 NETWORKS = ("C3E4N00617D2", "C3E4N02000D2", "C3E4N04224D2", "C3E4N06049D2",
             "C3E4N06717D2", "C3E4N08316D2", "C3E4N23643D2")
-# The audited 6,717-bus raw scenarios are about 105 MB. This explicit exception
-# does not lift the 16 MiB compressed HTTP transfer limit or authorize other data.
-RAW_CASE_CAP_BYTES = {network: (128 if network == "C3E4N06717D2" else 64) * 1024 * 1024
+# The audited 6,717/8,316-bus raw scenarios are about 105/90 MB. These exceptions
+# do not lift the 16 MiB compressed HTTP transfer limit or authorize other data.
+RAW_CASE_CAP_BYTES = {network: (128 if network in ("C3E4N06717D2", "C3E4N08316D2") else 64) * 1024 * 1024
                       for network in NETWORKS}
 NS = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
 

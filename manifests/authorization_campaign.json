@@ -8,7 +8,22 @@
   "maximum_end_to_end_seconds": 7200,
   "budget_authorization": "User explicitly allowed up to two hours per attempt, as in Division 2.",
   "network_order": ["C3E4N02000D2", "C3E4N04224D2", "C3E4N06049D2", "C3E4N06717D2", "C3E4N08316D2", "C3E4N23643D2"],
+  "larger_network_continuation": {
+    "policy": "original_route_after_6049_v1",
+    "explicit_user_authorization": true,
+    "user_request": "proceed with 8316 (one scenario) and then 23,643 (one scenario). can forget the DAYZER style stuff from the most recent attempt. proceed with the original iteration and improvement (can delete older runs if needed for space, try to get to 10% of top 6. remain under 2 hours and other rules of GO3, etc).",
+    "network_order": ["C3E4N08316D2", "C3E4N23643D2"],
+    "deferred_networks": ["C3E4N06717D2"],
+    "baseline_network": "C3E4N06049D2",
+    "algorithm_route": "HiGHS whole-horizon scheduling and Ipopt/MUMPS AC refinement; no sequential-linear-correction speedup",
+    "reference_interpretation": "Preserve prior clarification: sixth-best eligible score, not top-six average or best score."
+  },
   "attempts": {
+    "campaign_n08316_s103_r01": {
+      "network": "C3E4N08316D2",
+      "scenario": "103",
+      "input_sha256": "43c169a1448da751be5e9fc04447f9088f1802866f5e591ed72777b2496a46a3"
+    },
     "campaign_n02000_s005_r01": {
       "network": "C3E4N02000D2",
       "scenario": "005",
