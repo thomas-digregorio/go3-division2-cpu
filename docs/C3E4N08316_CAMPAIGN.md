@@ -317,3 +317,28 @@ HiGHS plus Ipopt/MUMPS route remains selected; correction/SLP is off. A config
 regression enforces this exact difference. The full new tiny component gate,
 hash-matched source inventory, pushed frozen revision and clean preflight must
 pass before r03 can claim its one-use full-run authorization.
+
+### r03 completed component gate
+
+All **45/45 stages**, **93 Python tests**, and **3,450 Julia assertions** passed.
+All **16** tiny pipelines passed independent hard feasibility, objective
+agreement, official `feas=1` / `phys_feas=1`, and their full nine contingency-hour
+checks. The exact-ramp integration completed all three hours with **zero export
+dispatch adjustments** and maximum P/Q imbalances of approximately 9.99e-16 /
+6.46e-15 p.u. The targeted two-producer regression reproduced the legacy drift
+above 1e-8 and removed it with exact intersections; positive PMIN and empty-domain
+failure checks also passed. These are fixture results, not a full-case pass.
+
+- Exact evidence directory: `tmp/pilot002_component_gate_2g1mfb0l`.
+- Summed stage time: 1,057.205 seconds; no competition-case solve was performed.
+- Manifest SHA256:
+  `589e0713026b3b5d01b0387fd32054d137cf81eef7d864da92c780ba388b3500`.
+- r03 configuration SHA256:
+  `7d14b4ca6c09b35b567aa6ab71a67de84744340bc6a84b346f034f96934ceef4`.
+- All 123 covered source/configuration files and all 45 saved stage logs were
+  rehashed and matched the completed gate.
+
+The correction was pushed as `eea9c86`; the final pre-run freeze adds this
+complete test record. No source/solver settings change between that freeze and
+the registered cold r03 attempt. The failed r02 solution is evidence only and
+must not supply initialization.
