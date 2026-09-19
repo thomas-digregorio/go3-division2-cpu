@@ -130,6 +130,37 @@ def main():
         "--output",str(evidence/"correction_verification"),"--seconds","60"])
     correction_certificate=json.loads((evidence/"correction_verification/certificate.json").read_text())
     correction_stats=json.loads((evidence/"correction_worker/solver_statistics.json").read_text())
+    stage("tiny_continuous_correction_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/source_features_problem.json",str(evidence/"continuous_correction_worker"),
+        "config/tiny_ac_correction_continuous.json",str(time.time()+120)],timeout=125)
+    stage("tiny_continuous_correction_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/source_features_problem.json",
+        "--solution",str(evidence/"continuous_correction_worker/candidate_final.json"),
+        "--output",str(evidence/"continuous_correction_verification"),"--seconds","60"])
+    continuous_correction_certificate=json.loads((evidence/"continuous_correction_verification/certificate.json").read_text())
+    continuous_correction_stats=json.loads((evidence/"continuous_correction_worker/solver_statistics.json").read_text())
+    continuous_native=list((evidence/"continuous_correction_worker/native_correction").rglob("*.json"))
+    if not continuous_native:
+        raise RuntimeError("Missing native IPX correction records")
+    for path in continuous_native:
+        native=json.loads(path.read_text())
+        if (native["native_solver_requested"]!="ipx" or native["crossover_requested"]!="off"
+            or native["native_stored_start"] or native["native_useful_basis_bypassed_presolve"]
+            or not native["import_audit"]["pass"]
+            or not Path(native["native_log_file"]).is_relative_to(evidence/"continuous_correction_worker")
+            or ("original_linearization_residual" in native and native["original_linearization_residual"]>1e-8)):
+            raise RuntimeError("Continuous correction native solver/import/residual audit failed")
+    for interval in continuous_correction_stats["ac_intervals"]:
+        correction=interval["reserve_ac"]["correction"]
+        phases=interval["reserve_ac"]["phases"]
+        if (correction["policy"]!="network_slp_continuous_then_round_v2"
+            or correction["lp_solver"]!="ipx" or correction["final_model_residual"]>1e-8
+            or correction["internal_primal_target"]!=1e-10
+            or correction["final_acceptance_tolerance"]!=1e-8
+            or any(x!=round(x) for x in correction["final_discrete_settings"].values())
+            or not any(p["phase"]=="continuous_shunt_correction" for p in phases)
+            or not any(p["phase"]=="rounded_shunt_correction" for p in phases)):
+            raise RuntimeError("Continuous candidate was not rounded and independently repaired")
     native_records=list((evidence/"correction_worker/native_correction").rglob("*.json"))
     if not native_records:
         raise RuntimeError("Missing retained native correction import/start audit")
@@ -208,13 +239,14 @@ def main():
         raise RuntimeError("New tiny integration did not exercise the registered source features")
     for checked in (certificate,separated_certificate,hipo_certificate,dominance_certificate,
                     reserve_ac_certificate,source_features_certificate,recovery_certificate,cold_seed_certificate,
-                    correction_certificate):
+                    correction_certificate,continuous_correction_certificate):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
     coverage_records={}
     for name in ("worker","separated_worker","hipo_worker","dominance_worker",
-                 "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker"):
+                 "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
+                 "continuous_correction_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -254,6 +286,8 @@ def main():
         "tiny_cold_seed_scheduling":seed_stats,
         "tiny_network_correction_certificate":correction_certificate,
         "tiny_network_correction_statistics":correction_stats,
+        "tiny_continuous_correction_certificate":continuous_correction_certificate,
+        "tiny_continuous_correction_statistics":continuous_correction_stats,
         "tiny_worker_exact_interval_coverage":coverage_records,
         "tiny_source_features_scheduling":feature_stats,
         "tiny_source_features_ac_statistics":source_ac_stats,

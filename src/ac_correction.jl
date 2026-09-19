@@ -3,6 +3,8 @@
 # checked on the raw full-horizon GO3 input. No external point or solver is used.
 using SparseArrays
 const AC_CORRECTION_POLICY="network_slp_fixed_shunts_v1"
+const AC_CORRECTION_CONTINUOUS_POLICY="network_slp_continuous_then_round_v2"
+const AC_CORRECTION_POLICIES=(AC_CORRECTION_POLICY,AC_CORRECTION_CONTINUOUS_POLICY)
 
 correction_bounds(s::MOI.EqualTo)=(Float64(s.value),Float64(s.value))
 correction_bounds(s::MOI.LessThan)=(-Inf,Float64(s.upper))
@@ -134,7 +136,8 @@ function correction_import_audit(h,A,c,lb,ub,rl,ru;matrix_threshold=1e-12)
         "scope"=>"Candidate LP import only; original nonlinear/source checks remain mandatory")
 end
 
-function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothing)
+function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothing,solver="simplex")
+    solver in ("simplex","ipx") || error("Unsupported correction LP solver")
     seconds>0 && isfinite(seconds) || error("Invalid correction LP budget")
     size(A)==(length(rl),length(c)) && length(ru)==length(rl) &&
         length(lb)==length(ub)==length(x)==length(c) || error("Correction LP dimensions differ")
@@ -156,6 +159,7 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
         "requested_seconds"=>seconds,"columns"=>length(x),"rows"=>length(rl),
         "basis_reused"=>false,"external_solution_read"=>false,
         "start_policy"=>"fresh_presolved_lp_v1","presolve_requested"=>"on",
+        "native_solver_requested"=>solver,"crossover_requested"=>(solver=="ipx" ? "off" : "not_applicable"),
         "complete_start_api_status"=>nothing,"native_stored_start"=>false,
         "native_start_use"=>"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search",
         "certificate_scope"=>"linearized candidate subproblem only; no full GO3 bound")
@@ -168,8 +172,13 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
         check(HiGHS.Highs_setDoubleOptionValue(h,"primal_feasibility_tolerance",1e-9),"primal_tolerance")
         check(HiGHS.Highs_setDoubleOptionValue(h,"dual_feasibility_tolerance",1e-9),"dual_tolerance")
         check(HiGHS.Highs_setDoubleOptionValue(h,"small_matrix_value",1e-12),"matrix_threshold")
-        check(HiGHS.Highs_setStringOptionValue(h,"solver","simplex"),"solver")
+        check(HiGHS.Highs_setStringOptionValue(h,"solver",solver),"solver")
         check(HiGHS.Highs_setStringOptionValue(h,"presolve","on"),"presolve")
+        if solver=="ipx"
+            # Explicit IPX: installed HiGHS may route the generic "ipm" to HiPO.
+            check(HiGHS.Highs_setStringOptionValue(h,"run_crossover","off"),"run_crossover")
+            check(HiGHS.Highs_setDoubleOptionValue(h,"ipm_optimality_tolerance",1e-10),"ipm_tolerance")
+        end
         # One bulk CSC transfer, no per-variable native edits or commercial backend.
         starts=HiGHS.HighsInt.(A.colptr.-1);indices=HiGHS.HighsInt.(A.rowval.-1)
         import_status=HiGHS.Highs_passLp(h,length(c),length(rl),nnz(A),HiGHS.kHighsMatrixFormatColwise,
@@ -214,7 +223,8 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
         end
         merge!(record,Dict("native_model_status"=>status,"native_primal_status"=>ps,
             "native_seconds"=>HiGHS.Highs_getRunTime(h),"api_seconds"=>api_seconds,
-            "simplex_iterations"=>intinfo("simplex_iteration_count")))
+            "simplex_iterations"=>intinfo("simplex_iteration_count"),
+            "ipm_iterations"=>intinfo("ipm_iteration_count")))
         point,record
     catch e
         record["error"]=sprint(showerror,e)
@@ -225,6 +235,7 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
         lines=readlines(log_path)
         messages=filter(line->occursin(r"(?i)^\s*(warning|error)\s*:",line),lines)
         record["native_presolve_observed"]=any(line->occursin("Presolving model",line) || occursin("Presolve reductions",line),lines)
+        record["native_ipx_observed"]=any(line->occursin("IPX",line),lines)
         record["native_useful_basis_bypassed_presolve"]=any(line->occursin("useful basis so presolve not used",line),lines)
         record["native_warning_error_count"]=length(messages)
         record["native_warning_error_excerpt"]=first(messages,min(20,length(messages)))
@@ -235,7 +246,9 @@ function correction_native_lp(A,c,lb,ub,rl,ru,x;seconds,threads=4,log_dir=nothin
     end
 end
 
-function ac_linear_correction(model,point;deadline,max_rounds=8,lp_seconds=4.0,threads=4,log_dir=nothing)
+function ac_linear_correction(model,point;deadline,max_rounds=8,lp_seconds=4.0,threads=4,log_dir=nothing,
+        lp_solver="simplex",primal_target=AC_POINT_RESIDUAL_TOLERANCE)
+    isfinite(primal_target) && 0<primal_target<=AC_POINT_RESIDUAL_TOLERANCE || error("Invalid correction primal target")
     started=time();o=correction_oracle(model)
     point.variables==o.variables || error("Correction source variable mapping differs")
     x=copy(point.values);x=clamp.(x,o.lb,o.ub)
@@ -248,7 +261,7 @@ function ac_linear_correction(model,point;deadline,max_rounds=8,lp_seconds=4.0,t
         unique(o.jac_cols)
     end
     for round_id in 1:max_rounds
-        if residual<=AC_POINT_RESIDUAL_TOLERANCE
+        if residual<=primal_target
             reason="original_model_residual_pass";break
         elseif deadline-time()<=0.2
             reason="correction_deadline";break
@@ -262,7 +275,7 @@ function ac_linear_correction(model,point;deadline,max_rounds=8,lp_seconds=4.0,t
         allowance=min(lp_seconds,deadline-time()-0.05)
         allowance>0 || (reason="correction_deadline";break)
         proposed,record=correction_native_lp(lin.A,o.c,lo,hi,lin.lower,lin.upper,x;
-            seconds=allowance,threads=threads,log_dir=log_dir)
+            seconds=allowance,threads=threads,log_dir=log_dir,solver=lp_solver)
         merge!(record,Dict("round"=>round_id,"before_residual"=>residual,"trust_radius"=>radius))
         if proposed===nothing
             record["accepted"]=false;record["reason"]="no_feasible_linearized_point"
@@ -272,7 +285,7 @@ function ac_linear_correction(model,point;deadline,max_rounds=8,lp_seconds=4.0,t
         for alpha in (1.0,0.5,0.25,0.125,0.0625,0.03125)
             trial=x.+alpha.*(proposed.-x)
             r=correction_residual(o,trial)
-            if r<=AC_POINT_RESIDUAL_TOLERANCE || r<(1.0-1e-4*alpha)*residual
+            if r<=primal_target || r<(1.0-1e-4*alpha)*residual
                 x=trial;residual=r;took=true;accepted+=1
                 record["step_fraction"]=alpha
                 alpha<1 && (radius=max(0.01,radius/2))
@@ -291,8 +304,9 @@ function ac_linear_correction(model,point;deadline,max_rounds=8,lp_seconds=4.0,t
     independent_local=ac_primal_residual(model,returned)
     abs(independent_local-residual)<=max(1e-10,1e-8*max(independent_local,residual)) ||
         error("Correction oracle and original JuMP residual disagree")
-    residual<=AC_POINT_RESIDUAL_TOLERANCE && (reason="original_model_residual_pass")
-    record=Dict("policy"=>AC_CORRECTION_POLICY,"phase"=>"linearized_correction",
+    residual<=primal_target && (reason="original_model_residual_pass")
+    record=Dict("policy"=>"original_ac_slp_v1","phase"=>"linearized_correction","lp_solver"=>lp_solver,
+        "internal_primal_target"=>primal_target,"final_acceptance_tolerance"=>AC_POINT_RESIDUAL_TOLERANCE,
         "termination"=>reason,"complete_finite_point"=>true,"max_primal_residual"=>independent_local,
         "initial_residual"=>initial_residual,"rounds"=>records,"accepted_steps"=>accepted,
         "wall_seconds"=>time()-started,"oracle_build_seconds"=>o.build_seconds,

@@ -12,6 +12,29 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class SpeedupTests(unittest.TestCase):
+    def test_ipx_continuous_shunt_variant_requires_matching_registration(self):
+        config=json.loads((ROOT/"config/speedup_n06049_s003_r04.json").read_text())
+        auth=json.loads((ROOT/"manifests/authorization_speedup_004.json").read_text())
+        self.assertTrue(registered_budget(config))
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as d:
+            root=Path(d)
+            for group,keys in (("baseline",("result","completion","configuration","comparison")),
+                               ("previous_attempt",("result","completion"))):
+                for key in keys:
+                    path=root/auth[group][key+"_path"]
+                    atomic_json(path,{"tiny":group+key})
+                    auth[group][key+"_sha256"]=sha256(path)
+            atomic_json(root/"manifests/authorization_speedup_004.json",auth)
+            latch=registered_latch(root,config)
+            claim_pilot(latch,{"tiny":True})
+            with self.assertRaises(FileExistsError):
+                claim_pilot(latch,{"duplicate":True})
+            for change in ({"ac_correction_lp_solver":"simplex"},
+                           {"ac_correction_policy":"network_slp_fixed_shunts_v1"},
+                           {"allow_pop_solution":True},{"cold_start":False}):
+                with self.assertRaises(ValueError):
+                    registered_latch(root,{**config,**change})
+
     def test_ongoing_iterations_remain_cold_and_one_execution_per_registration(self):
         config=json.loads((ROOT/"config/speedup_n06049_s003_r03.json").read_text())
         auth=json.loads((ROOT/"manifests/authorization_speedup_003.json").read_text())

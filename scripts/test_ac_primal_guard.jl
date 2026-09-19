@@ -17,7 +17,8 @@ include(joinpath(@__DIR__,"..","src","pilot_worker.jl"))
     @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts")
     fix(shunt_step["s"],1;force=true)
     for extra in ((min_iterations=-1,),(min_iterations=true,),(window=1,),(window=true,),
-            (objective_relative_range=Inf,),(objective_relative_range=-1,))
+            (objective_relative_range=Inf,),(objective_relative_range=-1,),
+            (primal_tolerance=0.0,),(primal_tolerance=1e-7,),(primal_tolerance=NaN,))
         @test_throws ErrorException install_ac_primal_guard!(m;
             policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts",extra...)
     end
@@ -69,12 +70,15 @@ end
         old=deepcopy(r)
         set_start_value(x,1.1);set_start_value(y,1.9)
         g2=install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="numerical_recovery",
-            min_iterations=0,window=2,objective_relative_range=1e100)
+            min_iterations=0,window=2,objective_relative_range=1e100,primal_tolerance=1e-10)
         optimize!(m)
         r2=finish_ac_primal_guard!(m,g2)
         @test r2["stop_requested"] && r2["returned_point_passed_local_screen"]
         @test r==old
         @test r2["phase"]=="numerical_recovery"
+        @test r2["primal_residual_limit"]==1e-10
+        @test r2["model_residual_at_stop"]<=1e-10
+        @test r2["returned_point_passed_internal_target"]
     end
 end
 

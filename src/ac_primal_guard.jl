@@ -10,8 +10,11 @@ function ac_objective_stable(history,tolerance)
 end
 
 function install_ac_primal_guard!(model;policy="off",phase,
-        min_iterations=20,window=8,objective_relative_range=1e-7)
+        min_iterations=20,window=8,objective_relative_range=1e-7,
+        primal_tolerance=AC_POINT_RESIDUAL_TOLERANCE)
     policy in ("off",AC_PRIMAL_GUARD_POLICY) || error("Unknown AC primal guard policy")
+    primal_tolerance isa Real && isfinite(primal_tolerance) &&
+        0<primal_tolerance<=AC_POINT_RESIDUAL_TOLERANCE || error("Invalid internal primal target")
     record=Dict{String,Any}("policy"=>policy,"phase"=>phase,"enabled"=>policy!="off",
         "stop_requested"=>false,"callback_count"=>0,"audit_count"=>0,
         "audit_seconds"=>0.0,"source_bounds_changed"=>false,
@@ -35,7 +38,7 @@ function install_ac_primal_guard!(model;policy="off",phase,
     record["minimum_iterations"]=min_iterations
     record["objective_window_iterations"]=window
     record["objective_relative_range_limit"]=objective_relative_range
-    record["primal_residual_limit"]=AC_POINT_RESIDUAL_TOLERANCE
+    record["primal_residual_limit"]=primal_tolerance
     record["variable_count"]=length(variables)
     history=Float64[]
     native_columns=Int[]
@@ -51,7 +54,7 @@ function install_ac_primal_guard!(model;policy="off",phase,
             push!(history,Float64(obj))
             length(history)>window && popfirst!(history)
             (iteration>=min_iterations && length(history)==window &&
-                isfinite(inf_pr) && 0<=inf_pr<=AC_POINT_RESIDUAL_TOLERANCE &&
+                isfinite(inf_pr) && 0<=inf_pr<=primal_tolerance &&
                 iteration-last_audit>=5 &&
                 ac_objective_stable(history,objective_relative_range)) || return true
             last_audit=iteration
@@ -78,7 +81,7 @@ function install_ac_primal_guard!(model;policy="off",phase,
             record["audit_count"]+=1
             record["audit_seconds"]+=time()-began
             record["last_audited_residual"]=residual
-            residual<=AC_POINT_RESIDUAL_TOLERANCE || return true
+            residual<=primal_tolerance || return true
             # The objective is independently evaluated on that same mapped point.
             values_by_variable=Dict(zip(point.variables,point.values))
             actual_objective=value(v->values_by_variable[v],objective_function(model))
@@ -116,6 +119,7 @@ function finish_ac_primal_guard!(model,state)
         residual=ac_primal_residual(model,returned)
         record["returned_model_residual"]=residual
         record["returned_point_passed_local_screen"]=residual<=AC_POINT_RESIDUAL_TOLERANCE
+        record["returned_point_passed_internal_target"]=residual<=record["primal_residual_limit"]
         # Any changed/nonpassing returned point still follows the existing
         # recovery/fail-fast rule; a callback stop never overrides that screen.
     end

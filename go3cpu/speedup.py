@@ -25,7 +25,8 @@ def speedup_latch(root, config):
             or config["finalization_reserve_seconds"] < 30
             or config["scheduling_relative_gap"] != 0.001
             or config.get("scheduling_seed_policy", "off") != "off"
-            or config["ac_correction_policy"] != "network_slp_fixed_shunts_v1"
+            or config["ac_correction_policy"] != auth.get("correction_policy", "network_slp_fixed_shunts_v1")
+            or config.get("ac_correction_lp_solver", "simplex") != auth.get("correction_lp_solver", "simplex")
             or config["intermediate_verification"] != "skip_unverified_schedule_v1"):
         raise ValueError("Speedup experiment differs from its single-run authorization")
     baseline = auth["baseline"]

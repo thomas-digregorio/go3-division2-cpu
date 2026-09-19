@@ -151,7 +151,7 @@ function run_worker(case_path, output, config, work_deadline)
     ac_guard=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
         error("AC primal guard requires the reserve-aware adapter and local residual checks")
     ac_correction=get(config,"ac_correction_policy","off")
-    ac_correction in ("off",AC_CORRECTION_POLICY) || error("Unknown network correction policy")
+    (ac_correction=="off" || ac_correction in AC_CORRECTION_POLICIES) || error("Unknown network correction policy")
     ac_correction=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
         error("Network corrections require the full reserve-aware AC model and residual screen")
 
@@ -282,7 +282,7 @@ function run_worker(case_path, output, config, work_deadline)
             "max_wall_time"=>rounded_ac_time_limit(config["ac_seconds_per_solve"],refinement_deadline),
             "print_level"=>get(config,"ac_print_level",3))
         ac_start = time()
-        if ac_correction==AC_CORRECTION_POLICY
+        if ac_correction in AC_CORRECTION_POLICIES
             hour_budget=correction_interval_budget(config,length(input.periods)-i+1,refinement_deadline;now=ac_start)
             hour_deadline=hour_budget["hour_deadline"]
             correction_phase_event("hour_allocation","begin";details=merge(Dict("interval"=>i),hour_budget))
@@ -295,6 +295,7 @@ function run_worker(case_path, output, config, work_deadline)
                 max_rounds=get(config,"ac_correction_max_rounds",8),
                 fallback_seconds=get(config,"ac_correction_fallback_seconds",12.0),
                 threads=config["highs_threads"],adaptive_budget=hour_budget["policy"]=="remaining_horizon_v1",
+                policy=ac_correction,lp_solver=get(config,"ac_correction_lp_solver","simplex"),
                 diagnostic_dir=joinpath(output,"native_correction","hour_"*lpad(string(i),4,'0')))
             ac_model.ext[:reserve_ac]["correction"]["hour_budget"]=hour_budget
         elseif ac_reserve_policy=="source_joint_reserves_in_ac_v1"

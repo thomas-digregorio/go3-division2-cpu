@@ -136,16 +136,35 @@ function extract_ac_correction_result(model,input,on,real_power,point)
         "dc_line"=>Dict{String,Any}())
 end
 
-function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,phase="fixed_shunt_fallback",max_iter=120)
+function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,
+        phase="fixed_shunt_fallback",max_iter=120,allow_unfixed_shunts=false,barrier_strategy="adaptive",
+        primal_target=AC_POINT_RESIDUAL_TOLERANCE)
     started=time()
+    barrier_strategy in ("adaptive","monotone") || error("Unknown correction barrier strategy")
+    isfinite(primal_target) && 0<primal_target<=AC_POINT_RESIDUAL_TOLERANCE || error("Invalid correction fallback target")
+    fixed_shunts=!haskey(object_dictionary(model),:shunt_step) || all(is_fixed,model[:shunt_step])
+    fixed_shunts || allow_unfixed_shunts || error("Unfixed shunts require candidate-only fallback")
     correction_phase_event(phase,"begin";details=Dict("requested_seconds"=>seconds,
-        "remaining_hour_seconds"=>deadline-started,"max_iterations"=>max_iter))
+        "remaining_hour_seconds"=>deadline-started,"max_iterations"=>max_iter,
+        "fixed_shunts"=>fixed_shunts,"barrier_strategy"=>barrier_strategy))
     record=prepare_ac_recovery!(model,optimizer,point;seconds,deadline,max_iter)
     record["trigger"]="linear_correction_failed_original_model_residual_screen"
     record["complete_primal_start"]["source"]="network_correction_in_same_interval_and_attempt"
+    set_optimizer_attribute(model,"mu_strategy",barrier_strategy)
+    record["options"]["mu_strategy"]=barrier_strategy
+    record["candidate_only_unfixed_shunts"]=!fixed_shunts
+    record["internal_primal_target"]=primal_target
+    if primal_target<AC_POINT_RESIDUAL_TOLERANCE
+        # Headroom for independent reconstruction: several branch-row residuals
+        # may accumulate in one bus balance. Do not relax the final acceptance.
+        for (key,val) in Dict("tol"=>primal_target,"constr_viol_tol"=>primal_target/10,
+                "acceptable_tol"=>primal_target,"acceptable_constr_viol_tol"=>primal_target/10)
+            set_optimizer_attribute(model,key,val);record["options"][key]=val
+        end
+    end
     set_optimizer_attribute(model,"max_wall_time",rounded_ac_time_limit(seconds,deadline))
-    guard=install_ac_primal_guard!(model;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts",
-        min_iterations=0,window=2,objective_relative_range=1.0)
+    guard=install_ac_primal_guard!(model;policy=fixed_shunts ? AC_PRIMAL_GUARD_POLICY : "off",phase="rounded_shunts",
+        min_iterations=0,window=2,objective_relative_range=1.0,primal_tolerance=primal_target)
     optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
     guard_record=finish_ac_primal_guard!(model,guard)
     has_values(model) || return point,Dict("phase"=>phase,"complete_finite_point"=>true,
@@ -166,27 +185,90 @@ function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,
         "rollback"=>!accept,"certificate_scope"=>"primal feasibility only, not optimality"))
 end
 
+function round_correction_shunts!(model,point,shunt_domains)
+    point.variables==all_variables(model) || error("Incomplete shunt-rounding point")
+    lookup=Dict(zip(point.variables,point.values));settings=Dict{String,Float64}()
+    for (u,(lo,hi)) in shunt_domains
+        v=model[:shunt_step][u]
+        step=clamp(round(lookup[v]),lo,hi)
+        isinteger(step) && lo<=step<=hi || error("Invalid source-domain discrete shunt setting")
+        fix(v,step;force=true);set_start_value(v,step)
+        lookup[v]=step;settings[u]=step
+    end
+    (variables=point.variables,values=[lookup[v] for v in point.variables]),settings
+end
+
+function continuous_then_rounded_correction(model,optimizer,point,shunt_domains;
+        deadline,slp_seconds,lp_seconds,max_rounds,fallback_seconds,threads,diagnostic_dir,lp_solver)
+    phases=Any[]
+    primal_target=1e-10 # stricter internal search target, not a changed final tolerance
+    function linear_stage(point,name,seconds)
+        correction_phase_event(name,"begin";details=Dict("budget_seconds"=>seconds,
+            "remaining_hour_seconds"=>deadline-time(),"lp_solver"=>lp_solver))
+        result,phase=ac_linear_correction(model,point;deadline=min(deadline,time()+seconds),
+            max_rounds,lp_seconds,threads,log_dir=diagnostic_dir,lp_solver,primal_target)
+        phase["phase"]=name
+        push!(phases,phase)
+        correction_phase_event(name,"end";details=Dict("wall_seconds"=>phase["wall_seconds"],
+            "residual"=>phase["max_primal_residual"],"accepted_steps"=>phase["accepted_steps"],
+            "termination"=>phase["termination"]))
+        result
+    end
+    # This is a candidate relaxation only. Never publish it as a discrete point.
+    # Reserve at least 40% of the remaining hour for rounding and original-model repair.
+    point=linear_stage(point,"continuous_shunt_correction",slp_seconds)
+    if ac_primal_residual(model,point)>primal_target && deadline-time()>8
+        seconds=min(fallback_seconds,0.6*max(0.0,deadline-time()-2.0))
+        point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds,max_iter=600,
+            phase="continuous_shunt_fallback",allow_unfixed_shunts=true,barrier_strategy="monotone",primal_target)
+        push!(phases,phase)
+    end
+    continuous_residual=ac_primal_residual(model,point)
+    point,settings=round_correction_shunts!(model,point,shunt_domains)
+    correction_phase_event("round_shunts","complete";details=Dict("count"=>length(settings),
+        "continuous_candidate_residual"=>continuous_residual,
+        "rounded_candidate_residual"=>ac_primal_residual(model,point),
+        "continuous_candidate_is_final"=>false))
+    point=linear_stage(point,"rounded_shunt_correction",min(slp_seconds,max(0.0,0.4*(deadline-time()))))
+    if ac_primal_residual(model,point)>primal_target && deadline-time()>5
+        seconds=correction_fallback_budget(fallback_seconds,deadline)
+        point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds,max_iter=600,
+            phase="rounded_shunt_fallback",barrier_strategy="monotone",primal_target)
+        push!(phases,phase)
+    end
+    point,phases,settings
+end
+
 function compute_corrected_ac(working,source,i;on_status,real_power,reactive_power,curves,
         optimizer,deadline,interval_seed=nothing,slp_seconds=15.0,lp_seconds=4.0,
-        max_rounds=8,fallback_seconds=12.0,threads=4,diagnostic_dir=nothing,adaptive_budget=false)
+        max_rounds=8,fallback_seconds=12.0,threads=4,diagnostic_dir=nothing,adaptive_budget=false,
+        policy=AC_CORRECTION_POLICY,lp_solver="simplex")
+    policy in AC_CORRECTION_POLICIES || error("Unknown correction pipeline policy")
     began=time()
     model,reserve=build_reserve_aware_ac(working,source,i;on_status,real_power,curves)
     set_optimizer(model,optimizer)
     start_record=initialize_ac_correction!(model,source,i,real_power,reactive_power,interval_seed)
     shunt_domains=Dict(u=>(lower_bound(model[:shunt_step][u]),upper_bound(model[:shunt_step][u])) for u in source.shunt_ids)
     settings=Dict{String,Float64}()
-    for u in source.shunt_ids
-        v=model[:shunt_step][u]
-        step=clamp(round(start_value(v)),shunt_domains[u]...)
-        isinteger(step) || error("Source shunt domain has no selected integral point")
-        settings[u]=step;fix(v,step;force=true);set_start_value(v,step)
+    if policy==AC_CORRECTION_POLICY
+        for u in source.shunt_ids
+            v=model[:shunt_step][u]
+            step=clamp(round(start_value(v)),shunt_domains[u]...)
+            isinteger(step) || error("Source shunt domain has no selected integral point")
+            settings[u]=step;fix(v,step;force=true);set_start_value(v,step)
+        end
     end
     point=(variables=all_variables(model),values=Float64[start_value(v) for v in all_variables(model)])
     built=time()-began
+    revisited=false
+    if policy==AC_CORRECTION_CONTINUOUS_POLICY
+        point,phases,settings=continuous_then_rounded_correction(model,optimizer,point,shunt_domains;
+            deadline,slp_seconds,lp_seconds,max_rounds,fallback_seconds,threads,diagnostic_dir,lp_solver)
+    else
     correction_phase_event("linearized_correction","begin";details=Dict(
         "budget_seconds"=>slp_seconds,"remaining_hour_seconds"=>deadline-time()))
     point,slp=ac_linear_correction(model,point;deadline=min(deadline,time()+slp_seconds),
-        max_rounds,lp_seconds,threads,log_dir=diagnostic_dir)
+        max_rounds,lp_seconds,threads,log_dir=diagnostic_dir,lp_solver)
     correction_phase_event("linearized_correction","end";details=Dict(
         "wall_seconds"=>slp["wall_seconds"],"residual"=>slp["max_primal_residual"],
         "accepted_steps"=>slp["accepted_steps"],"termination"=>slp["termination"]))
@@ -197,7 +279,6 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
             max_iter=adaptive_budget ? 600 : 120)
         push!(phases,phase)
     end
-    revisited=false
     if last(phases)["max_primal_residual"]>AC_POINT_RESIDUAL_TOLERANCE &&
             !isempty(source.shunt_ids) && deadline-time()>5
         # A small continuous candidate search, followed by explicit rounding and
@@ -210,7 +291,7 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
             set_lower_bound(v,shunt_domains[u][1]);set_upper_bound(v,shunt_domains[u][2])
         end
         relaxed,phase=ac_linear_correction(model,point;deadline=min(deadline-3,time()+4),
-            max_rounds=3,lp_seconds,threads,log_dir=diagnostic_dir)
+            max_rounds=3,lp_seconds,threads,log_dir=diagnostic_dir,lp_solver)
         phase["phase"]="shunt_revisit_relaxation";push!(phases,phase)
         lookup=Dict(zip(relaxed.variables,relaxed.values))
         for u in source.shunt_ids
@@ -218,7 +299,7 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
             fix(v,step;force=true);lookup[v]=step;settings[u]=step
         end
         point=(variables=relaxed.variables,values=[lookup[v] for v in relaxed.variables])
-        point,phase=ac_linear_correction(model,point;deadline,max_rounds,lp_seconds,threads,log_dir=diagnostic_dir)
+        point,phase=ac_linear_correction(model,point;deadline,max_rounds,lp_seconds,threads,log_dir=diagnostic_dir,lp_solver)
         phase["phase"]="rounded_shunt_repair";push!(phases,phase)
         if phase["max_primal_residual"]>saved_residual
             point=saved_point;settings=saved_settings
@@ -238,6 +319,8 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
         push!(phases,phase)
         residual=ac_primal_residual(model,point)
     end
+    end # original fixed-first policy
+    residual=ac_primal_residual(model,point)
     push!(phases,Dict("phase"=>"selected_correction_point","complete_finite_point"=>true,
         "max_primal_residual"=>residual,"wall_seconds"=>0.0,
         "certificate_scope"=>"local primal only; full final verification still mandatory"))
@@ -245,7 +328,9 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
     model.ext[:correction_point]=point
     model.ext[:reserve_ac]["phases"]=phases
     model.ext[:reserve_ac]["interval_primal_start"]=start_record
-    model.ext[:reserve_ac]["correction"]=Dict("policy"=>AC_CORRECTION_POLICY,
+    model.ext[:reserve_ac]["correction"]=Dict("policy"=>policy,"lp_solver"=>lp_solver,
+        "internal_primal_target"=>(policy==AC_CORRECTION_CONTINUOUS_POLICY ? 1e-10 : AC_POINT_RESIDUAL_TOLERANCE),
+        "final_acceptance_tolerance"=>AC_POINT_RESIDUAL_TOLERANCE,
         "model_build_and_initialization_seconds"=>built,"total_seconds"=>time()-began,
         "shunts_revisited"=>revisited,"final_discrete_settings"=>settings,
         "source_bounds_changed"=>false,"sequential_temporal_bounds"=>true,

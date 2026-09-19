@@ -122,6 +122,45 @@ end
     @test_throws ErrorException correction_interval_budget(merge(cfg,Dict("ac_correction_share_multiplier"=>NaN)),48,6200.0;now=100.0)
 end
 
+@testset "GO3 native correction IPX with presolve and no inherited basis" begin
+    # Bounded coupled tiny LP not eliminated by presolve. Reference is not a start.
+    A=sparse([2.0 1.0 0.0;0.0 1.0 3.0])
+    point,stats=correction_native_lp(A,[-1.0,-1.0,-1.0],zeros(3),fill(10.0,3),
+        [3.0,4.0],fill(Inf,2),zeros(3);seconds=10,solver="ipx")
+    @test point!==nothing
+    @test stats["native_ipx_observed"] && stats["ipm_iterations"]>0
+    @test stats["native_presolve_observed"] && !stats["native_useful_basis_bypassed_presolve"]
+    @test stats["native_solver_requested"]=="ipx" && stats["crossover_requested"]=="off"
+    @test stats["import_audit"]["pass"] && stats["original_linearization_residual"]<=1e-8
+    @test !stats["native_stored_start"]
+    @test !occursin("Running HiPO",read(stats["native_log_file"],String))
+    @test maximum([3.0,4.0]-A*point)<=1e-8
+    @test_throws ErrorException correction_native_lp(A,zeros(3),zeros(3),ones(3),zeros(2),ones(2),zeros(3);seconds=10,solver="unknown")
+end
+
+@testset "GO3 continuous candidate is rounded then independently repaired" begin
+    m=Model();@variable(m,0<=shunt_step[["s"]]<=2,start=0.0)
+    @variable(m,0<=p<=3,start=0.0)
+    @constraint(m,p+shunt_step["s"]==1.4)
+    @objective(m,Max,-p)
+    start=(variables=all_variables(m),values=[start_value(v) for v in all_variables(m)])
+    opt=optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,"bound_relax_factor"=>0.0)
+    domains=Dict("s"=>(0.0,2.0))
+    # The continuous optimum uses shunt 1.4. It is never a final discrete output.
+    result,phases,settings=continuous_then_rounded_correction(m,opt,start,domains;
+        deadline=time()+20,slp_seconds=5.0,lp_seconds=3.0,max_rounds=8,
+        fallback_seconds=5.0,threads=4,diagnostic_dir=nothing,lp_solver="ipx")
+    @test settings["s"]==1.0 && is_fixed(shunt_step["s"])
+    @test ac_primal_residual(m,result)<=1e-8
+    @test result.values[findfirst(==(p),result.variables)]≈0.4 atol=1e-8
+    @test first(phases)["phase"]=="continuous_shunt_correction"
+    @test any(x["phase"]=="rounded_shunt_correction" for x in phases)
+    @test domains==Dict("s"=>(0.0,2.0))
+    bad=Model();@variable(bad,0.1<=shunt_step[["s"]]<=0.2,start=0.15)
+    @test_throws ErrorException round_correction_shunts!(bad,
+        (variables=all_variables(bad),values=[0.15]),Dict("s"=>(0.1,0.2)))
+end
+
 @testset "GO3 source AC correction, discrete shunts, reserves and fallback" begin
     raw=JSON.parsefile(joinpath(@__DIR__,"..","tmp","official_tiny","source_features_problem.json"))
     for (j,b) in enumerate(raw["network"]["bus"])
@@ -168,13 +207,27 @@ end
         m,result=compute_corrected_ac(working,input,i;on_status=on,real_power=power,
             reactive_power=Dict(u=>schedule.reactive_power[u][i] for u in input.sdd_ids),curves,
             optimizer=opt,deadline=time()+40,interval_seed=seed,
-            max_rounds=i==2 ? 0 : 8,slp_seconds=8,fallback_seconds=10,adaptive_budget=true)
+            max_rounds=i==2 ? 0 : 8,slp_seconds=8,fallback_seconds=10,adaptive_budget=true,
+            policy=AC_CORRECTION_CONTINUOUS_POLICY,lp_solver="ipx")
         @test raw==original
         @test !ac_requires_stop(m.ext[:reserve_ac],true)
         @test all(isinteger,[d["step"] for d in values(result["shunt"])])
         @test m.ext[:reserve_ac]["original_bounds"]
         @test m.ext[:reserve_ac]["products"]==10
         @test ac_primal_residual(m,m.ext[:correction_point])<=1e-8
+        @test ac_primal_residual(m,m.ext[:correction_point])<=1e-10
+        @test m.ext[:reserve_ac]["correction"]["policy"]==AC_CORRECTION_CONTINUOUS_POLICY
+        @test m.ext[:reserve_ac]["correction"]["internal_primal_target"]==1e-10
+        @test m.ext[:reserve_ac]["correction"]["final_acceptance_tolerance"]==1e-8
+        @test all(is_fixed,m[:shunt_step])
+        for phase in m.ext[:reserve_ac]["phases"]
+            if phase["phase"]=="continuous_shunt_fallback"
+                @test phase["start"]["candidate_only_unfixed_shunts"]
+                @test phase["start"]["options"]["mu_strategy"]=="monotone"
+                @test !phase["native_primal_guard"]["enabled"]
+                @test phase["start"]["internal_primal_target"]==1e-10
+            end
+        end
         if i==2
             # A previous-hour point can already be valid, so explicitly perturb
             # a voltage to exercise the bounded fallback without faking status.
