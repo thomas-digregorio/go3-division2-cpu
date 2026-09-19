@@ -1,0 +1,35 @@
+GO3_PROGRESS {"epoch_seconds":1.789831699373e9,"event":"isolated_native_worker_started","raw_case_parsed":false,"pid":20116,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":0.003999948501586914,"remaining_work_seconds":87.71399450302124}
+GO3_PROGRESS {"epoch_seconds":1.789831708112e9,"event":"isolated_native_import_begin","options":{"highs_analysis_level":384,"random_seed":0,"parallel":"off","mip_feasibility_tolerance":1.0e-9,"primal_feasibility_tolerance":1.0e-9,"mip_lp_solver":"simplex","mip_rel_gap":0.001,"threads":1,"log_dev_level":1},"pid":20116,"raw_case_parsed":false,"extraction_metadata_loaded":false,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":8.743000030517578,"remaining_work_seconds":78.97499442100525}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+GO3_PROGRESS {"epoch_seconds":1.789831711452e9,"event":"isolated_native_import_complete","pid":20116,"variables":19323456,"nonzeros":78597478,"rows":20211928,"stage":"isolated_native_scheduling","seconds":3.2810001373291016,"elapsed_native_worker_seconds":12.08299994468689,"remaining_work_seconds":75.63499450683594}
+GO3_PROGRESS {"epoch_seconds":1.789831711466e9,"event":"economic_solve_begin","pid":20116,"stage":"isolated_native_scheduling","actual_solver_limit_seconds":74.6319944858551,"elapsed_native_worker_seconds":12.097000122070312,"remaining_work_seconds":75.62099432945251}
+ MIP      : 
+Rows      : 20211928
+Cols      : 19323456
+Nonzeros  : 78597478
+Integer   : 2592720 (2592720 binary)
+Coefficient ranges:
+  Matrix  [1e-05, 6e+03]
+  Cost    [1e-01, 1e+06]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-05, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+Permitted suppression of presolve rules via presolve_rule_off option:
+   Rule  6 (set bit  6 =    64): Forcing row
+   Rule  7 (set bit  7 =   128): Forcing col
+   Rule  8 (set bit  8 =   256): Free col substitution
+   Rule  9 (set bit  9 =   512): Doubleton equation
+   Rule 10 (set bit 10 =  1024): Dependent equations
+   Rule 11 (set bit 11 =  2048): Dependent free columns
+   Rule 12 (set bit 12 =  4096): Aggregator
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+   Rule 14 (set bit 14 = 16384): Sparsify
+   Rule 15 (set bit 15 = 32768): Probing
+   Rule 16 (set bit 16 = 65536): Enumeration
+   Rule 17 (set bit 17 = 131072): Dual fixing
+   Rule 18 (set bit 18 = 262144): Col stuffing
+   Rule 19 (set bit 19 = 524288): Initial sweep

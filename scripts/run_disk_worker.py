@@ -79,6 +79,10 @@ def main(julia,case,output,config_path,deadline):
     atomic_json(spool/"builder_exit.json",{"pid":pid,"returncode":code,"exited_before_native_launch":True,
         "process_wall_seconds":wall,"manifest_sha256":sha256(manifest)},exclusive=True)
     if isolated:
+        if config.get("scheduling_compaction_policy","off")!="off":
+            if config["scheduling_compaction_policy"]!="exact_zero_alias_v1":
+                raise ValueError("Unknown compaction policy")
+            compact_stage(common,spool,output,deadline,config.get("minimum_available_memory_gib",2))
         pid,code,wall=launch_stage(common+[str(ROOT/"src/solve_scheduling_native.jl")]+arguments,
             deadline=deadline,log_path=output/"native_console.log",
             memory_path=output/"native_memory.jsonl",progress_path=output/"progress",
@@ -93,6 +97,19 @@ def main(julia,case,output,config_path,deadline):
         if not result["statistics"]["has_primal"]:
             raise RuntimeError("Native scheduling returned no feasible primal; AC cannot start")
     launch_stage(common+[str(ROOT/"src/pilot_worker.jl")]+arguments,deadline=deadline)
+
+
+def compact_stage(common,spool,output,deadline,memory_floor_gib=2):
+    pid,code,wall=launch_stage(common+[str(ROOT/"src/compact_scheduling_worker.jl"),str(spool),
+        str(output),str(deadline)],deadline=deadline,log_path=output/"compaction_console.log",
+        memory_path=output/"compaction_memory.jsonl",progress_path=output/"progress",
+        memory_floor_bytes=int(memory_floor_gib*GIB))
+    proof=output/"compact_spool/proof_verification.json"
+    checked=json.loads(proof.read_text())
+    if not checked["pass"] or not checked["complete"]:
+        raise RuntimeError("Exact compaction proof incomplete or failed")
+    atomic_json(output/"compaction_exit.json",{"pid":pid,"returncode":code,
+        "process_wall_seconds":wall,"exited_before_native_launch":True,"proof_sha256":sha256(proof)},exclusive=True)
 
 
 if __name__=="__main__":

@@ -21,11 +21,34 @@ class IsolatedSchedulingTests(unittest.TestCase):
         self.assertEqual(completed.returncode,0,completed.stderr)
         self.assertTrue(completed.stdout.strip())
 
-    def test_registered_changes_are_storage_options_only(self):
+    def test_isolated_case_loader_returns_only_hash_bound_manifest(self):
+        from go3cpu.contract import load_case,case_manifest
+        source=ROOT/"tmp/official_tiny/dc_problem.json"
+        expected=case_manifest(load_case(source)[0])
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as folder:
+            output=Path(folder)/"manifest.json"
+            child=subprocess.run([sys.executable,str(ROOT/"scripts/load_case_manifest.py"),
+                str(source),sha256(source),str(output)],capture_output=True,text=True,timeout=15)
+            self.assertEqual(child.returncode,0,child.stderr)
+            result=json.loads(output.read_text())
+            self.assertEqual(result["manifest"],expected)
+            self.assertEqual(result["input_sha256"],sha256(source))
+            self.assertNotIn("network",result)
+
+    def test_isolated_case_loader_rejects_wrong_identity(self):
+        source=ROOT/"tmp/official_tiny/dc_problem.json"
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as folder:
+            output=Path(folder)/"manifest.json"
+            child=subprocess.run([sys.executable,str(ROOT/"scripts/load_case_manifest.py"),
+                str(source),"0"*64,str(output)],capture_output=True,text=True,timeout=15)
+            self.assertNotEqual(child.returncode,0)
+            self.assertFalse(output.exists())
+
+    def test_registered_changes_preserve_source_budget_and_tolerances(self):
         old=json.loads((ROOT/"config/campaign_n23643_s003_r03.json").read_text())
         new=json.loads((ROOT/"config/campaign_n23643_s003_r04.json").read_text())
         changes={"pilot_id","scheduling_storage_policy","scheduling_native_threads",
-                 "scheduling_native_parallel","scheduling_analysis_level"}
+                 "scheduling_native_parallel","scheduling_analysis_level","scheduling_compaction_policy"}
         self.assertEqual({k:v for k,v in old.items() if k not in changes},
                          {k:v for k,v in new.items() if k not in changes})
         self.assertEqual(new["scheduling_native_threads"],1)

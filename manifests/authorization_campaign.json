@@ -45,7 +45,7 @@
     "maximum_bounded_startup_diagnostics": 2,
     "network": "C3E4N23643D2",
     "scenario": "003",
-    "scope": "Isolated native solver and raw-case validation processes, native memory attribution, serial scheduling options, unchanged model/tolerances/security checks. No success is promised; failed attempts consume their latches."
+    "scope": "Isolated native solver and raw-case validation processes, native memory attribution, serial scheduling options, and the proposed mathematically equivalent exact compaction if isolation is insufficient. Preserve source constraints, costs, tolerances, security checks and two-hour limit. No success is promised; failed attempts consume their latches."
   },
   "attempts": {
     "campaign_n23643_s003_r04": {

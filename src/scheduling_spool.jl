@@ -204,7 +204,7 @@ function spool_array(directory,field,::Type{T},n) where T
     path=joinpath(directory,field*".bin")
     filesize(path)==sizeof(T)*n || error("Spool array length mismatch: $field")
     n==0 && return T[]
-    open(io->Mmap.mmap(io,Vector{T},n),path,"r")
+    open(io->Mmap.mmap(io,Vector{T},n),path,"r")::Vector{T}
 end
 
 function load_spool_native!(native,directory,record)

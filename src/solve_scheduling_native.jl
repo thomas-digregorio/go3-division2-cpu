@@ -2,6 +2,7 @@
 using HiGHS, JuMP, JSON
 const MOI=JuMP.MOI
 include(joinpath(@__DIR__,"scheduling_spool.jl"))
+include(joinpath(@__DIR__,"scheduling_compaction.jl"))
 include(joinpath(@__DIR__,"scheduling_isolated.jl"))
 
 function atomic_json(path,object)

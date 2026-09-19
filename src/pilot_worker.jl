@@ -8,6 +8,7 @@ include(joinpath(@__DIR__,"startup_windows.jl"))
 include(joinpath(@__DIR__,"scheduling_seed.jl"))
 include(joinpath(@__DIR__,"scheduling_storage.jl"))
 include(joinpath(@__DIR__,"scheduling_spool.jl"))
+include(joinpath(@__DIR__,"scheduling_compaction.jl"))
 include(joinpath(@__DIR__,"scheduling_isolated.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"ac_primal_start.jl"))
@@ -267,6 +268,10 @@ function run_worker(case_path, output, config, work_deadline)
             timings["scheduling_result_restore"]=timings["scheduling_native_phase"]
             timings["scheduling_native_phase"]=JSON.parsefile(joinpath(output,"native_exit.json"))["process_wall_seconds"]
             timings["scheduling"]+=timings["scheduling_native_phase"]
+            if isfile(joinpath(output,"compaction_exit.json"))
+                timings["scheduling_compaction"]=JSON.parsefile(joinpath(output,"compaction_exit.json"))["process_wall_seconds"]
+                timings["scheduling"]+=timings["scheduling_compaction"]
+            end
         end
     end
     atomic_json(joinpath(output,"statistics","scheduling.json"),statistics["scheduling"])

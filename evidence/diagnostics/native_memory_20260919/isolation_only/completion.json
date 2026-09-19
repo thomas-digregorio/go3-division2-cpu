@@ -1,0 +1,4 @@
+{
+  "process_wall_seconds": 29.354388100036886,
+  "error": "HostMemoryPressureError: Host memory gate: 1.903 GiB available, need 2.000 GiB; stop owned work only"
+}

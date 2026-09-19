@@ -32,14 +32,34 @@ function isolated_native_solve(directory,output,config;deadline,diagnostic=false
     record["identity"]["config"]==config || error("Isolated native configuration mismatch")
     diagnostic || get(config,"scheduling_storage_policy","")==ISOLATED_STORAGE_POLICY ||
         error("Unregistered isolated storage policy")
+    compaction=get(config,"scheduling_compaction_policy","off")
+    overrides=copy(diagnostic_options)
+    if haskey(overrides,"compaction_policy")
+        diagnostic || error("Diagnostic compaction cannot enter a benchmark")
+        compaction=pop!(overrides,"compaction_policy")
+    end
+    compaction in ("off",COMPACTION_POLICY) || error("Unknown exact compaction policy")
+    compact_directory=joinpath(output,"compact_spool")
+    compact=nothing
+    if compaction!= "off"
+        compact=validate_compact_spool(directory,compact_directory;deadline=deadline)
+        proof=JSON.parsefile(joinpath(compact_directory,"proof_verification.json"))
+        exited=JSON.parsefile(joinpath(output,"compaction_exit.json"))
+        (proof["pass"] && proof["complete"] &&
+            proof["compact_manifest_sha256"]==spool_sha(joinpath(compact_directory,"manifest.json")) &&
+            exited["returncode"]==0 && exited["exited_before_native_launch"]===true &&
+            exited["proof_sha256"]==spool_sha(joinpath(compact_directory,"proof_verification.json"))) ||
+            error("Compactor must exit after complete original-model proof verification")
+    end
     options=isolated_options(config)
-    if !isempty(diagnostic_options)
+    if !isempty(overrides)
         diagnostic || error("Diagnostic overrides cannot enter a benchmark")
-        all(k->k in ("threads","parallel","highs_analysis_level"),keys(diagnostic_options)) ||
+        all(k->k in ("threads","parallel","highs_analysis_level"),keys(overrides)) ||
             error("Unapproved diagnostic option override")
-        merge!(options,diagnostic_options)
+        merge!(options,overrides)
     end
     native=HiGHS.Optimizer()
+    released=false
     started=time()
     try
         for (key,value) in options
@@ -51,13 +71,15 @@ function isolated_native_solve(directory,output,config;deadline,diagnostic=false
         MOI.set(native,MOI.RawOptimizerAttribute("log_file"),log_path)
         on_event("isolated_native_import_begin",Dict("pid"=>getpid(),"options"=>options,
             "raw_case_parsed"=>false,"extraction_metadata_loaded"=>false))
-        load_spool_native!(native,directory,record)
+        loaded=compact===nothing ? record : compact
+        load_spool_native!(native,compact===nothing ? directory : compact_directory,loaded)
         GC.gc(true)
         import_seconds=time()-started
-        on_event("isolated_native_import_complete",Dict("variables"=>record["variables"],
-            "rows"=>record["rows"],"nonzeros"=>record["nonzeros"],"seconds"=>import_seconds))
-        spool_check_deadline(deadline-1)
-        limit=min(Float64(config["scheduling_seconds"]),deadline-time()-1)
+        on_event("isolated_native_import_complete",Dict("variables"=>loaded["variables"],
+            "rows"=>loaded["rows"],"nonzeros"=>loaded["nonzeros"],"seconds"=>import_seconds))
+        reserve=compact===nothing ? 1 : 15
+        spool_check_deadline(deadline-reserve)
+        limit=min(Float64(config["scheduling_seconds"]),deadline-time()-reserve)
         MOI.set(native,MOI.TimeLimitSec(),limit)
         on_event("economic_solve_begin",Dict("actual_solver_limit_seconds"=>limit))
         solve_started=time()
@@ -68,7 +90,7 @@ function isolated_native_solve(directory,output,config;deadline,diagnostic=false
         status=HiGHS.Highs_getModelStatus(native)
         ret==HiGHS.kHighsStatusError && error("Native solve error: $status")
         has_primal=spool_native_info(native,"primal_solution_status",HiGHS.HighsInt)==HiGHS.kHighsSolutionStatusFeasible
-        primal=has_primal ? Vector{Float64}(undef,record["variables"]) : Float64[]
+        primal=has_primal ? Vector{Float64}(undef,loaded["variables"]) : Float64[]
         if has_primal
             HiGHS.Highs_getSolution(native,primal,C_NULL,C_NULL,C_NULL)==HiGHS.kHighsStatusOk ||
                 error("Native primal extraction failed")
@@ -83,13 +105,27 @@ function isolated_native_solve(directory,output,config;deadline,diagnostic=false
             "simplex_iterations"=>spool_native_info(native,"simplex_iteration_count",HiGHS.HighsInt),
             "barrier_iterations"=>spool_native_info(native,"ipm_iteration_count",HiGHS.HighsInt),
             "nodes"=>spool_native_info(native,"mip_node_count",Int64))
+        finalize(native);released=true
+        on_event("native_model_released",Dict("pid"=>getpid()))
+        original_audit=nothing
+        if compact!==nothing && has_primal
+            mapping=spool_array(compact_directory,"original_to_compact",Int32,record["variables"])
+            primal=[j==0 ? 0.0 : primal[j] for j in mapping]
+            original_audit=check_original_spool_point(directory,record,primal;deadline=deadline)
+            original_audit["objective_agreement"]=abs(original_audit["objective"]-stats["objective"])<=
+                max(1e-6,1e-10*max(1.0,abs(stats["objective"])))
+            atomic_json(joinpath(output,"original_scheduling_audit.json"),original_audit)
+        end
         primal_path=joinpath(output,"native_primal.bin")
         ispath(primal_path) && error("Native primal already exists")
         open(io->write(io,primal),primal_path,"w")
-        storage=Dict("policy"=>ISOLATED_STORAGE_POLICY,"whole_model_copy"=>true,
+        storage=Dict("policy"=>ISOLATED_STORAGE_POLICY,"whole_model_copy"=>compact===nothing,
             "builder_exited_before_native_load"=>true,"builder_solve_calls"=>0,"cold_unsolved"=>true,
             "variables"=>record["variables"],"rows"=>record["rows"],"nonzeros"=>record["nonzeros"],
-            "rows_or_columns_eliminated"=>0,"source_values_changed"=>false,
+            "rows_or_columns_eliminated"=>record["variables"]+record["rows"]-loaded["variables"]-loaded["rows"],
+            "source_values_changed"=>false,"compaction_policy"=>compaction,
+            "native_variables"=>loaded["variables"],"native_rows"=>loaded["rows"],"native_nonzeros"=>loaded["nonzeros"],
+            "original_scheduling_audit"=>original_audit,
             "native_julia_per_row_metadata"=>false,"raw_case_parsed_in_native_process"=>false,
             "extraction_metadata_loaded_in_native_process"=>false,"solve_calls"=>1,
             "import_seconds"=>import_seconds,"options"=>options)
@@ -100,9 +136,13 @@ function isolated_native_solve(directory,output,config;deadline,diagnostic=false
             "statistics"=>stats,"storage"=>storage,"options"=>options)
         atomic_json(joinpath(output,"native_result.json"),result)
         atomic_json(joinpath(output,"statistics","original_economic_mip.json"),stats)
+        if original_audit!==nothing
+            original_audit["pass"] && original_audit["objective_agreement"] ||
+                error("Native primal failed the unchanged original scheduling model audit")
+        end
         result
     finally
-        finalize(native)
+        released || finalize(native)
         on_event("isolated_native_destroyed",Dict("pid"=>getpid()))
     end
 end
@@ -127,6 +167,11 @@ function restore_isolated_scheduling(input,directory;include_reserves=true,on_ev
         exited["returncode"]==0 && exited["pid"]==result["pid"] && exited["pid"]!=getpid() &&
         exited["exited_before_ac_launch"]===true && exited["result_sha256"]==spool_sha(result_path)) ||
         error("Isolated native result is incomplete, diagnostic, mismatched, or has no successful process exit")
+    audit=get(result["storage"],"original_scheduling_audit",nothing)
+    if get(record["identity"]["config"],"scheduling_compaction_policy","off")!= "off"
+        audit!==nothing && audit["complete"] && audit["pass"] && audit["objective_agreement"] ||
+            error("Compacted primal has no passing original-model audit")
+    end
     path=joinpath(output,"native_primal.bin")
     n=result["statistics"]["has_primal"] ? record["variables"] : 0
     (filesize(path)==result["primal_bytes"]==8*n && spool_sha(path)==result["primal_sha256"]) ||

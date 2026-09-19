@@ -8,8 +8,8 @@ still requires substantial native MIP bookkeeping before presolve.
 ## Exact-model storage policy
 
 `disk_isolated_native_v1` retains the r03 immutable numerical spool and all source
-rows, columns, bounds, domains, coefficients and objective terms. It changes
-process lifetimes, not equations or acceptance tolerances:
+rows, columns, bounds, domains, coefficients and objective terms. With compaction
+off it changes process lifetimes, not equations or acceptance tolerances:
 
 1. The controller validates the raw case in a short-lived Python child. Only the
    compact input manifest remains in the controller after that child exits.
@@ -65,3 +65,60 @@ solution SHA256 is `1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d
 identical to the previous disk-backed tiny baseline. Native scheduling used
 one solve call and its process exited before AC loading. This targeted evidence
 does not replace the complete fresh component gate required before a full run.
+
+## Isolation-only diagnostic and exact compaction
+
+The first bounded startup diagnostic (`native_startup_diagnostic_im9woerc`)
+reached native presolve, unlike r03, but still crossed the safety floor. It
+stopped after 29.354 seconds at 1.903 GiB host availability and approximately
+18.82 GiB owned process RSS. It supplied no optimized start and was not a cold
+end-to-end experiment. The diagnostic did not return a feasible solution.
+
+The proposed exact-compaction fallback is therefore enabled for r04 with
+`scheduling_compaction_policy=exact_zero_alias_v1`. It changes the solver matrix
+representation, but not the mathematical scheduling problem. The original
+matrix remains immutable. The only operations are:
+
+- Substitute exactly zero variables, proved by their existing fixed bounds,
+  a homogeneous singleton equality, or a zero-limited sum of one-signed terms.
+- Identify x=y only when an existing homogeneous two-term equality proves it.
+  Intersect their original domains; retain integrality if either is integer.
+  Merge only when at most one objective coefficient is nonzero.
+- Remove a transformed row only when it is exactly the tautology
+  `lower <= 0 <= upper`. Keep empty inconsistent rows. Reject any coefficient
+  merge that would require floating-point rounding rather than exact addition.
+
+No nonzero fixed-value substitution, approximate dependence test, tolerance
+relaxation, PMIN change, source row omission, reserve weakening, or heuristic
+fixing is allowed. A bounded reduction-pass count changes compactness only.
+Every operation has a source-row proof record. A separate replay checks those
+proofs, every transformed coefficient/domain/objective coefficient, every
+original row, and the complete original-column reconstruction mapping. That
+process exits before HiGHS starts. The native solve then uses the smaller
+equivalent matrix; its result is reconstructed into all original columns and
+checked against every original scheduling row, bound and integer domain at
+the existing 1e-8 scheduling-point audit tolerance. All native solver tolerances
+remain unchanged. An original scheduling audit is not full GO3 certification;
+the unchanged AC, independent and official checks are still mandatory.
+
+Compaction and proof checking are included in a cold run's total time. Fifteen
+seconds of the remaining work budget are withheld from the native solve for
+reconstruction/auditing. Startup diagnostics remain separately labelled and
+cannot be used as production solver results.
+
+The second bounded diagnostic (`native_startup_diagnostic_xof2cbvs`) produced
+15,253,134 columns, 17,635,208 rows and 68,232,594 nonzeros. It identified
+3,221,028 zero columns and 849,294 aliases, with 2,562,828 recorded inference
+steps. It hit its 180-second diagnostic limit DURING proof replay, before a
+proof-completion record or native solve. Its peak sampled process RSS was
+approximately 4.57 GiB. These counts are transformation output, not yet a
+completed large-model equivalence certificate or a solved case. Both diagnostic
+records are preserved under `evidence/diagnostics/native_memory_20260919`.
+
+The checker subsequently received concrete array/dimension type assertions and
+substage progress counters to avoid unnecessary dynamic-dispatch overhead and
+make long verification work visible. The 196 mathematical-equivalence/source
+fixture tests and 28 isolated-interface tests passed after that adjustment.
+The compacted 2-bus full pipeline independently passed 9/9 source checks and
+produced the exact same final-solution hash listed above. A fresh complete
+regression gate is still required before the first new full cold attempt.

@@ -1,0 +1,5 @@
+{
+  "threads": 1,
+  "parallel": "off",
+  "highs_analysis_level": 384
+}

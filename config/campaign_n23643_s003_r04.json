@@ -57,5 +57,6 @@
   "ac_primal_guard": "verified_stable_rounded_primal_v1",
   "scheduling_native_threads": 1,
   "scheduling_native_parallel": "off",
+  "scheduling_compaction_policy": "exact_zero_alias_v1",
   "scheduling_analysis_level": 384
 }

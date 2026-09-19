@@ -82,6 +82,8 @@ def main():
         "scripts/test_scheduling_spool.jl"],timeout=180)
     stage("isolated_scheduling_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_isolated_scheduling.jl"],timeout=120)
+    stage("scheduling_compaction_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_scheduling_compaction.jl"],timeout=180)
     stage("consumer_dominance_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -299,6 +301,27 @@ def main():
             or isolated_storage["options"]["parallel"]!="off"
             or abs(isolated_dc["certificate"]["objective"]-bounded_reserve_dc["certificate"]["objective"])>1e-8):
         raise RuntimeError("Isolated pipeline failed exact source, process lifetime, or exhaustive verification")
+    stage("tiny_compacted_scheduling_worker",[sys.executable,"scripts/run_disk_worker.py",str(JULIA),
+        "tmp/official_tiny/dc_problem.json",str(evidence/"compacted_scheduling_worker"),
+        "config/tiny_compacted_scheduling.json",str(time.time()+240)],timeout=245)
+    stage("tiny_compacted_scheduling_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dc_problem.json",
+        "--solution",str(evidence/"compacted_scheduling_worker/candidate_final.json"),
+        "--output",str(evidence/"compacted_scheduling_verification"),"--seconds","60",
+        "--official-contingency-batch-size","2"])
+    compacted_dc=dc_pipeline_audit(evidence,"compacted_scheduling_worker","compacted_scheduling_verification")
+    compacted_reserves=bounded_reserve_pipeline_audit(evidence,"compacted_scheduling_worker")
+    compacted_dir=evidence/"compacted_scheduling_worker"
+    compacted_stats=json.loads((compacted_dir/"statistics/scheduling.json").read_text())
+    compacted_storage=compacted_stats["storage"]
+    compacted_proof=json.loads((compacted_dir/"compact_spool/proof_verification.json").read_text())
+    original_audit=json.loads((compacted_dir/"original_scheduling_audit.json").read_text())
+    if (compacted_storage["compaction_policy"]!="exact_zero_alias_v1"
+            or compacted_storage["whole_model_copy"] or compacted_storage["source_values_changed"]
+            or compacted_storage["rows_or_columns_eliminated"]<=0 or not compacted_proof["pass"]
+            or not original_audit["pass"] or not original_audit["objective_agreement"]
+            or abs(compacted_dc["certificate"]["objective"]-bounded_reserve_dc["certificate"]["objective"])>1e-8):
+        raise RuntimeError("Compacted pipeline failed equivalence, original-model residuals, or exhaustive checks")
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -579,7 +602,8 @@ def main():
                     correction_certificate,continuous_correction_certificate,hot_repair_certificate,
                     continuation_certificate,original_guard_certificate,guarded_recovery_certificate,
                     native_scheduling_certificate,exact_ramp_certificate,dc_audit["certificate"],
-                    bounded_reserve_dc["certificate"],disk_dc["certificate"],isolated_dc["certificate"]):
+                    bounded_reserve_dc["certificate"],disk_dc["certificate"],isolated_dc["certificate"],
+                    compacted_dc["certificate"]):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -588,7 +612,7 @@ def main():
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
                  "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
                  "guarded_recovery_worker","native_scheduling_worker","exact_ramp_worker","dc_worker",
-                 "bounded_reserve_worker","disk_scheduling_worker","isolated_scheduling_worker"):
+                 "bounded_reserve_worker","disk_scheduling_worker","isolated_scheduling_worker","compacted_scheduling_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -609,7 +633,8 @@ def main():
         for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests",
                      "ac_primal_start_tests","ac_interval_start_tests","ac_ramp_bound_tests","ac_recovery_tests",
                      "ac_primal_guard_tests","scheduling_seed_tests","scheduling_storage_tests","ac_correction_tests",
-                     "dc_device_tests","reserve_storage_tests","scheduling_spool_tests","isolated_scheduling_tests"))
+                     "dc_device_tests","reserve_storage_tests","scheduling_spool_tests","isolated_scheduling_tests",
+                     "scheduling_compaction_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
@@ -640,6 +665,11 @@ def main():
         "tiny_isolated_scheduling_pipeline":isolated_dc,
         "tiny_isolated_scheduling_storage":isolated_storage,
         "tiny_isolated_scheduling_reserve_storage":isolated_reserves,
+        "tiny_compacted_scheduling_pipeline":compacted_dc,
+        "tiny_compacted_scheduling_storage":compacted_storage,
+        "tiny_compacted_scheduling_reserve_storage":compacted_reserves,
+        "tiny_compacted_scheduling_proof":compacted_proof,
+        "tiny_compacted_scheduling_original_audit":original_audit,
         "tiny_bounded_reserve_storage":bounded_reserve_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,

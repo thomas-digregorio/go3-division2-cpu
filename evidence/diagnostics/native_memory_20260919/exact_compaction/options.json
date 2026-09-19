@@ -1,0 +1,6 @@
+{
+  "threads": 1,
+  "parallel": "off",
+  "highs_analysis_level": 384,
+  "compaction_policy": "exact_zero_alias_v1"
+}
