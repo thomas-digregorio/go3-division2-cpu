@@ -39,6 +39,17 @@
   "source_feature_gate_pass": true,
   "initial_ac_connected_components": 1,
   "dc_component_evidence": "evidence/components/dc_support_20260919/result.json",
+  "bounded_reserve_component_evidence": "evidence/components/reserve_storage_20260919/result.json",
+  "official_evaluator_memory_audit": {
+    "source_sha256": "0876bc72009fa9c91040ae0442fef1a74f854852b5ca994ecce1b912305d6f00",
+    "unique_ac_line_outages": 22314,
+    "unique_transformer_outages": 4556,
+    "named_dense_array_bytes": 29304279952,
+    "named_dense_array_gib": 27.29173745214939,
+    "scope": "Declared dense contingency arrays only; excludes transients, factors, other problem/solution objects and operating system. Not a measured peak RSS.",
+    "status": "A bounded-memory exhaustive evaluation plan is required before the full case.",
+    "official_evaluator_modified": false
+  },
   "complete_full_case_preflight_pending": true,
   "other_feature_counts": {
     "energy_req_lb": 0,

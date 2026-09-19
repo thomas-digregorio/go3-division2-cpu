@@ -110,6 +110,60 @@ This focused gate is **not** the complete full-case preflight gate: a final
 configuration, meaningful score reference, complete component regression,
 clean frozen/pushed revision, and resource preflight are still required.
 
+## Reserve-model lifetime: bounded storage without a different LP
+
+Inspection of the pinned `GOC3Benchmark.jl/src/reserves.jl` found that the
+horizon wrapper retains all `(model, data)` pairs even with `return_models=false`.
+The opt-in `reserve_storage_policy=bounded_lifetime_v1` calls the identical
+upstream per-interval builder, optimizer, extraction and projection functions.
+It copies only numeric awards to the horizon result, releases each model, and
+checks that its weak reference is empty before proceeding. It also avoids the
+48-interval duplicate OPF-data representation and rechecks the existing global
+budget before configuring each LP. No reserve constraint or cost is removed.
+The legacy path remains the default for existing configurations. The policy is
+restricted to the already-registered single Julia thread; it is not a switch
+from a parallel full-case protocol. This is storage management, not DAYZER/SLP.
+
+Focused evidence `tmp/reserve_feature_gate_5sgf6gbe` passed six stages:
+104 Python tests, 31 DC Julia assertions, 115 reserve-storage Julia assertions,
+and the complete three-interval AC/DC worker with initial and final reserves.
+All six reserve LP models were released individually. The final solution is
+byte-identical to the preceding legacy-storage tiny solution (SHA256
+`1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`).
+Independent and official checks passed all nine contingency-hour combinations,
+with `feas=1`, `phys_feas=1` and unchanged numerical results. Unit tests also
+compare all ten reserve products in online/offline fixtures against the original
+horizon wrapper, preserve all inputs, and exercise an exhausted budget before
+the second LP. Compact evidence is in
+`evidence/components/reserve_storage_20260919/`. This does not yet establish
+full-case memory consumption or runtime.
+
+## New preflight finding: official evaluator memory
+
+A read-only allocation audit found a separate full-case resource concern in
+the pinned official `C3DataUtilities/datautilities/ctgmodel.py`, SHA256
+`0876bc72009fa9c91040ae0442fef1a74f854852b5ca994ecce1b912305d6f00`.
+It allocates dense work arrays over all unique source contingency branches.
+For this input there are 22,314 unique AC-line outages and 4,556 transformer
+outages, 23,642 nonreference buses and 33,739 AC branches. Named arrays at lines
+226-278 account for at least:
+
+`8 * [23642 * (4 * 22314 + 6 * 4556) + 33739 * (22314 + 4556)]`
+
+= **29,304,279,952 bytes (27.291737452 GiB)** of dense array storage. This excludes
+temporary solve results, factors, source/solution arrays, Python objects and the
+operating system. It is an allocation-size calculation, **not a measured RSS or
+failed full solve**. Windows reports 31.43 GiB visible RAM and approximately
+19.8 GiB available at the audit, so the unchanged evaluator is not a safe
+memory plan. The reserve-storage fix does not address these separate arrays.
+
+No upstream evaluator file has been changed, no contingency has been dropped,
+and no large run has been launched. Before launch, a bounded-memory exhaustive
+evaluation approach must be established and tested (including correct global
+worst/average penalty aggregation and complete source coverage); it must not
+silently replace an official full-case result with a partial-subset result.
+The score-reference decision below also remains unresolved.
+
 ## Comparison target requires a user decision
 
 The unchanged eligibility rules find eight active, feasible competitors but

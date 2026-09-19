@@ -14,6 +14,7 @@ include(joinpath(@__DIR__,"ac_ramp_bounds.jl"))
 include(joinpath(@__DIR__,"ac_recovery.jl"))
 include(joinpath(@__DIR__,"ac_primal_guard.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
+include(joinpath(@__DIR__,"reserve_storage.jl"))
 include(joinpath(@__DIR__,"ac_correction.jl"))
 include(joinpath(@__DIR__,"ac_correction_pipeline.jl"))
 
@@ -159,6 +160,8 @@ function run_worker(case_path, output, config, work_deadline)
     statistics["ac_ramp_bounds"]=Dict("policy"=>ac_ramp_policy,
         "bookkeeping_tolerance"=>ramp_tolerance,"source_bounds_changed"=>false,
         "official_tolerance_changed"=>false)
+    reserve_storage_policy=get(config,"reserve_storage_policy","legacy_horizon_v1")
+    reserve_storage_policy in RESERVE_STORAGE_POLICIES || error("Unknown reserve storage policy")
     ac_recovery=get(config,"ac_numerical_recovery","off")
     ac_recovery in ("off","adaptive_barrier_on_failed_residual_v1") || error("Unknown AC recovery policy")
     ac_recovery=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
@@ -256,10 +259,13 @@ function run_worker(case_path, output, config, work_deadline)
         get(config,"scheduling_include_reserves",false) || error("Initial reserve reuse requires joint scheduling")
         schedule # This is explicitly unverified until the original full-case checks.
     else
-        GO3.calculate_reserves_from_generation(input,initial;
-            optimizer=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>config["highs_threads"],
+        awards,audit=source_reserve_allocation(input,initial;policy=reserve_storage_policy,
+            optimizer_for_interval=i->optimizer_with_attributes(HiGHS.Optimizer,"threads"=>config["highs_threads"],
                 "time_limit"=>available(config["reserve_seconds_per_interval"]),
-                "primal_feasibility_tolerance"=>1e-9))
+                "primal_feasibility_tolerance"=>1e-9),
+            interval_callback=info->progress("initial_reserve_allocation";extra=info))
+        statistics["initial_reserve_storage"]=audit
+        awards
     end
     put_reserves!(initial,initial_reserves)
     timings["initial_reserves"] = time()-stage
@@ -411,10 +417,12 @@ function run_worker(case_path, output, config, work_deadline)
     atomic_json(joinpath(output,"statistics","export_projection_final.json"),export_audit)
     require_ac_export_projection(export_audit)
     progress("reserves")
-    awards = GO3.calculate_reserves_from_generation(input,final;
-        optimizer=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>config["highs_threads"],
+    awards,reserve_audit = source_reserve_allocation(input,final;policy=reserve_storage_policy,
+        optimizer_for_interval=i->optimizer_with_attributes(HiGHS.Optimizer,"threads"=>config["highs_threads"],
             "time_limit"=>available(config["reserve_seconds_per_interval"]),
-            "primal_feasibility_tolerance"=>1e-9))
+            "primal_feasibility_tolerance"=>1e-9),
+        interval_callback=info->progress("final_reserve_allocation";extra=info))
+    statistics["final_reserve_storage"]=reserve_audit
     put_reserves!(final,awards)
     timings["final_reserves_and_postprocess"] = time()-stage
     atomic_json(joinpath(output,"candidate_final.json"),final)

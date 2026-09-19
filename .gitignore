@@ -11,3 +11,4 @@ __pycache__/
 *.egg-info/
 *.log
 !evidence/components/dc_support_20260919/*.log
+!evidence/components/reserve_storage_20260919/*.log
