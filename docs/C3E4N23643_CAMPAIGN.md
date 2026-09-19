@@ -371,3 +371,14 @@ completed all three AC intervals with scheduling objective/bound 1,732.1479
 and zero scheduling gap. These are component results, not a 23,643-bus success.
 The fresh full component gate also includes infeasible-row and lifecycle tests,
 and independent plus official exhaustive checks before r03 may be launched.
+
+The fresh gate `tmp/pilot002_component_gate_dmu5e6u4` then passed all **57 stages,
+123 Python tests and 13,699 Julia assertions**, with 1,393.248 seconds summed
+stage time. The new disk adapter contributes 7,459 assertions. The disk-backed
+integration completed all 3/3 intervals and 9/9 contingency checks, independent
+hard pass, `feas=1`, `phys_feas=1`, and objective agreement. Its final objective
+is **1,732.1459647319407**. Final solution SHA256 is the same as the historical
+baseline: `1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`.
+The exit-0 builder record proves it exited before native loading. Compact
+hash-verified evidence is in `evidence/components/scheduling_spool_20260919/`.
+These tests establish the transfer contract, not full-case resource feasibility.
