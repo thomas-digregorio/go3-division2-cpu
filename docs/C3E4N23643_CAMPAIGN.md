@@ -255,3 +255,29 @@ is retained in `evidence/components/official_batches_20260919/`. The copied
 files were individually hash-verified; Git preserves their exact bytes.
 No full 23,643-bus run was started during this gate. Its measured memory,
 runtime, objective and final verification remain to be established by r01.
+
+## r01: safe memory stop during native scheduling handoff
+
+Frozen implementation **f48d82a489a33d149cf3a5f2fbb404364df99d37** and config
+SHA256 `023160d35614940c0adc12092ed26e85feaf8e313e74f696eb3ff0605ed35a99`
+started one cold attempt. It stopped and finalized after **745.168658 seconds
+(12.42 minutes)**, inside the two-hour limit. All owned processes exited.
+
+The scheduling model was built in **538.001 seconds**, with **19,323,456
+variables** before solver presolve. During the whole-model native handoff,
+available host memory fell to **1.856629 GiB**, below the registered **2 GiB**
+safety floor. Sampled peak process-tree RSS was **18.954803 GiB**. The controller
+recorded `HostMemoryPressureError` and `NO_VERIFIED_INCUMBENT`.
+
+This is a resource stop, **not infeasibility**. The economic optimization had
+not started; there is no objective, bound, gap or schedule. Zero AC intervals
+completed, and full-case independent/official verification was not reached.
+The new batched evaluator remains proven only by the component tests, not by
+this incomplete large run. The registered fifth-positive target remains unmet.
+
+Compact hash-audited evidence is in
+`evidence/campaign/campaign_n23643_s003_r01/`. Raw inputs, previous successful
+results and all r01 artifacts remain intact. No successful 8,316-bus run was
+repeated. The next storage-only investigation is to discard unused construction
+lookup containers before the native copy; this must not remove mathematical
+rows, columns, names, coefficients, bounds or source values.

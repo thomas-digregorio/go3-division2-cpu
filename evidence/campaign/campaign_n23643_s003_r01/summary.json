@@ -1,0 +1,142 @@
+{
+  "operation": "Post-run hash audit only; no solve or reevaluation",
+  "network": "C3E4N23643D2",
+  "scenario": "003",
+  "attempt": "campaign_n23643_s003_r01",
+  "implementation_commit": "f48d82a489a33d149cf3a5f2fbb404364df99d37",
+  "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5",
+  "status": "NO_VERIFIED_INCUMBENT",
+  "quality_gate": {
+    "pass": false,
+    "score": null,
+    "relative_shortfall_from_reference": null,
+    "relative_shortfall_from_sixth": null,
+    "verification_pass": false,
+    "pipeline_completed": false,
+    "within_deadline": true,
+    "target": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "division": 2,
+      "official_allow_switching": true,
+      "metric": "fifth_best_positive_eligible_score",
+      "reference_policy": "fifth_positive_when_sixth_zero_v1",
+      "reference_rank": 5,
+      "reference_score": 353804820.240399,
+      "relative_shortfall_limit": 0.1,
+      "sixth_best_score": 0.0,
+      "minimum_score": 318424338.21635914,
+      "top_six": [
+        {
+          "team": "YongOptimization",
+          "score": 600577211.010372,
+          "objective": 600577211.010372,
+          "runtime_seconds": 1540.0,
+          "source_row": 10036,
+          "uuid": "535-1693855412_c3E4"
+        },
+        {
+          "team": "quasiGrad",
+          "score": 598132224.471649,
+          "objective": 598132224.471649,
+          "runtime_seconds": 208255.0,
+          "source_row": 7360,
+          "uuid": "1062-1693667274_c3E4"
+        },
+        {
+          "team": "GOT-BSI-OPF",
+          "score": 589696575.511268,
+          "objective": 589696575.511268,
+          "runtime_seconds": 7653.0,
+          "source_row": 3346,
+          "uuid": "504-1693849098_c3E4"
+        },
+        {
+          "team": "TIM-GO",
+          "score": 588991289.929324,
+          "objective": 588991289.929324,
+          "runtime_seconds": 13630.0,
+          "source_row": 9367,
+          "uuid": "1054-1693623335_c3E4"
+        },
+        {
+          "team": "Artelys_Columbia",
+          "score": 353804820.240399,
+          "objective": 353804820.240399,
+          "runtime_seconds": 259147.0,
+          "source_row": 1339,
+          "uuid": "406-1693578904_c3E4"
+        },
+        {
+          "team": "Electric-Stampede",
+          "score": 0.0,
+          "objective": -26787439636.0895,
+          "runtime_seconds": 3308.0,
+          "source_row": 2008,
+          "uuid": "673-1693620838_c3E4"
+        }
+      ],
+      "eligible_competitors": 8,
+      "rejected": [
+        {
+          "source_row": 670,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 2677,
+          "reason": "unmatched, inactive, infeasible or benchmark"
+        },
+        {
+          "source_row": 4015,
+          "reason": "unmatched, inactive, infeasible or benchmark"
+        },
+        {
+          "source_row": 6022,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 6691,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 8029,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 8698,
+          "reason": "missing comparison fields"
+        }
+      ],
+      "note": "Comparison with published scores, not a global-optimality certificate."
+    }
+  },
+  "objective": null,
+  "end_to_end_seconds": 745.1686584000126,
+  "peak_sampled_process_tree_rss_gib": 18.954803466796875,
+  "solver_statistics": {
+    "ac_intervals": [],
+    "scheduling_phases": {},
+    "scheduling_events": [
+      {
+        "elapsed_scheduling_seconds": 542.566999912262,
+        "event": "model_built",
+        "build_seconds": 538.0009999275208
+      },
+      {
+        "elapsed_scheduling_seconds": 542.6389999389648,
+        "event": "native_handoff_begin",
+        "variables": 19323456
+      }
+    ]
+  },
+  "timings": {
+    "scheduling_elapsed_to_last_event": 542.664999961853,
+    "last_scheduling_event": "native_handoff_begin",
+    "loading_and_preprocessing": 2.9769999980926514,
+    "completed_ac_interval_wall_seconds": 0
+  },
+  "worker_error": null,
+  "controller_error": "Traceback (most recent call last):\n  File \"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\scripts\\run_pilot.py\", line 282, in execute\n    monitor.observe()\n  File \"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\scripts\\run_pilot.py\", line 175, in observe\n    self.last_host_memory=available_memory_check(measurement.available,measurement.total,\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\go3cpu\\safety.py\", line 38, in available_memory_check\n    raise HostMemoryPressureError(record)\ngo3cpu.safety.HostMemoryPressureError: Host memory gate: 1.857 GiB available, need 2.000 GiB; stop owned work only\n",
+  "final_certificate": null,
+  "completed_network_registration": null
+}
