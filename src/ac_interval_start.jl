@@ -1,6 +1,12 @@
 # Same-attempt continuation between adjacent hours. This object holds scalar
 # values only, never a previous model, file path, dual vector or saved run.
 
+function ac_primal_continuation_options()
+    Dict{String,Any}("warm_start_init_point"=>"no","bound_push"=>1e-8,
+        "bound_frac"=>1e-8,"slack_bound_push"=>1e-8,"slack_bound_frac"=>1e-8,
+        "mu_init"=>1e-6)
+end
+
 function ac_cost_block_map(model,input,i)
     haskey(model.ext,:ac_cost_block_map) && return model.ext[:ac_cost_block_map]
     # Use source UID axes, not DenseAxisArray's Cartesian iteration order.
@@ -113,9 +119,7 @@ function apply_ac_interval_start!(model,input,i,seed,scheduled_power)
     point=(variables=variables,values=values_)
     # This is a primal-only initialization for a different hourly model. Do
     # not assert that previous-hour duals or the old reduced structure apply.
-    options=Dict{String,Any}("warm_start_init_point"=>"no","bound_push"=>1e-8,
-        "bound_frac"=>1e-8,"slack_bound_push"=>1e-8,"slack_bound_frac"=>1e-8,
-        "mu_init"=>1e-6)
+    options=ac_primal_continuation_options()
     for (key,val) in options
         set_optimizer_attribute(model,key,val)
         get_optimizer_attribute(model,key)==val || error("AC continuation option was not retained")

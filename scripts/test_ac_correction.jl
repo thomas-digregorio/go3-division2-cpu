@@ -292,3 +292,37 @@ end
     bad.values[findfirst(==(p),bad.variables)]+=0.1
     @test correction_dual_seed(m,bad)===nothing
 end
+
+@testset "GO3 correction fallback preserves actual native primal continuation" begin
+    changes=Dict{Bool,Float64}()
+    for preserve in (false,true)
+        m=Model();@variable(m,0<=p<=2,start=0.0);@variable(m,0<=q<=2,start=1.0)
+        @constraint(m,p+q==1.0);@objective(m,Max,-p)
+        start=(variables=all_variables(m),values=[start_value(v) for v in all_variables(m)])
+        original_bounds=ac_variable_bounds(m);original_objective=objective_function(m)
+        opt=optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,"bound_relax_factor"=>0.0)
+        result,phase=correction_ipopt_fallback!(m,opt,start;deadline=time()+20,seconds=10,
+            phase="rounded_shunt_fallback",barrier_strategy="monotone",primal_target=1e-10,
+            preserve_primal_continuation=preserve,audit_native_initialization=true)
+        record=phase["start"];native=phase["native_primal_guard"]["native_initialization"]
+        @test record["primal_continuation_preserved"]==preserve
+        @test !record["dual_transfer_used"]
+        @test !record["complete_primal_start"]["dual_or_basis_start"]
+        @test record["options"]["warm_start_init_point"]=="no"
+        @test native["complete_mapping"] && native["iteration"]==0
+        @test native["variable_count"]==num_variables(m)
+        @test ac_variable_bounds(m)==original_bounds
+        @test JuMP.isequal_canonical(objective_function(m),original_objective)
+        @test ac_primal_residual(m,result)<=1e-10
+        changes[preserve]=native["maximum_absolute_change_from_requested_start"]
+        if preserve
+            @test all(record["options"][k]==v for (k,v) in ac_primal_continuation_options())
+            @test !record["dual_certificate_claimed"]
+        else
+            @test record["options"]["bound_push"]==0.01
+        end
+    end
+    @test changes[false]>=1e-3
+    @test changes[true]<=1e-7
+    @test changes[true]<changes[false]/1000
+end

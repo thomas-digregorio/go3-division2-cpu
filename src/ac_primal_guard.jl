@@ -12,7 +12,7 @@ end
 
 function install_ac_primal_guard!(model;policy="off",phase,
         min_iterations=20,window=8,objective_relative_range=1e-7,
-        primal_tolerance=AC_POINT_RESIDUAL_TOLERANCE)
+        primal_tolerance=AC_POINT_RESIDUAL_TOLERANCE,expected_start=nothing)
     policy in ("off",AC_PRIMAL_GUARD_POLICY,AC_CANDIDATE_GUARD_POLICY) || error("Unknown AC primal guard policy")
     primal_tolerance isa Real && isfinite(primal_tolerance) &&
         0<primal_tolerance<=AC_POINT_RESIDUAL_TOLERANCE || error("Invalid internal primal target")
@@ -23,7 +23,10 @@ function install_ac_primal_guard!(model;policy="off",phase,
         "certificate_scope"=>"local model feasibility only; objective stagnation is heuristic; no KKT or global optimality claim")
     accepted=Ref{Any}(nothing)
     state=(record=record,point=accepted)
-    policy=="off" && return state
+    if policy=="off"
+        expected_start===nothing || error("Native start audit requires an active guard callback")
+        return state
+    end
     candidate_only=policy==AC_CANDIDATE_GUARD_POLICY
     if candidate_only
         phase=="continuous_shunt_candidate" || error("Candidate guard requires explicitly relaxed-shunt phase")
@@ -44,6 +47,11 @@ function install_ac_primal_guard!(model;policy="off",phase,
         all(is_fixed,model[:shunt_step]) || error("Primal guard requires fixed shunt steps")
     end
     variables=all_variables(model)
+    if expected_start!==nothing
+        expected_start.variables==variables && length(expected_start.values)==length(variables) &&
+            all(isfinite,expected_start.values) || error("Incomplete/nonfinite native start audit mapping")
+        record["native_initialization_audit_requested"]=true
+    end
     record["minimum_iterations"]=min_iterations
     record["objective_window_iterations"]=window
     record["objective_relative_range_limit"]=objective_relative_range
@@ -52,6 +60,26 @@ function install_ac_primal_guard!(model;policy="off",phase,
     history=Float64[]
     native_columns=Int[]
     native_values=Float64[]
+    function current_native_point()
+        native=unsafe_backend(model)
+        native isa Ipopt.Optimizer || error("Unexpected AC guard optimizer")
+        inner=native.inner
+        if isempty(native_columns)
+            append!(native_columns,[Ipopt.column(optimizer_index(v)) for v in variables])
+            length(variables)==inner.n && sort(native_columns)==collect(1:inner.n) ||
+                error("Incomplete or ambiguous native primal mapping")
+            resize!(native_values,inner.n)
+            record["native_mapping_complete"]=true
+            record["native_variable_count"]=inner.n
+        end
+        all_variables(model)==variables && length(native_values)==inner.n ||
+            error("AC primal guard variable identities changed")
+        Ipopt.GetIpoptCurrentIterate(inner,false,inner.n,native_values,C_NULL,C_NULL,
+            inner.m,C_NULL,C_NULL)
+        point=(variables=variables,values=native_values[native_columns])
+        all(isfinite,point.values) || error("Nonfinite current native iterate")
+        point
+    end
     last_audit=-5
     function callback(alg_mode,iteration,obj,inf_pr,args...)
         record["callback_count"]+=1
@@ -59,6 +87,15 @@ function install_ac_primal_guard!(model;policy="off",phase,
             if alg_mode!=0 || !isfinite(obj)
                 empty!(history)
                 return true
+            end
+            if expected_start!==nothing && iteration==0 && !haskey(record,"native_initialization")
+                began=time();initial=current_native_point()
+                record["native_initialization"]=Dict("iteration"=>0,"complete_mapping"=>true,
+                    "variable_count"=>length(variables),
+                    "maximum_absolute_change_from_requested_start"=>
+                        maximum(abs.(initial.values.-expected_start.values);init=0.0),
+                    "audit_seconds"=>time()-began,"source_bounds_changed"=>false,
+                    "scope"=>"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate")
             end
             push!(history,Float64(obj))
             length(history)>window && popfirst!(history)
@@ -70,22 +107,7 @@ function install_ac_primal_guard!(model;policy="off",phase,
             began=time()
             # Read the accepted CURRENT native iterate, not the wrapper's last
             # objective/constraint-evaluation cache (which may be a trial point).
-            native=unsafe_backend(model)
-            native isa Ipopt.Optimizer || error("Unexpected AC guard optimizer")
-            inner=native.inner
-            if isempty(native_columns)
-                append!(native_columns,[Ipopt.column(optimizer_index(v)) for v in variables])
-                length(variables)==inner.n && sort(native_columns)==collect(1:inner.n) ||
-                    error("Incomplete or ambiguous native primal mapping")
-                resize!(native_values,inner.n)
-                record["native_mapping_complete"]=true
-                record["native_variable_count"]=inner.n
-            end
-            all_variables(model)==variables && length(native_values)==inner.n ||
-                error("AC primal guard variable identities changed")
-            Ipopt.GetIpoptCurrentIterate(inner,false,inner.n,native_values,C_NULL,C_NULL,
-                inner.m,C_NULL,C_NULL)
-            point=(variables=variables,values=native_values[native_columns])
+            point=current_native_point()
             residual=ac_primal_residual(model,point)
             record["audit_count"]+=1
             record["audit_seconds"]+=time()-began
@@ -119,6 +141,9 @@ end
 function finish_ac_primal_guard!(model,state)
     record=state.record
     haskey(record,"callback_error") && error("AC primal guard failed: "*record["callback_error"])
+    if get(record,"native_initialization_audit_requested",false) && !haskey(record,"native_initialization")
+        error("Native first-iterate audit was requested but not observed")
+    end
     if record["stop_requested"]
         returned=capture_complete_ac_primal(model)
         saved=state.point[]

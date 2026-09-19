@@ -121,3 +121,15 @@ end
     @test value(shunt_step["s"])≈0.4 atol=1e-10
     @test lower_bound(shunt_step["s"])==0 && upper_bound(shunt_step["s"])==2
 end
+
+@testset "GO3 native initialization audit refuses absent or invalid mappings" begin
+    m=Model();@variable(m,p>=0,start=0.0);@objective(m,Max,-p)
+    point=(variables=all_variables(m),values=[0.0])
+    @test_throws ErrorException install_ac_primal_guard!(m;policy="off",phase="rounded_shunts",expected_start=point)
+    @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts",
+        expected_start=(variables=point.variables,values=[NaN]))
+    @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts",
+        expected_start=(variables=VariableRef[],values=Float64[]))
+    guard=install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts",expected_start=point)
+    @test_throws ErrorException finish_ac_primal_guard!(m,guard)
+end

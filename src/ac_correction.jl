@@ -5,7 +5,9 @@ using SparseArrays
 const AC_CORRECTION_POLICY="network_slp_fixed_shunts_v1"
 const AC_CORRECTION_CONTINUOUS_POLICY="network_slp_continuous_then_round_v2"
 const AC_CORRECTION_HOT_REPAIR_POLICY="network_slp_continuous_hot_repair_v3"
-const AC_CORRECTION_POLICIES=(AC_CORRECTION_POLICY,AC_CORRECTION_CONTINUOUS_POLICY,AC_CORRECTION_HOT_REPAIR_POLICY)
+const AC_CORRECTION_CONTINUATION_POLICY="network_slp_preserved_primal_repair_v4"
+const AC_CORRECTION_POLICIES=(AC_CORRECTION_POLICY,AC_CORRECTION_CONTINUOUS_POLICY,
+    AC_CORRECTION_HOT_REPAIR_POLICY,AC_CORRECTION_CONTINUATION_POLICY)
 
 correction_bounds(s::MOI.EqualTo)=(Float64(s.value),Float64(s.value))
 correction_bounds(s::MOI.LessThan)=(-Inf,Float64(s.upper))

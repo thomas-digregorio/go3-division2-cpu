@@ -105,3 +105,11 @@ def tiny_source_features_case():
         if d["device_type"]=="producer":
             d.update(q_bound_cap=1,q_0_lb=-0.3,q_0_ub=0.3,beta_lb=-0.1,beta_ub=0.1)
     return case
+
+
+def tiny_primal_continuation_case():
+    """Vary adjacent-hour demand to force repair of the previous local point."""
+    case = tiny_source_features_case()
+    consumer = next(d for d in case["time_series_input"]["simple_dispatchable_device"] if d["uid"] == "d")
+    consumer["p_ub"] = [1.0, 0.7, 0.9]
+    return case

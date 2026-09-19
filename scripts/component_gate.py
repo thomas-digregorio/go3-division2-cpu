@@ -148,6 +148,41 @@ def main():
         "--output",str(evidence/"hot_repair_verification"),"--seconds","60"])
     hot_repair_certificate=json.loads((evidence/"hot_repair_verification/certificate.json").read_text())
     hot_repair_stats=json.loads((evidence/"hot_repair_worker/solver_statistics.json").read_text())
+    stage("tiny_continuation_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/primal_continuation_problem.json",str(evidence/"continuation_worker"),
+        "config/tiny_ac_correction_continuation.json",str(time.time()+120)],timeout=125)
+    stage("tiny_continuation_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/primal_continuation_problem.json",
+        "--solution",str(evidence/"continuation_worker/candidate_final.json"),
+        "--output",str(evidence/"continuation_verification"),"--seconds","60"])
+    continuation_certificate=json.loads((evidence/"continuation_verification/certificate.json").read_text())
+    continuation_stats=json.loads((evidence/"continuation_worker/solver_statistics.json").read_text())
+    preserved_starts=0
+    for interval in continuation_stats["ac_intervals"]:
+        correction=interval["reserve_ac"]["correction"]
+        if (correction["policy"]!="network_slp_preserved_primal_repair_v4"
+                or correction["final_model_residual"]>1e-10
+                or any(x!=round(x) for x in correction["final_discrete_settings"].values())
+                or "first native Ipopt iterate audited" not in interval["warm_start"]):
+            raise RuntimeError("Primal-continuation fixture failed original-model audit")
+        for phase in interval["reserve_ac"]["phases"]:
+            if not phase.get("fallback"):
+                continue
+            native=phase["native_primal_guard"].get("native_initialization",{})
+            if not native.get("complete_mapping") or native.get("iteration")!=0:
+                raise RuntimeError("Missing actual first-iterate native start readback")
+            start=phase["start"]
+            if start["primal_continuation_preserved"]:
+                preserved_starts+=1
+                if (interval["interval"]<=1 or start["dual_transfer_used"]
+                        or start["options"]["warm_start_init_point"]!="no"
+                        or start["options"]["mu_init"]!=1e-6
+                        or any(start["options"][k]!=1e-8 for k in
+                            ("bound_push","bound_frac","slack_bound_push","slack_bound_frac"))
+                        or native["maximum_absolute_change_from_requested_start"]>1e-6):
+                    raise RuntimeError("Primal continuation was reset or claimed a dual warm start")
+    if not preserved_starts:
+        raise RuntimeError("Time-varying fixture did not exercise a continued-hour fallback")
     used_transfers=0
     for interval in hot_repair_stats["ac_intervals"]:
         correction=interval["reserve_ac"]["correction"]
@@ -272,14 +307,15 @@ def main():
         raise RuntimeError("New tiny integration did not exercise the registered source features")
     for checked in (certificate,separated_certificate,hipo_certificate,dominance_certificate,
                     reserve_ac_certificate,source_features_certificate,recovery_certificate,cold_seed_certificate,
-                    correction_certificate,continuous_correction_certificate,hot_repair_certificate):
+                    correction_certificate,continuous_correction_certificate,hot_repair_certificate,
+                    continuation_certificate):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
     coverage_records={}
     for name in ("worker","separated_worker","hipo_worker","dominance_worker",
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
-                 "continuous_correction_worker","hot_repair_worker"):
+                 "continuous_correction_worker","hot_repair_worker","continuation_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -323,6 +359,8 @@ def main():
         "tiny_continuous_correction_statistics":continuous_correction_stats,
         "tiny_hot_repair_certificate":hot_repair_certificate,
         "tiny_hot_repair_statistics":hot_repair_stats,
+        "tiny_primal_continuation_certificate":continuation_certificate,
+        "tiny_primal_continuation_statistics":continuation_stats,
         "tiny_worker_exact_interval_coverage":coverage_records,
         "tiny_source_features_scheduling":feature_stats,
         "tiny_source_features_ac_statistics":source_ac_stats,

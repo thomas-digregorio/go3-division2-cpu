@@ -12,6 +12,17 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class SpeedupTests(unittest.TestCase):
+    def test_primal_continuation_registration_preserves_full_cold_contract(self):
+        config=json.loads((ROOT/"config/speedup_n06049_s003_r06.json").read_text())
+        previous=json.loads((ROOT/"config/speedup_n06049_s003_r05.json").read_text())
+        self.assertTrue(registered_budget(config))
+        self.assertEqual(config["ac_correction_policy"],"network_slp_preserved_primal_repair_v4")
+        self.assertEqual(registered_latch(ROOT,config).name,"speedup_n06049_s003_r06_latch.json")
+        changed={k for k in config if config[k]!=previous[k]}
+        self.assertEqual(changed,{"pilot_id","ac_correction_policy"})
+        with self.assertRaises(ValueError):
+            registered_latch(ROOT,{**config,"cold_start":False})
+
     def test_ipx_continuous_shunt_variant_requires_matching_registration(self):
         config=json.loads((ROOT/"config/speedup_n06049_s003_r04.json").read_text())
         auth=json.loads((ROOT/"manifests/authorization_speedup_004.json").read_text())
