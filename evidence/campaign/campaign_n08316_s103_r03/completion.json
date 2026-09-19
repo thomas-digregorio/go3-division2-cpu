@@ -1,0 +1,14 @@
+{
+  "status": "VERIFIED_HARD_FEASIBLE",
+  "final_result_serialization_seconds": 0.008301199995912611,
+  "result_sha256": "00577736716de75b777c3dafccc48dcfb19e97350633b1b9feba45772ee80f74",
+  "elapsed_through_result_serialization_seconds": 6508.759884200001,
+  "within_local_deadline": true,
+  "runtime_target": {
+    "target_seconds": 7200,
+    "hard_safety_limit_seconds": 7200,
+    "within_target": true,
+    "within_hard_limit": true,
+    "target_is_hard_deadline": true
+  }
+}

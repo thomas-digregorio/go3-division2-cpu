@@ -27,3 +27,15 @@ extraction, test a bounded network-specific raw-size allowance covering this
 audited member; the existing 16 MiB compressed transfer cap is sufficient.
 Register and freeze the full attempt only after the 8,316-bus acceptance gate
 passes. This document does not claim a completed experiment.
+
+## Predecessor gate completed
+
+On 2026-09-19, 8,316-bus scenario 103 attempt r03 passed its full acceptance
+gate in 6,508.759884 seconds: all 48 hours, all 301,872 source contingency-hour
+checks, independent hard feasibility, objective agreement, official `feas=1`
+and `phys_feas=1`, and the sixth-best-score target. Its compact evidence is
+`evidence/campaign/campaign_n08316_s103_r03/` and the completion registration
+is hash-bound in `manifests/authorization_campaign.json`.
+
+The 23,643-bus source audit and component-tested setup can now proceed. No
+23,643-bus full-case run has been launched or claimed successful by this record.

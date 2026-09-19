@@ -342,3 +342,87 @@ The correction was pushed as `eea9c86`; the final pre-run freeze adds this
 complete test record. No source/solver settings change between that freeze and
 the registered cold r03 attempt. The failed r02 solution is evidence only and
 must not supply initialization.
+
+## r03 full cold result: verified success
+
+The single registered r03 attempt ran on the laptop CPU from frozen, pushed
+implementation `2713e5df972f8cae7b77d8963419eba4e1f28424`. It completed on
+2026-09-19. No source/configuration edits, duplicate solve, warmup, or supplied
+optimized initialization occurred during the run. The original HiGHS scheduling
+plus Ipopt/MUMPS AC refinement route remained selected; SLP/correction was off.
+
+| Acceptance item | Recorded result |
+|---|---:|
+| End-to-end, through result serialization | 6,508.759884 s (108.480 min) |
+| Hard end-to-end limit | 7,200 s; passed |
+| Official objective / feasible score | 1,153,496,520.441392 |
+| Sixth-best eligible published score | 1,025,576,419.277920 |
+| Required score (90% of sixth-best) | 923,018,777.350128 |
+| Quality gate | PASS |
+| Hourly coverage | 48/48; exact interval coverage, worker exit 0 |
+| Source contingency-hour checks | 301,872 / 301,872 |
+| Independent hard constraints | PASS |
+| Official feasibility / physical feasibility | `feas=1`, `phys_feas=1` |
+| Objective agreement | PASS; absolute discrepancy 0.0101099014 |
+| Maximum independent hard residual | 9.214612406e-11 |
+| Maximum active-power imbalance | 1.184334748e-10 p.u. |
+| Maximum reactive-power imbalance | 7.408667534e-10 p.u. |
+| Maximum refined export bus-injection change | 4.606759418e-12 p.u. |
+| Numerical recovery attempts | 0 |
+| Peak sampled process-tree RSS | 13.275925 GiB |
+
+All checkpoint export audits and the final 48-hour export audit passed their
+1e-9 p.u. guard. The final audit contained no unfinished future intervals. The
+previous r02 failure of the official physical-balance gate did not recur; the
+source bounds, costs, penalties, and solver/evaluator tolerances were not
+relaxed. The final result is better than the sixth-best reference score, not
+merely within the requested 10% shortfall. This comparison is neither an
+official competition placing nor a full-GO3 global-optimality certificate.
+
+| Measured stage | Seconds |
+|---|---:|
+| Worker loading / preprocessing | 1.705 |
+| Scheduling stage | 814.526 |
+| Initial reserve allocation | 98.166 |
+| AC refinement, all 48 intervals | 4,873.702 |
+| Final reserves and postprocessing | 186.022 |
+| Complete worker (includes other worker overhead) | 5,987.042 |
+| Independent final verification | 292.160 |
+| Official final evaluation | 211.645 |
+| End-to-end including controller and serialization | 6,508.760 |
+
+The scheduling economic MILP's native solve time was 677.956 s; it returned
+objective 1,158,895,578.889697, bound 1,159,231,073.494133, and relative gap
+0.0002894951112 (0.028950%, below the requested 0.1%). That bound/gap applies
+only to the approximate scheduling subproblem, not the complete AC GO3 result.
+
+### Important meaning of feasibility
+
+This is feasibility under the unchanged GO3 source rules, including their
+permitted soft penalties. It is **not** an overload-free N-1 certificate.
+The maximum evaluated contingency overload was 4.808560231 p.u. Recorded
+penalties include base overload 140,391.615485, reserve shortfall 3,411.795033,
+worst-contingency 160,913.266275, and average-contingency 61,399.632911. These
+costs are included in the verified objective; no source penalty was removed.
+
+### Retention and post-run audit
+
+Compact evidence is in `evidence/campaign/campaign_n08316_s103_r03/`.
+The collector verified hashes before archiving and retained every original
+solution/log file. No files were deleted and no reevaluation was launched.
+After completion, all 123 covered source/configuration hashes and all 113
+pinned upstream tracked-file hashes still matched. Both upstream checkouts
+were at their recorded revisions with no tracked modifications, and the
+worktree remained clean through the full run.
+
+- Result SHA256:
+  `00577736716de75b777c3dafccc48dcfb19e97350633b1b9feba45772ee80f74`.
+- Completion SHA256:
+  `d5c0fb546863d4638718309bb73f9dbf299d372b7ab20ec93066c9c88cd41a2f`.
+- Verified retained candidate SHA256:
+  `68bbeedd2a6195d565a1aac3cffd3d9ebeae8f3aa8fb3143d98ec5f13d25c550`.
+
+The completed-network registration now admits preparation of the already
+authorized 23,643-bus scenario 003. The overall two-network objective remains
+unfinished until that network independently passes its own full acceptance
+gate. The deferred 6,717-bus network is not represented as passed.
