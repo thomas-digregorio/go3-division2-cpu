@@ -41,6 +41,8 @@ def main():
     stage("julia_tests",[str(JULIA),"--startup-file=no","--project=.","scripts/test_solver.jl"])
     stage("scheduling_seed_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_scheduling_seed.jl"])
+    stage("scheduling_storage_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_scheduling_storage.jl"])
     stage("consumer_dominance_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -113,6 +115,21 @@ def main():
         "--solution",str(evidence/"source_features_worker/candidate_final.json"),
         "--output",str(evidence/"source_features_verification"),"--seconds","60"])
     source_features_certificate=json.loads((evidence/"source_features_verification/certificate.json").read_text())
+    stage("tiny_native_scheduling_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/source_features_problem.json",str(evidence/"native_scheduling_worker"),
+        "config/tiny_scheduling_native.json",str(time.time()+120)],timeout=125)
+    stage("tiny_native_scheduling_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/source_features_problem.json",
+        "--solution",str(evidence/"native_scheduling_worker/candidate_final.json"),
+        "--output",str(evidence/"native_scheduling_verification"),"--seconds","60"])
+    native_scheduling_certificate=json.loads((evidence/"native_scheduling_verification/certificate.json").read_text())
+    native_scheduling_stats=json.loads((evidence/"native_scheduling_worker/statistics/scheduling.json").read_text())
+    native_storage=native_scheduling_stats["storage"]
+    if (native_storage["policy"]!="native_handoff_v1" or not native_storage["whole_model_copy"]
+            or not native_storage["cached_model_emptied"] or native_storage["native_mode"]!="DIRECT"
+            or native_storage["rows_or_columns_eliminated"]!=0 or native_storage["source_values_changed"]
+            or native_scheduling_stats["mip_lp_solver_option"]!="simplex"):
+        raise RuntimeError("Native scheduling integration did not preserve its storage-only contract")
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -391,7 +408,8 @@ def main():
     for checked in (certificate,separated_certificate,hipo_certificate,dominance_certificate,
                     reserve_ac_certificate,source_features_certificate,recovery_certificate,cold_seed_certificate,
                     correction_certificate,continuous_correction_certificate,hot_repair_certificate,
-                    continuation_certificate,original_guard_certificate,guarded_recovery_certificate):
+                    continuation_certificate,original_guard_certificate,guarded_recovery_certificate,
+                    native_scheduling_certificate):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -399,7 +417,7 @@ def main():
     for name in ("worker","separated_worker","hipo_worker","dominance_worker",
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
                  "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
-                 "guarded_recovery_worker"):
+                 "guarded_recovery_worker","native_scheduling_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -419,7 +437,7 @@ def main():
     julia_logs="\n".join((evidence/(name+".log")).read_text()
         for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests",
                      "ac_primal_start_tests","ac_interval_start_tests","ac_recovery_tests",
-                     "ac_primal_guard_tests","scheduling_seed_tests","ac_correction_tests"))
+                     "ac_primal_guard_tests","scheduling_seed_tests","scheduling_storage_tests","ac_correction_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
@@ -434,6 +452,8 @@ def main():
         "tiny_consumer_dominance_audit":dominance_audit,
         "tiny_reserve_aware_certificate":reserve_ac_certificate,
         "tiny_source_features_certificate":source_features_certificate,
+        "tiny_native_scheduling_certificate":native_scheduling_certificate,
+        "tiny_native_scheduling_statistics":native_scheduling_stats,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,
         "tiny_cold_seed_scheduling":seed_stats,

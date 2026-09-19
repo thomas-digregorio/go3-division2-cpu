@@ -22,7 +22,8 @@ from go3cpu.controller import (Deadline, Incumbent, Snapshots, atomic_json, clai
     latest_candidate, latest_snapshot, registered_latch, run_bounded, sha256, stop_process,
     partial_worker_timings, partial_scheduling_statistics)
 from go3cpu.official import configure_imports
-from go3cpu.safety import GIB, local_path, storage_check
+from go3cpu.safety import (GIB, local_path, storage_check, configured_memory_floor,
+                          available_memory_check, HostMemoryPressureError)
 from go3cpu.campaign import (sixth_best_target, quality_gate, registered_budget,
                              experiment_exit_code, pipeline_coverage)
 from go3cpu.speedup import (skip_intermediate_verification, final_verification_required,
@@ -98,6 +99,11 @@ def preflight(config_path):
         quality_target=sixth_best_target(comparison,network=config["network"],scenario=config["scenario"],
             switching=config["official_allow_switching"])
     env=runtime_environment()
+    host_memory=None
+    memory_floor=configured_memory_floor(config)
+    if memory_floor is not None:
+        measurement=psutil.virtual_memory()
+        host_memory=available_memory_check(measurement.available,measurement.total,floor_bytes=memory_floor)
     hardware={"platform":platform.platform(),"python":sys.version,"runtime":runtime_identity(),
         "physical_cpu_count":psutil.cpu_count(logical=False),"logical_cpu_count":psutil.cpu_count(),
         "ram_bytes":psutil.virtual_memory().total}
@@ -110,7 +116,7 @@ def preflight(config_path):
         "julia_manifest_sha256":sha256(ROOT/"Manifest.toml"),"source_manifest_sha256":sha256(ROOT/"manifests/sources.json"),
         "component_tests_sha256":sha256(ROOT/"manifests/component_tests.json"),
         "config":config,"case":case_record,"quality_target":quality_target,
-        "hardware":hardware,"storage":storage_check(ROOT,pending_bytes=GIB,
+        "hardware":hardware,"host_memory":host_memory,"storage":storage_check(ROOT,pending_bytes=GIB,
              floor_bytes=int(config["minimum_free_gib"]*GIB)),
         "setup_exclusions":"Dependency installation, package precompilation, source registration, checkout and download only. Runtime process import/JIT, raw loading, preprocessing and case factors included.",
         "initialization":"Cold; source conditions only, no POP or saved optimized solutions",
@@ -129,6 +135,9 @@ class Monitor:
         self.next_report=0
         self.last_stage=None
         self.target_reported=False
+        self.memory_floor=configured_memory_floor(config)
+        self.next_memory=0
+        self.last_host_memory=None
         self.snapshots=Snapshots(run/"live_status")
 
     def observe(self,process=None):
@@ -156,6 +165,16 @@ class Monitor:
         self.cpu_by_pid[current.pid]=cpu.user+cpu.system
         self.peak_rss=max(self.peak_rss,memory)
         now=time.perf_counter()
+        if self.memory_floor is not None and now>=self.next_memory:
+            measurement=psutil.virtual_memory()
+            try:
+                self.last_host_memory=available_memory_check(measurement.available,measurement.total,
+                    floor_bytes=self.memory_floor)
+            except HostMemoryPressureError as exc:
+                self.last_host_memory={**exc.record,"elapsed_seconds":now-self.clock.start}
+                atomic_json(self.run/"resource_stop.json",self.last_host_memory)
+                raise
+            self.next_memory=now+2.0
         if now>=self.next_storage:
             storage_check(ROOT,floor_bytes=int(self.config["minimum_free_gib"]*GIB))
             self.next_storage=now+5
@@ -168,7 +187,7 @@ class Monitor:
         if now>=self.next_report or stage!=self.last_stage:
             message={"elapsed_seconds":now-self.clock.start,"remaining_seconds":self.clock.remaining(),
                 "worker":progress,"peak_sampled_process_tree_rss_bytes":self.peak_rss,
-                "runtime_target":target}
+                "runtime_target":target,"host_memory":self.last_host_memory}
             self.snapshots.publish(message)
             print("PILOT_PROGRESS "+json.dumps(message),flush=True)
             self.next_report=now+30
@@ -270,8 +289,10 @@ def execute(config_path,config,env,preflight_record):
                     # Generated handshake is not a solver start or a separate experiment.
                     (worker_dir/"continue_after_schedule").write_text("initial candidate policy handled; continue within original deadline\n")
                 time.sleep(0.1)
-    except Exception:
+    except Exception as exc:
         result["controller_error"]=traceback.format_exc()
+        if isinstance(exc,HostMemoryPressureError):
+            result["resource_stop"]={**exc.record,"classification":"HOST_MEMORY_PRESSURE_STOP"}
     finally:
         if worker is not None:
             stop_process(worker)
@@ -295,6 +316,7 @@ def execute(config_path,config,env,preflight_record):
         result["progress"]=latest_snapshot(worker_dir/"progress")
         result["penalized_violations_allowed_by_official_rules"]=True
         result["peak_sampled_process_tree_rss_bytes"]=monitor.peak_rss
+        result["last_host_memory"]=monitor.last_host_memory
         result["cpu_seconds_by_pid_sampled"]=monitor.cpu_by_pid
         result["cpu_measurement_note"]="Sampled process CPU and sum of RSS, not allocator peak; shared pages may be counted twice."
         result["thread_settings"]={k:config[k] for k in ("highs_threads","julia_threads","blas_threads")}

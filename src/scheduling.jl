@@ -24,10 +24,14 @@ end
 
 function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
         include_reserves::Bool=true,consumer_dominance::Bool=false,
+        storage_policy="cached_model_v1",
         seed_policy="off",construction_seconds=0,cost_seconds=0,cost_lp_solver="simplex",deadline=Inf,
         native_log_path=nothing,on_phase=record->nothing,
         on_seed=(schedule,audit,label)->nothing,on_event=(name,details)->nothing)
     seed_policy in ("off",SCHEDULING_SEED_POLICY) || error("Unknown scheduling seed policy")
+    storage_policy in SCHEDULING_STORAGE_POLICIES || error("Unknown scheduling storage policy")
+    storage_policy=="native_handoff_v1" && seed_policy!="off" &&
+        error("Native handoff is supported only for the original cold scheduling route")
     if seed_policy!= "off"
         include_reserves || error("Cold construction must retain joint source reserves")
         all(x->isfinite(x) && x>0,(construction_seconds,cost_seconds)) ||
@@ -52,7 +56,16 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
     end
     println("GO3_SCHEDULING_MODEL ",JSON.json(model.ext[:scheduling_formulation])); flush(stdout)
     on_event("model_built",Dict("build_seconds"=>time()-started))
-    set_optimizer(model,optimizer)
+    if storage_policy=="native_handoff_v1"
+        on_event("native_handoff_begin",Dict("variables"=>num_variables(model)))
+        model=native_scheduling_handoff!(model,optimizer)
+        gc_started=time()
+        GC.gc(true)
+        model.ext[:scheduling_storage]["post_handoff_gc_seconds"]=time()-gc_started
+        on_event("native_handoff_complete",model.ext[:scheduling_storage])
+    else
+        set_optimizer(model,optimizer)
+    end
     set_time_limit_sec(model,time_limit)
     set_silent && JuMP.set_silent(model)
     best=nothing

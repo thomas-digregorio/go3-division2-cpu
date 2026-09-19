@@ -19,6 +19,11 @@
     "reference_interpretation": "Preserve prior clarification: sixth-best eligible score, not top-six average or best score."
   },
   "attempts": {
+    "campaign_n08316_s103_r02": {
+      "network": "C3E4N08316D2",
+      "scenario": "103",
+      "input_sha256": "43c169a1448da751be5e9fc04447f9088f1802866f5e591ed72777b2496a46a3"
+    },
     "campaign_n08316_s103_r01": {
       "network": "C3E4N08316D2",
       "scenario": "103",

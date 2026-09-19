@@ -21,6 +21,18 @@ def rows():
 
 
 class CampaignTests(unittest.TestCase):
+    def test_8316_r02_changes_storage_and_safety_not_numerical_model(self):
+        original=json.loads((ROOT/"config/campaign_n08316_s103_r01.json").read_text())
+        revised=json.loads((ROOT/"config/campaign_n08316_s103_r02.json").read_text())
+        self.assertEqual(revised["scheduling_storage_policy"],"native_handoff_v1")
+        self.assertEqual(revised["minimum_available_memory_gib"],2)
+        changed={"pilot_id","scheduling_storage_policy","minimum_available_memory_gib"}
+        self.assertEqual({k:v for k,v in original.items() if k not in changed},
+                         {k:v for k,v in revised.items() if k not in changed})
+        auth=json.loads((ROOT/"manifests/authorization_campaign.json").read_text())
+        self.assertEqual(auth["attempts"][revised["pilot_id"]],
+                         {k:revised[k] for k in ("network","scenario","input_sha256")})
+
     def test_8316_registration_preserves_original_6049_numerical_policy(self):
         baseline = json.loads((ROOT/"config/campaign_n06049_s003_r03.json").read_text())
         current = json.loads((ROOT/"config/campaign_n08316_s103_r01.json").read_text())

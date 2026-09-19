@@ -6,6 +6,7 @@ LinearAlgebra.BLAS.set_num_threads(1)
 include(joinpath(@__DIR__,"consumer_dominance.jl"))
 include(joinpath(@__DIR__,"startup_windows.jl"))
 include(joinpath(@__DIR__,"scheduling_seed.jl"))
+include(joinpath(@__DIR__,"scheduling_storage.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"ac_primal_start.jl"))
 include(joinpath(@__DIR__,"ac_interval_start.jl"))
@@ -183,6 +184,7 @@ function run_worker(case_path, output, config, work_deadline)
         include_reserves=get(config,"scheduling_include_reserves",true),
         consumer_dominance=dominance_policy=="guarded_online_v1",
         seed_policy=get(config,"scheduling_seed_policy","off"),
+        storage_policy=get(config,"scheduling_storage_policy","cached_model_v1"),
         construction_seconds=get(config,"scheduling_construction_seconds",0),
         cost_seconds=get(config,"scheduling_constructed_cost_seconds",0),
         cost_lp_solver=get(config,"scheduling_constructed_cost_lp_solver","simplex"),
@@ -211,6 +213,8 @@ function run_worker(case_path, output, config, work_deadline)
             nothing : max(0.0,bound-selected["objective"])/max(abs(selected["objective"]),1e-10)
     end
     merge!(statistics["scheduling"],model.ext[:scheduling_formulation])
+    statistics["scheduling"]["storage"]=get(model.ext,:scheduling_storage,
+        Dict("policy"=>"cached_model_v1"))
     statistics["scheduling"]["mip_lp_solver_requested"]=get(config,"scheduling_mip_lp_solver","choose")
     statistics["scheduling"]["mip_lp_solver_option"]=get_optimizer_attribute(model,"mip_lp_solver")
     statistics["scheduling"]["log_dev_level"]=get_optimizer_attribute(model,"log_dev_level")

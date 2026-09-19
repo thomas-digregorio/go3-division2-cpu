@@ -158,3 +158,50 @@ checked the completion/result hashes, copied the explicit stop reason, hashed
 all retained run files and preserved the originals. Result SHA256:
 `2aa78780308ca99948bfc8b1a4e2b0f121e833bbbc211ab945c6c82034eba1df`.
 The 23,643-bus solve remains unstarted behind this case's success gate.
+
+## r02: storage-only native scheduling handoff and host-memory safety
+
+The next registered attempt keeps the same scenario, source hash, comparison,
+numerical model, algorithm options, gap/tolerances and deadlines. Its only config
+changes are a new attempt ID, `scheduling_storage_policy=native_handoff_v1`, and
+a 2 GiB available-host-memory safety floor. A regression checks this exact diff.
+It remains a fresh cold attempt and uses no point from r01 or another network.
+
+The normal JuMP scheduling model is still built by the unchanged pinned upstream
+functions plus the existing source-faithful project adapters. Before solving,
+the complete unsolved model is copied through public `MOI.copy_to` into a fresh
+HiGHS-backed JuMP `direct_model`. Every constraint type must be natively supported;
+variable counts, complete constraint inventories and objective sense must match.
+Extraction references for commitment, real/reactive power, balance slacks and all
+ten reserve products are remapped through the returned index map. Other columns
+are still present in the native model even if no high-level extraction handle is
+retained. Metadata is restricted to plain values so it cannot retain old models.
+
+After successful copying, the disposable cached model is emptied and garbage
+collected before `optimize!`. No source rows/columns are eliminated, no algebraic
+presolve is introduced, and there are no coefficient, bound, integrality or
+objective changes. Native solver presolve stays on as before. Storage-only
+handoff does not promise that the full case will fit or solve; r02 must measure
+that. JuMP documents the extra cached representation and direct-mode tradeoffs:
+<https://jump.dev/JuMP.jl/stable/manual/models/#Direct-mode>.
+
+Synthetic tests compare every mapped row coefficient, constraint set (including
+bounds/integrality), objective coefficient and sense exactly before releasing
+the old cache. Joint/separated-reserve fixtures retain their objectives; startup
+window infeasibility remains infeasible; the production handoff path, extraction,
+metadata ownership and unsupported-policy rejection are tested. The focused
+Julia suite passed 2,214 assertions. All 92 Python tests passed, including new
+memory-threshold, stop-record and unchanged-historical-configuration checks.
+These tests did not construct or solve any competition model.
+
+The controller checks global available physical memory every two seconds when
+the new floor is configured. Falling below 2 GiB records a resource stop and
+unwinds through the existing owned-process cleanup/finalization. It never kills
+unrelated applications, deletes source data, changes machine settings, or calls
+resource exhaustion infeasibility. This safety condition is additional to—not
+a replacement for—the unchanged two-hour deadline and exhaustive verification.
+
+The full component gate now contains 42 stages and 15 tiny-pipeline certificates,
+including a new native-scheduling-to-AC-to-official-verification integration.
+Its complete new manifest, source-hash check, frozen push and clean preflight
+are required before r02's one-use latch may be claimed.

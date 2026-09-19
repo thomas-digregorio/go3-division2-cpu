@@ -3,9 +3,40 @@
 from pathlib import Path
 import os
 import shutil
+import math
 
 GIB = 1024 ** 3
 MIN_FREE_BYTES = 30 * GIB
+
+
+class HostMemoryPressureError(RuntimeError):
+    def __init__(self, record):
+        self.record = record
+        super().__init__(f"Host memory gate: {record['available_bytes']/GIB:.3f} GiB available, "
+                         f"need {record['floor_bytes']/GIB:.3f} GiB; stop owned work only")
+
+
+def configured_memory_floor(config):
+    value = config.get("minimum_available_memory_gib")
+    if value is None:
+        return None  # Historical configurations retain their registered behavior.
+    if (isinstance(value, bool) or not isinstance(value, (int, float))
+            or not math.isfinite(value) or value < 1):
+        raise ValueError("Configured available-memory floor must be finite and at least 1 GiB")
+    return int(value * GIB)
+
+
+def available_memory_check(available_bytes, total_bytes, *, floor_bytes):
+    if (any(isinstance(v, bool) or not isinstance(v, int)
+            for v in (available_bytes, total_bytes, floor_bytes))
+            or not 0 <= available_bytes <= total_bytes or not 0 < floor_bytes <= total_bytes):
+        raise ValueError("Invalid physical-memory measurement or floor")
+    record = {"policy": "host_available_memory_floor_v1", "available_bytes": available_bytes,
+              "total_physical_bytes": total_bytes, "floor_bytes": floor_bytes,
+              "scope": "Global host availability; resource stop, not an infeasibility proof"}
+    if available_bytes < floor_bytes:
+        raise HostMemoryPressureError(record)
+    return record
 
 
 def local_path(path):
