@@ -191,3 +191,10 @@ validator and the full compacted pipeline. All 9/9 source checks, independent
 hard feasibility and official physical feasibility passed; final objective and
 solution hash are unchanged. Hash-verified evidence is retained under
 `evidence/components/native_presolve_registration_20260919/`.
+
+The final r05 cold run subsequently stopped at the RAM floor after 1,259.375
+seconds without an incumbent. The optional rule was correctly disabled, but
+available host RAM still fell to 1.824 GiB during native presolve. Peak sampled
+process-tree RSS was 19.066 GiB. Both permitted full attempts are now consumed;
+all owned processes exited and no further attempt was started. See
+`docs/C3E4N23643_CAMPAIGN.md` for the comparison and precise failed gates.

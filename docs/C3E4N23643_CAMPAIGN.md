@@ -447,3 +447,46 @@ problem. Evidence is retained under `evidence/campaign/campaign_n23643_s003_r04/
 The separate final-authorized r05 experiment skips only the optional native
 parallel-row/column presolve pass; see `docs/ISOLATED_NATIVE_SCHEDULING.md` for
 the source-based rationale, uncertainty and unchanged acceptance contract.
+
+## r05 outcome: selective native presolve also exceeds the RAM floor
+
+The second and final newly authorized cold attempt used frozen commit
+`97a5b5709f5f7b22fbd37719bd8e4f6a9ee89b37` and configuration SHA256
+`5585c8064c7f49c24f4aa28cf39b71f76789a6df09a97d6b1e77ebba4b9d93b7`.
+Preflight passed after correcting an identity-record metadata error; that
+earlier rejection launched no solver and consumed no attempt. The final fresh
+gate passed 63 stages, 130 Python tests and 13,948 Julia assertions, including
+the actual registration validator and independent/official tiny verification.
+
+Both original spools have identical SHA256 values for all 11 numerical/name
+files: costs, bounds, integrality, matrix arrays and names. Original dimensions,
+objective sense and offset are also identical. The r05 compaction proof passed
+over every original column and row; compaction plus proof took 194.796 seconds.
+The native log confirms `presolve_rule_off=8192`, disabling only rule 13.
+
+| New cold attempt | Frozen implementation | End-to-end time | Peak sampled process-tree RSS | Result |
+|---|---|---:|---:|---|
+| r04: isolation + exact compaction | `c8f0017` | 1,297.815 s (21:37.815) | 19.205 GiB | RAM safety stop; no incumbent |
+| r05: same, skip optional parallel-row/column pass | `97a5b57` | 1,259.375 s (20:59.375) | 19.066 GiB | RAM safety stop; no incumbent |
+
+r05 again reached native presolve and its initial reduced matrix. After the
+`Sparsify removed 0.0% of nonzeros` message, it logged `Fixed 25217 dominated
+columns and strengthened 0 bounds`. Host available memory then fell to
+**1.824 GiB**, below the unchanged 2 GiB floor. The owned process tree stopped
+cleanly, and a live process inventory found no remaining Julia/Python process
+associated with this repository. No third full attempt or further large-matrix
+diagnostic was launched.
+
+Neither attempt returned a scheduling incumbent, numerical objective/bound/gap,
+AC dispatch, or full-case security certificate. Neither reached the two-hour
+deadline or established mathematical infeasibility. Tiny regression success
+and the complete matrix-equivalence proofs must not be described as a successful
+23,643-bus solve. The approved score target is unmet.
+
+The selective-pass experiment did not resolve the native memory boundary and
+does not establish which individual allocation caused it. Further work needs a
+more substantial memory reduction or a larger-memory execution environment,
+with separate authorization before another full attempt. Source data, full run
+artifacts and compact hash-checked evidence are preserved; the r05 archive is
+`evidence/campaign/campaign_n23643_s003_r05/`. No model constraints, source
+PMIN, costs, tolerances or verification requirements were relaxed.

@@ -1,0 +1,21 @@
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+ MIP      : 
+Rows      : 17635208
+Cols      : 15253134
+Nonzeros  : 68232594
+Integer   : 2592720 (2592720 binary)
+Coefficient ranges:
+  Matrix  [1e-05, 6e+03]
+  Cost    [1e-01, 1e+06]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-05, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+Presolve rules not allowed:
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+13791058 rows, 15041285 cols, 61767371 nonzeros 75s
+Sparsify removed 0.0% of nonzeros
+Fixed 25217 dominated columns and strengthened 0 bounds

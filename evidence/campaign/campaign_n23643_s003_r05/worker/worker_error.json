@@ -1,0 +1,11 @@
+{
+  "stage": "disk_worker_orchestration",
+  "error": "Host memory gate: 1.824 GiB available, need 2.000 GiB; stop owned work only",
+  "resource_stop": {
+    "policy": "host_available_memory_floor_v1",
+    "available_bytes": 1958969344,
+    "total_physical_bytes": 33752997888,
+    "floor_bytes": 2147483648,
+    "scope": "Global host availability; resource stop, not an infeasibility proof"
+  }
+}
