@@ -25,6 +25,7 @@ def main():
     parser.add_argument("--output",required=True)
     parser.add_argument("--input-sha256")
     parser.add_argument("--seconds",type=float,required=True)
+    parser.add_argument("--official-contingency-batch-size",type=int)
     args = parser.parse_args()
     begin = time.perf_counter()
     output = local_path(args.output)
@@ -41,9 +42,15 @@ def main():
         record["independent_seconds"] = time.perf_counter()-begin
         stage = time.perf_counter()
         with (output/"official.log").open("w",encoding="utf-8") as log, contextlib.redirect_stdout(log):
-            official = evaluate(local_path(args.input),local_path(args.solution),output/"official",root=ROOT)
+            official = evaluate(local_path(args.input),local_path(args.solution),output/"official",root=ROOT,
+                contingency_batch_size=args.official_contingency_batch_size,deadline=begin+args.seconds-2)
         record["official_seconds"] = time.perf_counter()-stage
         ev = official["evaluation"]
+        if "contingency_batch_audit" in official:
+            record["official_contingency_batch_audit"] = official["contingency_batch_audit"]
+            if (not record["official_contingency_batch_audit"]["complete"] or
+                    record["official_contingency_batch_audit"]["completed_checks"] != independent["contingencies_required"]):
+                raise RuntimeError("Official and independent exhaustive coverage disagree")
         objective = float(ev["z"])
         error = abs(objective-independent["objective"])
         agreement = error <= max(1e-5,1e-9*abs(objective))

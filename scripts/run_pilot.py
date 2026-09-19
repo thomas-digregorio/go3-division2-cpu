@@ -63,6 +63,9 @@ def preflight(config_path):
     if (config.get("pilot_ready") is not True or config["maximum_full_runs"]!=1 or
         not registered_budget(config) or not config["cold_start"] or config["allow_pop_solution"]):
         raise RuntimeError("Pilot registration is not ready or scope changed")
+    if "official_contingency_batch_size" in config:
+        from go3cpu.official_batching import validate_batch_size
+        validate_batch_size(config["official_contingency_batch_size"])
     latch=registered_latch(ROOT,config)
     if latch.exists():
         raise RuntimeError("This explicit pilot authorization was already claimed; no automatic replacement")
@@ -97,7 +100,8 @@ def preflight(config_path):
         if comparison["sha256"]!=sha256(ROOT/".cache/sources/results_20240506.xlsx"):
             raise RuntimeError("Comparison workbook hash changed")
         quality_target=sixth_best_target(comparison,network=config["network"],scenario=config["scenario"],
-            switching=config["official_allow_switching"])
+            switching=config["official_allow_switching"],
+            reference_policy=config.get("quality_reference_policy", "sixth_best_eligible_score"))
     env=runtime_environment()
     host_memory=None
     memory_floor=configured_memory_floor(config)
@@ -235,9 +239,12 @@ def execute(config_path,config,env,preflight_record):
         output=run/"verification"/label
         output.mkdir(parents=True,exist_ok=False)
         start=time.perf_counter()
-        outcome=run_bounded([sys.executable,str(ROOT/"scripts/verify_candidate.py"),
+        verification_command=[sys.executable,str(ROOT/"scripts/verify_candidate.py"),
             "--input",str(ROOT/config["input_path"]),"--input-sha256",config["input_sha256"],
-            "--solution",str(candidate),"--output",str(output),"--seconds",str(allowance)],
+            "--solution",str(candidate),"--output",str(output),"--seconds",str(allowance)]
+        if "official_contingency_batch_size" in config:
+            verification_command += ["--official-contingency-batch-size", str(config["official_contingency_batch_size"])]
+        outcome=run_bounded(verification_command,
             output/"process.log",cwd=ROOT,env=env,deadline=start+allowance,observer=monitor.observe)
         file=output/"certificate.json"
         certificate=json.loads(file.read_text()) if file.exists() else {

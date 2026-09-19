@@ -47,7 +47,7 @@
     "named_dense_array_bytes": 29304279952,
     "named_dense_array_gib": 27.29173745214939,
     "scope": "Declared dense contingency arrays only; excludes transients, factors, other problem/solution objects and operating system. Not a measured peak RSS.",
-    "status": "A bounded-memory exhaustive evaluation plan is required before the full case.",
+    "status": "User approved bounded-memory exhaustive evaluation; 512-column official wrapper implemented, complete component gate and full-case preflight pending.",
     "official_evaluator_modified": false
   },
   "complete_full_case_preflight_pending": true,
@@ -72,11 +72,15 @@
     "initial_status": {"pdc_fr": 0.0, "qdc_fr": 0.0, "qdc_to": 0.0}
   },
   "comparison_manifest": "manifests/campaign/published_C3E4N23643D2_s003.json",
-  "comparison_status": "Decision required: sixth-best eligible score is zero, so relative shortfall is undefined.",
+  "comparison_status": "User explicitly approved fifth-best positive eligible score for this scenario only; sixth-best remains zero and is not relabelled.",
   "eligible_competitors": 8,
   "positive_eligible_scores": 5,
   "sixth_best_eligible_score": 0.0,
-  "replacement_reference_selected": false,
+  "replacement_reference_selected": true,
+  "reference_policy": "fifth_positive_when_sixth_zero_v1",
+  "approved_reference_score": 353804820.240399,
+  "approved_minimum_score": 318424338.2163591,
+  "registered_attempt": "campaign_n23643_s003_r01",
   "published_timelimit_values_seconds": [7200, 259200],
   "user_hard_end_to_end_seconds": 7200,
   "full_case_runs_started": 0

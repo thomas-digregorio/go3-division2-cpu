@@ -212,6 +212,17 @@ def main():
         "--solution",str(evidence/"bounded_reserve_worker/candidate_final.json"),
         "--output",str(evidence/"bounded_reserve_verification"),"--seconds","60"])
     bounded_reserve_dc=dc_pipeline_audit(evidence,"bounded_reserve_worker","bounded_reserve_verification")
+    stage("tiny_batched_official_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dc_problem.json",
+        "--solution",str(evidence/"bounded_reserve_worker/candidate_final.json"),
+        "--output",str(evidence/"batched_official_verification"),"--seconds","60",
+        "--official-contingency-batch-size","2"])
+    batched_dc=dc_pipeline_audit(evidence,"bounded_reserve_worker","batched_official_verification")
+    batch_audit=batched_dc["certificate"]["official_contingency_batch_audit"]
+    if (not batch_audit["complete"] or batch_audit["completed_checks"]!=9
+            or batch_audit["max_batch_columns"]!=2 or len(batch_audit["batches"])!=2
+            or abs(batched_dc["certificate"]["objective"]-bounded_reserve_dc["certificate"]["objective"])>1e-8):
+        raise RuntimeError("Batched official integration changed objective or omitted source contingencies")
     bounded_reserve_audit=bounded_reserve_pipeline_audit(evidence)
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
@@ -544,6 +555,7 @@ def main():
         "tiny_exact_ramp_statistics":exact_ramp_stats,
         "tiny_dc_pipeline":dc_audit,
         "tiny_bounded_reserve_pipeline":bounded_reserve_dc,
+        "tiny_batched_official_pipeline":batched_dc,
         "tiny_bounded_reserve_storage":bounded_reserve_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,

@@ -10,6 +10,16 @@ NETWORK_ORDER = ("C3E4N02000D2", "C3E4N04224D2", "C3E4N06049D2",
                  "C3E4N06717D2", "C3E4N08316D2", "C3E4N23643D2")
 LARGER_NETWORK_ORDER = ("C3E4N08316D2", "C3E4N23643D2")
 LARGER_NETWORK_POLICY = "original_route_after_6049_v1"
+DEFAULT_REFERENCE_POLICY = "sixth_best_eligible_score"
+FIFTH_POSITIVE_POLICY = "fifth_positive_when_sixth_zero_v1"
+
+
+def validate_reference_policy(policy, network, scenario):
+    if policy == DEFAULT_REFERENCE_POLICY:
+        return
+    if (policy != FIFTH_POSITIVE_POLICY or network != "C3E4N23643D2"
+            or str(scenario) != "003"):
+        raise ValueError("Unapproved quality-reference policy or scenario scope")
 
 
 def registered_budget(config):
@@ -24,8 +34,10 @@ def registered_budget(config):
     return seconds == 1800
 
 
-def sixth_best_target(report, *, network, scenario, switching=True):
+def sixth_best_target(report, *, network, scenario, switching=True,
+                      reference_policy=DEFAULT_REFERENCE_POLICY):
     """One active, feasible Final Event result per competitor, excluding benchmark."""
+    validate_reference_policy(reference_policy, network, scenario)
     competitors = {}
     rejected = []
     for row in report["records"]:
@@ -56,18 +68,32 @@ def sixth_best_target(report, *, network, scenario, switching=True):
                              "runtime_seconds": float(row["runtime"]),
                              "source_row": row["source_row"], "uuid": row["uuid"]}
     ranking = sorted(competitors.values(), key=lambda r: (-r["score"], r["team"]))
-    if len(ranking) < 6 or ranking[5]["score"] <= 0:
+    if len(ranking) < 6:
         raise ValueError("Need six unambiguous positive eligible competitor scores")
     sixth = ranking[5]["score"]
+    rank = 6
+    reference = sixth
+    metric = DEFAULT_REFERENCE_POLICY
+    if reference_policy == FIFTH_POSITIVE_POLICY:
+        if not switching or sixth != 0 or ranking[4]["score"] <= 0:
+            raise ValueError("Fifth-positive override requires positive fifth and zero sixth, switching enabled")
+        rank, reference, metric = 5, ranking[4]["score"], "fifth_best_positive_eligible_score"
+    elif sixth <= 0:
+        raise ValueError("Need six unambiguous positive eligible competitor scores")
     return {"network": network, "scenario": f"{int(scenario):03d}", "division": 2,
-            "official_allow_switching": switching, "metric": "sixth_best_eligible_score",
+            "official_allow_switching": switching, "metric": metric,
+            "reference_policy": reference_policy, "reference_rank": rank,
+            "reference_score": reference,
             "relative_shortfall_limit": 0.10, "sixth_best_score": sixth,
-            "minimum_score": 0.90 * sixth, "top_six": ranking[:6],
+            "minimum_score": 0.90 * reference, "top_six": ranking[:6],
             "eligible_competitors": len(ranking), "rejected": rejected,
             "note": "Comparison with published scores, not a global-optimality certificate."}
 
 
 def quality_gate(certificate, target, *, pipeline_completed, within_deadline):
+    reference = target.get("reference_score", target["sixth_best_score"])
+    if not math.isfinite(reference) or reference <= 0:
+        raise ValueError("Quality reference must be positive and finite")
     score = None
     objective = certificate.get("objective") if certificate else None
     if isinstance(objective, (float, int)) and math.isfinite(objective):
@@ -77,11 +103,12 @@ def quality_gate(certificate, target, *, pipeline_completed, within_deadline):
         and certificate.get("independent_hard_pass") and certificate.get("objective_agreement")
         and certificate.get("contingencies_required", 0) > 0
         and certificate.get("contingencies_completed") == certificate.get("contingencies_required"))
-    shortfall = None if score is None else max(0.0, (target["sixth_best_score"] - score) / target["sixth_best_score"])
+    shortfall = None if score is None else max(0.0, (reference - score) / reference)
     return {"pass": bool(verification and pipeline_completed and within_deadline
                          and score is not None and score >=
-                         (1.0-target["relative_shortfall_limit"])*target["sixth_best_score"]),
-            "score": score, "relative_shortfall_from_sixth": shortfall,
+                         (1.0-target["relative_shortfall_limit"])*reference),
+            "score": score, "relative_shortfall_from_reference": shortfall,
+            "relative_shortfall_from_sixth": shortfall if target.get("reference_rank", 6) == 6 else None,
             "verification_pass": verification, "pipeline_completed": pipeline_completed,
             "within_deadline": within_deadline, "target": target}
 
@@ -124,6 +151,15 @@ def campaign_latch(root, config):
         or auth["maximum_end_to_end_seconds"] != 7200 or not registered_budget(config)):
         raise ValueError("Campaign authorization does not match the user request")
     registered = auth["attempts"].get(identifier)
+    reference_policy = config.get("quality_reference_policy", DEFAULT_REFERENCE_POLICY)
+    validate_reference_policy(reference_policy, network, config["scenario"])
+    if reference_policy != DEFAULT_REFERENCE_POLICY:
+        override = auth.get("reference_overrides", {}).get(reference_policy, {})
+        if (override.get("explicit_user_authorization") is not True
+                or override.get("network") != network or override.get("scenario") != config["scenario"]
+                or override.get("reference_rank") != 5 or override.get("sixth_score_must_be_zero") is not True
+                or override.get("relative_shortfall_limit") != 0.10):
+            raise ValueError("Quality-reference override lacks scoped user authorization")
     identity = {k: config[k] for k in ("network", "scenario", "input_sha256")}
     if registered != identity or not config["cold_start"] or config["allow_pop_solution"]:
         raise ValueError("Attempt not explicitly registered, or not cold")

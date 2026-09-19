@@ -199,3 +199,59 @@ full-run configuration has been selected.
 The machine-readable audit is
 `manifests/campaign/audit_C3E4N23643D2_s003.json`; the raw published comparison
 records are in `manifests/campaign/published_C3E4N23643D2_s003.json`.
+
+## Approved continuation: fifth-positive reference and bounded evaluation
+
+The user's subsequent "yes proceed" approved both the fifth-best positive
+reference and a memory-bounded exhaustive official evaluation wrapper. For
+**scenario 003 only**, the reference is **353,804,820.240399** and the required
+score is **318,424,338.2163591**. The sixth-best score remains recorded as zero;
+every other case and all historical results retain their original sixth-best
+policy. No reference is used as a solver start.
+
+`go3cpu/official_batching.py` partitions outage columns into batches of 512,
+invoking the unchanged, hash-pinned official contingency routine on the entire
+network and all 48 periods each time. The original official caller still checks
+connectivity for the full set, computes all base/hard/reserve checks, and forms
+global worst-case and average penalties from the complete source-ordered
+`t_k_z` array. It does not average averages of unequal batches. Duplicate
+outaged components with distinct source contingency IDs remain distinct.
+Reported maxima are merged with original source-index/time tie ordering.
+Missing/nonfinite batch results, skipped execution, unknown source hashes and
+exhausted deadlines cannot produce a complete batch audit. The process-local
+hook is restored on success or exception; upstream files remain unchanged.
+The independent explicit post-outage factorization checker remains separate.
+
+Synthetic tests compare every penalty, global objective and reported maximum
+against the unsplit official routine, including nonzero DC flow, transformer
+phase/taps, varying topology, congestion, uneven batches and duplicate-component
+identities. Failure tests cover deadlines, incomplete/nonfinite results,
+disconnected contingencies, invalid sizes, nested use and source-pin mismatch.
+A full tiny AC/DC pipeline also goes through the CLI and both checkers.
+
+Registered attempt `campaign_n23643_s003_r01` preserves the successful 8,316-bus
+numerical route and enables bounded reserve-model lifetime and batched official
+verification. Its 7,200-second global limit includes a **2,400-second reserved
+final verification window** and 30 seconds for finalization. This reserves more
+time for 1,289,760 contingency-hour checks; it is a budget, not a claim that the
+larger case will finish. The component suite and hash/clean-commit preflight
+must pass before a full-case process can start. The successful 8,316-bus run
+will not be repeated.
+
+### Completed component gate
+
+`tmp/pilot002_component_gate_zxdkioae` completed with process exit 0:
+**52 stages, 118 Python tests and 3,596 Julia assertions**, all passing. Summed
+stage wall time was 1,225.006 seconds; this is setup/testing, not a full-case
+experiment. The new batched AC/DC tiny certificate has `feas=1`, `phys_feas=1`,
+independent hard pass, and all **9/9** contingency-hour evaluations. Objective
+is **1,732.1459647319407**, identical to the unbatched evaluation; independent
+objective discrepancy is **5.229594535194337e-12**. Maximum P/Q imbalance is
+**1.525059245555127e-10 / 2.3062018232600234e-9 p.u.**
+
+Compact evidence, including the full hash-bound component manifest, both tiny
+certificates, batch coverage, independent results, tiny candidate and test logs,
+is retained in `evidence/components/official_batches_20260919/`. The copied
+files were individually hash-verified; Git preserves their exact bytes.
+No full 23,643-bus run was started during this gate. Its measured memory,
+runtime, objective and final verification remain to be established by r01.

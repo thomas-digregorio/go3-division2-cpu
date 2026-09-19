@@ -22,7 +22,8 @@ def main():
     case, digest = load_case(path, config["input_sha256"])
     comparison = json.loads((ROOT / config["comparison_manifest_path"]).read_text())
     target = sixth_best_target(comparison, network=config["network"], scenario=config["scenario"],
-                               switching=config["official_allow_switching"])
+                               switching=config["official_allow_switching"],
+                               reference_policy=config.get("quality_reference_policy", "sixth_best_eligible_score"))
     manifest = {"schema_version": 1, "network": config["network"], "scenario": config["scenario"],
         "input_sha256": digest, "input_bytes": path.stat().st_size,
         "archive_url": archive_source(config["network"])[0],
