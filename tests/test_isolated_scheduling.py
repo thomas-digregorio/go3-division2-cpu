@@ -9,7 +9,7 @@ import sys
 from unittest.mock import patch
 
 from test_scheduling_spool import ROOT,module
-from go3cpu.controller import atomic_json,sha256
+from go3cpu.controller import atomic_json,sha256,registered_latch
 from go3cpu.process_memory import MemoryTimeline
 
 
@@ -90,6 +90,10 @@ class IsolatedSchedulingTests(unittest.TestCase):
         self.assertEqual(new["scheduling_native_presolve_policy"],"skip_parallel_rows_cols_v1")
         tiny=json.loads((ROOT/"config/tiny_compacted_scheduling.json").read_text())
         self.assertEqual(tiny["scheduling_native_presolve_policy"],new["scheduling_native_presolve_policy"])
+        auth=json.loads((ROOT/"manifests/authorization_campaign.json").read_text())
+        self.assertEqual(auth["attempts"][new["pilot_id"]],
+                         {k:new[k] for k in ("network","scenario","input_sha256")})
+        self.assertEqual(registered_latch(ROOT,new),ROOT/"runs"/(new["pilot_id"]+"_latch.json"))
 
     def test_memory_timeline_records_real_process_without_solver(self):
         import os

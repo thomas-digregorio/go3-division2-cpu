@@ -176,3 +176,11 @@ passed all 3/3 AC intervals and 9/9 source checks, independent hard feasibility,
 official `feas=1` and `phys_feas=1`, with zero original scheduling residual.
 Its final objective and solution SHA256 remain identical to the tiny baseline.
 Compact hash-verified evidence is in `evidence/components/native_presolve_20260919/`.
+
+The subsequent launch preflight rejected r05 before claiming its latch: an
+explanatory `scope` field had been placed inside the exact identity-only attempt
+record. That field was removed (its explanation remains in this document), and
+the registration test now calls the actual latch-resolution validator as well
+as comparing the exact identity dictionary. No full attempt was launched or
+consumed by this failure. Numerical code and configuration were not changed;
+a fresh complete gate is nevertheless required for the corrected registration.
