@@ -205,3 +205,26 @@ The full component gate now contains 42 stages and 15 tiny-pipeline certificates
 including a new native-scheduling-to-AC-to-official-verification integration.
 Its complete new manifest, source-hash check, frozen push and clean preflight
 are required before r02's one-use latch may be claimed.
+
+### r02 completed component gate
+
+The complete new gate passed **42/42 stages**, **92 Python tests**, **3,416 Julia
+checks**, and all **15** tiny-pipeline certificates. Each certificate completed
+all nine contingency-hour checks and passed independent hard feasibility,
+objective agreement, and official `feas=1` / `phys_feas=1`. In particular, the new
+native-scheduling integration preserved all 153 fixture variables and the complete
+constraint inventory, emptied its old cache, returned an optimal schedule, and
+produced an independently verified final AC solution. Full-case memory savings
+and quality remain to be measured, not inferred from this fixture.
+
+- Exact gate evidence: `tmp/pilot002_component_gate_m5l2vzpn`.
+- Stage time total: 994.723 seconds; no competition-case solve in the gate.
+- Component manifest SHA256:
+  `2a2ab70b1a4ca3af7d88d64db9fa104a063b5f02eb4fc33a2e374bb8d07decd8`.
+- r02 config SHA256:
+  `ae6106b0d627e398a273b6daabe83d8545922f0834dd3d7f973480179f860cb6`.
+- Rehashed source/configuration inventory: 119 files, all matching the gate.
+
+The tested correction was already pushed as `b657dce`; the final pre-run freeze
+also includes this complete gate record. No settings or source constraints are
+changed between the freeze and the r02 run.
