@@ -1,0 +1,8 @@
+{
+  "policy": "host_available_memory_floor_v1",
+  "available_bytes": 1907216384,
+  "total_physical_bytes": 33752997888,
+  "floor_bytes": 2147483648,
+  "scope": "Global host availability; resource stop, not an infeasibility proof",
+  "elapsed_seconds": 725.1631260000286
+}

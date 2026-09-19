@@ -1,0 +1,279 @@
+{
+  "operation": "Post-run hash audit only; no solve or reevaluation",
+  "network": "C3E4N23643D2",
+  "scenario": "003",
+  "attempt": "campaign_n23643_s003_r02",
+  "implementation_commit": "e9e84f493d203599cd15aeb0d537bc25d7695918",
+  "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5",
+  "status": "NO_VERIFIED_INCUMBENT",
+  "quality_gate": {
+    "pass": false,
+    "score": null,
+    "relative_shortfall_from_reference": null,
+    "relative_shortfall_from_sixth": null,
+    "verification_pass": false,
+    "pipeline_completed": false,
+    "within_deadline": true,
+    "target": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "division": 2,
+      "official_allow_switching": true,
+      "metric": "fifth_best_positive_eligible_score",
+      "reference_policy": "fifth_positive_when_sixth_zero_v1",
+      "reference_rank": 5,
+      "reference_score": 353804820.240399,
+      "relative_shortfall_limit": 0.1,
+      "sixth_best_score": 0.0,
+      "minimum_score": 318424338.21635914,
+      "top_six": [
+        {
+          "team": "YongOptimization",
+          "score": 600577211.010372,
+          "objective": 600577211.010372,
+          "runtime_seconds": 1540.0,
+          "source_row": 10036,
+          "uuid": "535-1693855412_c3E4"
+        },
+        {
+          "team": "quasiGrad",
+          "score": 598132224.471649,
+          "objective": 598132224.471649,
+          "runtime_seconds": 208255.0,
+          "source_row": 7360,
+          "uuid": "1062-1693667274_c3E4"
+        },
+        {
+          "team": "GOT-BSI-OPF",
+          "score": 589696575.511268,
+          "objective": 589696575.511268,
+          "runtime_seconds": 7653.0,
+          "source_row": 3346,
+          "uuid": "504-1693849098_c3E4"
+        },
+        {
+          "team": "TIM-GO",
+          "score": 588991289.929324,
+          "objective": 588991289.929324,
+          "runtime_seconds": 13630.0,
+          "source_row": 9367,
+          "uuid": "1054-1693623335_c3E4"
+        },
+        {
+          "team": "Artelys_Columbia",
+          "score": 353804820.240399,
+          "objective": 353804820.240399,
+          "runtime_seconds": 259147.0,
+          "source_row": 1339,
+          "uuid": "406-1693578904_c3E4"
+        },
+        {
+          "team": "Electric-Stampede",
+          "score": 0.0,
+          "objective": -26787439636.0895,
+          "runtime_seconds": 3308.0,
+          "source_row": 2008,
+          "uuid": "673-1693620838_c3E4"
+        }
+      ],
+      "eligible_competitors": 8,
+      "rejected": [
+        {
+          "source_row": 670,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 2677,
+          "reason": "unmatched, inactive, infeasible or benchmark"
+        },
+        {
+          "source_row": 4015,
+          "reason": "unmatched, inactive, infeasible or benchmark"
+        },
+        {
+          "source_row": 6022,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 6691,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 8029,
+          "reason": "missing comparison fields"
+        },
+        {
+          "source_row": 8698,
+          "reason": "missing comparison fields"
+        }
+      ],
+      "note": "Comparison with published scores, not a global-optimality certificate."
+    }
+  },
+  "objective": null,
+  "end_to_end_seconds": 726.5828904000227,
+  "peak_sampled_process_tree_rss_gib": 18.972389221191406,
+  "solver_statistics": {
+    "ac_intervals": [],
+    "scheduling_phases": {},
+    "scheduling_events": [
+      {
+        "elapsed_scheduling_seconds": 554.2279999256134,
+        "event": "model_built",
+        "build_seconds": 549.6199998855591
+      },
+      {
+        "elapsed_scheduling_seconds": 554.3039999008179,
+        "event": "native_metadata_release_begin",
+        "variables": 19323456
+      },
+      {
+        "elapsed_scheduling_seconds": 562.3889999389648,
+        "event": "native_metadata_release_complete",
+        "constraint_inventory": {
+          "VariableRef in MathOptInterface.ZeroOne": 2592720,
+          "AffExpr in MathOptInterface.EqualTo{Float64}": 4346392,
+          "AffExpr in MathOptInterface.GreaterThan{Float64}": 2037696,
+          "VariableRef in MathOptInterface.GreaterThan{Float64}": 16167648,
+          "VariableRef in MathOptInterface.LessThan{Float64}": 16159392,
+          "VariableRef in MathOptInterface.EqualTo{Float64}": 1427328,
+          "AffExpr in MathOptInterface.LessThan{Float64}": 13827840
+        },
+        "cleanup_and_gc_seconds": 7.877999782562256,
+        "removed_container_entries": 37513677,
+        "policy": "unregister_disposable_construction_containers_v1",
+        "scope": "Symbolic lookup containers only; complete MOI model and names retained",
+        "mathematical_names_changed": false,
+        "rows_or_columns_eliminated": 0,
+        "source_values_changed": false,
+        "gc_reported_live_bytes_after": 9232426220,
+        "mathematical_variables": 19323456,
+        "removed_lookup_symbols": [
+          "c_nsc_expr",
+          "c_qrd_expr",
+          "c_qru_expr",
+          "c_rgd_expr",
+          "c_rgu_expr",
+          "c_rrd_off_expr",
+          "c_rrd_on_expr",
+          "c_rru_off_expr",
+          "c_rru_on_expr",
+          "c_scr_expr",
+          "copperplate_p_balance",
+          "copperplate_q_balance",
+          "cost_block_p",
+          "cost_by_period",
+          "cost_expr",
+          "device_cost",
+          "max_energy_over_intervals",
+          "max_prod_in_azone",
+          "max_starts_over_intervals",
+          "min_dn",
+          "min_energy_over_intervals",
+          "min_up",
+          "mustrun_init",
+          "nsc_sf_expr",
+          "on_cost",
+          "on_status_evolution",
+          "p_disagg",
+          "p_disaggregation",
+          "p_nsc_balance",
+          "p_nsc_implication",
+          "p_nsc_slack",
+          "p_on",
+          "p_on_lb_implication_cons",
+          "p_on_lb_implication_prod",
+          "p_on_ub_implication_cons",
+          "p_on_ub_implication_prod",
+          "p_rgd_balance",
+          "p_rgd_implication",
+          "p_rgd_slack",
+          "p_rgu_balance",
+          "p_rgu_implication",
+          "p_rgu_slack",
+          "p_rrd_balance",
+          "p_rrd_off_implication",
+          "p_rrd_on_implication",
+          "p_rrd_slack",
+          "p_rru_balance",
+          "p_rru_off_implication",
+          "p_rru_on_implication",
+          "p_rru_slack",
+          "p_scr_balance",
+          "p_scr_implication",
+          "p_scr_slack",
+          "p_sd",
+          "p_su",
+          "p_su_sd_ub_implication_cons",
+          "p_su_sd_ub_implication_prod",
+          "pq_eq",
+          "pq_lb_cons",
+          "pq_lb_prod",
+          "pq_ub_cons",
+          "pq_ub_prod",
+          "prohibit_su_sd",
+          "q_implication_max_cons",
+          "q_implication_max_prod",
+          "q_implication_min_cons",
+          "q_implication_min_prod",
+          "q_qrd_balance",
+          "q_qrd_slack",
+          "q_qru_balance",
+          "q_qru_slack",
+          "qrd_sf_expr",
+          "qru_sf_expr",
+          "ramp_lb",
+          "ramp_ub",
+          "reserve_cost_expr",
+          "rgd_sf_expr",
+          "rgu_sf_expr",
+          "rrd_sf_expr",
+          "rru_sf_expr",
+          "scr_sf_expr",
+          "sd_cost",
+          "sd_power_curve",
+          "source_maximum_startups",
+          "su_cost",
+          "su_power_curve",
+          "u_sd",
+          "u_su"
+        ],
+        "gc_reported_live_bytes_before": 15372199309,
+        "retained_lookup_symbols": [
+          "p",
+          "p_balance_slack_neg",
+          "p_balance_slack_pos",
+          "p_nsc",
+          "p_on_status",
+          "p_rgd",
+          "p_rgu",
+          "p_rrd_off",
+          "p_rrd_on",
+          "p_rru_off",
+          "p_rru_on",
+          "p_scr",
+          "q",
+          "q_balance_slack_neg",
+          "q_balance_slack_pos",
+          "q_qrd",
+          "q_qru"
+        ]
+      },
+      {
+        "elapsed_scheduling_seconds": 562.4700000286102,
+        "event": "native_handoff_begin",
+        "variables": 19323456
+      }
+    ]
+  },
+  "timings": {
+    "scheduling_elapsed_to_last_event": 562.470999956131,
+    "last_scheduling_event": "native_handoff_begin",
+    "loading_and_preprocessing": 3.009999990463257,
+    "completed_ac_interval_wall_seconds": 0
+  },
+  "worker_error": null,
+  "controller_error": "Traceback (most recent call last):\n  File \"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\scripts\\run_pilot.py\", line 282, in execute\n    monitor.observe()\n  File \"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\scripts\\run_pilot.py\", line 175, in observe\n    self.last_host_memory=available_memory_check(measurement.available,measurement.total,\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\go3cpu\\safety.py\", line 38, in available_memory_check\n    raise HostMemoryPressureError(record)\ngo3cpu.safety.HostMemoryPressureError: Host memory gate: 1.776 GiB available, need 2.000 GiB; stop owned work only\n",
+  "final_certificate": null,
+  "completed_network_registration": null
+}

@@ -314,3 +314,41 @@ Objective and residuals are unchanged from the preceding tiny certificate.
 Hash-verified compact evidence is in
 `evidence/components/scheduling_metadata_20260919/`. Full-size memory savings
 and r02 feasibility are not established by these tiny tests.
+
+## r02: metadata cleanup is correct but insufficient for full handoff
+
+Frozen implementation **e9e84f493d203599cd15aeb0d537bc25d7695918**, config
+SHA256 `3419200b42175e76ae6cc45fd5507c247a5a4779f8ba2e5bc2e28ca7449ac669`,
+completed one cold attempt after the fresh gate. It again stopped during the
+native scheduling handoff, before `economic_solve_begin`:
+
+| Attempt | End-to-end wall time | Sampled peak process-tree RSS | Result |
+|---|---:|---:|---|
+| r01 | 745.169 s | 18.955 GiB | Memory safety stop; no incumbent |
+| r02 | 726.583 s | 18.972 GiB | Memory safety stop; no incumbent |
+
+r02 built the same **19,323,456 variables** in **549.620 seconds**. Cleanup took
+**7.878 seconds** and unregistered **37,513,677 construction-container entries**,
+not mathematical variables or constraints. GC-reported live bytes decreased
+from **15,372,199,309** to **9,232,426,220** (about 14.3 to 8.6 GiB), but this
+did not translate into enough physical headroom for the whole native copy.
+At the stop, available host RAM was **1,907,216,384 bytes (1.776 GiB)**, below
+the unchanged 2 GiB floor. All owned solver processes exited; no retry was
+launched on unchanged code.
+
+Neither attempt established an objective, bound, gap, feasible schedule, AC
+solution or full-case contingency verification. Neither proves infeasibility.
+The 7,200-second deadline was not reached; the resource gate stopped them first.
+Compact, hash-checked evidence is retained in
+`evidence/campaign/campaign_n23643_s003_r02/`; raw inputs and all previous
+successful results remain unchanged.
+
+A read-only adapter audit explains why additional bookkeeping cleanup is not
+enough: pinned HiGHS.jl `MOI.copy_to` builds destination metadata and an index
+map while retaining the source, copies whole row-function families, accumulates
+triplet arrays, and then constructs a CSC matrix before passing it to HiGHS.
+Naive incremental deletion is also unsafe as a memory strategy: the installed
+MOI `CleverDict` rehashes its dense vector into a dictionary on the first
+deletion. A genuinely bounded or disk-backed transfer therefore needs a
+separate, exactly audited adapter design; it is not implemented or proven by
+the current changes. No r03 has been registered or launched.
