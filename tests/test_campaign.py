@@ -21,6 +21,21 @@ def rows():
 
 
 class CampaignTests(unittest.TestCase):
+    def test_8316_r03_changes_only_ramp_bookkeeping_and_preliminary_verification(self):
+        original=json.loads((ROOT/"config/campaign_n08316_s103_r02.json").read_text())
+        revised=json.loads((ROOT/"config/campaign_n08316_s103_r03.json").read_text())
+        self.assertEqual(revised["ac_ramp_bound_policy"],"exact_source_intersections_v1")
+        self.assertEqual(revised["intermediate_verification"],"skip_unverified_schedule_v1")
+        changed={"pilot_id","ac_ramp_bound_policy","intermediate_verification"}
+        self.assertEqual({k:v for k,v in original.items() if k not in changed},
+                         {k:v for k,v in revised.items() if k not in changed})
+        auth=json.loads((ROOT/"manifests/authorization_campaign.json").read_text())
+        self.assertEqual(auth["attempts"][revised["pilot_id"]],
+                         {k:revised[k] for k in ("network","scenario","input_sha256")})
+        from go3cpu.speedup import skip_intermediate_verification, final_verification_required
+        self.assertTrue(skip_intermediate_verification(revised))
+        self.assertTrue(final_verification_required(revised, {}, 1, {}, 48))
+
     def test_8316_r02_changes_storage_and_safety_not_numerical_model(self):
         original=json.loads((ROOT/"config/campaign_n08316_s103_r01.json").read_text())
         revised=json.loads((ROOT/"config/campaign_n08316_s103_r02.json").read_text())

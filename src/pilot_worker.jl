@@ -10,6 +10,7 @@ include(joinpath(@__DIR__,"scheduling_storage.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"ac_primal_start.jl"))
 include(joinpath(@__DIR__,"ac_interval_start.jl"))
+include(joinpath(@__DIR__,"ac_ramp_bounds.jl"))
 include(joinpath(@__DIR__,"ac_recovery.jl"))
 include(joinpath(@__DIR__,"ac_primal_guard.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
@@ -97,12 +98,14 @@ function opf_view(solution, periods)
      for i in periods]
 end
 
-function checkpoint_ac_interval!(output,input,schedule,results,i;must_stop=false)
-    partial=GO3.construct_solution_dict(input,schedule;opf_data=results,
-        include_reserves=false,postprocess=true,print_projected_devices=false)
+function checkpoint_ac_interval!(output,input,schedule,results,i;must_stop=false,
+        ramp_policy="legacy_tolerance_v1")
+    partial,audit=construct_audited_ac_solution(input,schedule,results,i;policy=ramp_policy)
     force_source_topology!(partial,input)
     path=joinpath(output,"checkpoints","candidate_ac_"*lpad(string(i),4,'0')*".json")
     atomic_json(path,partial)
+    atomic_json(joinpath(output,"statistics","export_projection_"*lpad(string(i),4,'0')*".json"),audit)
+    require_ac_export_projection(audit)
     # Save the diagnostic point BEFORE signalling failure. The controller can
     # independently verify it and keep a better already-verified incumbent.
     must_stop && error("AC interval $i failed the explicit $(AC_POINT_RESIDUAL_TOLERANCE) primal residual screen; checkpoint saved; no later intervals attempted")
@@ -143,6 +146,11 @@ function run_worker(case_path, output, config, work_deadline)
     ac_interval_start in ("off","previous_screened_interval_v1") || error("Unknown AC interval start policy")
     ac_interval_start=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
         error("AC interval continuation requires the reserve-aware adapter and local residual checks")
+    ac_ramp_policy=get(config,"ac_ramp_bound_policy","legacy_tolerance_v1")
+    ramp_tolerance=ac_ramp_bound_tolerance(ac_ramp_policy)
+    statistics["ac_ramp_bounds"]=Dict("policy"=>ac_ramp_policy,
+        "bookkeeping_tolerance"=>ramp_tolerance,"source_bounds_changed"=>false,
+        "official_tolerance_changed"=>false)
     ac_recovery=get(config,"ac_numerical_recovery","off")
     ac_recovery in ("off","adaptive_barrier_on_failed_residual_v1") || error("Unknown AC recovery policy")
     ac_recovery=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
@@ -258,7 +266,7 @@ function run_worker(case_path, output, config, work_deadline)
     end
 
     stage = time()
-    working = GO3.tighten_bounds_using_ramp_limits(input,schedule.on_status,schedule.real_power)
+    working = tighten_ac_horizon_bounds(input,schedule;policy=ac_ramp_policy)
     working = deepcopy(working)
     power_curves = ac_reserve_policy=="off" ? nothing : fixed_schedule_power_curves(input,schedule)
     results = opf_view(initial,input.periods)
@@ -274,10 +282,10 @@ function run_worker(case_path, output, config, work_deadline)
         current_on = Dict(uid=>schedule.on_status[uid][i] for uid in input.sdd_ids)
         current_p = Dict(uid=>schedule.real_power[uid][i] for uid in input.sdd_ids)
         if i > 1
-            GO3.tighten_bounds_at_interval_using_ramp_limits!(working,i,
+            tighten_ac_interval_bounds!(working,i,
                 Dict(uid=>schedule.on_status[uid][i-1] for uid in input.sdd_ids),
                 Dict(uid=>results[i-1]["simple_dispatchable_device"][uid]["p_on"] for uid in input.sdd_ids),
-                current_on)
+                current_on;policy=ac_ramp_policy)
         end
         ipopt = optimizer_with_attributes(Ipopt.Optimizer,"linear_solver"=>"mumps",
             "honor_original_bounds"=>"yes", "bound_relax_factor"=>0.0,
@@ -378,7 +386,8 @@ function run_worker(case_path, output, config, work_deadline)
                 "reason"=>"final AC point failed explicit primal residual screen"))
         end
         if must_stop || i % get(config,"checkpoint_every_intervals",1) == 0 || i == length(input.periods)
-            checkpoint_ac_interval!(output,input,schedule,results,i;must_stop=must_stop)
+            checkpoint_ac_interval!(output,input,schedule,results,i;must_stop=must_stop,
+                ramp_policy=ac_ramp_policy)
         end
         if ac_interval_start!="off"
             interval_seed=capture_ac_interval_start(ac_model,input,i;point=correction_point)
@@ -386,10 +395,13 @@ function run_worker(case_path, output, config, work_deadline)
     end
     timings["ac_optimization"] = time()-stage
     stage = time()
-    final = GO3.construct_solution_dict(input,schedule;opf_data=results,
-        include_reserves=false,postprocess=true,print_projected_devices=false)
+    final,export_audit = construct_audited_ac_solution(input,schedule,results,length(ac_stats);
+        policy=ac_ramp_policy)
+    statistics["final_export_projection"]=export_audit
     force_source_topology!(final,input)
     atomic_json(joinpath(output,"candidate_before_final_reserves.json"),final)
+    atomic_json(joinpath(output,"statistics","export_projection_final.json"),export_audit)
+    require_ac_export_projection(export_audit)
     progress("reserves")
     awards = GO3.calculate_reserves_from_generation(input,final;
         optimizer=optimizer_with_attributes(HiGHS.Optimizer,"threads"=>config["highs_threads"],

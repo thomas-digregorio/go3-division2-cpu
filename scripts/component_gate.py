@@ -53,6 +53,8 @@ def main():
         "scripts/test_ac_primal_start.jl"])
     stage("ac_interval_start_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_interval_start.jl"])
+    stage("ac_ramp_bound_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_ac_ramp_bounds.jl"])
     stage("ac_primal_guard_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_primal_guard.jl"])
     stage("ac_correction_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -130,6 +132,31 @@ def main():
             or native_storage["rows_or_columns_eliminated"]!=0 or native_storage["source_values_changed"]
             or native_scheduling_stats["mip_lp_solver_option"]!="simplex"):
         raise RuntimeError("Native scheduling integration did not preserve its storage-only contract")
+    stage("tiny_exact_ramp_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/source_features_problem.json",str(evidence/"exact_ramp_worker"),
+        "config/tiny_ac_exact_ramp.json",str(time.time()+120)],timeout=125)
+    stage("tiny_exact_ramp_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/source_features_problem.json",
+        "--solution",str(evidence/"exact_ramp_worker/candidate_final.json"),
+        "--output",str(evidence/"exact_ramp_verification"),"--seconds","60"])
+    exact_ramp_certificate=json.loads((evidence/"exact_ramp_verification/certificate.json").read_text())
+    exact_ramp_stats=json.loads((evidence/"exact_ramp_worker/solver_statistics.json").read_text())
+    ramp_policy=exact_ramp_stats["ac_ramp_bounds"]
+    if (ramp_policy["policy"]!="exact_source_intersections_v1" or ramp_policy["bookkeeping_tolerance"]!=0.0
+            or ramp_policy["source_bounds_changed"] or ramp_policy["official_tolerance_changed"]):
+        raise RuntimeError("Exact ramp integration did not preserve source bounds and tolerances")
+    audits=[exact_ramp_stats["final_export_projection"]]
+    for i in range(1,4):
+        audit=json.loads((evidence/f"exact_ramp_worker/statistics/export_projection_{i:04d}.json").read_text())
+        if audit["refined_intervals"]!=i:
+            raise RuntimeError("Export audit did not distinguish refined and unfinished intervals")
+        audits.append(audit)
+    for audit in audits:
+        if (audit["policy"]!="exact_source_intersections_v1" or not audit["enforced"]
+                or not audit["within_guard"] or audit["bookkeeping_tolerance"]!=0.0
+                or audit["maximum_refined_bus_injection_change_pu"]>1e-9
+                or audit["source_bounds_changed"] or audit["official_tolerance_changed"]):
+            raise RuntimeError("Exported refined dispatch exceeded the unchanged physical contract")
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -409,7 +436,7 @@ def main():
                     reserve_ac_certificate,source_features_certificate,recovery_certificate,cold_seed_certificate,
                     correction_certificate,continuous_correction_certificate,hot_repair_certificate,
                     continuation_certificate,original_guard_certificate,guarded_recovery_certificate,
-                    native_scheduling_certificate):
+                    native_scheduling_certificate,exact_ramp_certificate):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -417,7 +444,7 @@ def main():
     for name in ("worker","separated_worker","hipo_worker","dominance_worker",
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
                  "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
-                 "guarded_recovery_worker","native_scheduling_worker"):
+                 "guarded_recovery_worker","native_scheduling_worker","exact_ramp_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -436,7 +463,7 @@ def main():
     python_count=int(re.search(r"Ran (\d+) tests",(evidence/"python_tests.log").read_text()).group(1))
     julia_logs="\n".join((evidence/(name+".log")).read_text()
         for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests",
-                     "ac_primal_start_tests","ac_interval_start_tests","ac_recovery_tests",
+                     "ac_primal_start_tests","ac_interval_start_tests","ac_ramp_bound_tests","ac_recovery_tests",
                      "ac_primal_guard_tests","scheduling_seed_tests","scheduling_storage_tests","ac_correction_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
@@ -454,6 +481,8 @@ def main():
         "tiny_source_features_certificate":source_features_certificate,
         "tiny_native_scheduling_certificate":native_scheduling_certificate,
         "tiny_native_scheduling_statistics":native_scheduling_stats,
+        "tiny_exact_ramp_certificate":exact_ramp_certificate,
+        "tiny_exact_ramp_statistics":exact_ramp_stats,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,
         "tiny_cold_seed_scheduling":seed_stats,
