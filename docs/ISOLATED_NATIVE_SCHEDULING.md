@@ -138,3 +138,33 @@ The complete manifest, all stage logs and the new compact certificates are
 hash-verified copies in `evidence/components/isolated_compaction_20260919/`.
 This gate permits r04 to start; it does not establish that the large native
 solver will fit in memory or that the full GO3 case will pass.
+
+## r04 outcome and final authorized native-presolve experiment
+
+r04 used frozen commit `c8f00179614af3526a2c5cbd50e0b76847af7b41` and stopped
+after **1,297.815 seconds** without an incumbent. The full compaction proof did
+pass: 2,562,828 inference steps, 19,323,456 original columns and 20,211,928 original
+rows. Transformation plus proof took 194.721 seconds. Native HiGHS accepted the
+15,253,134-column / 17,635,208-row / 68,232,594-nonzero compact model, entered
+presolve, and reported 13,791,058 rows / 15,041,285 columns / 61,767,371 nonzeros
+after 75 seconds. It later crossed the unchanged RAM floor at 1.807 GiB available.
+Peak sampled process-tree RSS was 19.205 GiB. No AC interval or independent
+full-case verification ran. This is a resource failure, not infeasibility.
+
+The last native log message was `Sparsify removed 0.0% of nonzeros`. The pinned
+[HiGHS v1.15.1 presolver source](https://github.com/ERGO-Code/HiGHS/blob/v1.15.1/highs/presolve/HPresolve.cpp)
+calls parallel-row/column detection after that section, and that routine creates
+full row/column hash and maximum-coefficient arrays. This makes that optional
+pass a plausible allocation source; the process-level trace does not prove the
+exact C++ allocation that crossed the floor.
+
+r05 is the **second and final** full attempt under the current authorization.
+It changes only the attempt ID and `scheduling_native_presolve_policy` to
+`skip_parallel_rows_cols_v1`. The adapter sets and reads back
+`presolve_rule_off=8192` (rule 13 in pinned HiGHS). Other presolve rules, the
+matrix, exact-compaction proof, objective, integrality, tolerances, AC pipeline,
+verification and safety limits are unchanged. This skips an optional solver
+reduction, not any source constraint. It may leave a larger root problem and is
+not a guarantee of lower peak memory or faster completion. Tiny feasible and
+infeasible MIP fixtures compare this setting with default presolve; the complete
+compacted integration must also pass exhaustive verification before launch.

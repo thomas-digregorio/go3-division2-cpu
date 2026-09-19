@@ -48,6 +48,12 @@
     "scope": "Isolated native solver and raw-case validation processes, native memory attribution, serial scheduling options, and the proposed mathematically equivalent exact compaction if isolation is insufficient. Preserve source constraints, costs, tolerances, security checks and two-hour limit. No success is promised; failed attempts consume their latches."
   },
   "attempts": {
+    "campaign_n23643_s003_r05": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5",
+      "scope": "Second and final full attempt under isolated_memory_authorization; preserve r04 model and tolerances, skip only optional native parallel-row/column presolve rule to reduce temporary memory. Fresh complete component gate and frozen push required."
+    },
     "campaign_n23643_s003_r04": {
       "network": "C3E4N23643D2",
       "scenario": "003",

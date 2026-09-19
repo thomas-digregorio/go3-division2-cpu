@@ -1,0 +1,33 @@
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+ MIP      : 
+Rows      : 17635208
+Cols      : 15253134
+Nonzeros  : 68232594
+Integer   : 2592720 (2592720 binary)
+Coefficient ranges:
+  Matrix  [1e-05, 6e+03]
+  Cost    [1e-01, 1e+06]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-05, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+Permitted suppression of presolve rules via presolve_rule_off option:
+   Rule  6 (set bit  6 =    64): Forcing row
+   Rule  7 (set bit  7 =   128): Forcing col
+   Rule  8 (set bit  8 =   256): Free col substitution
+   Rule  9 (set bit  9 =   512): Doubleton equation
+   Rule 10 (set bit 10 =  1024): Dependent equations
+   Rule 11 (set bit 11 =  2048): Dependent free columns
+   Rule 12 (set bit 12 =  4096): Aggregator
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+   Rule 14 (set bit 14 = 16384): Sparsify
+   Rule 15 (set bit 15 = 32768): Probing
+   Rule 16 (set bit 16 = 65536): Enumeration
+   Rule 17 (set bit 17 = 131072): Dual fixing
+   Rule 18 (set bit 18 = 262144): Col stuffing
+   Rule 19 (set bit 19 = 524288): Initial sweep
+13791058 rows, 15041285 cols, 61767371 nonzeros 75s
+Sparsify removed 0.0% of nonzeros

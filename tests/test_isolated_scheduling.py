@@ -81,6 +81,16 @@ class IsolatedSchedulingTests(unittest.TestCase):
             self.assertEqual(calls,["build_scheduling_spool.jl","solve_scheduling_native.jl","pilot_worker.jl"])
             self.assertTrue(json.loads((output/"native_exit.json").read_text())["exited_before_ac_launch"])
 
+    def test_second_attempt_changes_only_optional_native_presolve_policy(self):
+        old=json.loads((ROOT/"config/campaign_n23643_s003_r04.json").read_text())
+        new=json.loads((ROOT/"config/campaign_n23643_s003_r05.json").read_text())
+        changed={"pilot_id","scheduling_native_presolve_policy"}
+        self.assertEqual({k:v for k,v in old.items() if k not in changed},
+                         {k:v for k,v in new.items() if k not in changed})
+        self.assertEqual(new["scheduling_native_presolve_policy"],"skip_parallel_rows_cols_v1")
+        tiny=json.loads((ROOT/"config/tiny_compacted_scheduling.json").read_text())
+        self.assertEqual(tiny["scheduling_native_presolve_policy"],new["scheduling_native_presolve_policy"])
+
     def test_memory_timeline_records_real_process_without_solver(self):
         import os
         with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as folder:

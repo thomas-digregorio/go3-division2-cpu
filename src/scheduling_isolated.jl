@@ -20,6 +20,13 @@ function isolated_options(config)
         config["scheduling_native_parallel"] in ("off","choose","on") || error("Invalid native parallel option")
         options["parallel"]=config["scheduling_native_parallel"]
     end
+    presolve_policy=get(config,"scheduling_native_presolve_policy","default")
+    presolve_policy in ("default","skip_parallel_rows_cols_v1") || error("Unknown native presolve policy")
+    if presolve_policy=="skip_parallel_rows_cols_v1"
+        # Pinned HiGHS 1.15.1 rule 13. Disables an optional reduction pass,
+        # not constraints, presolve as a whole, or feasibility tolerances.
+        options["presolve_rule_off"]=8192
+    end
     options
 end
 

@@ -28,5 +28,6 @@
   "scheduling_native_threads": 1,
   "scheduling_native_parallel": "off",
   "scheduling_analysis_level": 384,
-  "scheduling_compaction_policy": "exact_zero_alias_v1"
+  "scheduling_compaction_policy": "exact_zero_alias_v1",
+  "scheduling_native_presolve_policy": "skip_parallel_rows_cols_v1"
 }

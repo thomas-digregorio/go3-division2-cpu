@@ -317,6 +317,7 @@ def main():
     compacted_proof=json.loads((compacted_dir/"compact_spool/proof_verification.json").read_text())
     original_audit=json.loads((compacted_dir/"original_scheduling_audit.json").read_text())
     if (compacted_storage["compaction_policy"]!="exact_zero_alias_v1"
+            or compacted_storage["options"].get("presolve_rule_off")!=8192
             or compacted_storage["whole_model_copy"] or compacted_storage["source_values_changed"]
             or compacted_storage["rows_or_columns_eliminated"]<=0 or not compacted_proof["pass"]
             or not original_audit["pass"] or not original_audit["objective_agreement"]

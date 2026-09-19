@@ -37,3 +37,45 @@ include(joinpath(@__DIR__,"..","src","pilot_worker.jl"))
     @test value(VariableRef(result,MOI.VariableIndex(1)))==2.5
     @test objective_value(result)==2.5
 end
+
+@testset "GO3 memory-conscious native presolve contract" begin
+    config=JSON.parsefile(joinpath(@__DIR__,"..","config","tiny_compacted_scheduling.json"))
+    @test config["scheduling_native_presolve_policy"]=="skip_parallel_rows_cols_v1"
+    baseline=copy(config);delete!(baseline,"scheduling_native_presolve_policy")
+    options=isolated_options(config)
+    @test options["presolve_rule_off"]==8192
+    @test filter(p->first(p)!="presolve_rule_off",options)==isolated_options(baseline)
+    native=HiGHS.Optimizer()
+    try
+        for (key,value) in options
+            MOI.set(native,MOI.RawOptimizerAttribute(key),value)
+            @test MOI.get(native,MOI.RawOptimizerAttribute(key))==value
+        end
+        @test MOI.get(native,MOI.RawOptimizerAttribute("presolve"))=="choose"
+    finally
+        finalize(native)
+    end
+    for policy in ("default","skip_parallel_rows_cols_v1"), infeasible in (false,true)
+        fixture=Model(HiGHS.Optimizer);set_silent(fixture)
+        config["scheduling_native_presolve_policy"]=policy
+        for (key,value) in isolated_options(config)
+            set_optimizer_attribute(fixture,key,value)
+        end
+        @variable(fixture,u[1:2],Bin)
+        @variable(fixture,0<=p[1:2]<=4)
+        @constraint(fixture,[j=1:2],p[j]>=2*u[j])
+        @constraint(fixture,[j=1:2],p[j]<=4*u[j])
+        @constraint(fixture,sum(p)==(infeasible ? 9 : 5))
+        @constraint(fixture,2*sum(p)==(infeasible ? 18 : 10))
+        @objective(fixture,Min,sum(p)+0.25*sum(u))
+        optimize!(fixture)
+        @test termination_status(fixture)==(infeasible ? MOI.INFEASIBLE : MOI.OPTIMAL)
+        if !infeasible
+            @test objective_value(fixture)≈5.5
+            @test sum(value.(p))≈5
+            @test value.(u)≈[1.0,1.0]
+        end
+    end
+    config["scheduling_native_presolve_policy"]="unknown"
+    @test_throws Exception isolated_options(config)
+end

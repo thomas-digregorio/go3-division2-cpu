@@ -424,3 +424,26 @@ local; compact hash-checked evidence is in
 Remaining work is to diagnose/reduce native HiGHS startup memory, or obtain more
 available RAM, before authorizing another full attempt. It would be incorrect
 to claim that fixing the JuMP-to-HiGHS overlap alone made the full solve fit.
+
+## r04: isolated native process and proved exact compaction
+
+The first of two newly authorized attempts used frozen commit
+`c8f00179614af3526a2c5cbd50e0b76847af7b41`. Before launch, the fresh component
+gate passed 63 stages, 129 Python tests and 13,923 Julia assertions, including
+the new isolated/compacted tiny pipelines and all 9/9 source checks.
+
+r04 completed the original build/export and an independent exact-compaction
+proof of all original rows/columns. The equivalent native matrix shrank to
+15,253,134 variables, 17,635,208 rows and 68,232,594 nonzeros. Compaction and proof
+used 194.721 seconds; the builder and compactor exited before native solving.
+HiGHS entered presolve and made reductions, but subsequently crossed the
+unchanged 2 GiB host-memory floor at 1.807 GiB available. The run finished after
+**1,297.815 seconds (21 min 37.815 s)**, with peak sampled process-tree RSS
+**19.205 GiB**, status `NO_VERIFIED_INCUMBENT` and no objective/bound/gap. No AC
+interval or full-case verification ran. All owned processes exited.
+
+This advances the storage/equivalence work but does not solve the full-case RAM
+problem. Evidence is retained under `evidence/campaign/campaign_n23643_s003_r04/`.
+The separate final-authorized r05 experiment skips only the optional native
+parallel-row/column presolve pass; see `docs/ISOLATED_NATIVE_SCHEDULING.md` for
+the source-based rationale, uncertainty and unchanged acceptance contract.
