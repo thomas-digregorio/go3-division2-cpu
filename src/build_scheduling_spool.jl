@@ -3,7 +3,8 @@
 include(joinpath(@__DIR__,"pilot_worker.jl"))
 
 function build_scheduling_worker(case_path,output,config,deadline)
-    get(config,"scheduling_storage_policy","")=="disk_backed_native_v1" || error("Unregistered storage policy")
+    get(config,"scheduling_storage_policy","") in ("disk_backed_native_v1","disk_isolated_native_v1") ||
+        error("Unregistered storage policy")
     get(config,"scheduling_seed_policy","off")=="off" || error("Only original cold route supported")
     get(config,"scheduling_balance_penalties","")=="source_pq_duration_weighted" || error("Source penalties required")
     dominance=get(config,"scheduling_consumer_dominance","off")

@@ -39,7 +39,20 @@
     "attempt": "campaign_n23643_s003_r03",
     "scope": "Storage-only disk-backed transfer; one cold attempt after fresh component gate; unchanged model, two-hour limit and safety floors"
   },
+  "isolated_memory_authorization": {
+    "explicit_user_request": "try these and then do a successful run. you have my permission to try a couple times",
+    "maximum_full_attempts": 2,
+    "maximum_bounded_startup_diagnostics": 2,
+    "network": "C3E4N23643D2",
+    "scenario": "003",
+    "scope": "Isolated native solver and raw-case validation processes, native memory attribution, serial scheduling options, unchanged model/tolerances/security checks. No success is promised; failed attempts consume their latches."
+  },
   "attempts": {
+    "campaign_n23643_s003_r04": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5"
+    },
     "campaign_n23643_s003_r03": {
       "network": "C3E4N23643D2",
       "scenario": "003",

@@ -265,15 +265,29 @@ def execute(config_path,config,env,preflight_record):
 
     try:
         started=time.perf_counter()
-        case,digest=load_case(ROOT/config["input_path"],config["input_sha256"])
-        result["runtime_case_manifest"]=case_manifest(case)
+        if config.get("scheduling_storage_policy")=="disk_isolated_native_v1":
+            case_record_path=run/"runtime_case_manifest.json"
+            loaded=run_bounded([sys.executable,str(ROOT/"scripts/load_case_manifest.py"),
+                str(ROOT/config["input_path"]),config["input_sha256"],str(case_record_path)],
+                run/"raw_loading.log",cwd=ROOT,env=env,deadline=clock.end-clock.reserve,
+                observer=monitor.observe)
+            if loaded["timeout"] or loaded["returncode"]!=0:
+                raise RuntimeError("Isolated raw-case validation failed")
+            case_record=json.loads(case_record_path.read_text())
+            if case_record["input_sha256"]!=config["input_sha256"]:
+                raise RuntimeError("Isolated raw-case identity mismatch")
+            result["runtime_case_manifest"]=case_record["manifest"]
+            result["controller_raw_case_process_exited"]=True
+        else:
+            case,digest=load_case(ROOT/config["input_path"],config["input_sha256"])
+            result["runtime_case_manifest"]=case_manifest(case)
+            del case
         result["controller_raw_loading_seconds"]=time.perf_counter()-started
-        del case
         atomic_json(run/"preflight.json",preflight_record)
         work_epoch=time.time()+clock.remaining(work=True)
         command=[str(JULIA),"--startup-file=no",f"--project={ROOT}",str(ROOT/"src/pilot_worker.jl"),
             str(ROOT/config["input_path"]),str(worker_dir),str(local_path(config_path)),str(work_epoch)]
-        if config.get("scheduling_storage_policy")=="disk_backed_native_v1":
+        if config.get("scheduling_storage_policy") in ("disk_backed_native_v1","disk_isolated_native_v1"):
             command=[sys.executable,str(ROOT/"scripts/run_disk_worker.py"),str(JULIA),
                 str(ROOT/config["input_path"]),str(worker_dir),str(local_path(config_path)),str(work_epoch)]
         initial_checked=False

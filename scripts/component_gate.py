@@ -80,6 +80,8 @@ def main():
         "scripts/test_scheduling_storage.jl"])
     stage("scheduling_spool_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_scheduling_spool.jl"],timeout=180)
+    stage("isolated_scheduling_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_isolated_scheduling.jl"],timeout=120)
     stage("consumer_dominance_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -269,6 +271,34 @@ def main():
             or spool_manifest["builder_pid"]!=spool_exit["pid"]
             or abs(disk_dc["certificate"]["objective"]-bounded_reserve_dc["certificate"]["objective"])>1e-8):
         raise RuntimeError("Disk-backed pipeline changed mathematics or failed lifecycle/exhaustive verification")
+    stage("tiny_isolated_scheduling_worker",[sys.executable,"scripts/run_disk_worker.py",str(JULIA),
+        "tmp/official_tiny/dc_problem.json",str(evidence/"isolated_scheduling_worker"),
+        "config/tiny_isolated_scheduling.json",str(time.time()+240)],timeout=245)
+    stage("tiny_isolated_scheduling_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dc_problem.json",
+        "--solution",str(evidence/"isolated_scheduling_worker/candidate_final.json"),
+        "--output",str(evidence/"isolated_scheduling_verification"),"--seconds","60",
+        "--official-contingency-batch-size","2"])
+    isolated_dc=dc_pipeline_audit(evidence,"isolated_scheduling_worker","isolated_scheduling_verification")
+    isolated_reserves=bounded_reserve_pipeline_audit(evidence,"isolated_scheduling_worker")
+    isolated_dir=evidence/"isolated_scheduling_worker"
+    isolated_stats=json.loads((isolated_dir/"statistics/scheduling.json").read_text())
+    isolated_storage=isolated_stats["storage"]
+    isolated_result=json.loads((isolated_dir/"native_result.json").read_text())
+    isolated_exit=json.loads((isolated_dir/"native_exit.json").read_text())
+    isolated_memory=[json.loads(line) for line in (isolated_dir/"native_memory.jsonl").read_text().splitlines()]
+    if (isolated_storage["policy"]!="disk_isolated_native_v1" or not isolated_storage["whole_model_copy"]
+            or not isolated_storage["native_exited_before_ac_load"] or isolated_storage["solve_calls"]!=1
+            or isolated_storage["raw_case_parsed_in_native_process"]
+            or isolated_storage["extraction_metadata_loaded_in_native_process"]
+            or isolated_storage["rows_or_columns_eliminated"]!=0 or isolated_storage["source_values_changed"]
+            or isolated_result["diagnostic_only"] or isolated_exit["returncode"]!=0
+            or isolated_exit["pid"]!=isolated_result["pid"] or not isolated_exit["exited_before_ac_launch"]
+            or isolated_exit["result_sha256"]!=sha256(isolated_dir/"native_result.json")
+            or not isolated_memory or isolated_storage["options"]["threads"]!=1
+            or isolated_storage["options"]["parallel"]!="off"
+            or abs(isolated_dc["certificate"]["objective"]-bounded_reserve_dc["certificate"]["objective"])>1e-8):
+        raise RuntimeError("Isolated pipeline failed exact source, process lifetime, or exhaustive verification")
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -549,7 +579,7 @@ def main():
                     correction_certificate,continuous_correction_certificate,hot_repair_certificate,
                     continuation_certificate,original_guard_certificate,guarded_recovery_certificate,
                     native_scheduling_certificate,exact_ramp_certificate,dc_audit["certificate"],
-                    bounded_reserve_dc["certificate"],disk_dc["certificate"]):
+                    bounded_reserve_dc["certificate"],disk_dc["certificate"],isolated_dc["certificate"]):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -558,7 +588,7 @@ def main():
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
                  "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
                  "guarded_recovery_worker","native_scheduling_worker","exact_ramp_worker","dc_worker",
-                 "bounded_reserve_worker","disk_scheduling_worker"):
+                 "bounded_reserve_worker","disk_scheduling_worker","isolated_scheduling_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -579,7 +609,7 @@ def main():
         for name in ("julia_tests","consumer_dominance_tests","reserve_ac_tests","source_feature_tests",
                      "ac_primal_start_tests","ac_interval_start_tests","ac_ramp_bound_tests","ac_recovery_tests",
                      "ac_primal_guard_tests","scheduling_seed_tests","scheduling_storage_tests","ac_correction_tests",
-                     "dc_device_tests","reserve_storage_tests","scheduling_spool_tests"))
+                     "dc_device_tests","reserve_storage_tests","scheduling_spool_tests","isolated_scheduling_tests"))
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
@@ -607,6 +637,9 @@ def main():
         "tiny_disk_scheduling_pipeline":disk_dc,
         "tiny_disk_scheduling_storage":disk_storage,
         "tiny_disk_scheduling_reserve_storage":disk_reserves,
+        "tiny_isolated_scheduling_pipeline":isolated_dc,
+        "tiny_isolated_scheduling_storage":isolated_storage,
+        "tiny_isolated_scheduling_reserve_storage":isolated_reserves,
         "tiny_bounded_reserve_storage":bounded_reserve_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,

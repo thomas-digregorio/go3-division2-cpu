@@ -8,6 +8,7 @@ include(joinpath(@__DIR__,"startup_windows.jl"))
 include(joinpath(@__DIR__,"scheduling_seed.jl"))
 include(joinpath(@__DIR__,"scheduling_storage.jl"))
 include(joinpath(@__DIR__,"scheduling_spool.jl"))
+include(joinpath(@__DIR__,"scheduling_isolated.jl"))
 include(joinpath(@__DIR__,"scheduling.jl"))
 include(joinpath(@__DIR__,"ac_primal_start.jl"))
 include(joinpath(@__DIR__,"ac_interval_start.jl"))
@@ -144,7 +145,9 @@ function run_worker(case_path, output, config, work_deadline)
     case = JSON.parsefile(case_path)
     input = GO3.process_input_data(case)
     timings["loading_and_preprocessing"] = time()-started
-    disk_scheduling=get(config,"scheduling_storage_policy","cached_model_v1")=="disk_backed_native_v1"
+    isolated_scheduling=get(config,"scheduling_storage_policy","")=="disk_isolated_native_v1"
+    disk_scheduling=get(config,"scheduling_storage_policy","cached_model_v1") in
+        ("disk_backed_native_v1","disk_isolated_native_v1")
     spool_path=joinpath(output,"scheduling_spool")
     if disk_scheduling
         spool=JSON.parsefile(joinpath(spool_path,"manifest.json"))
@@ -260,6 +263,11 @@ function run_worker(case_path, output, config, work_deadline)
     if disk_scheduling
         timings["scheduling_native_phase"]=timings["scheduling"]
         timings["scheduling"]+=timings["scheduling_builder"]["process_wall_seconds"]
+        if isolated_scheduling
+            timings["scheduling_result_restore"]=timings["scheduling_native_phase"]
+            timings["scheduling_native_phase"]=JSON.parsefile(joinpath(output,"native_exit.json"))["process_wall_seconds"]
+            timings["scheduling"]+=timings["scheduling_native_phase"]
+        end
     end
     atomic_json(joinpath(output,"statistics","scheduling.json"),statistics["scheduling"])
     atomic_json(joinpath(output,"timing_snapshots","scheduling.json"),timings)

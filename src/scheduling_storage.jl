@@ -3,7 +3,7 @@
 # No row/column elimination, presolve, coefficient change, or external start.
 
 const SCHEDULING_STORAGE_POLICIES=("cached_model_v1","native_handoff_v1",
-    "native_handoff_trimmed_metadata_v1","disk_backed_native_v1")
+    "native_handoff_trimmed_metadata_v1","disk_backed_native_v1","disk_isolated_native_v1")
 const SCHEDULING_EXTRACTION_SYMBOLS=(
     :p_on_status,:p,:q,:p_balance_slack_pos,:p_balance_slack_neg,
     :q_balance_slack_pos,:q_balance_slack_neg,

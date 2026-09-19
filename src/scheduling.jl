@@ -50,7 +50,10 @@ function schedule_source_balances(input;optimizer,time_limit,set_silent=false,
     storage_policy in SCHEDULING_STORAGE_POLICIES || error("Unknown scheduling storage policy")
     storage_policy!="cached_model_v1" && seed_policy!="off" &&
         error("Native handoff is supported only for the original cold scheduling route")
-    if storage_policy=="disk_backed_native_v1"
+    if storage_policy=="disk_isolated_native_v1"
+        spool_path===nothing && error("Isolated scheduling requires a completed native process")
+        return restore_isolated_scheduling(input,spool_path;include_reserves=include_reserves,on_event=on_event)
+    elseif storage_policy=="disk_backed_native_v1"
         spool_path===nothing && error("Disk-backed scheduling requires an exited, unsolved builder")
         return solve_scheduling_spool(input,spool_path;optimizer=optimizer,time_limit=time_limit,
             deadline=deadline,set_silent=set_silent,include_reserves=include_reserves,on_event=on_event)

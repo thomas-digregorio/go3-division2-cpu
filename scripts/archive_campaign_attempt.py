@@ -54,6 +54,10 @@ def collect(attempt, *, root=ROOT):
             "agent_stop_reason.json",
             "resource_stop.json",
             "worker/solver_statistics.json", "worker/worker_error.json", "worker/schedule_balance.json",
+            "runtime_case_manifest.json", "worker/native_result.json", "worker/native_exit.json",
+            "worker/scheduling_builder.json", "worker/native_memory.jsonl",
+            "worker/native_console.log", "worker/statistics/scheduling_economic_native.log",
+            "worker/scheduling_spool/manifest.json", "worker/scheduling_spool/builder_exit.json",
             "worker/statistics/scheduling.json", "worker/timings.json",
             "verification/schedule/certificate.json", "verification/final/certificate.json")
     compact_files += tuple(str(p.relative_to(run)) for p in
