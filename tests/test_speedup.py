@@ -12,6 +12,22 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class SpeedupTests(unittest.TestCase):
+    def test_quality_guarded_recovery_preserves_registered_cold_contract(self):
+        config=json.loads((ROOT/"config/speedup_n06049_s003_r08.json").read_text())
+        previous=json.loads((ROOT/"config/speedup_n06049_s003_r07.json").read_text())
+        self.assertTrue(registered_budget(config))
+        self.assertEqual(config["ac_correction_policy"],"network_slp_quality_guarded_recovery_v6")
+        self.assertEqual(registered_latch(ROOT,config).name,"speedup_n06049_s003_r08_latch.json")
+        self.assertEqual({k for k in config if config[k]!=previous[k]},
+                         {"pilot_id","ac_correction_policy"})
+        self.assertEqual(config["total_seconds"],7200)
+        self.assertEqual(config["ac_correction_hour_seconds"],600)
+        for change in ({"cold_start":False},{"allow_pop_solution":True},
+                       {"ac_correction_policy":previous["ac_correction_policy"]},
+                       {"total_seconds":7201},{"evaluation_reserve_seconds":449}):
+            with self.assertRaises(ValueError):
+                registered_latch(ROOT,{**config,**change})
+
     def test_original_residual_guard_registration_preserves_model_and_budget(self):
         config=json.loads((ROOT/"config/speedup_n06049_s003_r07.json").read_text())
         previous=json.loads((ROOT/"config/speedup_n06049_s003_r06.json").read_text())

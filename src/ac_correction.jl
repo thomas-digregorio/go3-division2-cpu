@@ -7,8 +7,10 @@ const AC_CORRECTION_CONTINUOUS_POLICY="network_slp_continuous_then_round_v2"
 const AC_CORRECTION_HOT_REPAIR_POLICY="network_slp_continuous_hot_repair_v3"
 const AC_CORRECTION_CONTINUATION_POLICY="network_slp_preserved_primal_repair_v4"
 const AC_CORRECTION_ORIGINAL_GUARD_POLICY="network_slp_original_residual_guard_v5"
+const AC_CORRECTION_RECOVERY_POLICY="network_slp_quality_guarded_recovery_v6"
 const AC_CORRECTION_POLICIES=(AC_CORRECTION_POLICY,AC_CORRECTION_CONTINUOUS_POLICY,
-    AC_CORRECTION_HOT_REPAIR_POLICY,AC_CORRECTION_CONTINUATION_POLICY,AC_CORRECTION_ORIGINAL_GUARD_POLICY)
+    AC_CORRECTION_HOT_REPAIR_POLICY,AC_CORRECTION_CONTINUATION_POLICY,
+    AC_CORRECTION_ORIGINAL_GUARD_POLICY,AC_CORRECTION_RECOVERY_POLICY)
 
 correction_bounds(s::MOI.EqualTo)=(Float64(s.value),Float64(s.value))
 correction_bounds(s::MOI.LessThan)=(-Inf,Float64(s.upper))
@@ -36,7 +38,7 @@ function correction_oracle(model)
         c[positions[v]]=a
     end
     objective_sense(model)==MOI.MAX_SENSE || error("Correction expects source welfare maximization")
-    ai=Int[];aj=Int[];av=Float64[];al=Float64[];au=Float64[]
+    ai=Int[];aj=Int[];av=Float64[];al=Float64[];au=Float64[];linear_refs=ConstraintRef[]
     nl=MOI.Nonlinear.Model();nl_lower=Float64[];nl_upper=Float64[]
     nl_refs=ConstraintRef[]
     isempty(all_nonlinear_constraints(model)) || error("Legacy nonlinear rows require an explicit adapter")
@@ -46,6 +48,7 @@ function correction_oracle(model)
             row=constraint_object(cref);lo,hi=correction_bounds(row.set)
             if F==AffExpr
                 push!(al,lo-row.func.constant);push!(au,hi-row.func.constant)
+                push!(linear_refs,cref)
                 r=length(al)
                 for (v,a) in row.func.terms
                     push!(ai,r);push!(aj,positions[v]);push!(av,a)
@@ -64,7 +67,7 @@ function correction_oracle(model)
     pattern=MOI.jacobian_structure(evaluator)
     rows=Int[first(p) for p in pattern];cols=Int[last(p) for p in pattern]
     A=sparse(ai,aj,av,length(al),n)
-    (;model,variables=vars,positions,lb,ub,c,offset=objective.constant,A,al,au,
+    (;model,variables=vars,positions,lb,ub,c,offset=objective.constant,A,al,au,linear_refs,
       evaluator,nl_lower,nl_upper,nl_refs,jac_rows=rows,jac_cols=cols,
       build_seconds=time()-started)
 end

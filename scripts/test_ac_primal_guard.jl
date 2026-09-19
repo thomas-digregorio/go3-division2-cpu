@@ -15,6 +15,10 @@ include(joinpath(@__DIR__,"..","src","pilot_worker.jl"))
     @test_throws ErrorException install_ac_primal_guard!(m;policy="unknown",phase="rounded_shunts")
     @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,
         phase="rounded_shunts",residual_screen="unknown")
+    for interval in (0,-1,true,1.5)
+        @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,
+            phase="rounded_shunts",original_probe_interval=interval)
+    end
     @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="continuous_shunts")
     @test_throws ErrorException install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts")
     fix(shunt_step["s"],1;force=true)
@@ -46,7 +50,7 @@ end
         # converged to x^2. All primal tolerances remain unchanged.
         g=install_ac_primal_guard!(m;policy=AC_PRIMAL_GUARD_POLICY,phase="rounded_shunts",
             min_iterations=0,window=2,objective_relative_range=1e100,primal_tolerance=1e-10,
-            residual_screen="native_original_unscaled")
+            residual_screen="native_original_unscaled",original_probe_interval=1)
         optimize!(m);r=finish_ac_primal_guard!(m,g)
         @test termination_status(m)==MOI.INTERRUPTED
         @test r["stop_requested"] && r["returned_point_passed_internal_target"]
@@ -59,6 +63,7 @@ end
         @test r["callback_internal_gate_would_reject"]
         @test r["native_primal_residual_at_stop"]>1e-10
         @test r["residual_screen"]=="native_original_unscaled"
+        @test r["original_probe_interval"]==1
         @test r["returned_point_max_change"]<=1e-10
         @test value(fixed)==1.0
         @test ac_variable_bounds(m)==bounds

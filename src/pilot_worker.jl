@@ -296,6 +296,9 @@ function run_worker(case_path, output, config, work_deadline)
                 fallback_seconds=get(config,"ac_correction_fallback_seconds",12.0),
                 threads=config["highs_threads"],adaptive_budget=hour_budget["policy"]=="remaining_horizon_v1",
                 policy=ac_correction,lp_solver=get(config,"ac_correction_lp_solver","simplex"),
+                recovery_deadline=ac_correction==AC_CORRECTION_RECOVERY_POLICY && ac_recovery!="off" ?
+                    hour_budget["protected_recovery_deadline"] : hour_deadline,
+                recovery_enabled=ac_recovery!="off",
                 diagnostic_dir=joinpath(output,"native_correction","hour_"*lpad(string(i),4,'0')))
             ac_model.ext[:reserve_ac]["correction"]["hour_budget"]=hour_budget
         elseif ac_reserve_policy=="source_joint_reserves_in_ac_v1"
@@ -347,13 +350,16 @@ function run_worker(case_path, output, config, work_deadline)
         if correction_point!==nothing
             stats["warm_start"]="source voltages and current cold schedule for first interval; later intervals use previous locally screened primal from this attempt; fresh presolved native LP without primal/basis start; fallback uses complete same-attempt primal only; no supplied dual, basis, or external solution"
             if ac_correction in (AC_CORRECTION_HOT_REPAIR_POLICY,AC_CORRECTION_CONTINUATION_POLICY,
-                    AC_CORRECTION_ORIGINAL_GUARD_POLICY)
+                    AC_CORRECTION_ORIGINAL_GUARD_POLICY,AC_CORRECTION_RECOVERY_POLICY)
                 stats["warm_start"]="source voltages and current cold schedule; previous locally screened primal only within this attempt; fresh presolved native LP without primal/basis; rounded repair conditionally reuses audited complete same-interval primal/dual mapping; no external solution, cross-run start or basis; no dual certificate claimed"
-                if ac_correction in (AC_CORRECTION_CONTINUATION_POLICY,AC_CORRECTION_ORIGINAL_GUARD_POLICY)
+                if ac_correction in (AC_CORRECTION_CONTINUATION_POLICY,AC_CORRECTION_ORIGINAL_GUARD_POLICY,AC_CORRECTION_RECOVERY_POLICY)
                     stats["warm_start"]*="; previous-hour primal initialization options preserved through fallback rebuild; first native Ipopt iterate audited"
                 end
-                if ac_correction==AC_CORRECTION_ORIGINAL_GUARD_POLICY
+                if ac_correction in (AC_CORRECTION_ORIGINAL_GUARD_POLICY,AC_CORRECTION_RECOVERY_POLICY)
                     stats["warm_start"]*="; early-stop audit triggered by native original unscaled violations, not internal callback residual"
+                end
+                if ac_correction==AC_CORRECTION_RECOVERY_POLICY
+                    stats["warm_start"]*="; dual transfer gated by original relative stationarity; one bounded primal-only adaptive recovery if needed"
                 end
             end
         end

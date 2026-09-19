@@ -13,14 +13,17 @@ end
 function install_ac_primal_guard!(model;policy="off",phase,
         min_iterations=20,window=8,objective_relative_range=1e-7,
         primal_tolerance=AC_POINT_RESIDUAL_TOLERANCE,expected_start=nothing,
-        residual_screen="callback_internal")
+        residual_screen="callback_internal",original_probe_interval=5)
     policy in ("off",AC_PRIMAL_GUARD_POLICY,AC_CANDIDATE_GUARD_POLICY) || error("Unknown AC primal guard policy")
     residual_screen in ("callback_internal","native_original_unscaled") || error("Unknown primal residual screen")
+    original_probe_interval isa Integer && !(original_probe_interval isa Bool) && original_probe_interval>0 ||
+        error("Invalid original-residual probe interval")
     primal_tolerance isa Real && isfinite(primal_tolerance) &&
         0<primal_tolerance<=AC_POINT_RESIDUAL_TOLERANCE || error("Invalid internal primal target")
     record=Dict{String,Any}("policy"=>policy,"phase"=>phase,"enabled"=>policy!="off",
         "stop_requested"=>false,"callback_count"=>0,"audit_count"=>0,
         "audit_seconds"=>0.0,"source_bounds_changed"=>false,"residual_screen"=>residual_screen,
+        "original_probe_interval"=>original_probe_interval,
         "model_structure_changed"=>false,"external_solution_read"=>false,
         "certificate_scope"=>"local model feasibility only; objective stagnation is heuristic; no KKT or global optimality claim")
     accepted=Ref{Any}(nothing)
@@ -118,7 +121,7 @@ function install_ac_primal_guard!(model;policy="off",phase,
         record["native_original_row_count"]=inner.m
         residual
     end
-    last_audit=-5
+    last_audit=-5;last_probe=-original_probe_interval
     function callback(alg_mode,iteration,obj,inf_pr,args...)
         record["callback_count"]+=1
         try
@@ -139,10 +142,10 @@ function install_ac_primal_guard!(model;policy="off",phase,
             length(history)>window && popfirst!(history)
             (iteration>=min_iterations && length(history)==window &&
                 isfinite(inf_pr) && 0<=inf_pr &&
-                iteration-last_audit>=5 &&
                 ac_objective_stable(history,objective_relative_range)) || return true
             if residual_screen=="native_original_unscaled"
-                last_audit=iteration # Throttle even unsuccessful cheap probes.
+                iteration-last_probe>=original_probe_interval || return true
+                last_probe=iteration
                 original=current_original_residual()
                 record["last_probed_iteration"]=Int(iteration)
                 record["callback_internal_residual_at_probe"]=inf_pr
@@ -151,6 +154,9 @@ function install_ac_primal_guard!(model;policy="off",phase,
             else
                 inf_pr<=primal_tolerance || return true
             end
+            # Full failed audits may be throttled; cheap native probes need not
+            # skip a newly feasible iterate just because the last probe failed.
+            iteration-last_audit>=5 || return true
             last_audit=iteration
             began=time()
             # Read the accepted CURRENT native iterate, not the wrapper's last

@@ -104,13 +104,18 @@ end
     @test budget["hour_deadline"]<=6200.0-budget["future_hours_reserved_seconds"]
     @test budget["slp_seconds"]==45.0
     @test !budget["global_deadline_reset"]
+    @test budget["protected_recovery_deadline"]==700.0
+    @test budget["protected_recovery_deadline"]>=budget["hour_deadline"]
+    @test budget["protected_recovery_deadline"]<=6200.0-budget["future_hours_reserved_seconds"]
     last=correction_interval_budget(cfg,1,6200.0;now=100.0)
     @test last["hour_allowance_seconds"]==600.0
     tight=correction_interval_budget(cfg,48,110.0;now=100.0)
     @test 0<=tight["hour_allowance_seconds"]<=10/48+1e-12
     @test tight["hour_deadline"]<=110.0
+    @test tight["protected_recovery_deadline"]<=110.0-tight["future_hours_reserved_seconds"]+1e-12
     expired=correction_interval_budget(cfg,48,99.0;now=100.0)
     @test expired["hour_allowance_seconds"]==0
+    @test expired["protected_recovery_deadline"]==99.0
     @test correction_fallback_budget(120.0,300.0;now=100.0,adaptive=true)==120.0
     @test correction_fallback_budget(120.0,180.0;now=100.0,adaptive=true)==58.5
     @test correction_fallback_budget(120.0,99.0;now=100.0,adaptive=true)==0.0
@@ -120,6 +125,94 @@ end
     @test_throws ErrorException correction_interval_budget(cfg,0,6200.0;now=100.0)
     @test_throws ErrorException correction_interval_budget(merge(cfg,Dict("ac_correction_budget_policy"=>"unknown")),48,6200.0;now=100.0)
     @test_throws ErrorException correction_interval_budget(merge(cfg,Dict("ac_correction_share_multiplier"=>NaN)),48,6200.0;now=100.0)
+end
+
+@testset "GO3 original stationarity screens finite but unusable dual starts" begin
+    for kind in (:bound,:affine,:nonlinear)
+        m=Model(optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,
+            "tol"=>1e-10,"bound_relax_factor"=>0.0,"honor_original_bounds"=>"yes"))
+        @variable(m,0<=x<=5,start=1.0)
+        row=if kind==:bound
+            set_upper_bound(x,2.0);UpperBoundRef(x)
+        elseif kind==:affine
+            @constraint(m,2*x<=4.0)
+        else
+            @constraint(m,x^2<=4.0)
+        end
+        @objective(m,Max,x)
+        optimize!(m)
+        point=capture_complete_ac_primal(m);duals=capture_complete_ac_dual(m)
+        bounds=ac_variable_bounds(m);rows=all_constraints(m;include_variable_in_set_constraints=true)
+        good=correction_dual_quality(m,point,duals)
+        @test good["pass"] && good["relative_stationarity"]<1e-6
+        @test !good["dual_certificate_claimed"]
+        @test ac_primal_residual(m,point)<=1e-8
+        @test abs(duals.rows[row])>0.1
+        bad=(rows=copy(duals.rows),legacy=duals.legacy)
+        bad.rows[row]*=1e8
+        checked=correction_dual_quality(m,point,bad)
+        @test !checked["pass"] && checked["reason"]=="poor_stationarity"
+        @test checked["relative_stationarity"]>1.0
+        @test ac_variable_bounds(m)==bounds
+        @test all_constraints(m;include_variable_in_set_constraints=true)==rows
+        missing=(rows=copy(duals.rows),legacy=duals.legacy);delete!(missing.rows,row)
+        @test_throws ErrorException correction_dual_quality(m,point,missing)
+        @test_throws ErrorException correction_dual_quality(m,point,duals;relative_limit=NaN)
+        @test_throws ErrorException correction_dual_quality(m,
+            (variables=point.variables,values=Float64[]),duals)
+    end
+end
+
+@testset "GO3 bounded recovery clears bad duals and honors absolute budget" begin
+    m=Model();@variable(m,shunt_step[["s"]]==1.0)
+    @variable(m,0<=p<=3,start=0.0)
+    @constraint(m,p+shunt_step["s"]==1.4);@objective(m,Max,-p)
+    for c in all_constraints(m;include_variable_in_set_constraints=true)
+        set_dual_start_value(c,1e12)
+    end
+    point=(variables=all_variables(m),values=[v==p ? 0.0 : 1.0 for v in all_variables(m)])
+    bounds=ac_variable_bounds(m);rows=all_constraints(m;include_variable_in_set_constraints=true)
+    objective=objective_function(m)
+    opt=optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,"bound_relax_factor"=>0.0)
+    expired,skipped=correction_final_recovery!(m,opt,point;deadline=time()-1)
+    @test expired==point && !skipped["attempted"]
+    @test skipped["reason"]=="insufficient_protected_budget"
+    deadline=time()+30
+    repaired,phase=correction_final_recovery!(m,opt,point;deadline,seconds=10)
+    @test phase["attempted"] && phase["recovery_count"]==1
+    @test phase["protected_absolute_deadline"]==deadline && !phase["global_deadline_reset"]
+    @test !phase["start"]["dual_transfer_used"]
+    @test phase["start"]["options"]["mu_strategy"]=="adaptive"
+    @test phase["start"]["options"]["warm_start_init_point"]=="no"
+    @test phase["start"]["dual_starts_cleared"]==length(rows)
+    @test phase["native_primal_guard"]["native_initialization"]["complete_mapping"]
+    @test phase["native_primal_guard"]["original_probe_interval"]==1
+    @test ac_primal_residual(m,repaired)<=1e-10
+    @test ac_variable_bounds(m)==bounds
+    @test all_constraints(m;include_variable_in_set_constraints=true)==rows
+    @test JuMP.isequal_canonical(objective_function(m),objective)
+    unchanged,skipped=correction_final_recovery!(m,opt,repaired;deadline,seconds=10)
+    @test unchanged==repaired && !skipped["attempted"]
+    @test skipped["reason"]=="primal_target_already_passed"
+    @test_throws ErrorException correction_final_recovery!(m,opt,point;deadline=Inf)
+end
+
+@testset "GO3 dual seed refuses a native feasible point with poor multipliers" begin
+    m=Model(optimizer_with_attributes(Ipopt.Optimizer,"print_level"=>0,"max_iter"=>0,
+        "warm_start_init_point"=>"yes","bound_relax_factor"=>0.0,
+        "warm_start_bound_push"=>1e-10,"warm_start_bound_frac"=>1e-10))
+    @variable(m,0<=shunt_step[["s"]]<=2,start=0.4)
+    @variable(m,0<=p<=3,start=1.0)
+    row=@constraint(m,p+shunt_step["s"]==1.4);@objective(m,Max,-p)
+    set_dual_start_value(row,1e8)
+    optimize!(m)
+    point=capture_complete_ac_primal(m)
+    @test ac_primal_residual(m,point)<=1e-10
+    @test has_duals(m)
+    @test correction_dual_seed(m,point;screen_quality=true)===nothing
+    @test !m.ext[:correction_dual_quality]["pass"]
+    @test m.ext[:correction_dual_quality]["reason"]=="poor_stationarity"
+    @test m.ext[:correction_dual_quality]["relative_stationarity"]>1.0
 end
 
 @testset "GO3 native correction IPX with presolve and no inherited basis" begin
@@ -256,6 +349,29 @@ end
         seed=capture_ac_interval_start(m,input,i;point)
         previous=result
     end
+    # Force only the PRIMARY local allowance to be exhausted; a distinct
+    # protected recovery deadline remains. This uses the original tiny AC
+    # model, not a fabricated passing status or relaxed source limit.
+    fresh=GO3.tighten_bounds_using_ramp_limits(input,schedule.on_status,schedule.real_power)
+    rescue_deadline=time()+45
+    rescued,result=compute_corrected_ac(fresh,input,1;on_status=on0,real_power=p0,
+        reactive_power=Dict(u=>schedule.reactive_power[u][1] for u in input.sdd_ids),curves,
+        optimizer=opt,deadline=time()-1,recovery_deadline=rescue_deadline,
+        policy=AC_CORRECTION_RECOVERY_POLICY,max_rounds=0,fallback_seconds=10,lp_solver="ipx")
+    recovery=only(filter(p->p["phase"]=="bounded_primal_only_recovery",rescued.ext[:reserve_ac]["phases"]))
+    @test recovery["attempted"] && recovery["protected_absolute_deadline"]==rescue_deadline
+    @test !recovery["start"]["dual_transfer_used"]
+    @test ac_primal_residual(rescued,rescued.ext[:correction_point])<=1e-10
+    @test !ac_requires_stop(rescued.ext[:reserve_ac],true)
+    @test all(isinteger,[d["step"] for d in values(result["shunt"])])
+    @test raw==original
+    disabled,_=compute_corrected_ac(fresh,input,1;on_status=on0,real_power=p0,
+        reactive_power=Dict(u=>schedule.reactive_power[u][1] for u in input.sdd_ids),curves,
+        optimizer=opt,deadline=time()-1,recovery_deadline=time()+45,recovery_enabled=false,
+        policy=AC_CORRECTION_RECOVERY_POLICY,max_rounds=0,fallback_seconds=10,lp_solver="ipx")
+    @test !disabled.ext[:reserve_ac]["correction"]["final_recovery_enabled"]
+    @test ac_requires_stop(disabled.ext[:reserve_ac],true)
+    @test !any(p["phase"]=="bounded_primal_only_recovery" for p in disabled.ext[:reserve_ac]["phases"])
 end
 
 @testset "GO3 same-hour primal dual repair maps only shunt domain changes" begin

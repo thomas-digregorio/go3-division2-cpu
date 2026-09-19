@@ -166,6 +166,56 @@ def main():
         "--output",str(evidence/"original_guard_verification"),"--seconds","60"])
     original_guard_certificate=json.loads((evidence/"original_guard_verification/certificate.json").read_text())
     original_guard_stats=json.loads((evidence/"original_guard_worker/solver_statistics.json").read_text())
+    stage("tiny_guarded_recovery_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/primal_continuation_problem.json",str(evidence/"guarded_recovery_worker"),
+        "config/tiny_ac_correction_guarded_recovery.json",str(time.time()+120)],timeout=125)
+    stage("tiny_guarded_recovery_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/primal_continuation_problem.json",
+        "--solution",str(evidence/"guarded_recovery_worker/candidate_final.json"),
+        "--output",str(evidence/"guarded_recovery_verification"),"--seconds","60"])
+    guarded_recovery_certificate=json.loads((evidence/"guarded_recovery_verification/certificate.json").read_text())
+    guarded_recovery_stats=json.loads((evidence/"guarded_recovery_worker/solver_statistics.json").read_text())
+    guarded_probes=0
+    guarded_fallbacks=0
+    for interval in guarded_recovery_stats["ac_intervals"]:
+        correction=interval["reserve_ac"]["correction"]
+        if (correction["policy"]!="network_slp_quality_guarded_recovery_v6"
+                or correction["final_model_residual"]>1e-10
+                or correction["internal_primal_target"]!=1e-10
+                or correction["final_acceptance_tolerance"]!=1e-8
+                or not correction["final_recovery_enabled"]
+                or any(x!=round(x) for x in correction["final_discrete_settings"].values())):
+            raise RuntimeError("Guarded recovery changed original acceptance or discrete domains")
+        quality=correction["dual_initialization_quality"]
+        recoveries=[]
+        for phase in interval["reserve_ac"]["phases"]:
+            if phase["phase"]=="bounded_primal_only_recovery":
+                recoveries.append(phase)
+                if phase["attempted"] and (phase["global_deadline_reset"]
+                        or phase["recovery_count"]!=1 or phase["start"]["dual_transfer_used"]
+                        or phase["protected_absolute_deadline"]!=correction["protected_recovery_deadline"]):
+                    raise RuntimeError("Recovery changed its bounded primal-only contract")
+            if not phase.get("fallback"):
+                continue
+            guarded_fallbacks+=1
+            guard=phase["native_primal_guard"]
+            if (guard["residual_screen"]!="native_original_unscaled"
+                    or guard["original_probe_interval"]!=1
+                    or not guard["native_initialization"]["complete_mapping"]
+                    or guard["primal_residual_limit"]!=1e-10):
+                raise RuntimeError("Missing every-eligible-iteration original probe or complete native mapping")
+            guarded_probes+=guard["native_original_probe_count"]
+            if phase["start"]["dual_transfer_used"] and (not quality["pass"]
+                    or quality["relative_stationarity"]>quality["relative_limit"]
+                    or quality["dual_certificate_claimed"]):
+                raise RuntimeError("Unsuitable multipliers were transferred or called a certificate")
+            if guard["stop_requested"] and (guard["model_residual_at_stop"]>1e-10
+                    or not guard["returned_point_passed_internal_target"]):
+                raise RuntimeError("Guarded recovery bypassed its complete original-model audit")
+        if len(recoveries)!=1:
+            raise RuntimeError("Guarded recovery must make exactly one bounded eligibility decision per hour")
+    if not guarded_fallbacks or not guarded_probes:
+        raise RuntimeError("New integration did not exercise actual nonlinear fallbacks and residual probes")
     original_probes=0
     original_audits=0
     for interval in original_guard_stats["ac_intervals"]:
@@ -341,14 +391,15 @@ def main():
     for checked in (certificate,separated_certificate,hipo_certificate,dominance_certificate,
                     reserve_ac_certificate,source_features_certificate,recovery_certificate,cold_seed_certificate,
                     correction_certificate,continuous_correction_certificate,hot_repair_certificate,
-                    continuation_certificate,original_guard_certificate):
+                    continuation_certificate,original_guard_certificate,guarded_recovery_certificate):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
     coverage_records={}
     for name in ("worker","separated_worker","hipo_worker","dominance_worker",
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
-                 "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker"):
+                 "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
+                 "guarded_recovery_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -396,6 +447,8 @@ def main():
         "tiny_primal_continuation_statistics":continuation_stats,
         "tiny_original_residual_guard_certificate":original_guard_certificate,
         "tiny_original_residual_guard_statistics":original_guard_stats,
+        "tiny_guarded_recovery_certificate":guarded_recovery_certificate,
+        "tiny_guarded_recovery_statistics":guarded_recovery_stats,
         "tiny_worker_exact_interval_coverage":coverage_records,
         "tiny_source_features_scheduling":feature_stats,
         "tiny_source_features_ac_statistics":source_ac_stats,

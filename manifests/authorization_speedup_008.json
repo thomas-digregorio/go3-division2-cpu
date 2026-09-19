@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "user_authorization": "The user authorized multiple cold iterations and said 'continue to iterate i said'. Continue on the 6049-bus speedup route; larger networks remain paused. After r07 failed rounded hour 3, gate same-hour dual transfers on an original-model relative stationarity heuristic; preserve the complete validated same-attempt primal when rejecting bad multipliers. Probe original residuals at each eligible iteration, and allow one primal-only adaptive-barrier recovery within the existing 600-second maximum hourly cap, future-hour reserves and unchanged absolute global deadline. No source constraints, tolerances, costs, penalties, scheduling settings or final exhaustive acceptance change. No earlier run supplies initialization. Two-hour ceiling; 30-minute soft target.",
+  "ongoing_iteration_authorized": true,
+  "maximum_full_runs": 1,
+  "maximum_full_runs_scope": "This registered attempt only, not the overall iterative work",
+  "target_seconds": 1800,
+  "hard_safety_limit_seconds": 7200,
+  "correction_policy": "network_slp_quality_guarded_recovery_v6",
+  "correction_lp_solver": "ipx",
+  "identity": {
+    "pilot_id": "speedup_n06049_s003_r08",
+    "network": "C3E4N06049D2",
+    "scenario": "003",
+    "input_sha256": "312b066e51e4e058d0f2e1a96ea32c8f30a3f1dbfc9c4266b6d5d73af4206e41"
+  },
+  "baseline": {
+    "numerical_revision": "cfe7ea05d834e6f3344ee4a3176d31b2d4705811",
+    "result_path": "evidence/campaign/campaign_n06049_s003_r03/result.json",
+    "result_sha256": "d98a8349c8dc776847b4c303c861792c0633a27f078a371063e7bd77ef3ff943",
+    "completion_path": "evidence/campaign/campaign_n06049_s003_r03/completion.json",
+    "completion_sha256": "2801465d4e2ee1b996e6d0ab0d629fc243b62e1f1c616162122cb0f3b0623372",
+    "configuration_path": "config/campaign_n06049_s003_r03.json",
+    "configuration_sha256": "4e4e07cb690697fb73caadfbe00ddee3ec754dab8c8b208bce0e11eb91bb5b7a",
+    "comparison_path": "manifests/campaign/published_C3E4N06049D2_s003.json",
+    "comparison_sha256": "6dfec67611fe1bec26ee561cfc96463c0d204d9479e71eb1de74a8ac9659a7bf"
+  },
+  "previous_attempt": {
+    "result_path": "evidence/speedup/speedup_n06049_s003_r07/result.json",
+    "result_sha256": "8c716f5b7485d08f281d42ee8c3079d5cf2a746ebc5ead4774b181d7ee12251c",
+    "completion_path": "evidence/speedup/speedup_n06049_s003_r07/completion.json",
+    "completion_sha256": "8f2eb9650fa2dddfc1b44953e81c72160cea12533d787cee38dccf9162cd5d4d"
+  },
+  "sixth_best_eligible_score": 597463992.571312,
+  "required_minimum_score": 537717593.3141807,
+  "required_hours": 48,
+  "required_contingency_hours": 187296,
+  "saved_solution_may_initialize": false,
+  "commercial_solver_allowed": false,
+  "gpu_allowed": false
+}

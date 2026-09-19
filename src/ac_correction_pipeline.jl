@@ -30,6 +30,7 @@ function correction_interval_budget(config,remaining_intervals,deadline;now=time
         "remaining_refinement_seconds"=>available,"fair_share_seconds"=>fair,
         "future_hours_reserved_seconds"=>future_reserve,"hour_allowance_seconds"=>allowance,
         "hour_deadline"=>now+allowance,"slp_seconds"=>slp,
+        "protected_recovery_deadline"=>min(deadline,now+min(cap,max(0.0,available-future_reserve))),
         "global_deadline_reset"=>false)
 end
 
@@ -140,7 +141,7 @@ function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,
         phase="fixed_shunt_fallback",max_iter=120,allow_unfixed_shunts=false,barrier_strategy="adaptive",
         primal_target=AC_POINT_RESIDUAL_TOLERANCE,continuous_candidate_guard=false,dual_seed=nothing,
         preserve_primal_continuation=false,audit_native_initialization=false,
-        guard_residual_screen="callback_internal")
+        guard_residual_screen="callback_internal",original_probe_interval=5)
     started=time()
     barrier_strategy in ("adaptive","monotone") || error("Unknown correction barrier strategy")
     isfinite(primal_target) && 0<primal_target<=AC_POINT_RESIDUAL_TOLERANCE || error("Invalid correction fallback target")
@@ -204,7 +205,8 @@ function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,
         (variables=all_variables(model),values=Float64[start_value(v) for v in all_variables(model)]) : nothing
     guard=install_ac_primal_guard!(model;policy=guard_policy,phase=guard_phase,
         min_iterations=0,window=2,objective_relative_range=fixed_shunts ? 1.0 : 1e-7,
-        primal_tolerance=primal_target,expected_start,residual_screen=guard_residual_screen)
+        primal_tolerance=primal_target,expected_start,residual_screen=guard_residual_screen,
+        original_probe_interval)
     optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
     guard_record=finish_ac_primal_guard!(model,guard)
     has_values(model) || return point,Dict("phase"=>phase,"complete_finite_point"=>true,
@@ -225,19 +227,87 @@ function correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=12.0,
         "rollback"=>!accept,"certificate_scope"=>"primal feasibility only, not optimality"))
 end
 
-function correction_dual_seed(model,point;primal_target=1e-10)
+function correction_dual_quality(model,point,multipliers;relative_limit=1e-3)
+    began=time()
+    relative_limit isa Real && !(relative_limit isa Bool) && isfinite(relative_limit) &&
+        relative_limit>0 || error("Invalid dual-start quality limit")
+    point.variables==all_variables(model) && length(point.values)==length(point.variables) &&
+        all(isfinite,point.values) || error("Invalid dual-quality primal map")
+    rows=all_constraints(model;include_variable_in_set_constraints=true)
+    Set(rows)==Set(keys(multipliers.rows)) && all(isfinite,values(multipliers.rows)) ||
+        error("Incomplete/nonfinite dual-quality multiplier map")
+    o=correction_oracle(model)
+    # MOI constraint duals use the minimization Lagrangian convention,
+    # independently of objective sense. This source model maximizes welfare.
+    gradient=-copy(o.c)
+    gradient.-=transpose(o.A)*[multipliers.rows[c] for c in o.linear_refs]
+    jac=zeros(length(o.jac_rows));MOI.eval_constraint_jacobian(o.evaluator,jac,point.values)
+    all(isfinite,jac) || error("Nonfinite source Jacobian in dual quality check")
+    for k in eachindex(jac)
+        gradient[o.jac_cols[k]]-=jac[k]*multipliers.rows[o.nl_refs[o.jac_rows[k]]]
+    end
+    for v in point.variables
+        for c in (is_fixed(v) ? (FixRef(v),) :
+                ((has_lower_bound(v) ? (LowerBoundRef(v),) : ())...,
+                 (has_upper_bound(v) ? (UpperBoundRef(v),) : ())...))
+            gradient[o.positions[v]]-=multipliers.rows[c]
+        end
+    end
+    scale=max(1.0,maximum(abs,o.c;init=0.0))
+    finite=all(isfinite,gradient)
+    residual=finite ? maximum(abs,gradient;init=0.0) : nothing
+    relative=finite ? residual/scale : nothing
+    Dict("pass"=>finite && relative<=relative_limit,
+        "policy"=>"original_relative_stationarity_initialization_screen_v1",
+        "stationarity_infinity_norm"=>residual,"objective_gradient_scale"=>scale,
+        "relative_stationarity"=>relative,"relative_limit"=>relative_limit,
+        "reason"=>!finite ? "nonfinite_stationarity" : relative>relative_limit ? "poor_stationarity" : "usable_initialization",
+        "wall_seconds"=>time()-began,
+        "scope"=>"Warm-start heuristic only; not full KKT, dual feasibility or global bound certification",
+        "dual_certificate_claimed"=>false,"source_bounds_changed"=>false)
+end
+
+function correction_dual_seed(model,point;primal_target=1e-10,screen_quality=false)
+    if screen_quality
+        model.ext[:correction_dual_quality]=Dict("pass"=>false,"reason"=>"no_matching_feasible_native_primal",
+            "dual_certificate_claimed"=>false)
+    end
     has_values(model) && has_duals(model) || return nothing
     residual=ac_primal_residual(model,point)
     residual<=primal_target || return nothing
     native_point=capture_complete_ac_primal(model)
     native_point.variables==point.variables && native_point.values==point.values || return nothing
     multipliers=capture_complete_ac_dual(model)
+    if screen_quality
+        quality=correction_dual_quality(model,point,multipliers)
+        model.ext[:correction_dual_quality]=quality
+        quality["pass"] || return nothing
+    end
     removed=Set{ConstraintRef}()
     for v in model[:shunt_step]
         has_lower_bound(v) && push!(removed,LowerBoundRef(v))
         has_upper_bound(v) && push!(removed,UpperBoundRef(v))
     end
     (point=multipliers,removed_bounds=removed,primal_residual=residual)
+end
+
+function correction_final_recovery!(model,optimizer,point;deadline,seconds=120.0,primal_target=1e-10)
+    isfinite(deadline) || error("Recovery requires a finite protected absolute deadline")
+    residual=ac_primal_residual(model,point)
+    allowance=correction_fallback_budget(seconds,deadline)
+    if residual<=primal_target || allowance<=5.0
+        return point,Dict("phase"=>"bounded_primal_only_recovery","attempted"=>false,
+            "reason"=>residual<=primal_target ? "primal_target_already_passed" : "insufficient_protected_budget",
+            "max_primal_residual"=>residual,"wall_seconds"=>0.0,"complete_finite_point"=>true)
+    end
+    all(is_fixed,model[:shunt_step]) || error("Final recovery requires fixed original-domain shunts")
+    returned,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds=allowance,max_iter=600,
+        phase="bounded_primal_only_recovery",barrier_strategy="adaptive",primal_target,
+        audit_native_initialization=true,guard_residual_screen="native_original_unscaled",original_probe_interval=1)
+    merge!(phase,Dict("attempted"=>true,"protected_absolute_deadline"=>deadline,
+        "global_deadline_reset"=>false,"recovery_count"=>1,
+        "recovery_policy"=>"one_adaptive_primal_only_solve_from_same_attempt"))
+    returned,phase
 end
 
 function round_correction_shunts!(model,point,shunt_domains)
@@ -256,7 +326,7 @@ end
 function continuous_then_rounded_correction(model,optimizer,point,shunt_domains;
         deadline,slp_seconds,lp_seconds,max_rounds,fallback_seconds,threads,diagnostic_dir,lp_solver,
         hot_repair=false,preserve_primal_continuation=false,audit_native_initialization=false,
-        guard_residual_screen="callback_internal")
+        guard_residual_screen="callback_internal",guarded_recovery=false)
     phases=Any[]
     primal_target=1e-10 # stricter internal search target, not a changed final tolerance
     function linear_stage(point,name,seconds)
@@ -279,23 +349,27 @@ function continuous_then_rounded_correction(model,optimizer,point,shunt_domains;
         point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds,max_iter=600,
             phase="continuous_shunt_fallback",allow_unfixed_shunts=true,barrier_strategy="monotone",primal_target,
             continuous_candidate_guard=hot_repair,preserve_primal_continuation,audit_native_initialization,
-            guard_residual_screen)
+            guard_residual_screen,original_probe_interval=guarded_recovery ? 1 : 5)
         push!(phases,phase)
     end
     continuous_residual=ac_primal_residual(model,point)
-    dual_seed=hot_repair ? correction_dual_seed(model,point;primal_target) : nothing
+    dual_seed=hot_repair ? correction_dual_seed(model,point;primal_target,screen_quality=guarded_recovery) : nothing
+    primal_repair=guarded_recovery && continuous_residual<=primal_target
+    guarded_recovery && correction_phase_event("dual_initialization_quality","screen";
+        details=get(model.ext,:correction_dual_quality,Dict("pass"=>false,"reason"=>"no_dual_seed")))
     point,settings=round_correction_shunts!(model,point,shunt_domains)
     correction_phase_event("round_shunts","complete";details=Dict("count"=>length(settings),
         "continuous_candidate_residual"=>continuous_residual,
         "rounded_candidate_residual"=>ac_primal_residual(model,point),
         "continuous_candidate_is_final"=>false,"same_interval_dual_seed_available"=>dual_seed!==nothing))
-    if dual_seed===nothing
+    if dual_seed===nothing && !primal_repair
         point=linear_stage(point,"rounded_shunt_correction",min(slp_seconds,max(0.0,0.4*(deadline-time()))))
     else
         # The two preceding full attempts obtained no accepted rounded LP step.
         # Use the already-audited same-hour NLP initialization directly instead.
         push!(phases,Dict("phase"=>"rounded_shunt_correction","wall_seconds"=>0.0,
-            "termination"=>"skipped_for_same_interval_primal_dual_repair",
+            "termination"=>dual_seed===nothing ? "skipped_for_validated_same_interval_primal_repair" :
+                "skipped_for_same_interval_primal_dual_repair",
             "max_primal_residual"=>ac_primal_residual(model,point),"accepted_steps"=>0,"rounds"=>Any[],
             "dual_certificate_claimed"=>false))
     end
@@ -303,7 +377,8 @@ function continuous_then_rounded_correction(model,optimizer,point,shunt_domains;
         seconds=correction_fallback_budget(fallback_seconds,deadline)
         point,phase=correction_ipopt_fallback!(model,optimizer,point;deadline,seconds,max_iter=600,
             phase="rounded_shunt_fallback",barrier_strategy="monotone",primal_target,dual_seed,
-            preserve_primal_continuation,audit_native_initialization,guard_residual_screen)
+            preserve_primal_continuation=preserve_primal_continuation || primal_repair,
+            audit_native_initialization,guard_residual_screen,original_probe_interval=guarded_recovery ? 1 : 5)
         push!(phases,phase)
     end
     point,phases,settings
@@ -312,7 +387,7 @@ end
 function compute_corrected_ac(working,source,i;on_status,real_power,reactive_power,curves,
         optimizer,deadline,interval_seed=nothing,slp_seconds=15.0,lp_seconds=4.0,
         max_rounds=8,fallback_seconds=12.0,threads=4,diagnostic_dir=nothing,adaptive_budget=false,
-        policy=AC_CORRECTION_POLICY,lp_solver="simplex")
+        policy=AC_CORRECTION_POLICY,lp_solver="simplex",recovery_deadline=deadline,recovery_enabled=true)
     policy in AC_CORRECTION_POLICIES || error("Unknown correction pipeline policy")
     began=time()
     model,reserve=build_reserve_aware_ac(working,source,i;on_status,real_power,curves)
@@ -332,16 +407,22 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
     built=time()-began
     revisited=false
     if policy in (AC_CORRECTION_CONTINUOUS_POLICY,AC_CORRECTION_HOT_REPAIR_POLICY,
-            AC_CORRECTION_CONTINUATION_POLICY,AC_CORRECTION_ORIGINAL_GUARD_POLICY)
+            AC_CORRECTION_CONTINUATION_POLICY,AC_CORRECTION_ORIGINAL_GUARD_POLICY,AC_CORRECTION_RECOVERY_POLICY)
         point,phases,settings=continuous_then_rounded_correction(model,optimizer,point,shunt_domains;
             deadline,slp_seconds,lp_seconds,max_rounds,fallback_seconds,threads,diagnostic_dir,lp_solver,
             hot_repair=policy in (AC_CORRECTION_HOT_REPAIR_POLICY,AC_CORRECTION_CONTINUATION_POLICY,
-                AC_CORRECTION_ORIGINAL_GUARD_POLICY),
+                AC_CORRECTION_ORIGINAL_GUARD_POLICY,AC_CORRECTION_RECOVERY_POLICY),
             preserve_primal_continuation=policy in (AC_CORRECTION_CONTINUATION_POLICY,
-                AC_CORRECTION_ORIGINAL_GUARD_POLICY) && interval_seed!==nothing,
-            audit_native_initialization=policy in (AC_CORRECTION_CONTINUATION_POLICY,AC_CORRECTION_ORIGINAL_GUARD_POLICY),
-            guard_residual_screen=policy==AC_CORRECTION_ORIGINAL_GUARD_POLICY ?
-                "native_original_unscaled" : "callback_internal")
+                AC_CORRECTION_ORIGINAL_GUARD_POLICY,AC_CORRECTION_RECOVERY_POLICY) && interval_seed!==nothing,
+            audit_native_initialization=policy in (AC_CORRECTION_CONTINUATION_POLICY,AC_CORRECTION_ORIGINAL_GUARD_POLICY,
+                AC_CORRECTION_RECOVERY_POLICY),
+            guard_residual_screen=policy in (AC_CORRECTION_ORIGINAL_GUARD_POLICY,AC_CORRECTION_RECOVERY_POLICY) ?
+                "native_original_unscaled" : "callback_internal",guarded_recovery=policy==AC_CORRECTION_RECOVERY_POLICY)
+        if policy==AC_CORRECTION_RECOVERY_POLICY && recovery_enabled
+            point,recovery=correction_final_recovery!(model,optimizer,point;
+                deadline=recovery_deadline,seconds=fallback_seconds)
+            push!(phases,recovery)
+        end
     else
     correction_phase_event("linearized_correction","begin";details=Dict(
         "budget_seconds"=>slp_seconds,"remaining_hour_seconds"=>deadline-time()))
@@ -414,6 +495,12 @@ function compute_corrected_ac(working,source,i;on_status,real_power,reactive_pow
         "source_bounds_changed"=>false,"sequential_temporal_bounds"=>true,
         "final_model_residual"=>residual,"threads"=>threads,"external_solution_read"=>false)
     model.ext[:reserve_ac]["correction"]["adaptive_hour_budget"]=adaptive_budget
+    if policy==AC_CORRECTION_RECOVERY_POLICY
+        model.ext[:reserve_ac]["correction"]["dual_initialization_quality"]=
+            get(model.ext,:correction_dual_quality,Dict("pass"=>false,"reason"=>"no_dual_seed"))
+        model.ext[:reserve_ac]["correction"]["protected_recovery_deadline"]=recovery_deadline
+        model.ext[:reserve_ac]["correction"]["final_recovery_enabled"]=recovery_enabled
+    end
     lookup=Dict(zip(point.variables,point.values))
     model.ext[:reserve_ac]["reserve_cost_at_solution"]=value(v->lookup[v],reserve.cost)
     result=extract_ac_correction_result(model,working,on_status,real_power,point)
