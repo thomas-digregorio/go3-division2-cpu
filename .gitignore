@@ -13,3 +13,4 @@ __pycache__/
 !evidence/components/dc_support_20260919/*.log
 !evidence/components/reserve_storage_20260919/*.log
 !evidence/components/official_batches_20260919/*.log
+!evidence/components/scheduling_metadata_20260919/*.log

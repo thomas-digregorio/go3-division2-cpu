@@ -301,3 +301,16 @@ the production event sequence. All 2,214 existing scheduling-storage assertions
 also pass. Registered r02 differs from r01 only in attempt ID and the storage
 policy. Full tiny pipeline regressions and a fresh freeze/push/preflight remain
 required before its one cold full-case attempt.
+
+The fresh gate `tmp/pilot002_component_gate_i0immdyy` subsequently completed
+with exit 0: **54 stages, 119 Python tests, 6,240 Julia assertions**, all passing
+(1,288.062 seconds summed stage time). Its combined trimmed-scheduling,
+bounded-reserve, AC/DC and batched-verification pipeline passed all **9/9**
+checks with `feas=1`, `phys_feas=1`, and independent hard pass. All 153 model
+variables remain; only 329 construction-container entries were unregistered.
+The solution is byte-identical to the untrimmed baseline: SHA256
+`1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`.
+Objective and residuals are unchanged from the preceding tiny certificate.
+Hash-verified compact evidence is in
+`evidence/components/scheduling_metadata_20260919/`. Full-size memory savings
+and r02 feasibility are not established by these tiny tests.
