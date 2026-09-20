@@ -19,3 +19,5 @@ __pycache__/
 !evidence/diagnostics/reserve_partition_20260920/**/*.log
 !evidence/components/reserve_benders_loop_20260920/**/*.log
 !evidence/components/reserve_benders_loop_20260920/*.log
+!evidence/components/reserve_benders_full_gate_20260920/**/*.log
+!evidence/components/reserve_benders_full_gate_20260920/*.log

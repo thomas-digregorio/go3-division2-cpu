@@ -15,12 +15,13 @@ from run_pilot import JULIA, runtime_environment
 from run_disk_worker import compact_stage, reserve_partition_stage
 
 
-def audit_loop(output, *, minimum_rounds=1, expected=None, phase_one=False):
+def audit_loop(output, *, minimum_rounds=1, expected=None, phase_one=False, require_gap=True):
     summary=json.loads((output/"reserve_decomposition/summary.json").read_text())
     native=json.loads((output/"native_result.json").read_text())
     rows=summary["rounds"]
-    if (not summary["complete"] or not summary["scheduling_gap_met"] or len(rows)<minimum_rounds
-            or summary["relative_gap"]>1e-6 or not native["storage"]["original_scheduling_audit"]["pass"]):
+    if (not summary["complete"] or len(rows)<minimum_rounds
+            or not native["storage"]["original_scheduling_audit"]["pass"]
+            or (require_gap and (not summary["scheduling_gap_met"] or summary["relative_gap"]>1e-6))):
         raise AssertionError("Tiny decomposition did not converge with a source-feasible incumbent")
     if expected is not None and abs(summary["objective"]-expected)>1e-8:
         raise AssertionError("Benders solution differs from analytically proved joint optimum")
@@ -83,9 +84,14 @@ def main(integration_only=False):
         stage("certificate",common+["scripts/test_reserve_benders_certificate.jl"])
         stage("runtime",common+["scripts/test_reserve_benders_runtime.jl"])
         stage("python",[sys.executable,"-m","unittest","discover","-s","tests","-v"])
-    for kind in ("cost_feedback","phase_one"):
+    for kind in ("cost_feedback","phase_one","bounded_incumbent"):
         output=evidence/kind;output.mkdir()
-        row=stage(kind+"_build",common+["scripts/build_reserve_benders_fixture.jl",kind,str(output),str(config)])
+        fixture_kind=kind;fixture_config=config
+        if kind=="bounded_incumbent":
+            fixture_kind="cost_feedback"
+            settings=json.loads(config.read_text());settings["scheduling_benders_max_rounds"]=1
+            fixture_config=output/"config.json";atomic_json(fixture_config,settings,exclusive=True)
+        row=stage(kind+"_build",common+["scripts/build_reserve_benders_fixture.jl",fixture_kind,str(output),str(fixture_config)])
         manifest=output/"scheduling_spool/manifest.json"
         atomic_json(output/"scheduling_spool/builder_exit.json",{"pid":row["pid"],"returncode":0,
             "exited_before_native_launch":True,"process_wall_seconds":row["seconds"],
@@ -93,10 +99,18 @@ def main(integration_only=False):
         compact_stage(common,output/"scheduling_spool",output,time.time()+120)
         reserve_partition_stage(common,output/"scheduling_spool",output,time.time()+120)
         stage(kind+"_loop",[sys.executable,"scripts/run_reserve_benders.py",str(JULIA),str(output),
-            str(config),str(time.time()+180)])
+            str(fixture_config),str(time.time()+180)])
         expected=json.loads((output/"expected.json").read_text())
-        results[kind]=audit_loop(output,minimum_rounds=expected["expected_minimum_rounds"],
-            expected=expected["objective"],phase_one=kind=="phase_one")
+        if kind=="bounded_incumbent":
+            results[kind]=audit_loop(output,expected=-3.0,require_gap=False)
+            summary=json.loads((output/"reserve_decomposition/summary.json").read_text())
+            native=json.loads((output/"native_result.json").read_text())
+            if (summary["reason"]!="round_limit" or summary["scheduling_gap_met"]
+                    or summary["relative_gap"]!=1.0 or native["statistics"]["termination"]!="ITERATION_LIMIT"):
+                raise AssertionError("Bounded feasible incumbent was incorrectly called gap-certified")
+        else:
+            results[kind]=audit_loop(output,minimum_rounds=expected["expected_minimum_rounds"],
+                expected=expected["objective"],phase_one=kind=="phase_one")
     output=evidence/"dc_worker"
     stage("tiny_source_ac_pipeline",[sys.executable,"scripts/run_disk_worker.py",str(JULIA),
         "tmp/official_tiny/dc_problem.json",str(output),str(config),str(time.time()+240)],seconds=245)

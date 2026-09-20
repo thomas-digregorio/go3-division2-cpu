@@ -1,0 +1,6 @@
+Test Summary:                                        | Pass  Total   Time
+GO3 startup window exact half-open source membership |   32     32  11.4s
+Test Summary:                                           | Pass  Total  Time
+GO3 maximum startups cannot be repaired by soft balance |    5      5  1.1s
+Test Summary:                                               | Pass  Total  Time
+GO3 source P-Q capability survives scheduling and AC models |    9      9  0.0s

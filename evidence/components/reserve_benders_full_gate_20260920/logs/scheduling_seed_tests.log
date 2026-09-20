@@ -1,0 +1,213 @@
+Test Summary:                                            | Pass  Total  Time
+GO3 cold seed exact domain restoration including failure |   25     25  4.1s
+Test Summary:                                             | Pass  Total   Time
+GO3 cold seed source objective constraints and extraction |   29     29  12.8s
+GO3_SCHEDULING_MODEL {"reserve_policy":"joint_scheduling_then_full_reallocation","constraints_excluding_variable_bounds":181,"source_pq_bound_devices":1,"variables":153,"build_seconds":0.002000093460083008,"include_reserves":true,"consumer_online_dominance":{"fixed_online_variables":3,"generator_commitments_changed":0,"policy":"proven_zero_minimum_consumer_online_dominance_v1","eligible_consumers":1,"source_values_changed":false,"rejected_consumers":{},"eligible_consumer_uids":["d"]},"source_startup_windows":{"membership":"begin-tol <= interval_start < end-tol","time_equality_tolerance":1.0e-6,"source_values_changed":false,"windows":4}}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+MIP has 181 rows; 153 cols; 517 nonzeros; 18 integer variables (15 binary)
+Coefficient ranges:
+  Matrix  [1e-02, 3e+00]
+  Cost    [2e-01, 1e+00]
+  Bound   [5e-01, 4e+00]
+  RHS     [5e-01, 8e+00]
+Presolving model
+61 rows, 44 cols, 156 nonzeros 0s
+25 rows, 16 cols, 67 nonzeros 0s
+21 rows, 12 cols, 50 nonzeros 0s
+19 rows, 11 cols, 46 nonzeros 0s
+Presolve reductions: rows 19(-162); columns 11(-142); nonzeros 46(-471) 
+Objective function is integral with scale 4
+
+Solving MIP model with:
+   19 rows
+   11 cols (7 binary, 0 integer, 0 implied int., 4 continuous, 0 domain fixed)
+   46 nonzeros
+   Thread count 4 (of 24 threads). Using 1 max workers. Parallel search off
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   inf             0.5                Large        0      0      0         0     0.0s
+ T       0       0         0 100.00%   1.75            1.75               0.00%        0      0      0         4     0.0s
+         1       0         1 100.00%   1.75            1.75               0.00%        0      0      0         4     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1.75
+  Dual bound        1.75
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      0.000852942466736
+  Solution status   feasible
+                    1.75 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01
+                    0.00 (Presolve)
+                    0.01 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     4
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 181 rows; 153 cols; 517 nonzeros
+Coefficient ranges:
+  Matrix  [1e-02, 3e+00]
+  Cost    [3e-03, 1e+03]
+  Bound   [5e-01, 4e+00]
+  RHS     [5e-01, 8e+00]
+Presolving model
+43 rows, 48 cols, 125 nonzeros 0s
+33 rows, 44 cols, 120 nonzeros 0s
+Dependent equations search running on 1 equations with time limit of 1.00s
+Dependent equations search removed 0 rows and 0 nonzeros in 0.00s (limit = 1.00s)
+32 rows, 43 cols, 130 nonzeros 0s
+Presolve reductions: rows 32(-149); columns 43(-110); nonzeros 130(-387) 
+Solving the presolved LP
+IPX model has 32 rows, 44 columns and 131 nonzeros
+Input
+    Number of variables:                                44
+    Number of free variables:                           0
+    Number of constraints:                              32
+    Number of equality constraints:                     2
+    Number of matrix entries:                           131
+    Matrix range:                                       [1e-02, 1e+00]
+    RHS range:                                          [2e-01, 3e+00]
+    Objective range:                                    [3e-03, 1e+03]
+    Bounds range:                                       [5e-01, 3e+00]
+Preprocessing
+    Dualized model:                                     no
+    Number of dense columns:                            0
+    Range of scaling factors:                           [1.00e+00, 1.00e+00]
+    Scaled cost norm:                                   1010
+    Scaled bounds norm:                                 3
+IPX version 1.0
+Interior point solve
+ Iter       primal obj         dual obj       pinf       dinf       gap      time
+   0   -5.51026095e+02  -2.24927665e+04   6.89e-01   8.18e-01  1.90e+00       0.0
+   1    6.26002680e+03  -1.78126457e+04   6.26e-02   1.02e-01  4.17e+00       0.0
+   2    7.72931219e+02  -5.34031318e+03   9.82e-03   1.08e-02  2.68e+00       0.0
+   3   -6.33396051e+02  -2.96819211e+03   3.92e-03   3.38e-03  1.30e+00       0.0
+   4   -1.47540927e+03  -2.16778451e+03   9.06e-04   8.78e-04  3.80e-01       0.0
+ Constructing starting basis...
+ Iter       primal obj         dual obj       pinf       dinf       gap      time
+   5   -1.67528164e+03  -1.81291575e+03   1.34e-04   8.78e-10  7.89e-02       0.0
+   6   -1.73006417e+03  -1.74305301e+03   1.55e-06   7.98e-11  7.48e-03       0.0
+   7   -1.73231389e+03  -1.73300862e+03   1.55e-12   5.17e-12  4.01e-04       0.0
+   8   -1.73231488e+03  -1.73242523e+03   1.67e-16   7.84e-13  6.37e-05       0.0
+   9   -1.73231494e+03  -1.73233478e+03   1.11e-16   2.81e-14  1.14e-05       0.0
+  10   -1.73232069e+03  -1.73232545e+03   8.33e-17   2.54e-15  2.74e-06       0.0
+  11   -1.73232245e+03  -1.73232342e+03   1.11e-16   3.05e-16  5.57e-07       0.0
+  12   -1.73232285e+03  -1.73232296e+03   5.55e-17   7.29e-17  6.38e-08       0.0
+  13   -1.73232290e+03  -1.73232290e+03   5.55e-17   9.11e-17  2.83e-09       0.0
+  14*  -1.73232290e+03  -1.73232290e+03   1.11e-16   5.36e-17  4.82e-11       0.0
+Summary
+    Runtime:                                            0.00s
+    Status interior point solve:                        optimal
+    Status crossover:                                   not run
+    objective value:                                    -1.73232290e+03
+    interior solution primal residual (abs/rel):        2.22e-16 / 5.55e-17
+    interior solution dual residual (abs/rel):          5.68e-14 / 5.62e-17
+    interior solution objective gap (abs/rel):          8.35e-08 / 4.82e-11
+Ipx: IPM       optimal
+
+Performed postsolve
+WARNING: Solution optimality conditions
+num/max      0 / 1.03e-16 (relative      0 / 2.59e-17) primal infeasibilities     (tolerance = 1e-09)
+num/max     75 / 1.01e+03 (relative     72 /     1.01)   dual infeasibilities     (tolerance = 1e-07)
+num/max      0 / 5.55e-17 (relative      0 / 1.39e-17) primal residual errors     (tolerance = 1e-07)
+num/max    105 /    2e+03 (relative    105 /        2)   dual residual errors     (tolerance = 1e-07)
+                                         0 / 1.22e-11  P-D objective error        (tolerance = 1e-07)
+WARNING: LP solver claims optimality, but with
+WARNING:    num/max     72 /     1.01 relative   dual infeasibilities (tolerance = 1e-07)
+WARNING:    num/max    105 /        2 relative   dual residual errors (tolerance = 1e-07)
+WARNING: Model status changed from "Optimal" to "Unknown" since relative violation of tolerances is    2e+07
+
+Model status        : Unknown
+IPM       iterations: 14
+Objective value     :  1.7323229000e+03
+P-D objective error :  1.2246891834e-11
+HiGHS run time      :          0.00
+GO3_SCHEDULING_START {"audit":{"variables":153,"objective":1732.3228999999924,"complete":true,"pass":true,"maximum_residual":1.034244570426926e-16,"constraints_including_bounds_and_integrality":433},"source":"same_cold_attempt_only","variable_count":153,"accepted_interface_count":153,"complete":true,"native_acceptance":"pending_native_solve_log"}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+MIP has 181 rows; 153 cols; 517 nonzeros; 18 integer variables (15 binary)
+Coefficient ranges:
+  Matrix  [1e-02, 3e+00]
+  Cost    [3e-03, 1e+03]
+  Bound   [5e-01, 4e+00]
+  RHS     [5e-01, 8e+00]
+Assessing feasibility of MIP using primal feasibility and integrality tolerance of       1e-09
+Solution has               num          max          sum
+Col     infeasibilities      0            0            0
+Integer infeasibilities      0            0            0
+Row     infeasibilities      0            0            0
+Row     residuals            0            0            0
+Presolving model
+73 rows, 59 cols, 210 nonzeros 0s
+52 rows, 52 cols, 193 nonzeros 0s
+51 rows, 51 cols, 203 nonzeros 0s
+Presolve reductions: rows 51(-130); columns 51(-102); nonzeros 203(-314) 
+
+MIP start solution is feasible, objective value is 1732.3229
+
+Solving MIP model with:
+   51 rows
+   51 cols (0 binary, 0 integer, 0 implied int., 41 continuous, 10 domain fixed)
+   203 nonzeros
+   Thread count 4 (of 24 threads). Using 1 max workers. Parallel search off
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   1732.325044     1732.3229          0.00%        0      0      0         0     0.0s
+ T       0       0         0   0.00%   1732.325044     1732.3229          0.00%        0      0      0         5     0.0s
+         1       0         1 100.00%   1732.3229       1732.3229          0.00%        0      0      0         5     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1732.3229
+  Dual bound        1732.3229
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      5.70298824059e-10
+  Solution status   feasible
+                    1732.3229 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01
+                    0.00 (Presolve)
+                    0.00 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     5
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+GO3_SCHEDULING_MODEL {"reserve_policy":"joint_scheduling_then_full_reallocation","constraints_excluding_variable_bounds":181,"source_pq_bound_devices":1,"variables":153,"build_seconds":0.002000093460083008,"include_reserves":true,"consumer_online_dominance":{"fixed_online_variables":3,"generator_commitments_changed":0,"policy":"proven_zero_minimum_consumer_online_dominance_v1","eligible_consumers":1,"source_values_changed":false,"rejected_consumers":{},"eligible_consumer_uids":["d"]},"source_startup_windows":{"membership":"begin-tol <= interval_start < end-tol","time_equality_tolerance":1.0e-6,"source_values_changed":false,"windows":4}}
+GO3_SCHEDULING_START {"audit":{"variables":153,"objective":1732.3229,"complete":true,"pass":true,"maximum_residual":5.551115123125783e-17,"constraints_including_bounds_and_integrality":433},"source":"same_cold_attempt_only","variable_count":153,"accepted_interface_count":153,"complete":true,"native_acceptance":"pending_native_solve_log"}
+Test Summary:                                                       | Pass  Total  Time
+GO3 cold scheduling native start evidence and zero-budget retention |   14     14  1.2s
+Test Summary:                                              | Pass  Total  Time
+GO3 restricted IPX LP native proof and timeout restoration |   15     15  0.3s

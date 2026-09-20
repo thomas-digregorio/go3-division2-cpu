@@ -1,0 +1,279 @@
+GO3_PROGRESS {"elapsed_worker_seconds":0.07299995422363281,"stage":"loading","remaining_work_seconds":105.47860217094421}
+GO3_PROGRESS {"elapsed_worker_seconds":0.7599999904632568,"stage":"scheduling","remaining_work_seconds":104.79160213470459}
+GO3_SCHEDULING_MODEL {"reserve_policy":"joint_scheduling_then_full_reallocation","constraints_excluding_variable_bounds":171,"source_pq_bound_devices":0,"variables":153,"build_seconds":6.375,"include_reserves":true,"source_startup_windows":{"membership":"begin-tol <= interval_start < end-tol","time_equality_tolerance":1.0e-6,"source_values_changed":false,"windows":0}}
+GO3_PROGRESS {"elapsed_scheduling_seconds":10.391999959945679,"event":"model_built","elapsed_worker_seconds":11.210999965667725,"build_seconds":6.588000059127808,"stage":"scheduling_event","remaining_work_seconds":94.34060215950012}
+GO3_PROGRESS {"elapsed_scheduling_seconds":11.125999927520752,"event":"economic_solve_begin","elapsed_worker_seconds":11.891999959945679,"stage":"scheduling_event","remaining_work_seconds":93.65960216522217}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+MIP has 171 rows; 153 cols; 481 nonzeros; 18 integer variables (15 binary)
+Coefficient ranges:
+  Matrix  [1e-02, 3e+00]
+  Cost    [3e-03, 1e+03]
+  Bound   [5e-01, 4e+00]
+  RHS     [5e-01, 3e+00]
+Presolving model
+68 rows, 54 cols, 177 nonzeros 0s
+57 rows, 45 cols, 168 nonzeros 0s
+38 rows, 39 cols, 119 nonzeros 0s
+Presolve reductions: rows 38(-133); columns 39(-114); nonzeros 119(-362) 
+
+Solving MIP model with:
+   38 rows
+   39 cols (7 binary, 0 integer, 0 implied int., 32 continuous, 0 domain fixed)
+   119 nonzeros
+   Thread count 4 (of 24 threads). Using 1 max workers. Parallel search off
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   inf             -26.425            Large        0      0      0         0     0.0s
+ T       0       0         0   0.00%   1737.275        1732.1479          0.30%        0      0      0        12     0.0s
+         1       0         1 100.00%   1732.1479       1732.1479          0.00%        0      0      0        12     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1732.1479
+  Dual bound        1732.1479
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      0.0348493869637
+  Solution status   feasible
+                    1732.1479 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01
+                    0.00 (Presolve)
+                    0.01 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     12
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+GO3_PROGRESS {"elapsed_scheduling_seconds":11.390000104904175,"event":"economic_solve_returned","elapsed_worker_seconds":12.162999868392944,"stage":"scheduling_event","wall_seconds":0.26400017738342285,"remaining_work_seconds":93.3886022567749}
+Rounded shunt steps:
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+GO3_PROGRESS {"elapsed_worker_seconds":19.132999897003174,"stage":"schedule_candidate_ready","remaining_work_seconds":86.41860222816467}
+GO3_PROGRESS {"elapsed_worker_seconds":20.118000030517578,"interval":1,"stage":"ac_optimization","interval_count":3,"remaining_work_seconds":85.43360209465027}
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Total number of variables............................:       36
+                     variables with only lower bounds:       15
+                variables with lower and upper bounds:       19
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       21
+Total number of inequality constraints...............:        9
+        inequality constraints with only lower bounds:        0
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:        6
+
+
+Number of Iterations....: 19
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8994459395050541e+01    4.9497229697525268e+02
+Dual infeasibility......:   9.8380227575578516e-12    4.9190113787789258e-11
+Constraint violation....:   2.8106513251666202e-11    2.8106513251666202e-11
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   9.9982795538109957e-11    4.9991397769054971e-10
+Overall NLP error.......:   9.9982795538109957e-11    4.9991397769054971e-10
+
+
+Number of objective function evaluations             = 20
+Number of objective gradient evaluations             = 20
+Number of equality constraint evaluations            = 20
+Number of inequality constraint evaluations          = 20
+Number of equality constraint Jacobian evaluations   = 20
+Number of inequality constraint Jacobian evaluations = 20
+Number of Lagrangian Hessian evaluations             = 19
+Total seconds in IPOPT                               = 1.900
+
+EXIT: Optimal Solution Found.
+Total number of variables............................:       35
+                     variables with only lower bounds:       15
+                variables with lower and upper bounds:       18
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       21
+Total number of inequality constraints...............:        9
+        inequality constraints with only lower bounds:        0
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:        6
+
+
+Number of Iterations....: 16
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8994459395146521e+01    4.9497229697573260e+02
+Dual infeasibility......:   2.2322884719430170e-13    1.1161442359715085e-12
+Constraint violation....:   4.7795101210112989e-14    4.7795101210112989e-14
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   9.1154364304336293e-11    4.5577182152168147e-10
+Overall NLP error.......:   9.1154364304336293e-11    4.5577182152168147e-10
+
+
+Number of objective function evaluations             = 17
+Number of objective gradient evaluations             = 17
+Number of equality constraint evaluations            = 17
+Number of inequality constraint evaluations          = 17
+Number of equality constraint Jacobian evaluations   = 17
+Number of inequality constraint Jacobian evaluations = 17
+Number of Lagrangian Hessian evaluations             = 16
+Total seconds in IPOPT                               = 0.003
+
+EXIT: Optimal Solution Found.
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":1,"policy":"legacy_tolerance_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":1.0e-8,"enforced":false,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+GO3_PROGRESS {"elapsed_worker_seconds":26.683000087738037,"interval":2,"stage":"ac_optimization","interval_count":3,"remaining_work_seconds":78.86860203742981}
+Total number of variables............................:       36
+                     variables with only lower bounds:       15
+                variables with lower and upper bounds:       19
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       21
+Total number of inequality constraints...............:        9
+        inequality constraints with only lower bounds:        0
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:        6
+
+
+Number of Iterations....: 19
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8994459395050541e+01    9.8994459395050535e+02
+Dual infeasibility......:   9.8436554046843483e-12    9.8436554046843483e-11
+Constraint violation....:   2.8106522258591047e-11    2.8106522258591047e-11
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   9.9982796269034767e-11    9.9982796269034752e-10
+Overall NLP error.......:   9.9982796269034767e-11    9.9982796269034752e-10
+
+
+Number of objective function evaluations             = 20
+Number of objective gradient evaluations             = 20
+Number of equality constraint evaluations            = 20
+Number of inequality constraint evaluations          = 20
+Number of equality constraint Jacobian evaluations   = 20
+Number of inequality constraint Jacobian evaluations = 20
+Number of Lagrangian Hessian evaluations             = 19
+Total seconds in IPOPT                               = 0.004
+
+EXIT: Optimal Solution Found.
+Total number of variables............................:       35
+                     variables with only lower bounds:       15
+                variables with lower and upper bounds:       18
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       21
+Total number of inequality constraints...............:        9
+        inequality constraints with only lower bounds:        0
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:        6
+
+
+Number of Iterations....: 16
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8994459395146521e+01    9.8994459395146521e+02
+Dual infeasibility......:   2.2869726945540236e-13    2.2869726945540236e-12
+Constraint violation....:   4.8017145815038020e-14    4.8017145815038020e-14
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   9.1154364303923672e-11    9.1154364303923664e-10
+Overall NLP error.......:   9.1154364303923672e-11    9.1154364303923664e-10
+
+
+Number of objective function evaluations             = 17
+Number of objective gradient evaluations             = 17
+Number of equality constraint evaluations            = 17
+Number of inequality constraint evaluations          = 17
+Number of equality constraint Jacobian evaluations   = 17
+Number of inequality constraint Jacobian evaluations = 17
+Number of Lagrangian Hessian evaluations             = 16
+Total seconds in IPOPT                               = 0.003
+
+EXIT: Optimal Solution Found.
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":2,"policy":"legacy_tolerance_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":1.0e-8,"enforced":false,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+GO3_PROGRESS {"elapsed_worker_seconds":26.78600001335144,"interval":3,"stage":"ac_optimization","interval_count":3,"remaining_work_seconds":78.7656021118164}
+Total number of variables............................:       36
+                     variables with only lower bounds:       15
+                variables with lower and upper bounds:       19
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       21
+Total number of inequality constraints...............:        9
+        inequality constraints with only lower bounds:        0
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:        6
+
+
+Number of Iterations....: 19
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8994459395050541e+01    2.4748614848762634e+02
+Dual infeasibility......:   9.8361475214803207e-12    2.4590368803700802e-11
+Constraint violation....:   2.8108180413464966e-11    2.8108180413464966e-11
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   9.9983214962742416e-11    2.4995803740685603e-10
+Overall NLP error.......:   9.9983214962742416e-11    2.4995803740685603e-10
+
+
+Number of objective function evaluations             = 20
+Number of objective gradient evaluations             = 20
+Number of equality constraint evaluations            = 20
+Number of inequality constraint evaluations          = 20
+Number of equality constraint Jacobian evaluations   = 20
+Number of inequality constraint Jacobian evaluations = 20
+Number of Lagrangian Hessian evaluations             = 19
+Total seconds in IPOPT                               = 0.004
+
+EXIT: Optimal Solution Found.
+Total number of variables............................:       35
+                     variables with only lower bounds:       15
+                variables with lower and upper bounds:       18
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       21
+Total number of inequality constraints...............:        9
+        inequality constraints with only lower bounds:        0
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:        6
+
+
+Number of Iterations....: 16
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8994459395146521e+01    2.4748614848786630e+02
+Dual infeasibility......:   2.2785178751150127e-13    5.6962946877875317e-13
+Constraint violation....:   4.7850612361344247e-14    4.7850612361344247e-14
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   9.1154364309495431e-11    2.2788591077373857e-10
+Overall NLP error.......:   9.1154364309495431e-11    2.2788591077373857e-10
+
+
+Number of objective function evaluations             = 17
+Number of objective gradient evaluations             = 17
+Number of equality constraint evaluations            = 17
+Number of inequality constraint evaluations          = 17
+Number of equality constraint Jacobian evaluations   = 17
+Number of inequality constraint Jacobian evaluations = 17
+Number of Lagrangian Hessian evaluations             = 16
+Total seconds in IPOPT                               = 0.003
+
+EXIT: Optimal Solution Found.
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":3,"policy":"legacy_tolerance_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":1.0e-8,"enforced":false,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":3,"policy":"legacy_tolerance_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":1.0e-8,"enforced":false,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+GO3_PROGRESS {"elapsed_worker_seconds":26.825999975204468,"stage":"reserves","remaining_work_seconds":78.72560214996338}
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+GO3_PROGRESS {"intervals_required":3,"elapsed_worker_seconds":27.000999927520752,"all_intervals_refined":true,"intervals_finished":3,"stage":"complete","remaining_work_seconds":78.5506021976471}

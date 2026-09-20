@@ -1,0 +1,4 @@
+Test Summary:                                   | Pass  Total  Time
+GO3 isolated native option and status contracts |   28     28  0.1s
+Test Summary:                                 | Pass  Total  Time
+GO3 memory-conscious native presolve contract |   25     25  1.6s

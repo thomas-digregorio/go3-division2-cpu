@@ -45,6 +45,18 @@ def scheduling_gap(upper,incumbent):
     return max(0.0,upper-incumbent)/max(abs(incumbent),1e-10)
 
 
+def terminal_status(reason,gap_met):
+    if gap_met:
+        return 7,"OPTIMAL"
+    if reason=="round_limit":
+        return 14,"ITERATION_LIMIT"
+    if reason in ("master_absolute_deadline","recourse_absolute_deadline",
+                  "scheduling_budget_reserved_for_recourse_and_finalization",
+                  "master_returned_no_feasible_primal"):
+        return 13,"TIME_LIMIT"
+    raise ValueError("Unknown Benders terminal reason")
+
+
 def validate_configuration(config):
     if (config.get("scheduling_decomposition_policy")!=POLICY
             or config.get("scheduling_storage_policy")!="disk_isolated_native_v1"
@@ -178,8 +190,8 @@ def run(julia,output,config_path,deadline):
     shutil.copyfile(primal,destination)
     if sha256(destination)!=best["source_primal"]["sha256"]:
         raise ValueError("Benders final primal copy mismatch")
-    terminal=7 if summary["scheduling_gap_met"] else 13
-    statistics={"native_status":terminal,"termination":"OPTIMAL" if terminal==7 else "TIME_LIMIT",
+    terminal,label=terminal_status(reason,summary["scheduling_gap_met"])
+    statistics={"native_status":terminal,"termination":label,
         "termination_origin":"decomposition_gap_or_budget_not_a_single_HiGHS_status",
         "has_primal":True,"objective":best["objective"],"bound":upper,"relative_gap":gap,
         "solve_seconds":sum(r["master_statistics"]["solve_seconds"] for r in rounds),

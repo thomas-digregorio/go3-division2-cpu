@@ -47,7 +47,21 @@
     "scenario": "003",
     "scope": "Isolated native solver and raw-case validation processes, native memory attribution, serial scheduling options, and the proposed mathematically equivalent exact compaction if isolation is insufficient. Preserve source constraints, costs, tolerances, security checks and two-hour limit. No success is promised; failed attempts consume their latches."
   },
+  "low_memory_goal_continuation": {
+    "explicit_user_request": "well i dont have more RAM so continue to try to get the 23k bus to run even with low RAM.",
+    "registered_next_attempt": "campaign_n23643_s003_r06",
+    "network": "C3E4N23643D2",
+    "scenario": "003",
+    "scope": "One newly registered cold attempt after a fresh complete component gate. Exact source reserve decomposition with sequential native master and hourly recourse lifetimes; original full joint scheduling primal audit. Preserve all source constraints, costs, FP64 solver data, tolerances, 48 hours, exhaustive verification, quality target, 7200-second end-to-end cap and host safety floors. Previous used latches remain immutable.",
+    "scheduling_budget_seconds": 1500,
+    "scheduling_budget_note": "A bounded within-run incumbent may enter unchanged AC refinement without claiming a scheduling gap certificate. Final full-case feasibility, coverage, score and elapsed-time gates remain mandatory."
+  },
   "attempts": {
+    "campaign_n23643_s003_r06": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5"
+    },
     "campaign_n23643_s003_r05": {
       "network": "C3E4N23643D2",
       "scenario": "003",

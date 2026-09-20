@@ -1,0 +1,6 @@
+Test Summary:                                               | Pass  Total   Time
+Source reserve partition exact recomposition and lower cuts |   58     58  20.7s
+Test Summary:                                                          | Pass  Total  Time
+Reserve partition rejects unsupported recourse rather than dropping it |    6      6  0.9s
+Test Summary:                                                 | Pass  Total  Time
+Only original-domain redundant master projections are omitted |   66     66  0.5s

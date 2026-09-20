@@ -243,8 +243,11 @@ function rb_recourse_round(ctx,config,request,directory;deadline,on_event=(n,d)-
         lower_value<=result.statistics["objective"]+1e-8 || error("Reserve cut exceeds its generating primal cost")
         kind=="cost" || lower_value>1e-8 || error("Reserve infeasibility was not independently certified; refusing an unsafe cut")
         cut_path=joinpath(hour_dir,"cut.json")
+        # Keep cuts sparse on disk and when importing many rounds. Omitting
+        # bit-exact zero coefficients does not change the certified affine cut.
+        nonzero=findall(!iszero,cut.coefficients)
         atomic_json(cut_path,Dict("kind"=>kind,"period"=>period,"identity"=>ctx.identity,
-            "parameter_ids"=>lp.parameter_ids,"coefficients"=>cut.coefficients,"intercept"=>cut.intercept,
+            "parameter_ids"=>lp.parameter_ids[nonzero],"coefficients"=>cut.coefficients[nonzero],"intercept"=>cut.intercept,
             "certificate"=>cut.certificate,"generating_lower_value"=>lower_value,
             "generating_master_result"=>request["master_result"],"part_manifest_sha256"=>part["manifest_sha256"],
             "raw_dual"=>rb_binary(joinpath(hour_dir,"raw_dual.bin"),result.dual)))

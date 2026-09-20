@@ -156,3 +156,41 @@ now binds the actual coordinator PID and its direct launcher parent, while
 retaining exact PID matching for Julia workers. A regression test covers this
 distinction. The old incomplete gate is not counted as a pass. Compact evidence
 is archived in `evidence/components/reserve_benders_loop_20260920/`.
+
+### Registered next full attempt (not yet launched)
+
+`campaign_n23643_s003_r06` is registered under the user's renewed low-RAM goal.
+It retains the same raw case, 48 intervals, 1e-3 scheduling target, numerical
+tolerances, full original-model/AC/security checks, quality reference, 2 GiB
+host-memory floor, 30 GiB disk floor and 7,200-second end-to-end cap. Scheduling
+now has a 1,500-second post-partition budget, at most 600 seconds per master
+solve and 30 seconds per hourly recourse solve. Each new master reserves 300
+seconds for recourse and 30 seconds for finalization. The original 2,400-second
+exhaustive-evaluation reserve and 30-second campaign finalization reserve are
+unchanged. There is no promise that these budgets will be sufficient.
+
+The full regression gate includes a bounded-incumbent fixture proving that an
+iteration-limited, source-feasible point is saved with its nonzero gap and is
+not labeled optimal. Cut files now omit only bit-exact zero coefficients to
+avoid storing dense all-zero parameter vectors across many master rounds.
+The new complete gate passed before r06 launch, as recorded below.
+
+### Complete pre-r06 regression gate
+
+The complete gate at `tmp/pilot002_component_gate_iiec1ixz` passed **67 top-level
+stages, 135 Python tests and 14,730 Julia assertions**. Summed stage wall time
+was 1,850.251 seconds; this is development/setup time, not a competition-case
+benchmark. Its nested decomposition integration at
+`tmp/reserve_loop_components_w3sfxhut` passed eight stages, including the
+single-round bounded-incumbent test. That fixture retained objective -3.0 with
+gap 1.0 and `ITERATION_LIMIT`, rather than claiming its known optimum -0.75.
+It supplied no prior start; start-consumption evidence is meaningful only for
+the fixtures whose `audited_starts` count is nonzero.
+
+The source DC/AC pipeline again produced exactly the earlier candidate SHA256
+and objective 1732.1459647319407. Independent hard checks passed, official
+`feas=1` and `phys_feas=1`, and all 9/9 source outage-hour checks completed.
+Every top-level log hash and the full current source/configuration inventory
+were independently checked against the completed manifest. No competition-case
+solve had started at this gate. Compact byte-verified evidence is archived in
+`evidence/components/reserve_benders_full_gate_20260920/`.
