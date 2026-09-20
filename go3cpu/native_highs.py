@@ -25,7 +25,8 @@ def backend_record(config, *, root):
     policy = config.get("scheduling_native_backend_policy", "upstream_jll_v1")
     if policy == "upstream_jll_v1":
         if any(key in config for key in (
-                "scheduling_native_objective_clique_max_size", "scheduling_native_analytic_center")):
+                "scheduling_native_objective_clique_max_size", "scheduling_native_analytic_center",
+                "scheduling_native_root_presolve_only")):
             raise ValueError("Native setup controls require the registered native backend")
         return {"policy": policy}
     if policy not in POLICY_MANIFESTS:
@@ -35,6 +36,9 @@ def backend_record(config, *, root):
             raise ValueError("Root-memory policy requires the optional analytic center disabled")
     elif "scheduling_native_analytic_center" in config:
         raise ValueError("Analytic-center control requires the root-memory backend")
+    if "scheduling_native_root_presolve_only" in config:
+        if policy != ROOT_POLICY or type(config["scheduling_native_root_presolve_only"]) is not bool:
+            raise ValueError("Root-only presolve requires a Boolean and the root-memory backend")
     cap = config.get("scheduling_native_objective_clique_max_size")
     if type(cap) is not int or not 0 <= cap <= 4096:
         raise ValueError("Registered objective-clique cap must be an integer in [0,4096]")
@@ -66,6 +70,8 @@ def backend_record(config, *, root):
               "manifest": record, "objective_clique_max_size": cap}
     if policy == ROOT_POLICY:
         result["analytic_center_requested"] = False
+        if "scheduling_native_root_presolve_only" in config:
+            result["root_presolve_only_requested"] = config["scheduling_native_root_presolve_only"]
     return result
 
 

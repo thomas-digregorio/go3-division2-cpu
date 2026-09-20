@@ -27,6 +27,11 @@ function native_highs_identity(config)
             get(config,"scheduling_native_analytic_center",nothing)===false ||
                 error("Root-memory guard requires analytic center disabled")
             result["analytic_center_requested"]=false
+            if haskey(config,"scheduling_native_root_presolve_only")
+                config["scheduling_native_root_presolve_only"] isa Bool ||
+                    error("Root-only presolve must be Boolean")
+                result["root_presolve_only_requested"]=config["scheduling_native_root_presolve_only"]
+            end
         end
     end
     result

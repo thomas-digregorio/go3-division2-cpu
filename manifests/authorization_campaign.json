@@ -68,7 +68,7 @@
     "registered_next_attempt": "campaign_n23643_s003_r08",
     "network": "C3E4N23643D2",
     "scenario": "003",
-    "scope": "One cold attempt under the active low-memory goal, after a fresh complete component gate. Disable only the optional native analytic-center auxiliary LP, retaining the tested objective-clique cap. Preserve the full source model, FP64, existing within-run audited starts, ordinary simplex root LP and branch-and-cut, all r07 budgets, score target, exhaustive verification and safety floors. Preserve both prior native libraries and all used authorization latches. This solver-policy choice is an implementation within the goal, not a quoted user selection."
+    "scope": "One cold attempt under the active low-memory goal, after a fresh complete component gate. Disable the optional native analytic-center auxiliary LP and enable the existing mip_root_presolve_only option to avoid repeated inner LP/sub-MIP presolve workspaces while retaining initial MIP presolve and the tested objective-clique cap. Preserve the full source model, FP64, existing within-run audited starts, ordinary simplex root LP and branch-and-cut, all r07 budgets, score target, exhaustive verification and safety floors. Preserve both prior native libraries and all used authorization latches. These solver-policy choices are implementations within the goal, not quoted user selections."
   },
   "attempts": {
     "campaign_n23643_s003_r08": {

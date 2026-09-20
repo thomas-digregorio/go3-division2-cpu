@@ -68,5 +68,6 @@
   "scheduling_benders_max_rounds": 20,
   "scheduling_native_backend_policy": "root_memory_guard_v1",
   "scheduling_native_objective_clique_max_size": 4096,
-  "scheduling_native_analytic_center": false
+  "scheduling_native_analytic_center": false,
+  "scheduling_native_root_presolve_only": true
 }

@@ -1,4 +1,4 @@
-# Optional analytic-center LP opt-out
+# Optional analytic-center LP opt-out and root-only presolve
 
 The active user goal is to obtain a fully verified 23,643-bus solution on the
 existing low-RAM laptop. Attempt r07 reached the first root LP, but the host
@@ -28,6 +28,34 @@ source feasibility checks and tolerances are retained. Skipping this auxiliary
 calculation can reduce optional bound tightening or primal-heuristic performance;
 there is no guarantee of faster solution or a smaller overall search tree. It
 does not permit an infeasible point or an uncertified bound to pass any gate.
+
+### Serial-task caveat and the additional upstream option
+
+Further read-only source inspection before any r08 full-case launch found an
+important attribution caveat. `HighsTaskExecutor(1)` creates no background workers;
+`TaskGroup::spawn` queues the auxiliary task. The first ordinary LP is called
+before `finishAnalyticCenterComputation`. The r07 message "starting analytic
+centre calculation" therefore does not prove that the auxiliary LP had executed
+when memory ran out. Disabling it alone may not affect the r07 failure point.
+
+`HighsLpRelaxation` constructs a separate `Highs` instance without inheriting the
+outer `presolve_rule_off=8192` option. At the first root LP, `evaluateRootNode`
+normally sets its presolve on. `Highs::calledOptimizeModel` then invokes a second
+LP presolve, with fresh workspace, on the already MIP-presolved model. This is a
+source-backed allocation opportunity, not a measured per-routine memory profile.
+
+Before claiming r08, the registration was extended to set the **existing upstream**
+`mip_root_presolve_only=true` option. It preserves initial MIP presolve but disables
+the ordinary first-LP presolve and several later repair/sub-MIP presolves. This
+may use more simplex iterations or make heuristics slower. The native DLL and
+patch are unchanged. The option is applied/read back through the API, recorded in
+each master result, and tested in combination with both auxiliary-LP settings.
+
+The prior complete-gate attempt `tmp/pilot002_component_gate_c6qt51h2` was
+intentionally stopped before these source/configuration changes: 21 stages had
+reported success; `ac_interval_start_tests` was active. The owned process tree
+exited, logs were retained, and no passing new manifest or full-case run was
+produced. It is not a complete gate for the revised configuration.
 
 Root timing markers now bracket root entry, LP loading, and the first LP solve.
 A skipped center is logged explicitly. The prior objective-clique cap remains
@@ -66,18 +94,20 @@ pipeline. All source checks, audited within-run starts and independent/official
 exhaustive verification must pass. Earlier stock and setup-guard pipelines remain
 in the gate. Tiny test success alone is not large-case acceptance.
 
-Registered r08 differs from r07 only by pilot ID, backend policy and the explicit
-analytic-center opt-out. It retains the 7,200-second end-to-end limit, 2 GiB host
+Registered r08 differs from r07 only by pilot ID, backend policy, the explicit
+analytic-center opt-out and the root-only presolve option. It retains the
+7,200-second end-to-end limit, 2 GiB host
 memory floor, 30 GiB physical disk floor, original model/PMIN/tolerances, all 48
 periods and all 26,870 source contingencies per period. The score target and
 independent/official acceptance gates are unchanged. No r07 latch is reused.
 
 The r07 logs did not identify allocations by routine. Removing the auxiliary LP
-is therefore a controlled next attempt, not a claim that it was the sole memory
-consumer. The ordinary root LP or later AC factorization may still exceed the
-laptop's available memory. Full-case results will determine that.
+and avoiding repeated presolve are a controlled next attempt, not a claim that
+either was the sole memory consumer. The ordinary root LP or later AC
+factorization may still exceed the laptop's available memory. Full-case results
+will determine that.
 
-## Completed focused integration
+## Earlier completed focused integration (auxiliary-LP opt-out only)
 
 The new backend's tiny end-to-end gate in `tmp/reserve_loop_components_djuryurv`
 passed all 11 stages, including 151 Python tests. All original scheduling audits
@@ -91,3 +121,27 @@ The byte-verified focused archive has 421 files / 710,447 bytes under
 `evidence/components/native_root_memory_20260920`. A fresh complete regression
 gate is still required before the registered cold r08 attempt. No full-case run
 was started by this focused test.
+
+## Revised focused checks (including root-only presolve)
+
+The revised direct native test passed **431 assertions** across 16 feasible solves,
+four infeasible solves, and API/scope checks. All four combinations of auxiliary
+LP enabled/disabled and root-only presolve enabled/disabled matched enumerated
+optima and bounds. All 152 Python tests passed, including 10 native-policy tests.
+
+The focused pipeline `tmp/reserve_loop_components_zsqmg03s` passed all eight
+integration stages. All 16 solver workers had the exact registered DLL identity;
+all eight master results recorded accepted/read-back `mip_root_presolve_only=true`
+and `mip_compute_analytic_center=false`. The multiround cut/start and intentionally
+uncertified bounded-incumbent tests passed. The final three-period AC solution
+again passed both independent and official verification, with 9/9 source
+contingency checks, objective 1732.1459647319407, hard residual 0, P imbalance
+1.526e-10 p.u. or less and Q imbalance 2.307e-9 p.u. or less. The candidate hash
+is identical to the earlier tiny baseline. No large-case result is inferred.
+
+The hash-verified archive is
+`evidence/components/native_root_only_presolve_20260920/focused_integration`:
+741 files / 1,030,170 bytes, with original logs and outputs retained. Its sibling
+stop record preserves the intentional cancellation of the superseded incomplete
+suite. No full-case run or authorization latch has been consumed for r08. The
+next required gate is a fresh complete source-matched regression suite.

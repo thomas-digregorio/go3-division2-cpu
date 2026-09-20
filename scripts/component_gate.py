@@ -383,6 +383,8 @@ def main():
             root_memory_result["source_hashes"]!=source_hashes() or root_memory_result["full_case_runs"]!=0 or
             root_memory_result["results"]["native_guard"]["workers_checked"]<16 or
             root_memory_result["results"]["native_guard"].get("analytic_center_requested") is not False or
+            root_memory_result["results"]["native_guard"].get("root_presolve_only_requested") is not True or
+            root_memory_result["results"]["native_guard"].get("master_options_checked",0)<8 or
             root_certificate["input_sha256"]!=stock_certificate["input_sha256"] or
             abs(root_certificate["objective"]-stock_certificate["objective"])>1e-8):
         raise RuntimeError("Root-memory guard failed the complete equivalent tiny integration")
@@ -709,7 +711,7 @@ def main():
                                ("reserve_benders_runtime_tests",2),
                                ("native_highs_guard_tests",2),
                                ("guarded_reserve_benders_runtime_tests",2),
-                               ("native_root_memory_tests",2),
+                               ("native_root_memory_tests",3),
                                ("root_memory_reserve_benders_runtime_tests",2)):
         counts=re.findall(r"^[^\n|]+\|\s+(\d+)\s+(\d+)\s+",
                           (evidence/(name+".log")).read_text(),re.MULTILINE)

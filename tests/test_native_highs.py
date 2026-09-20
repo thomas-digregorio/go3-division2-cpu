@@ -83,11 +83,13 @@ class NativeHighsPolicyTests(unittest.TestCase):
 
     def test_root_memory_environment_preserves_the_previous_build(self):
         config=self.config(scheduling_native_backend_policy=ROOT_POLICY,
-                           scheduling_native_analytic_center=False)
+                           scheduling_native_analytic_center=False,
+                           scheduling_native_root_presolve_only=True)
         record=backend_record(config,root=ROOT)
         old=backend_record(self.config(),root=ROOT)
         self.assertEqual(record["manifest"]["policy"],ROOT_POLICY)
         self.assertFalse(record["analytic_center_requested"])
+        self.assertTrue(record["root_presolve_only_requested"])
         self.assertNotEqual(record["manifest"]["artifact_directory"],old["manifest"]["artifact_directory"])
         self.assertEqual(old["manifest"]["files"]["library"]["sha256"],
             "09e8b2b6eafd425f03390dc5aa192820aa79f825025ee3be54e71a792b75634d")
@@ -104,10 +106,25 @@ class NativeHighsPolicyTests(unittest.TestCase):
         new=json.loads((ROOT/"config/campaign_n23643_s003_r08.json").read_text())
         changed={key for key in old.keys() | new.keys() if old.get(key)!=new.get(key)}
         self.assertEqual(changed,{"pilot_id","scheduling_native_backend_policy",
-                                  "scheduling_native_analytic_center"})
+                                  "scheduling_native_analytic_center","scheduling_native_root_presolve_only"})
         self.assertEqual(new["scheduling_native_backend_policy"],ROOT_POLICY)
         self.assertIs(new["scheduling_native_analytic_center"],False)
+        self.assertIs(new["scheduling_native_root_presolve_only"],True)
         self.assertNotEqual(registered_latch(ROOT,new),registered_latch(ROOT,old))
+
+    def test_root_presolve_requires_boolean_and_registered_scope(self):
+        for value in (0,1,"true",None):
+            with self.subTest(value=value),self.assertRaisesRegex(ValueError,"Boolean"):
+                backend_record(self.config(scheduling_native_backend_policy=ROOT_POLICY,
+                    scheduling_native_analytic_center=False,scheduling_native_root_presolve_only=value),root=ROOT)
+        for policy in (POLICY,"upstream_jll_v1"):
+            with self.subTest(policy=policy),self.assertRaises(ValueError):
+                backend_record(self.config(scheduling_native_backend_policy=policy,
+                    scheduling_native_root_presolve_only=True),root=ROOT)
+        for value in (True,False):
+            record=backend_record(self.config(scheduling_native_backend_policy=ROOT_POLICY,
+                scheduling_native_analytic_center=False,scheduling_native_root_presolve_only=value),root=ROOT)
+            self.assertIs(record["root_presolve_only_requested"],value)
 
 
 if __name__=="__main__":

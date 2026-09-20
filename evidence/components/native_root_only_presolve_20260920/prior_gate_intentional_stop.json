@@ -1,0 +1,16 @@
+{
+  "status": "INTENTIONALLY_STOPPED_BEFORE_CONFIGURATION_REVISION",
+  "complete": false,
+  "pass": false,
+  "evidence_directory": "tmp/pilot002_component_gate_c6qt51h2",
+  "completed_stages_reported": 21,
+  "last_reported_completed_stage": "ac_primal_start_tests",
+  "active_stage_at_stop": "ac_interval_start_tests",
+  "stopped_owned_launcher_pid": 16708,
+  "stopped_owned_descendant_pids": [19256, 9748, 19696],
+  "source_revision_before_change": "d7c8e0e",
+  "reason": "Read-only native-source analysis found that serial analytic-centre work is deferred until after the first LP, whereas that LP starts a second presolve using fresh options. Stop this test suite before changing the unclaimed r08 configuration to exercise existing root-only presolve. A new complete source-matched gate is required. This is not a failed model or a passing full gate.",
+  "full_case_runs": 0,
+  "existing_logs_retained": true,
+  "new_complete_component_manifest_written": false
+}

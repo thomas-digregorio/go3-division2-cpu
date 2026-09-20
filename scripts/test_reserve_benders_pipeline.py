@@ -127,7 +127,7 @@ def main(integration_only=False,native_guard=False,root_memory=False):
     if native_guard or root_memory:
         from go3cpu.native_highs import backend_record
         native=backend_record(json.loads(config.read_text()),root=ROOT)
-        checked=[]
+        checked=[];root_options_checked=0
         for path in evidence.glob("*/reserve_decomposition/rounds/*/*/result.json"):
             record=json.loads(path.read_text())
             identity=record["native_backend"]
@@ -138,13 +138,26 @@ def main(integration_only=False,native_guard=False,root_memory=False):
                 raise AssertionError("Tiny native worker did not load the exact guarded library")
             if root_memory and identity.get("analytic_center_requested") is not False:
                 raise AssertionError("Root-memory worker did not retain the disabled auxiliary LP policy")
+            if root_memory:
+                if identity.get("root_presolve_only_requested") is not True:
+                    raise AssertionError("Root-memory worker did not record the root-only presolve policy")
+                if record["mode"]=="master":
+                    if (record["options"].get("mip_root_presolve_only") is not True or
+                            record["options"].get("mip_compute_analytic_center") is not False or
+                            "presolve" in record["options"]):
+                        raise AssertionError("Native master did not accept the registered memory options")
+                    root_options_checked+=1
             checked.append(str(path))
         if len(checked)<16:
             raise AssertionError("Incomplete native master/recourse identity coverage")
         results["native_guard"]={"policy":native["policy"],"workers_checked":len(checked),
                                  "library_sha256":native["manifest"]["files"]["library"]["sha256"]}
         if root_memory:
+            if root_options_checked<8:
+                raise AssertionError("Incomplete native master option coverage")
             results["native_guard"]["analytic_center_requested"]=False
+            results["native_guard"]["root_presolve_only_requested"]=True
+            results["native_guard"]["master_options_checked"]=root_options_checked
     if source_hashes(ROOT)!=hashes:
         raise RuntimeError("Source changed during the component gate")
     result={"pass":True,"complete":True,"tiny_only":True,"full_case_runs":0,

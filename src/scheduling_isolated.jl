@@ -44,6 +44,14 @@ function isolated_options(config)
     elseif haskey(config,"scheduling_native_analytic_center")
         error("Analytic-center control requires the root-memory backend")
     end
+    if haskey(config,"scheduling_native_root_presolve_only")
+        policy==NATIVE_ROOT_MEMORY_POLICY || error("Root-only presolve requires the root-memory backend")
+        value=config["scheduling_native_root_presolve_only"]
+        value isa Bool || error("Root-only presolve must be Boolean")
+        # Existing upstream option: preserve initial MIP presolve, but avoid
+        # a second LP presolve and optional sub-MIP presolves/workspaces.
+        options["mip_root_presolve_only"]=value
+    end
     options
 end
 
