@@ -157,7 +157,7 @@ retaining exact PID matching for Julia workers. A regression test covers this
 distinction. The old incomplete gate is not counted as a pass. Compact evidence
 is archived in `evidence/components/reserve_benders_loop_20260920/`.
 
-### Registered next full attempt (not yet launched)
+### Registered r06 full attempt
 
 `campaign_n23643_s003_r06` is registered under the user's renewed low-RAM goal.
 It retains the same raw case, 48 intervals, 1e-3 scheduling target, numerical
@@ -194,3 +194,58 @@ Every top-level log hash and the full current source/configuration inventory
 were independently checked against the completed manifest. No competition-case
 solve had started at this gate. Compact byte-verified evidence is archived in
 `evidence/components/reserve_benders_full_gate_20260920/`.
+
+### r06 outcome: RAM barrier cleared through presolve, master setup times out
+
+The single cold r06 attempt used frozen commit
+`93ddd4e5af9c228e999e057534b4a429c1add90d` and ended with
+`NO_VERIFIED_INCUMBENT` after **2,856.973 seconds (47 min 36.973 s)**. This was a
+scheduling-stage deadline, not a RAM stop, mathematical infeasibility, or the
+7,200-second campaign limit. All owned processes exited; no replacement was
+started. The original r06 run and latch remain immutable.
+
+| Completed or interrupted stage | Process wall time |
+|---|---:|
+| Original raw-case builder/export | 1,283.565 s |
+| Exact compaction and equivalence proof | 233.102 s |
+| Source reserve partition and proof | 166.224 s |
+| Benders coordinator, interrupted in first master | 1,170.514 s |
+| Entire attempt through result serialization | 2,856.973 s |
+
+The compaction proof checked all 19,323,456 original columns and 20,211,928
+original rows. The reserve partition checked all 15,253,134 compact columns
+and 17,635,208 compact rows, covered every source row exactly once, and retained
+all 48 source reserve periods without changing coefficients or bounds.
+HiGHS loaded the 8,043,170-column, 10,931,162-row master and completed presolve in
+approximately 303 seconds. It then logged `starting setup` and did not return
+from that stage before the external scheduling deadline stopped its process.
+
+The whole-attempt sampled peak was **15.261 GiB**. The native master stage
+peaked at **13.119 GiB**, with minimum host availability **7.732 GiB**, well
+above the unchanged 2 GiB floor. These measurements prove progress through
+native presolve, not that a complete optimization or AC verification fits.
+
+One native master call started; none returned. The coordinator's existing
+`solve_calls: 0` counts completed calls, not launches. No root-LP result,
+incumbent, bound, gap, reserve-recourse result, AC interval, or full-case
+verification certificate was produced. The registered score target is unmet.
+
+The requested native limit was 600 seconds, but the process remained inside
+setup until the coordinator's overall master deadline. This exposes a watchdog
+gap: the external launcher enforced the overall scheduling allocation, while
+the individual native limit depended on HiGHS returning/checking its timer.
+Future rounds need an external guard on each native call without treating
+post-solve auditing as another solver call or discarding an earlier verified
+incumbent. No r06 settings were changed while it was running.
+
+The pinned [HiGHS setup source](https://github.com/ERGO-Code/HiGHS/blob/04024d701f/highs/mip/HighsMipSolverData.cpp#L788)
+places objective-clique processing and bound propagation before the first root
+LP. Objective clique partitioning contains potentially expensive neighborhood
+scans, but the stage log alone does **not** identify the exact hot routine.
+Symmetry detection occurs later in root evaluation, so disabling symmetry is
+not an evidence-backed explanation for this particular setup delay.
+
+Compact, hash-checked evidence is retained in
+`evidence/campaign/campaign_n23643_s003_r06/`, including the interrupted master
+logs, request and memory timeline. Binary matrices and all other detailed
+artifacts remain in the original local run; nothing was pruned or deleted.

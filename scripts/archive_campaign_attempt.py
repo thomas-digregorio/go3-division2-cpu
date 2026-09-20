@@ -57,6 +57,7 @@ def collect(attempt, *, root=ROOT):
             "runtime_case_manifest.json", "worker/native_result.json", "worker/native_exit.json",
             "worker/scheduling_builder.json", "worker/native_memory.jsonl",
             "worker/compaction_exit.json", "worker/compaction_memory.jsonl",
+            "worker/reserve_partition_exit.json",
             "worker/compact_spool/manifest.json", "worker/compact_spool/proof_verification.json",
             "worker/original_scheduling_audit.json",
             "worker/native_console.log", "worker/statistics/scheduling_economic_native.log",
@@ -65,6 +66,12 @@ def collect(attempt, *, root=ROOT):
             "verification/schedule/certificate.json", "verification/final/certificate.json")
     compact_files += tuple(str(p.relative_to(run)) for p in
         sorted((run/"worker/native_correction").rglob("*.json")))
+    # A stopped native stage may have no result.json. Preserve its request,
+    # console/progress and memory records, plus the source partition proof.
+    # Large binary matrices/primal vectors remain in the retained run only.
+    compact_files += tuple(str(p.relative_to(run)) for p in
+        sorted((run/"worker/reserve_decomposition").rglob("*"))
+        if p.is_file() and p.suffix in (".json", ".jsonl", ".log"))
     for relative in compact_files:
         source = run / relative
         if source.exists():

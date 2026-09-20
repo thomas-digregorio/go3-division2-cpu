@@ -1,0 +1,5 @@
+{
+  "stage": "disk_worker_orchestration",
+  "error": "Scheduling worker stage failed: worker; exit=1",
+  "resource_stop": null
+}

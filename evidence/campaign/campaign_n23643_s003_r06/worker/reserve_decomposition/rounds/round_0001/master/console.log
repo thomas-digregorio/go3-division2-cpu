@@ -1,0 +1,31 @@
+GO3_PROGRESS {"epoch_seconds":1.789938877212e9,"event":"reserve_benders_worker_started","raw_case_parsed":false,"pid":10756,"mode":"master","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1164.7124516963959}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+GO3_PROGRESS {"epoch_seconds":1.789938879367e9,"event":"reserve_benders_master_loaded","cut_count":0,"pid":10756,"start":{"supplied":false},"mode":"master","stage":"source_reserve_benders","variables":8043170,"nonzeros":32733724,"rows":10931162,"round":1,"remaining_work_seconds":1162.5574514865875}
+GO3_PROGRESS {"epoch_seconds":1.789938879475e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":600.0,"pid":10756,"mode":"master","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1162.4494516849518}
+ MIP      : 
+Rows      : 10931162
+Cols      : 8043170
+Nonzeros  : 32733724
+Integer   : 2592720 (2592720 binary)
+Coefficient ranges:
+  Matrix  [1e-05, 6e+03]
+  Cost    [1e-01, 1e+06]
+  Bound   [1e-04, 3e+02]
+  RHS     [1e-05, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+Presolve rules not allowed:
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+7116004 rows, 7957224 cols, 26749975 nonzeros 17s
+Sparsify removed 0.0% of nonzeros
+Strengthened 140 coefficients
+Enumeration presolve fixed 2593 columns, tightened 2 bounds and performed 0 substitutions
+Enumeration presolve fixed 62 columns, tightened 0 bounds and performed 0 substitutions
+1007 probing evaluations: 114 deleted rows, 1 deleted columns, 41 lifted nonzeros
+6256517 rows, 7268026 cols, 34584369 nonzeros 303s
+Presolve reductions: rows 6256517(-4674645); columns 7268026(-775144); nonzeros 34584369(+1850645) 
+MIP-Timing:     3.1e+02 - completed presolve
+MIP-Timing:     3.1e+02 - starting  setup

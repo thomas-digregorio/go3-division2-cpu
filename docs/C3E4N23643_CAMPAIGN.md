@@ -490,3 +490,30 @@ with separate authorization before another full attempt. Source data, full run
 artifacts and compact hash-checked evidence are preserved; the r05 archive is
 `evidence/campaign/campaign_n23643_s003_r05/`. No model constraints, source
 PMIN, costs, tolerances or verification requirements were relaxed.
+
+## r06: source reserve decomposition reaches presolve, then a setup deadline
+
+The renewed low-RAM goal authorized a new cold attempt using frozen commit
+`93ddd4e5af9c228e999e057534b4a429c1add90d`. The complete pre-run gate passed
+67 stages, 135 Python tests and 14,730 Julia assertions, including independent
+and official tiny-pipeline verification. All source data, numerical precision,
+model constraints, 48 periods, full contingency coverage, quality target and
+the two-hour end-to-end cap were retained.
+
+r06 completed exact compaction and source-reserve partition proofs, then
+loaded an 8,043,170-variable master. Unlike r04/r05, it completed native HiGHS
+presolve. Whole-run peak sampled RSS was 15.261 GiB; the native master peaked
+at 13.119 GiB with at least 7.732 GiB host RAM available. No memory guard fired.
+
+However, HiGHS remained in MIP setup after its requested 600-second native
+limit. The external scheduling deadline stopped the owned process tree. The
+attempt ended at **2,856.973 seconds**, status `NO_VERIFIED_INCUMBENT`, with no
+objective, bound, gap, reserve-recourse solutions, AC dispatch or full security
+verification. It did not establish infeasibility or reach the two-hour limit.
+
+The full goal remains unmet. The next implementation work is to externally
+enforce individual native-call limits and identify the expensive setup routine
+before another registered full attempt. See `docs/LOW_MEMORY_RESERVE_DECOMPOSITION.md`
+for detailed stage timings and the distinction between one started native
+call and zero completed calls. All full run artifacts remain local; compact
+evidence is in `evidence/campaign/campaign_n23643_s003_r06/`.

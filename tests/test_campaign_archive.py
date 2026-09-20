@@ -58,6 +58,27 @@ class CampaignArchiveTests(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 collect(ATTEMPT,root=root)
 
+    def test_interrupted_benders_stage_evidence_is_copied_without_binary_spools(self):
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as d:
+            root=Path(d);run=finished_fixture(root)
+            stage=run/"worker/reserve_decomposition/rounds/round_0001/master"
+            stage.mkdir(parents=True)
+            atomic_json(stage/"request.json",{"mode":"master","round":1})
+            (stage/"master.log").write_text("MIP setup started\n",encoding="utf-8")
+            (stage/"memory.jsonl").write_text('{"rss_bytes":123}\n',encoding="utf-8")
+            (stage/"matrix.bin").write_bytes(b"fixture binary retained locally")
+            atomic_json(run/"worker/reserve_partition_exit.json",{"returncode":0})
+            collect(ATTEMPT,root=root)
+            output=root/"evidence/campaign"/ATTEMPT
+            manifest=json.loads((output/"retained_manifest.json").read_text())
+            for path in (stage/"request.json",stage/"master.log",stage/"memory.jsonl",
+                         run/"worker/reserve_partition_exit.json"):
+                self.assertEqual(path.read_bytes(),(output/path.relative_to(run)).read_bytes())
+            self.assertFalse((output/(stage/"matrix.bin").relative_to(run)).exists())
+            self.assertEqual((stage/"matrix.bin").read_bytes(),b"fixture binary retained locally")
+            self.assertIn((stage/"matrix.bin").relative_to(run).as_posix(),manifest["source_files"])
+            self.assertEqual(manifest["files_deleted"],0)
+
     def test_changed_result_cannot_be_archived(self):
         with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as d:
             root = Path(d)
