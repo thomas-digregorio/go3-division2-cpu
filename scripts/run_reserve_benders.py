@@ -18,6 +18,7 @@ sys.path.insert(0,str(ROOT/"scripts"))
 from go3cpu.controller import atomic_json, sha256
 from go3cpu.safety import local_path, GIB
 from run_disk_worker import launch_stage, NativeCallDeadlineExceeded
+from go3cpu.native_highs import backend_record, native_environment
 
 POLICY="source_reserve_benders_v1"
 ROUND_SCHEMA="go3_source_reserve_benders_round_v1"
@@ -86,12 +87,13 @@ def run_stage(common,output,config_path,request,directory,deadline,config):
     request_path=directory/"request.json"
     atomic_json(request_path,request,exclusive=True)
     native_limit=config["scheduling_benders_master_round_seconds"] if request["mode"]=="master" else config["scheduling_benders_recourse_seconds"]
+    environment=native_environment(config,root=ROOT)
     try:
         pid,code,wall=launch_stage(common+[str(ROOT/"src/solve_reserve_benders_worker.jl"),str(output),
             str(config_path),str(request_path),str(directory),str(deadline)],deadline=deadline,
             log_path=directory/"console.log",memory_path=directory/"memory.jsonl",progress_path=output/"progress",
             memory_floor_bytes=int(config.get("minimum_available_memory_gib",2)*GIB),
-            native_call_limit=native_limit)
+            native_call_limit=native_limit,environment=environment)
     except TimeoutError as exc:
         # launch_stage's finally has stopped its owned tree and closed logs.
         # Preserve this interrupted call even though no result.json exists.
@@ -117,6 +119,7 @@ def run_stage(common,output,config_path,request,directory,deadline,config):
 def run(julia,output,config_path,deadline):
     julia,output,config_path=map(local_path,(julia,output,config_path))
     config=json.loads(config_path.read_text());validate_configuration(config)
+    backend_record(config,root=ROOT)
     if (output/"native_result.json").exists():
         raise FileExistsError("Completed scheduling result already exists")
     root=output/"reserve_decomposition"

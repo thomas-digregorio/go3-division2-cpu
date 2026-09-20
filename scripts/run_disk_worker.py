@@ -48,7 +48,7 @@ def native_call_deadline(event, *, pid, launched_epoch, maximum_seconds):
 
 
 def launch_stage(command, *, deadline, log_path=None, memory_path=None, progress_path=None,
-                 memory_floor_bytes=2*GIB, native_call_limit=None):
+                 memory_floor_bytes=2*GIB, native_call_limit=None, environment=None):
     if native_call_limit is not None and (
             isinstance(native_call_limit,bool) or not isinstance(native_call_limit,(int,float))
             or not math.isfinite(native_call_limit) or native_call_limit<=0 or progress_path is None):
@@ -61,7 +61,7 @@ def launch_stage(command, *, deadline, log_path=None, memory_path=None, progress
     started=time.perf_counter()
     launched_epoch=time.time()
     try:
-        process=subprocess.Popen(command,cwd=ROOT,stdout=stream,stderr=subprocess.STDOUT,
+        process=subprocess.Popen(command,cwd=ROOT,stdout=stream,stderr=subprocess.STDOUT,env=environment,
             creationflags=subprocess.CREATE_NO_WINDOW if os.name=="nt" else 0)
         if memory_path:
             memory=MemoryTimeline(memory_path,floor_bytes=memory_floor_bytes)

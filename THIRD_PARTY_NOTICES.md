@@ -27,6 +27,13 @@
   supplied solved POPs and competitor solutions are not used.
 - Solver dependencies retain their upstream notices: HiGHS (MIT), Ipopt (EPL),
   MUMPS and JuMP/Julia dependencies according to their installed package licenses.
+- The optional native setup guard patches HiGHS 1.15.1, upstream commit
+  `04024d701f79feb8e2f18bc3df0dffc04ef05088`. The complete changes are retained in
+  `patches/highs-1.15.1-setup-guard.patch`, with the upstream copyright and MIT
+  license in `patches/HIGHS-LICENSE.txt`. The separately built local library is
+  ignored, hash-bound by `manifests/native_highs_setup_guard_v1.json`, and does
+  not replace the installed solver. Build tooling and its notices stay local;
+  this repository does not redistribute native binaries or the toolchain.
 
 This project is an independent prototype, not an original team's proprietary
 solver or an official competition submission. Upstream comparison times do not

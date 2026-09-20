@@ -9,7 +9,7 @@ def source_hashes(root: Path) -> dict[str, str]:
     patterns = (
         "go3cpu/*.py", "scripts/*.py", "scripts/*.jl", "src/*.jl",
         "tests/*.py", "config/*.json", "manifests/authorization_*.json",
-        "manifests/campaign/*.json",
+        "manifests/campaign/*.json", "manifests/native_highs*.json", "patches/*.patch",
     )
     files = {path for pattern in patterns for path in root.glob(pattern)}
     files.update(root / name for name in (

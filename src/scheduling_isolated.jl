@@ -1,6 +1,7 @@
 # Cold native solve and result-only restoration in disjoint OS processes.
 # No raw-case parsing, GOC3Benchmark, Ipopt, or extraction metadata in the solver.
 const ISOLATED_STORAGE_POLICY="disk_isolated_native_v1"
+include(joinpath(@__DIR__,"native_highs_policy.jl"))
 
 function isolated_termination(status)
     get(Dict(7=>MOI.OPTIMAL,8=>MOI.INFEASIBLE,9=>MOI.INFEASIBLE_OR_UNBOUNDED,
@@ -26,6 +27,15 @@ function isolated_options(config)
         # Pinned HiGHS 1.15.1 rule 13. Disables an optional reduction pass,
         # not constraints, presolve as a whole, or feasibility tolerances.
         options["presolve_rule_off"]=8192
+    end
+    policy=get(config,"scheduling_native_backend_policy","upstream_jll_v1")
+    policy in ("upstream_jll_v1",NATIVE_SETUP_GUARD_POLICY) || error("Unknown native backend")
+    if policy==NATIVE_SETUP_GUARD_POLICY
+        cap=get(config,"scheduling_native_objective_clique_max_size",nothing)
+        cap isa Integer && !(cap isa Bool) && 0<=cap<=4096 || error("Invalid objective-clique cap")
+        options["mip_objective_clique_max_size"]=cap
+    elseif haskey(config,"scheduling_native_objective_clique_max_size")
+        error("Objective-clique cap requires the registered native backend")
     end
     options
 end

@@ -57,14 +57,15 @@ def bounded_reserve_pipeline_audit(evidence, worker="bounded_reserve_worker"):
 
 
 def main():
+    tested_sources=source_hashes()
     env=runtime_environment()
     evidence=Path(tempfile.mkdtemp(prefix="pilot002_component_gate_",dir=ROOT/"tmp"))
     print("COMPONENT_EVIDENCE "+str(evidence),flush=True)
     stages=[]
-    def stage(name,command,timeout=120):
+    def stage(name,command,timeout=120,stage_env=None):
         started=time.perf_counter()
         with (evidence/(name+".log")).open("w",encoding="utf-8") as log:
-            p=subprocess.run(command,cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=timeout,
+            p=subprocess.run(command,cwd=ROOT,env=env if stage_env is None else stage_env,stdout=log,stderr=subprocess.STDOUT,timeout=timeout,
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name=="nt" else 0)
         entry={"name":name,"returncode":p.returncode,"seconds":time.perf_counter()-started,
             "log_sha256":sha256(evidence/(name+".log"))}
@@ -90,6 +91,13 @@ def main():
         "scripts/test_reserve_benders_partition.jl"],timeout=180)
     stage("reserve_benders_runtime_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_reserve_benders_runtime.jl"],timeout=120)
+    from go3cpu.native_highs import native_environment
+    guard_config=json.loads((ROOT/"config/tiny_reserve_benders_native_guard.json").read_text())
+    guard_env=native_environment(guard_config,root=ROOT,base_environment=env)
+    stage("native_highs_guard_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_native_highs_guard.jl"],timeout=120,stage_env=guard_env)
+    stage("guarded_reserve_benders_runtime_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_reserve_benders_runtime.jl"],timeout=120,stage_env=guard_env)
     stage("consumer_dominance_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -341,6 +349,20 @@ def main():
             benders_result["evidence_directory"]!=str(benders_directory) or
             benders_result["source_hashes"]!=source_hashes() or benders_result["full_case_runs"]!=0):
         raise RuntimeError("Stale or incomplete source reserve decomposition test gate")
+    stage("native_guard_benders_integration",[sys.executable,"scripts/test_reserve_benders_pipeline.py",
+        "--integration-only","--native-guard"],timeout=420)
+    guard_log=(evidence/"native_guard_benders_integration.log").read_text()
+    guard_match=re.search(r"^BENDERS_COMPONENT_EVIDENCE (.+)$",guard_log,re.MULTILINE)
+    if guard_match is None:
+        raise RuntimeError("Missing current native-guard integration evidence")
+    guard_directory=Path(guard_match.group(1).strip())
+    guard_result=json.loads((guard_directory/"result.json").read_text())
+    if (not guard_result["pass"] or not guard_result["complete"] or
+            guard_result["source_hashes"]!=source_hashes() or guard_result["full_case_runs"]!=0 or
+            guard_result["results"]["native_guard"]["workers_checked"]<16 or
+            guard_result["results"]["source_dc_ac_pipeline"]["certificate"]["candidate_sha256"] !=
+            benders_result["results"]["source_dc_ac_pipeline"]["certificate"]["candidate_sha256"]):
+        raise RuntimeError("Native guard changed or did not verify the complete tiny integration")
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -661,13 +683,18 @@ def main():
     # Count their summaries explicitly rather than silently omitting them.
     for name,expected_sets in (("reserve_benders_certificate_tests",5),
                                ("reserve_benders_partition_tests",3),
-                               ("reserve_benders_runtime_tests",2)):
+                               ("reserve_benders_runtime_tests",2),
+                               ("native_highs_guard_tests",2),
+                               ("guarded_reserve_benders_runtime_tests",2)):
         counts=re.findall(r"^[^\n|]+\|\s+(\d+)\s+(\d+)\s+",
                           (evidence/(name+".log")).read_text(),re.MULTILINE)
         if len(counts)!=expected_sets or any(a!=b for a,b in counts):
             raise RuntimeError(f"Missing or failing decomposition test summaries: {name}")
         julia_counts.extend(counts)
+    from go3cpu.provenance import assert_tested_sources_unchanged
+    assert_tested_sources_unchanged(ROOT,tested_sources)
     result={"pass":True,"scope":"Original synthetic 2-bus 3-interval fixture only; no competition-case solve",
+        "complete":True,"full_case_runs":0,
         "runtime":runtime_identity(),
         "python_test_count":python_count,"julia_test_count":sum(int(a) for a,b in julia_counts),"stages":stages,
         "evidence_directory":str(evidence),
@@ -700,6 +727,7 @@ def main():
         "tiny_compacted_scheduling_proof":compacted_proof,
         "tiny_compacted_scheduling_original_audit":original_audit,
         "tiny_reserve_benders_integration":benders_result,
+        "tiny_native_guard_benders_integration":guard_result,
         "tiny_bounded_reserve_storage":bounded_reserve_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,
@@ -719,7 +747,7 @@ def main():
         "tiny_worker_exact_interval_coverage":coverage_records,
         "tiny_source_features_scheduling":feature_stats,
         "tiny_source_features_ac_statistics":source_ac_stats,
-        "tiny_reserve_aware_statistics":ac_intervals,"source_sha256":source_hashes()}
+        "tiny_reserve_aware_statistics":ac_intervals,"source_sha256":tested_sources}
     atomic_json(ROOT/"manifests/component_tests.json",result)
 
 

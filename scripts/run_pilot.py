@@ -103,6 +103,8 @@ def preflight(config_path):
             switching=config["official_allow_switching"],
             reference_policy=config.get("quality_reference_policy", "sixth_best_eligible_score"))
     env=runtime_environment()
+    from go3cpu.native_highs import backend_record
+    native_backend=backend_record(config,root=ROOT)
     host_memory=None
     memory_floor=configured_memory_floor(config)
     if memory_floor is not None:
@@ -120,7 +122,7 @@ def preflight(config_path):
         "julia_manifest_sha256":sha256(ROOT/"Manifest.toml"),"source_manifest_sha256":sha256(ROOT/"manifests/sources.json"),
         "component_tests_sha256":sha256(ROOT/"manifests/component_tests.json"),
         "config":config,"case":case_record,"quality_target":quality_target,
-        "hardware":hardware,"host_memory":host_memory,"storage":storage_check(ROOT,pending_bytes=GIB,
+        "hardware":hardware,"host_memory":host_memory,"native_backend":native_backend,"storage":storage_check(ROOT,pending_bytes=GIB,
              floor_bytes=int(config["minimum_free_gib"]*GIB)),
         "setup_exclusions":"Dependency installation, package precompilation, source registration, checkout and download only. Runtime process import/JIT, raw loading, preprocessing and case factors included.",
         "initialization":"Cold; source conditions only, no POP or saved optimized solutions",

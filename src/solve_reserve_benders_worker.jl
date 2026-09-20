@@ -19,7 +19,8 @@ function run_benders_stage(output,config_path,request_path,directory,deadline)
         atomic_json(joinpath(output,"progress",lpad(string(sequence),8,'0')*".json"),record)
         println("GO3_PROGRESS ",JSON.json(record));flush(stdout)
     end
-    event("reserve_benders_worker_started",Dict("raw_case_parsed"=>false))
+    native_backend=native_highs_identity(config)
+    event("reserve_benders_worker_started",Dict("raw_case_parsed"=>false,"native_backend"=>native_backend))
     result=if request["mode"]=="master"
         rb_master_round(ctx,config,request,directory;deadline=deadline,on_event=event)
     elseif request["mode"]=="recourse"
@@ -28,6 +29,7 @@ function run_benders_stage(output,config_path,request_path,directory,deadline)
         error("Unknown Benders stage")
     end
     result["request_sha256"]=spool_sha(request_path)
+    result["native_backend"]=native_backend
     atomic_json(joinpath(directory,"result.json"),result)
     event("reserve_benders_stage_complete",Dict("result_sha256"=>spool_sha(joinpath(directory,"result.json"))))
 end
