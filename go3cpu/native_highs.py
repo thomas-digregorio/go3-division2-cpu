@@ -8,9 +8,12 @@ import tomllib
 from .safety import local_path
 
 POLICY = "setup_clique_guard_v1"
+ROOT_POLICY = "root_memory_guard_v1"
 STOCK_ARTIFACT = "7b3fde6a10989de897c61b0c6880e7e7d97cccd4"
 SOURCE_COMMIT = "04024d701f79feb8e2f18bc3df0dffc04ef05088"
 MANIFEST = "manifests/native_highs_setup_guard_v1.json"
+ROOT_MANIFEST = "manifests/native_highs_root_memory_guard_v1.json"
+POLICY_MANIFESTS = {POLICY: MANIFEST, ROOT_POLICY: ROOT_MANIFEST}
 
 
 def digest(path):
@@ -21,11 +24,17 @@ def digest(path):
 def backend_record(config, *, root):
     policy = config.get("scheduling_native_backend_policy", "upstream_jll_v1")
     if policy == "upstream_jll_v1":
-        if "scheduling_native_objective_clique_max_size" in config:
-            raise ValueError("An objective-clique cap requires the registered native backend")
+        if any(key in config for key in (
+                "scheduling_native_objective_clique_max_size", "scheduling_native_analytic_center")):
+            raise ValueError("Native setup controls require the registered native backend")
         return {"policy": policy}
-    if policy != POLICY:
+    if policy not in POLICY_MANIFESTS:
         raise ValueError("Unknown native backend policy")
+    if policy == ROOT_POLICY:
+        if config.get("scheduling_native_analytic_center") is not False:
+            raise ValueError("Root-memory policy requires the optional analytic center disabled")
+    elif "scheduling_native_analytic_center" in config:
+        raise ValueError("Analytic-center control requires the root-memory backend")
     cap = config.get("scheduling_native_objective_clique_max_size")
     if type(cap) is not int or not 0 <= cap <= 4096:
         raise ValueError("Registered objective-clique cap must be an integer in [0,4096]")
@@ -36,9 +45,9 @@ def backend_record(config, *, root):
             or config.get("scheduling_mip_lp_solver") != "simplex"):
         raise ValueError("Local native backend requires the serial isolated simplex route")
     root = local_path(root)
-    manifest_path = root / MANIFEST
+    manifest_path = root / POLICY_MANIFESTS[policy]
     record = json.loads(manifest_path.read_text())
-    if (record["policy"] != POLICY or record["source_commit"] != SOURCE_COMMIT
+    if (record["policy"] != policy or record["source_commit"] != SOURCE_COMMIT
             or record["stock_artifact"] != STOCK_ARTIFACT
             or record["floating_point_bits"] != 64 or record["highs_int_bits"] != 32):
         raise ValueError("Native build identity or numeric contract differs")
@@ -53,8 +62,11 @@ def backend_record(config, *, root):
     overrides = tomllib.loads((overlay / "artifacts/Overrides.toml").read_text())
     if overrides != {STOCK_ARTIFACT: str(prefix).replace("\\", "/")}:
         raise ValueError("Unexpected native override; no global JLL changes are permitted")
-    return {"policy": policy, "manifest_sha256": digest(manifest_path),
-            "manifest": record, "objective_clique_max_size": cap}
+    result = {"policy": policy, "manifest_sha256": digest(manifest_path),
+              "manifest": record, "objective_clique_max_size": cap}
+    if policy == ROOT_POLICY:
+        result["analytic_center_requested"] = False
+    return result
 
 
 def native_environment(config, *, root, base_environment=None):

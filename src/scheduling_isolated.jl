@@ -29,13 +29,20 @@ function isolated_options(config)
         options["presolve_rule_off"]=8192
     end
     policy=get(config,"scheduling_native_backend_policy","upstream_jll_v1")
-    policy in ("upstream_jll_v1",NATIVE_SETUP_GUARD_POLICY) || error("Unknown native backend")
-    if policy==NATIVE_SETUP_GUARD_POLICY
+    policy=="upstream_jll_v1" || haskey(NATIVE_GUARD_MANIFESTS,policy) || error("Unknown native backend")
+    if haskey(NATIVE_GUARD_MANIFESTS,policy)
         cap=get(config,"scheduling_native_objective_clique_max_size",nothing)
         cap isa Integer && !(cap isa Bool) && 0<=cap<=4096 || error("Invalid objective-clique cap")
         options["mip_objective_clique_max_size"]=cap
     elseif haskey(config,"scheduling_native_objective_clique_max_size")
         error("Objective-clique cap requires the registered native backend")
+    end
+    if policy==NATIVE_ROOT_MEMORY_POLICY
+        get(config,"scheduling_native_analytic_center",nothing)===false ||
+            error("Root-memory guard requires analytic center disabled")
+        options["mip_compute_analytic_center"]=false
+    elseif haskey(config,"scheduling_native_analytic_center")
+        error("Analytic-center control requires the root-memory backend")
     end
     options
 end

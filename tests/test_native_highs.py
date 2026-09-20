@@ -5,7 +5,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from go3cpu.native_highs import backend_record, native_environment, POLICY, MANIFEST, STOCK_ARTIFACT, SOURCE_COMMIT
+from go3cpu.native_highs import (backend_record, native_environment, POLICY, MANIFEST,
+    ROOT_POLICY, ROOT_MANIFEST, STOCK_ARTIFACT, SOURCE_COMMIT)
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -69,6 +70,44 @@ class NativeHighsPolicyTests(unittest.TestCase):
         self.assertNotEqual(registered_latch(ROOT,new),registered_latch(ROOT,old))
         self.assertEqual(new["total_seconds"],7200)
         self.assertEqual(new["minimum_available_memory_gib"],2)
+
+    def test_root_memory_policy_is_separate_and_requires_bool_false(self):
+        for value in (True,0,1,"off",None):
+            with self.subTest(value=value),self.assertRaisesRegex(ValueError,"requires.*disabled"):
+                backend_record(self.config(scheduling_native_backend_policy=ROOT_POLICY,
+                    scheduling_native_analytic_center=value),root=ROOT)
+        for policy in (POLICY,"upstream_jll_v1"):
+            with self.subTest(policy=policy),self.assertRaises(ValueError):
+                backend_record(self.config(scheduling_native_backend_policy=policy,
+                    scheduling_native_analytic_center=False),root=ROOT)
+
+    def test_root_memory_environment_preserves_the_previous_build(self):
+        config=self.config(scheduling_native_backend_policy=ROOT_POLICY,
+                           scheduling_native_analytic_center=False)
+        record=backend_record(config,root=ROOT)
+        old=backend_record(self.config(),root=ROOT)
+        self.assertEqual(record["manifest"]["policy"],ROOT_POLICY)
+        self.assertFalse(record["analytic_center_requested"])
+        self.assertNotEqual(record["manifest"]["artifact_directory"],old["manifest"]["artifact_directory"])
+        self.assertEqual(old["manifest"]["files"]["library"]["sha256"],
+            "09e8b2b6eafd425f03390dc5aa192820aa79f825025ee3be54e71a792b75634d")
+        env=native_environment(config,root=ROOT,base_environment={"UNCHANGED":"yes"})
+        self.assertEqual(env["JULIA_DEPOT_PATH"].split(os.pathsep)[0],
+                         str(ROOT/"environments/highs-root-memory-depot"))
+        self.assertEqual(env["UNCHANGED"],"yes")
+        from go3cpu.provenance import source_hashes
+        self.assertIn(ROOT_MANIFEST,source_hashes(ROOT))
+
+    def test_r08_changes_only_the_native_root_memory_policy(self):
+        from go3cpu.controller import registered_latch
+        old=json.loads((ROOT/"config/campaign_n23643_s003_r07.json").read_text())
+        new=json.loads((ROOT/"config/campaign_n23643_s003_r08.json").read_text())
+        changed={key for key in old.keys() | new.keys() if old.get(key)!=new.get(key)}
+        self.assertEqual(changed,{"pilot_id","scheduling_native_backend_policy",
+                                  "scheduling_native_analytic_center"})
+        self.assertEqual(new["scheduling_native_backend_policy"],ROOT_POLICY)
+        self.assertIs(new["scheduling_native_analytic_center"],False)
+        self.assertNotEqual(registered_latch(ROOT,new),registered_latch(ROOT,old))
 
 
 if __name__=="__main__":

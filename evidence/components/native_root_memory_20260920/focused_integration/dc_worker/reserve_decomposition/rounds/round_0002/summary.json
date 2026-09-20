@@ -1,0 +1,56 @@
+{
+  "round": 2,
+  "master": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_djuryurv\\dc_worker\\reserve_decomposition\\rounds\\round_0002\\master\\result.json",
+    "sha256": "267efbd931fe9a7114071d7146f08f4d67a60479a02cf57f68c59ddb2dd52956"
+  },
+  "master_statistics": {
+    "solve_seconds": 0.0010290145874023438,
+    "objective": 1732.1479,
+    "bound": 1732.1479,
+    "has_primal": true,
+    "native_status": 7,
+    "termination": "OPTIMAL",
+    "simplex_iterations": 0,
+    "barrier_iterations": -1,
+    "nodes": 0,
+    "solve_wall_seconds": 0.011999845504760742,
+    "relative_gap": 0.0
+  },
+  "master_start": {
+    "supplied": true,
+    "scope": "complete within-attempt primal; no external seed",
+    "native_consumption_reported": true,
+    "source_result": {
+      "sha256": "bbfdf983babd5310e5036ff5bdaa57b4fe3aadf5f001e29acff5a7a36bf134e2",
+      "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_djuryurv\\dc_worker\\reserve_decomposition\\rounds\\round_0001\\recourse\\result.json"
+    },
+    "api_returncode": 0,
+    "api_accepted": true,
+    "original_master_audit": {
+      "variables": 46,
+      "scope": "Original scheduling rows, bounds, integer domains and objective; not full GO3 verification",
+      "rows": 70,
+      "objective": 1732.1479000000002,
+      "complete": true,
+      "pass": true,
+      "maximum_residual": 0.0,
+      "tolerance": 1e-08
+    },
+    "maximum_cut_violation": 0.0,
+    "native_log_evidence": [
+      "MIP start solution is feasible, objective value is 1732.1479"
+    ]
+  },
+  "master_process_wall_seconds": 4.393103600014001,
+  "master_upper_bound": 1732.1479,
+  "recourse": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_djuryurv\\dc_worker\\reserve_decomposition\\rounds\\round_0002\\recourse\\result.json",
+    "sha256": "3a4e84459cf0f1c141df50f324df87d45549d5860d205dab8aeb0edf24ccea22"
+  },
+  "verified_incumbent": 1732.1479,
+  "recourse_process_wall_seconds": 5.426410500018392,
+  "all_source_hours_feasible": true,
+  "added_cuts": 3,
+  "relative_gap": 0.0
+}

@@ -34,6 +34,11 @@
   ignored, hash-bound by `manifests/native_highs_setup_guard_v1.json`, and does
   not replace the installed solver. Build tooling and its notices stay local;
   this repository does not redistribute native binaries or the toolchain.
+- `patches/highs-1.15.1-root-memory-guard.patch` is a separate cumulative HiGHS
+  patch adding an optional analytic-center opt-out and root timing markers on
+  the same pinned MIT-licensed source. Its build manifest is
+  `manifests/native_highs_root_memory_guard_v1.json`; the earlier patched build
+  and the installed JLL remain unchanged.
 
 This project is an independent prototype, not an original team's proprietary
 solver or an official competition submission. Upstream comparison times do not

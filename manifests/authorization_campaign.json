@@ -63,7 +63,19 @@
     "scenario": "003",
     "scope": "One new cold attempt after a fresh complete component gate. Use the hash-bound local HiGHS setup guard and externally enforced native-call deadline. Limit optional objective-clique grouping to 4096 nonzero-cost binary columns. Preserve FP64, the complete original model and audits, all source contingencies, all r06 budgets, score target, 7200-second limit and host safety floors. No previous authorization latch is reused."
   },
+  "root_memory_goal_continuation": {
+    "explicit_user_goal": "well i dont have more RAM so continue to try to get the 23k bus to run even with low RAM.",
+    "registered_next_attempt": "campaign_n23643_s003_r08",
+    "network": "C3E4N23643D2",
+    "scenario": "003",
+    "scope": "One cold attempt under the active low-memory goal, after a fresh complete component gate. Disable only the optional native analytic-center auxiliary LP, retaining the tested objective-clique cap. Preserve the full source model, FP64, existing within-run audited starts, ordinary simplex root LP and branch-and-cut, all r07 budgets, score target, exhaustive verification and safety floors. Preserve both prior native libraries and all used authorization latches. This solver-policy choice is an implementation within the goal, not a quoted user selection."
+  },
   "attempts": {
+    "campaign_n23643_s003_r08": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5"
+    },
     "campaign_n23643_s003_r07": {
       "network": "C3E4N23643D2",
       "scenario": "003",

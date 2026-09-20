@@ -1,0 +1,12 @@
+{
+  "mode": "recourse",
+  "round": 1,
+  "identity": {
+    "partition_manifest_sha256": "4a4520333b9b27dcd4ba3e5b2007efee42c359b5dee606fe99accb7df6c58897",
+    "source_manifest_sha256": "a9e88476729faf929155e83c3e0d3bfcb29f30766fdc89721b401674ef2e1e2f"
+  },
+  "master_result": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_djuryurv\\phase_one\\reserve_decomposition\\rounds\\round_0001\\master\\result.json",
+    "sha256": "b037f7b3203e0b4d6e3745ced5fd88731d4ce6ec37fd8ccb5aed5e67549f5fb2"
+  }
+}

@@ -22,5 +22,7 @@
 /evidence/campaign/campaign_n23643_s003_r06/** -text -whitespace
 /evidence/components/native_deadline_guard_20260920/** -text -whitespace
 /patches/highs-1.15.1-setup-guard.patch -text -whitespace
+/patches/highs-1.15.1-root-memory-guard.patch -text -whitespace
 /evidence/components/native_setup_guard_20260920/** -text -whitespace
 /evidence/campaign/campaign_n23643_s003_r07/** -text -whitespace
+/evidence/components/native_root_memory_20260920/** -text -whitespace

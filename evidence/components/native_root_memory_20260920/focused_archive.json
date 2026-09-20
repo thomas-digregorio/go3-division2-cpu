@@ -1,0 +1,20 @@
+{
+  "source_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_djuryurv",
+  "archive_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\evidence\\components\\native_root_memory_20260920\\focused_integration",
+  "files": 421,
+  "bytes": 710447,
+  "inventory_sha256": "955b2e5e2ea229df678cae8c376f1eafd0b1678355920e2319d81ddf01255eb3",
+  "copies_verified": true,
+  "source_deleted": false,
+  "full_case_runs": 0,
+  "stages": 11,
+  "python_tests": 151,
+  "native_workers": 16,
+  "independent_pass": true,
+  "official_feas": 1,
+  "official_phys_feas": 1,
+  "contingencies_required": 9,
+  "contingencies_completed": 9,
+  "candidate_sha256": "1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65",
+  "inventory_encoding": "UTF-8; sorted source full paths; relative forward-slash path TAB sha256 TAB byte-count; newline separators; no terminal newline"
+}

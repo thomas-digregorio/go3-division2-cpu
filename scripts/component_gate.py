@@ -98,6 +98,12 @@ def main():
         "scripts/test_native_highs_guard.jl"],timeout=120,stage_env=guard_env)
     stage("guarded_reserve_benders_runtime_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_reserve_benders_runtime.jl"],timeout=120,stage_env=guard_env)
+    root_memory_config=json.loads((ROOT/"config/tiny_reserve_benders_root_memory.json").read_text())
+    root_memory_env=native_environment(root_memory_config,root=ROOT,base_environment=env)
+    stage("native_root_memory_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_native_root_memory_guard.jl"],timeout=120,stage_env=root_memory_env)
+    stage("root_memory_reserve_benders_runtime_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_reserve_benders_runtime.jl"],timeout=120,stage_env=root_memory_env)
     stage("consumer_dominance_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -363,6 +369,23 @@ def main():
             guard_result["results"]["source_dc_ac_pipeline"]["certificate"]["candidate_sha256"] !=
             benders_result["results"]["source_dc_ac_pipeline"]["certificate"]["candidate_sha256"]):
         raise RuntimeError("Native guard changed or did not verify the complete tiny integration")
+    stage("native_root_memory_benders_integration",[sys.executable,"scripts/test_reserve_benders_pipeline.py",
+        "--integration-only","--root-memory"],timeout=420)
+    root_memory_log=(evidence/"native_root_memory_benders_integration.log").read_text()
+    root_memory_match=re.search(r"^BENDERS_COMPONENT_EVIDENCE (.+)$",root_memory_log,re.MULTILINE)
+    if root_memory_match is None:
+        raise RuntimeError("Missing current root-memory integration evidence")
+    root_memory_directory=Path(root_memory_match.group(1).strip())
+    root_memory_result=json.loads((root_memory_directory/"result.json").read_text())
+    root_certificate=root_memory_result["results"]["source_dc_ac_pipeline"]["certificate"]
+    stock_certificate=benders_result["results"]["source_dc_ac_pipeline"]["certificate"]
+    if (not root_memory_result["pass"] or not root_memory_result["complete"] or
+            root_memory_result["source_hashes"]!=source_hashes() or root_memory_result["full_case_runs"]!=0 or
+            root_memory_result["results"]["native_guard"]["workers_checked"]<16 or
+            root_memory_result["results"]["native_guard"].get("analytic_center_requested") is not False or
+            root_certificate["input_sha256"]!=stock_certificate["input_sha256"] or
+            abs(root_certificate["objective"]-stock_certificate["objective"])>1e-8):
+        raise RuntimeError("Root-memory guard failed the complete equivalent tiny integration")
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -685,7 +708,9 @@ def main():
                                ("reserve_benders_partition_tests",3),
                                ("reserve_benders_runtime_tests",2),
                                ("native_highs_guard_tests",2),
-                               ("guarded_reserve_benders_runtime_tests",2)):
+                               ("guarded_reserve_benders_runtime_tests",2),
+                               ("native_root_memory_tests",2),
+                               ("root_memory_reserve_benders_runtime_tests",2)):
         counts=re.findall(r"^[^\n|]+\|\s+(\d+)\s+(\d+)\s+",
                           (evidence/(name+".log")).read_text(),re.MULTILINE)
         if len(counts)!=expected_sets or any(a!=b for a,b in counts):
@@ -728,6 +753,7 @@ def main():
         "tiny_compacted_scheduling_original_audit":original_audit,
         "tiny_reserve_benders_integration":benders_result,
         "tiny_native_guard_benders_integration":guard_result,
+        "tiny_root_memory_benders_integration":root_memory_result,
         "tiny_bounded_reserve_storage":bounded_reserve_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,

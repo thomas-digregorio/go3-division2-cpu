@@ -1,0 +1,55 @@
+{
+  "schema": "go3_native_highs_build_v1",
+  "policy": "root_memory_guard_v1",
+  "version": "1.15.1",
+  "source_commit": "04024d701f79feb8e2f18bc3df0dffc04ef05088",
+  "source_url": "https://github.com/ERGO-Code/HiGHS",
+  "stock_artifact": "7b3fde6a10989de897c61b0c6880e7e7d97cccd4",
+  "floating_point_bits": 64,
+  "highs_int_bits": 32,
+  "compiler": "w64devkit 2.10.0 GCC 16.2.0",
+  "toolchain_archive_sha256": "18d0a4c71a166f8401ab6305781bec5882b40b5e06ba9807c61cb5f3b3c6325e",
+  "cmake": "4.4.3",
+  "build_options": {
+    "CMAKE_BUILD_TYPE": "Release",
+    "BUILD_SHARED_LIBS": "ON",
+    "BUILD_TESTING": "OFF",
+    "BUILD_EXAMPLES": "OFF",
+    "BUILD_CXX_EXE": "ON",
+    "HIPO": "OFF",
+    "ZLIB": "OFF",
+    "CUPDLP_GPU": "OFF",
+    "HIGHSINT64": "OFF"
+  },
+  "flags_note": "Same compiler/build options as setup guard; FP64 and 32-bit indices. Native scheduling uses simplex. Adds opt-out for the optional separate analytic-center LP; stock AC/refinement libraries and previous native build unchanged.",
+  "artifact_directory": "environments/highs-root-memory-build",
+  "overlay_directory": "environments/highs-root-memory-depot",
+  "installed_jll_modified": false,
+  "files": {
+    "executable": {
+      "path": "environments/highs-root-memory-build/bin/highs.exe",
+      "sha256": "ca4c747df0089ed9d208c0efb7850cd1cbfc88423f45317e42f4ad0936014443",
+      "bytes": 3454188
+    },
+    "library": {
+      "path": "environments/highs-root-memory-build/bin/libhighs.dll",
+      "sha256": "06fa04b2f66ae80f3446e8e2a95ad1bea09faa0414b3151c1764bbb6bf7395c8",
+      "bytes": 10052960
+    },
+    "override": {
+      "path": "environments/highs-root-memory-depot/artifacts/Overrides.toml",
+      "sha256": "ab0b57a1b4b1dd840f5a2a8de702cc303466dc61caba51d9868906d25bc8e9c4",
+      "bytes": 127
+    },
+    "patch": {
+      "path": "patches/highs-1.15.1-root-memory-guard.patch",
+      "sha256": "d88779c3b347c684a6510f0f7b19e20d2bc0fca1afbdfc56663daf31dc116dc6",
+      "bytes": 9710
+    },
+    "extras": {
+      "path": "environments/highs-root-memory-build/bin/libhighs_extras.dll",
+      "sha256": "2147821f40d8be3e0207e77285ef32d4a94bd9b2a23ee1c2d5b2eb8ad3548ced",
+      "bytes": 40610
+    }
+  }
+}
