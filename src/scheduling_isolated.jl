@@ -35,6 +35,7 @@ function isolated_native_solve(directory,output,config;deadline,diagnostic=false
     directory=spool_local(directory);output=spool_local(output)
     ispath(joinpath(output,"native_result.json")) && error("Native result already exists; no retry")
     get(config,"scheduling_seed_policy","off")=="off" || error("Isolated scheduling must start cold")
+    get(config,"scheduling_decomposition_policy","off")=="off" || error("A decomposed schedule must use its registered coordinator")
     record=validate_scheduling_spool(directory;deadline=deadline)
     record["identity"]["config"]==config || error("Isolated native configuration mismatch")
     diagnostic || get(config,"scheduling_storage_policy","")==ISOLATED_STORAGE_POLICY ||
@@ -175,6 +176,18 @@ function restore_isolated_scheduling(input,directory;include_reserves=true,on_ev
         exited["exited_before_ac_launch"]===true && exited["result_sha256"]==spool_sha(result_path)) ||
         error("Isolated native result is incomplete, diagnostic, mismatched, or has no successful process exit")
     audit=get(result["storage"],"original_scheduling_audit",nothing)
+    decomposition=get(record["identity"]["config"],"scheduling_decomposition_policy","off")
+    if decomposition!="off"
+        decomposition=="source_reserve_benders_v1" && result["storage"]["decomposition_policy"]==decomposition ||
+            error("Unknown or mismatched scheduling decomposition")
+        ref=result["storage"]["decomposition_summary"]
+        spool_sha(spool_local(ref["path"]))==ref["sha256"] || error("Decomposition summary identity mismatch")
+        summary=JSON.parsefile(ref["path"])
+        summary["complete"] && summary["incumbent"]!==nothing &&
+            summary["identity"]["source_manifest_sha256"]==result["spool_manifest_sha256"] &&
+            summary["objective"]==result["statistics"]["objective"] &&
+            summary["native_master_and_recourse_processes_never_overlap"] || error("Incomplete decomposition evidence")
+    end
     if get(record["identity"]["config"],"scheduling_compaction_policy","off")!= "off"
         audit!==nothing && audit["complete"] && audit["pass"] && audit["objective_agreement"] ||
             error("Compacted primal has no passing original-model audit")

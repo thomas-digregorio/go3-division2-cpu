@@ -25,6 +25,29 @@ function rb_transpose_interval(matrix::SparseMatrixCSC{Float64,Ti},dual::Vector{
     lower,upper
 end
 
+function rb_recourse_transpose(A,dual,c,y_upper)
+    lower,upper=rb_transpose_interval(A,dual)
+    # Phase I gives original recourse columns zero cost. A mathematically exact
+    # cancellation such as 1-1 must not force every multiplier to zero merely
+    # because FP64 interval additions enclosed zero with a positive endpoint.
+    # Refine only ambiguous zero-cost, unbounded columns with directed MPFR
+    # arithmetic; this tightens a proof, not model data or solver tolerances.
+    for j in eachindex(c)
+        c[j]==0 && !isfinite(y_upper[j]) && lower[j]<=0<upper[j] || continue
+        tighter=setprecision(BigFloat,256) do
+            setrounding(BigFloat,RoundUp) do
+                total=BigFloat(0)
+                for k in nzrange(A,j)
+                    total+=BigFloat(A.nzval[k])*BigFloat(dual[A.rowval[k]])
+                end
+                Float64(total,RoundUp)
+            end
+        end
+        upper[j]=min(upper[j],tighter)
+    end
+    lower,upper
+end
+
 function rb_certificate_inputs(A,P,c,lower,upper,y_upper,x_lower,x_upper,dual)
     m,n=size(A)
     size(P,1)==m && length(c)==n && length(y_upper)==n &&
@@ -55,7 +78,7 @@ function rb_repair_dual(A,c,lower,upper,y_upper,raw_dual)
     end
     repairs=0;scale=1.0;zero_fallback=false
     for pass in 1:8
-        _,at_upper=rb_transpose_interval(A,dual)
+        _,at_upper=rb_recourse_transpose(A,dual,c,y_upper)
         bad=[j for j in eachindex(c) if !isfinite(y_upper[j]) && at_upper[j]>c[j]]
         isempty(bad) && return dual,Dict("repair_passes"=>pass-1,"singleton_repairs"=>repairs,
             "common_scale"=>scale,"zero_fallback"=>zero_fallback,
@@ -77,7 +100,7 @@ function rb_repair_dual(A,c,lower,upper,y_upper,raw_dual)
                 needed<=0 && break
             end
         end
-        _,at_upper=rb_transpose_interval(A,dual)
+        _,at_upper=rb_recourse_transpose(A,dual,c,y_upper)
         factor=1.0
         for j in eachindex(c)
             isfinite(y_upper[j]) && continue
@@ -104,7 +127,7 @@ function reserve_benders_cut(A::SparseMatrixCSC{Float64,Ti},P::SparseMatrixCSC{F
         raw_dual::Vector{Float64}) where {Ti,Tj}
     rb_certificate_inputs(A,P,c,lower,upper,y_upper,x_lower,x_upper,raw_dual)
     dual,repair=rb_repair_dual(A,c,lower,upper,y_upper,raw_dual)
-    _,at_upper=rb_transpose_interval(A,dual)
+    _,at_upper=rb_recourse_transpose(A,dual,c,y_upper)
     intercept=0.0
     for i in eachindex(dual)
         dual[i]==0 && continue

@@ -83,20 +83,40 @@ def main(julia,case,output,config_path,deadline):
             if config["scheduling_compaction_policy"]!="exact_zero_alias_v1":
                 raise ValueError("Unknown compaction policy")
             compact_stage(common,spool,output,deadline,config.get("minimum_available_memory_gib",2))
-        pid,code,wall=launch_stage(common+[str(ROOT/"src/solve_scheduling_native.jl")]+arguments,
+        decomposition=config.get("scheduling_decomposition_policy","off")
+        if decomposition not in ("off","source_reserve_benders_v1"):
+            raise ValueError("Unknown scheduling decomposition policy")
+        native_command=common+[str(ROOT/"src/solve_scheduling_native.jl")]+arguments
+        if decomposition=="source_reserve_benders_v1":
+            from run_reserve_benders import validate_configuration
+            validate_configuration(config)
+            reserve_partition_stage(common,spool,output,deadline,config.get("minimum_available_memory_gib",2))
+            native_command=[sys.executable,str(ROOT/"scripts/run_reserve_benders.py"),str(julia),
+                str(output),str(config_path),str(deadline)]
+        pid,code,wall=launch_stage(native_command,
             deadline=deadline,log_path=output/"native_console.log",
             memory_path=output/"native_memory.jsonl",progress_path=output/"progress",
             memory_floor_bytes=int(config.get("minimum_available_memory_gib",2)*GIB))
         result_path=output/"native_result.json"
         result=json.loads(result_path.read_text())
-        if (not result.get("complete") or result.get("diagnostic_only") or result["pid"]!=pid
+        if (not result.get("complete") or result.get("diagnostic_only") or not native_pid_matches(result,pid,decomposition)
                 or result["identity"]!=record["identity"] or result["spool_manifest_sha256"]!=sha256(manifest)):
             raise RuntimeError("Native result identity or completion mismatch")
-        atomic_json(output/"native_exit.json",{"pid":pid,"returncode":code,"exited_before_ac_launch":True,
+        atomic_json(output/"native_exit.json",{"pid":result["pid"],"launcher_pid":pid,"returncode":code,"exited_before_ac_launch":True,
             "process_wall_seconds":wall,"result_sha256":sha256(result_path)},exclusive=True)
         if not result["statistics"]["has_primal"]:
             raise RuntimeError("Native scheduling returned no feasible primal; AC cannot start")
     launch_stage(common+[str(ROOT/"src/pilot_worker.jl")]+arguments,deadline=deadline)
+
+
+def native_pid_matches(result,launcher_pid,decomposition):
+    # Windows venv python.exe can be a synchronous launcher for its base
+    # interpreter. Accept exactly that observed parent relationship for the
+    # Python coordinator, not an arbitrary different PID or a Julia worker.
+    return result.get("pid")==launcher_pid or (
+        decomposition=="source_reserve_benders_v1"
+        and result.get("coordinator_parent_pid")==launcher_pid
+        and result.get("storage",{}).get("decomposition_policy")==decomposition)
 
 
 def compact_stage(common,spool,output,deadline,memory_floor_gib=2):
@@ -109,6 +129,24 @@ def compact_stage(common,spool,output,deadline,memory_floor_gib=2):
     if not checked["pass"] or not checked["complete"]:
         raise RuntimeError("Exact compaction proof incomplete or failed")
     atomic_json(output/"compaction_exit.json",{"pid":pid,"returncode":code,
+        "process_wall_seconds":wall,"exited_before_native_launch":True,"proof_sha256":sha256(proof)},exclusive=True)
+
+
+def reserve_partition_stage(common,spool,output,deadline,memory_floor_gib=2):
+    directory=output/"reserve_decomposition"
+    if directory.exists():
+        raise FileExistsError("Reserve partition already exists; cannot reuse another attempt")
+    directory.mkdir()
+    pid,code,wall=launch_stage(common+[str(ROOT/"src/partition_reserves_worker.jl"),str(spool),
+        str(output/"compact_spool"),str(directory),str(deadline)],deadline=deadline,
+        log_path=directory/"partition_console.log",memory_path=directory/"partition_memory.jsonl",
+        progress_path=directory/"progress",memory_floor_bytes=int(memory_floor_gib*GIB))
+    proof=directory/"reserve_partition/proof_verification.json"
+    checked=json.loads(proof.read_text())
+    if (not checked["pass"] or not checked["complete"] or
+            checked["partition_manifest_sha256"]!=sha256(directory/"reserve_partition/manifest.json")):
+        raise RuntimeError("Source reserve partition proof incomplete or failed")
+    atomic_json(output/"reserve_partition_exit.json",{"pid":pid,"returncode":code,
         "process_wall_seconds":wall,"exited_before_native_launch":True,"proof_sha256":sha256(proof)},exclusive=True)
 
 

@@ -272,6 +272,10 @@ function run_worker(case_path, output, config, work_deadline)
                 timings["scheduling_compaction"]=JSON.parsefile(joinpath(output,"compaction_exit.json"))["process_wall_seconds"]
                 timings["scheduling"]+=timings["scheduling_compaction"]
             end
+            if isfile(joinpath(output,"reserve_partition_exit.json"))
+                timings["scheduling_reserve_partition"]=JSON.parsefile(joinpath(output,"reserve_partition_exit.json"))["process_wall_seconds"]
+                timings["scheduling"]+=timings["scheduling_reserve_partition"]
+            end
         end
     end
     atomic_json(joinpath(output,"statistics","scheduling.json"),statistics["scheduling"])

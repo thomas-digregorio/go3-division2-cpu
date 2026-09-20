@@ -94,14 +94,65 @@ and `evidence/diagnostics/reserve_partition_20260920/`. The final local diagnost
 directory is `tmp/reserve_partition_diagnostic_621032b1`; its partition manifest
 SHA256 is `ccb10af722c6980c7e11d40c6be75f7c91ca232e15e5fdcc27f98291d14e642f`.
 
-The remaining implementation is the bounded master/recourse coordinator,
-within-attempt starts, original-model incumbent reconstruction/auditing, and
-production-pipeline integration. Master and reserve solves should use separate
-process lifetimes so native heaps do not overlap. Small cut coefficients must
-be weakened conservatively before native insertion, never silently discarded
-in a way that invalidates a lower bound; a tested helper implements this.
+The bounded master/recourse coordinator and production-pipeline integration are
+now implemented and undergoing the tiny-fixture integration gate. Native
+master and recourse stages run in separate, sequential processes. Each round
+checks every source reserve period, constructs certified lower cuts, and
+reconstructs/audits all original scheduling rows before saving an incumbent.
+Subsequent masters receive a complete, within-attempt, audited primal start;
+API acceptance is logged separately from native-log evidence of consumption.
+Small cut coefficients are weakened conservatively before native insertion,
+never silently discarded in a way that invalidates a lower bound.
+
+An infeasible hourly reserve LP invokes a separate elastic Phase I. Its
+certified positive lower bound yields a necessary feasibility cut on the
+continuous master domain. Phase-I slack is never accepted as a reserve
+schedule or an original-model feasibility repair. A tiny test exposed overly
+conservative FP64 interval cancellation in zero-cost columns. Ambiguous
+zero-cost/unbounded-column proof sums are now refined with directed MPFR
+arithmetic; source/solver values remain FP64 and source tolerances are unchanged.
+
+The orchestration uses a single absolute scheduling budget, reserves time for
+recourse and serialization, retains previously audited incumbents, and reports
+the joint scheduling gap against the master upper bound. A restricted-master
+gap alone cannot terminate successfully. A budget-limited scheduling incumbent
+can proceed to the unchanged AC/official pipeline without being described as
+gap-certified; full campaign acceptance still requires every physical, score,
+coverage and end-to-end time gate below. Each full attempt must start from raw
+inputs rather than any unsolved diagnostic partition or old solution.
 
 The complete regression gate and a newly registered frozen cold experiment
 are still required. The existing historical full-gate manifest is not current
-proof for these changes. Production configuration and previous run records are
-unchanged, and the score/time/full-verification goal is still unachieved.
+proof for these changes. Previous production configurations and run records
+are unchanged, and the score/time/full-verification goal is still unachieved.
+
+### Focused coordinator integration gate
+
+`tmp/reserve_loop_components_q0v1747z` passed 9 stages: 133 Python tests,
+606 lower-cut certificate assertions, 46 native-runtime assertions, two
+analytically solvable multiround fixtures, and the original three-period DC/AC
+tiny pipeline with independent and official evaluation. The cost-feedback
+fixture converged in two rounds; the infeasible-recourse fixture required a
+certified Phase-I cut and three rounds. Both attained the independently known
+joint objective -0.75 with maximum original-model residual zero.
+
+The source DC fixture required two scheduling rounds and reached objective
+1732.1479 with zero scheduling gap and residual. Its native HiGHS log explicitly
+reported that the complete prior-round MIP start was feasible. The simpler
+fixtures recorded successful API acceptance and explicit start residual checks,
+but presolve solved their masters without a log entry confirming incumbent
+consumption; these two facts are not conflated.
+
+The final three-period AC candidate has objective **1732.1459647319407**, the
+same serialized candidate SHA256 as the earlier pipeline
+(`1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`).
+Independent hard-constraint checks passed, official `feas=1` and `phys_feas=1`,
+and all **9/9** source outage-hour checks completed. This is small-fixture
+integration evidence, not a solved or timed 23,643-bus case.
+
+The first integration gate stopped before AC because Windows' synchronous
+Python venv launcher and its interpreter have different PIDs. The exit record
+now binds the actual coordinator PID and its direct launcher parent, while
+retaining exact PID matching for Julia workers. A regression test covers this
+distinction. The old incomplete gate is not counted as a pass. Compact evidence
+is archived in `evidence/components/reserve_benders_loop_20260920/`.

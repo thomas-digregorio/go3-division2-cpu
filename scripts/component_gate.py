@@ -88,6 +88,8 @@ def main():
         "scripts/test_reserve_benders_certificate.jl"],timeout=120)
     stage("reserve_benders_partition_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_reserve_benders_partition.jl"],timeout=180)
+    stage("reserve_benders_runtime_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_reserve_benders_runtime.jl"],timeout=120)
     stage("consumer_dominance_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -327,6 +329,18 @@ def main():
             or not original_audit["pass"] or not original_audit["objective_agreement"]
             or abs(compacted_dc["certificate"]["objective"]-bounded_reserve_dc["certificate"]["objective"])>1e-8):
         raise RuntimeError("Compacted pipeline failed equivalence, original-model residuals, or exhaustive checks")
+    stage("reserve_benders_pipeline_tests",[sys.executable,"scripts/test_reserve_benders_pipeline.py",
+        "--integration-only"],timeout=360)
+    benders_log=(evidence/"reserve_benders_pipeline_tests.log").read_text()
+    benders_match=re.search(r"^BENDERS_COMPONENT_EVIDENCE (.+)$",benders_log,re.MULTILINE)
+    if benders_match is None:
+        raise RuntimeError("Missing current Benders integration evidence directory")
+    benders_directory=Path(benders_match.group(1).strip())
+    benders_result=json.loads((benders_directory/"result.json").read_text())
+    if (not benders_result["pass"] or not benders_result["complete"] or
+            benders_result["evidence_directory"]!=str(benders_directory) or
+            benders_result["source_hashes"]!=source_hashes() or benders_result["full_case_runs"]!=0):
+        raise RuntimeError("Stale or incomplete source reserve decomposition test gate")
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -646,7 +660,8 @@ def main():
     # The new decomposition tests use descriptive (non-GO3-prefixed) names.
     # Count their summaries explicitly rather than silently omitting them.
     for name,expected_sets in (("reserve_benders_certificate_tests",5),
-                               ("reserve_benders_partition_tests",3)):
+                               ("reserve_benders_partition_tests",3),
+                               ("reserve_benders_runtime_tests",2)):
         counts=re.findall(r"^[^\n|]+\|\s+(\d+)\s+(\d+)\s+",
                           (evidence/(name+".log")).read_text(),re.MULTILINE)
         if len(counts)!=expected_sets or any(a!=b for a,b in counts):
@@ -684,6 +699,7 @@ def main():
         "tiny_compacted_scheduling_reserve_storage":compacted_reserves,
         "tiny_compacted_scheduling_proof":compacted_proof,
         "tiny_compacted_scheduling_original_audit":original_audit,
+        "tiny_reserve_benders_integration":benders_result,
         "tiny_bounded_reserve_storage":bounded_reserve_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,

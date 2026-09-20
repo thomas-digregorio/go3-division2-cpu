@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "C:\Users\thoma\Documents\go3-division2-cpu\scripts\run_disk_worker.py", line 147, in <module>
+    main(*sys.argv[1:5],float(sys.argv[5]))
+  File "C:\Users\thoma\Documents\go3-division2-cpu\scripts\run_disk_worker.py", line 104, in main
+    raise RuntimeError("Native result identity or completion mismatch")
+RuntimeError: Native result identity or completion mismatch
