@@ -1,0 +1,8 @@
+{
+  "pid": 24132,
+  "launcher_pid": 24252,
+  "returncode": 0,
+  "exited_before_ac_launch": true,
+  "process_wall_seconds": 19.333094300003722,
+  "result_sha256": "6cc113b3da0f769a38a81de37545671f74d966a8d68fb90f339561ad5b061fad"
+}

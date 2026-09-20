@@ -1,0 +1,35 @@
+{
+  "groups": [
+    {
+      "name": "main",
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_314vmtz9",
+      "file_count": 1210,
+      "bytes": 4123414,
+      "inventory_sha256": "3bd620a1236b7877727ebdb39204c815a962a183414c0b6f7cb62d428f558e12",
+      "copies_verified": true
+    },
+    {
+      "name": "stock_benders",
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_fnwz7ldj",
+      "file_count": 418,
+      "bytes": 668376,
+      "inventory_sha256": "860b052b66be6fa712fbff4a59e5e7d414785420a47e56ca492f160878e6a011",
+      "copies_verified": true
+    },
+    {
+      "name": "guarded_benders",
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_ed2ypvex",
+      "file_count": 418,
+      "bytes": 675936,
+      "inventory_sha256": "93d5edea2717042dd372b2e15122589588d76d16d2e67330582d0c3245c84487",
+      "copies_verified": true
+    }
+  ],
+  "component_manifest_sha256": "b8f9eebddc23d27c641e7807280007075a4194e545096a4d93c698386f734dfc",
+  "source_deleted": false,
+  "full_case_runs": 0,
+  "stages": 70,
+  "python_tests": 148,
+  "julia_assertions": 14974,
+  "inventory_encoding": "UTF-8, sorted source full paths, relative forward-slash path TAB sha256 TAB byte-count, newline separators, no terminal newline"
+}

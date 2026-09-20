@@ -1,6 +1,6 @@
 # Cold 23,643-bus attempt r07: preregistration
 
-Status: component regression in progress; no r07 full-case run has started.
+Status: complete fresh component regression passed; r07 is ready for cold launch.
 
 The latest user request authorizes another run after bug fixes and allows
 retaining floating-point precision. This attempt keeps FP64 and the complete
@@ -57,3 +57,18 @@ tested at that time; it is not a substitute for the final fresh regression gate.
 The r06 setup stall's exact routine remains unproven. The cap addresses a plausible
 hotspot; the new stage timing will identify where the next attempt spends time.
 No full-case speedup or successful 23,643-bus solution is claimed at preregistration.
+
+## Completed full regression gate
+
+The fresh suite in `tmp/pilot002_component_gate_314vmtz9` completed all 70 stages
+with 148 Python tests and 14,974 Julia assertions passing. Covered sources were
+identical at the beginning and end of the suite. No full-case solve was performed
+by this gate. Stock and guarded Benders pipelines passed all three AC intervals
+and all nine required contingency checks; both official feasibility flags were
+1 and their final candidate SHA256 values matched exactly. All 16 guarded native
+workers had the registered library identity.
+
+The complete component manifest and all JSON/log evidence from the main suite
+and both decomposition integrations are retained under the `full_gate` subfolder
+of `evidence/components/native_setup_guard_20260920`. Every copied file was
+individually hash-checked against its original. No original files were removed.
