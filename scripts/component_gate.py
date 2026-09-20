@@ -84,6 +84,10 @@ def main():
         "scripts/test_isolated_scheduling.jl"],timeout=120)
     stage("scheduling_compaction_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_scheduling_compaction.jl"],timeout=180)
+    stage("reserve_benders_certificate_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_reserve_benders_certificate.jl"],timeout=120)
+    stage("reserve_benders_partition_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_reserve_benders_partition.jl"],timeout=180)
     stage("consumer_dominance_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -639,6 +643,15 @@ def main():
     julia_counts=re.findall(r"^GO3[^\n]*\|\s+(\d+)\s+(\d+)\s+",julia_logs,re.MULTILINE)
     if not julia_counts or any(a!=b for a,b in julia_counts):
         raise RuntimeError("Julia test summaries missing or not all passed")
+    # The new decomposition tests use descriptive (non-GO3-prefixed) names.
+    # Count their summaries explicitly rather than silently omitting them.
+    for name,expected_sets in (("reserve_benders_certificate_tests",5),
+                               ("reserve_benders_partition_tests",3)):
+        counts=re.findall(r"^[^\n|]+\|\s+(\d+)\s+(\d+)\s+",
+                          (evidence/(name+".log")).read_text(),re.MULTILINE)
+        if len(counts)!=expected_sets or any(a!=b for a,b in counts):
+            raise RuntimeError(f"Missing or failing decomposition test summaries: {name}")
+        julia_counts.extend(counts)
     result={"pass":True,"scope":"Original synthetic 2-bus 3-interval fixture only; no competition-case solve",
         "runtime":runtime_identity(),
         "python_test_count":python_count,"julia_test_count":sum(int(a) for a,b in julia_counts),"stages":stages,

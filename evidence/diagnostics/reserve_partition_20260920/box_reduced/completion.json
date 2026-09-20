@@ -1,0 +1,11 @@
+{
+  "solve_calls": 0,
+  "benchmark": false,
+  "complete": true,
+  "pid": 28288,
+  "process_exit": 0,
+  "process_wall_seconds": 119.14830800000345,
+  "proof_sha256": "4c78b5fda04d58d6148ce12b0b452e0d0729e50eba181aa1224255ee52122dcb",
+  "error": null,
+  "end_to_end_seconds": 119.14977580000414
+}

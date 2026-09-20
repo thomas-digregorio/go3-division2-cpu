@@ -1,0 +1,10 @@
+Test Summary:                                                 | Pass  Total  Time
+Reserve lower cuts retain complete piecewise LP recourse cost |  148    148  2.1s
+Test Summary:                                                    | Pass  Total  Time
+Zero-cost maximum-production auxiliary and imperfect dual repair |   15     15  0.0s
+Test Summary:                                                           | Pass  Total  Time
+Signed parameter domains, ranged rows, bad signs and fail-closed inputs |   40     40  0.0s
+Test Summary:                                                   | Pass  Total  Time
+Random feasible recourse points respect conservative lower cuts |  390    390  0.0s
+Test Summary:                                                     | Pass  Total  Time
+Native small-coefficient handling never strengthens the lower cut |   13     13  0.2s
