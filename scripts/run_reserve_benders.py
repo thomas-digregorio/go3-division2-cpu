@@ -17,7 +17,7 @@ sys.path.insert(0,str(ROOT))
 sys.path.insert(0,str(ROOT/"scripts"))
 from go3cpu.controller import atomic_json, sha256
 from go3cpu.safety import local_path, GIB
-from run_disk_worker import launch_stage
+from run_disk_worker import launch_stage, NativeCallDeadlineExceeded
 
 POLICY="source_reserve_benders_v1"
 ROUND_SCHEMA="go3_source_reserve_benders_round_v1"
@@ -51,6 +51,7 @@ def terminal_status(reason,gap_met):
     if reason=="round_limit":
         return 14,"ITERATION_LIMIT"
     if reason in ("master_absolute_deadline","recourse_absolute_deadline",
+                  "master_native_call_deadline","recourse_native_call_deadline",
                   "scheduling_budget_reserved_for_recourse_and_finalization",
                   "master_returned_no_feasible_primal"):
         return 13,"TIME_LIMIT"
@@ -84,10 +85,23 @@ def run_stage(common,output,config_path,request,directory,deadline,config):
     directory.mkdir(parents=True)
     request_path=directory/"request.json"
     atomic_json(request_path,request,exclusive=True)
-    pid,code,wall=launch_stage(common+[str(ROOT/"src/solve_reserve_benders_worker.jl"),str(output),
-        str(config_path),str(request_path),str(directory),str(deadline)],deadline=deadline,
-        log_path=directory/"console.log",memory_path=directory/"memory.jsonl",progress_path=output/"progress",
-        memory_floor_bytes=int(config.get("minimum_available_memory_gib",2)*GIB))
+    native_limit=config["scheduling_benders_master_round_seconds"] if request["mode"]=="master" else config["scheduling_benders_recourse_seconds"]
+    try:
+        pid,code,wall=launch_stage(common+[str(ROOT/"src/solve_reserve_benders_worker.jl"),str(output),
+            str(config_path),str(request_path),str(directory),str(deadline)],deadline=deadline,
+            log_path=directory/"console.log",memory_path=directory/"memory.jsonl",progress_path=output/"progress",
+            memory_floor_bytes=int(config.get("minimum_available_memory_gib",2)*GIB),
+            native_call_limit=native_limit)
+    except TimeoutError as exc:
+        # launch_stage's finally has stopped its owned tree and closed logs.
+        # Preserve this interrupted call even though no result.json exists.
+        atomic_json(directory/"interruption.json",{"schema":"go3_native_stage_interruption_v1",
+            "identity":request["identity"],"request_sha256":sha256(request_path),
+            "mode":request["mode"],"round":request["round"],"error":str(exc),
+            "kind":"native_call_deadline" if isinstance(exc,NativeCallDeadlineExceeded) else "absolute_stage_deadline",
+            "native_call":getattr(exc,"details",None),"launch_cleanup_completed":True,
+            "no_relaunch":True,"stage_deadline_epoch":deadline},exclusive=True)
+        raise
     path=directory/"result.json"
     record=json.loads(path.read_text())
     if (record.get("schema")!=ROUND_SCHEMA or not record.get("complete")
@@ -120,7 +134,7 @@ def run(julia,output,config_path,deadline):
     started=time.perf_counter()
     scheduling_end=min(deadline,time.time()+config["scheduling_seconds"])
     solve_end=scheduling_end-config["scheduling_benders_finalize_seconds"]
-    history=[];rounds=[];best=None;best_ref=None;upper=None;reason="round_limit"
+    history=[];rounds=[];interruptions=[];best=None;best_ref=None;upper=None;reason="round_limit"
     options=None;solve_calls=0
     for number in range(1,config["scheduling_benders_max_rounds"]+1):
         master_end=solve_end-config["scheduling_benders_recourse_reserve_seconds"]
@@ -131,8 +145,9 @@ def run(julia,output,config_path,deadline):
         directory=rounds_path/f"round_{number:04d}"
         try:
             master,master_ref=run_stage(common,output,config_path,request,directory/"master",master_end,config)
-        except TimeoutError:
-            reason="master_absolute_deadline";break
+        except TimeoutError as exc:
+            reason="master_native_call_deadline" if isinstance(exc,NativeCallDeadlineExceeded) else "master_absolute_deadline"
+            interruptions.append(artifact(directory/"master/interruption.json"));break
         options=master["options"];solve_calls+=master["solve_calls"]
         stats=master["statistics"]
         if stats["native_status"]==8 and best is not None:
@@ -148,10 +163,12 @@ def run(julia,output,config_path,deadline):
         request={"mode":"recourse","round":number,"identity":identity,"master_result":master_ref}
         try:
             recourse,recourse_ref=run_stage(common,output,config_path,request,directory/"recourse",solve_end,config)
-        except TimeoutError:
-            row["termination"]="recourse_absolute_deadline"
+        except TimeoutError as exc:
+            reason="recourse_native_call_deadline" if isinstance(exc,NativeCallDeadlineExceeded) else "recourse_absolute_deadline"
+            interruptions.append(artifact(directory/"recourse/interruption.json"))
+            row["termination"]=reason
             rounds.append(row);atomic_json(directory/"summary.json",row,exclusive=True)
-            reason="recourse_absolute_deadline";break
+            break
         if recourse["hours_completed"]!=len(partition["periods"]) or recourse["hours_required"]!=len(partition["periods"]):
             raise ValueError("Incomplete source reserve hour set")
         solve_calls+=recourse["solve_calls"]
@@ -173,6 +190,8 @@ def run(julia,output,config_path,deadline):
     gap=scheduling_gap(upper,None if best is None else best["objective"])
     summary={"schema":"go3_source_reserve_benders_summary_v1","complete":True,"pid":os.getpid(),
         "policy":POLICY,"identity":identity,"reason":reason,"rounds":rounds,"solve_calls":solve_calls,
+        "solve_calls_scope":"Returned calls in completed stages; interrupted stage evidence is separate",
+        "interrupted_stages":interruptions,
         "incumbent":best_ref,"objective":None if best is None else best["objective"],"bound":upper,
         "relative_gap":gap,"scheduling_gap_met":gap is not None and gap<=config["scheduling_relative_gap"],
         "all_source_hours_required":partition["periods"],"wall_seconds":time.perf_counter()-started,

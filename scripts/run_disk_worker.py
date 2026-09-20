@@ -4,6 +4,7 @@ The ordinary run controller supervises this complete process tree, including
 memory, physical disk and the original end-to-end deadline. No retry path.
 """
 import json
+import math
 import os
 from pathlib import Path
 import subprocess
@@ -20,14 +21,45 @@ from go3cpu.process_memory import MemoryTimeline
 from go3cpu.controller import latest_snapshot
 
 
+class NativeCallDeadlineExceeded(TimeoutError):
+    """An owned native call ignored its requested limit; not a RAM failure."""
+    def __init__(self, details):
+        self.details=details
+        super().__init__(f"Native {details['begin_event'].get('mode','solver')} call exceeded "
+                         f"its {details['begin_event']['actual_limit_seconds']:g}-second wall limit")
+
+
+def native_call_deadline(event, *, pid, launched_epoch, maximum_seconds):
+    # This registered synchronous worker publishes begin immediately before
+    # Highs_run, and returned before extraction/auditing. Other workers and
+    # stale records (including a reused OS PID) cannot start this guard.
+    if (event.get("event")!="reserve_benders_solve_begin" or event.get("pid")!=pid
+            or event.get("stage")!="source_reserve_benders"):
+        return None
+    epoch=event.get("epoch_seconds");seconds=event.get("actual_limit_seconds")
+    for value in (epoch,seconds):
+        if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value):
+            raise ValueError("Malformed owned native-call deadline marker")
+    if epoch<launched_epoch:
+        return None
+    if seconds<=0 or seconds>maximum_seconds+1e-6:
+        raise ValueError("Native-call limit exceeds its registered budget")
+    return epoch+seconds
+
+
 def launch_stage(command, *, deadline, log_path=None, memory_path=None, progress_path=None,
-                 memory_floor_bytes=2*GIB):
+                 memory_floor_bytes=2*GIB, native_call_limit=None):
+    if native_call_limit is not None and (
+            isinstance(native_call_limit,bool) or not isinstance(native_call_limit,(int,float))
+            or not math.isfinite(native_call_limit) or native_call_limit<=0 or progress_path is None):
+        raise ValueError("A native-call guard requires a finite positive limit and progress records")
     if time.time()>=deadline:
         raise TimeoutError("Work deadline exhausted before process launch")
     stream=local_path(log_path).open("w",encoding="utf-8") if log_path else None
     process=None
     memory=None
     started=time.perf_counter()
+    launched_epoch=time.time()
     try:
         process=subprocess.Popen(command,cwd=ROOT,stdout=stream,stderr=subprocess.STDOUT,
             creationflags=subprocess.CREATE_NO_WINDOW if os.name=="nt" else 0)
@@ -36,13 +68,25 @@ def launch_stage(command, *, deadline, log_path=None, memory_path=None, progress
         while process.poll() is None:
             if time.time()>=deadline:
                 raise TimeoutError("Work deadline exhausted during process stage")
+            event=latest_snapshot(progress_path) if progress_path else {}
+            if native_call_limit is not None:
+                native_end=native_call_deadline(event,pid=process.pid,
+                    launched_epoch=launched_epoch,maximum_seconds=native_call_limit)
+                now=time.time()
+                if native_end is not None and now>=native_end:
+                    raise NativeCallDeadlineExceeded({"pid":process.pid,"begin_event":event,
+                        "observed_epoch_seconds":now,"native_deadline_epoch":native_end,
+                        "native_elapsed_seconds":now-event["epoch_seconds"],
+                        "process_wall_seconds":time.perf_counter()-started,
+                        "poll_interval_seconds":0.25,"stage_deadline_epoch":deadline})
             if memory:
-                event=latest_snapshot(progress_path) if progress_path else {}
                 memory.observe(process.pid,event.get("event",event.get("stage","process_startup")))
             time.sleep(0.25)
         code=process.returncode
         if code:
-            raise RuntimeError(f"Scheduling worker stage failed: {Path(command[3]).name}; exit={code}")
+            label=next((Path(str(arg)).name for arg in command
+                if Path(str(arg)).suffix.lower() in (".py",".jl")),Path(str(command[0])).name)
+            raise RuntimeError(f"Scheduling worker stage failed: {label}; exit={code}")
         return process.pid,code,time.perf_counter()-started
     finally:
         if process is not None:

@@ -1,0 +1,26 @@
+GO3_PROGRESS {"epoch_seconds":1.789940863376e9,"event":"reserve_benders_worker_started","raw_case_parsed":false,"pid":9976,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":108.45450067520142}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+GO3_PROGRESS {"epoch_seconds":1.789940865078e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":5.0,"pid":9976,"period":1,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":106.75250053405762}
+LP has 1 row; 1 col; 1 nonzero
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [3e+00, 3e+00]
+  Bound   [0e+00, 0e+00]
+  RHS     [1e+00, 1e+00]
+Presolving model
+0 rows, 0 cols, 0 nonzeros 0s
+0 rows, 0 cols, 0 nonzeros 0s
+Presolve reductions: rows 0(-1); columns 0(-1); nonzeros 0(-1) - Reduced to empty
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Objective value     :  3.0000000000e+00
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00
+GO3_PROGRESS {"epoch_seconds":1.7899408651e9,"event":"reserve_benders_solve_returned","solve_seconds":0.00046896934509277344,"pid":9976,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":0,"barrier_iterations":0,"has_primal":true,"period":1,"native_status":7,"solve_wall_seconds":0.0009999275207519531,"round":1,"remaining_work_seconds":106.7305006980896}
+GO3_PROGRESS {"epoch_seconds":1.789940865573e9,"event":"reserve_benders_hour_complete","pid":9976,"mode":"recourse","hours_completed":1,"stage":"source_reserve_benders","hours_required":1,"kind":"cost","period":1,"round":1,"remaining_work_seconds":106.25750064849854}
+GO3_PROGRESS {"epoch_seconds":1.789940865806e9,"event":"reserve_benders_incumbent_audited","pid":9976,"mode":"recourse","objective":-3.0,"stage":"source_reserve_benders","round":1,"maximum_residual":0.0,"remaining_work_seconds":106.02450060844421}
+GO3_PROGRESS {"epoch_seconds":1.789940865846e9,"event":"reserve_benders_stage_complete","pid":9976,"result_sha256":"6ef81011030c96af3c0fa7e2b0bf52c7d393b9fde4d77d56ce0e4ad7bcf50a2f","mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":105.98450064659119}

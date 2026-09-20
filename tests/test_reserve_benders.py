@@ -34,6 +34,8 @@ class ReserveBendersContracts(unittest.TestCase):
         self.assertEqual(terminal_status("scheduling_gap_met",True),(7,"OPTIMAL"))
         self.assertEqual(terminal_status("round_limit",False),(14,"ITERATION_LIMIT"))
         self.assertEqual(terminal_status("recourse_absolute_deadline",False),(13,"TIME_LIMIT"))
+        self.assertEqual(terminal_status("master_native_call_deadline",False),(13,"TIME_LIMIT"))
+        self.assertEqual(terminal_status("recourse_native_call_deadline",False),(13,"TIME_LIMIT"))
         with self.assertRaises(ValueError):
             terminal_status("invented",False)
 

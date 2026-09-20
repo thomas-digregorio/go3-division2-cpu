@@ -249,3 +249,39 @@ Compact, hash-checked evidence is retained in
 `evidence/campaign/campaign_n23643_s003_r06/`, including the interrupted master
 logs, request and memory timeline. Binary matrices and all other detailed
 artifacts remain in the original local run; nothing was pruned or deleted.
+
+### External native-call deadline guard
+
+The native launcher now enforces each registered master/recourse call's wall
+limit externally. It accepts only a fresh `reserve_benders_solve_begin` marker
+from the exact owned Julia PID. A returned marker ends the native timer so
+post-solve extraction and original-model auditing retain their separate stage
+budget. The overall stage deadline and resource floors still apply. Native
+worker calls are synchronous; if intermediate in-call progress is added later,
+the guard must retain active-call state rather than rely on the latest marker.
+
+An interrupted stage writes immutable request-bound `interruption.json`
+evidence after its owned process tree is stopped. Native-call deadlines and
+absolute-stage deadlines have distinct terminal reasons. No retry is launched,
+and an earlier fully audited incumbent remains available for finalization.
+Completed-call counts explicitly exclude interrupted-stage evidence. Worker
+failure messages now identify the actual script instead of a positional
+argument such as `worker`.
+
+Six focused tests passed, including a deliberately unresponsive tiny subprocess
+and descendant, post-solve audit time, malformed/stale markers, and immutable
+interruption evidence. The subsequent default tiny integration gate at
+`tmp/reserve_loop_components__0cleh1k` passed **11 top-level stages, 142 Python
+tests and 652 Julia assertions**. Its three-period AC candidate retained the
+same SHA256 and objective 1732.1459647319407 as the preceding gates. Independent
+hard checks passed, official `feas=1` and `phys_feas=1`, and all **9/9** source
+outage-hour checks completed. Source inventory was unchanged during the gate.
+Compact evidence is retained in
+`evidence/components/native_deadline_guard_20260920/`.
+
+This is a watchdog/integration milestone, not a native setup-speed fix or a
+solved 23,643-bus case. The complete campaign regression gate is not yet current
+for this patch, and no replacement full-case run has started. FP64 arithmetic,
+source rows, bounds, costs, and feasibility tolerances remain unchanged. The
+separate read-only [precision audit](NUMERIC_PRECISION_AUDIT.md) explains why
+FP16/FP8 are not drop-in substitutes for the current native solver.
