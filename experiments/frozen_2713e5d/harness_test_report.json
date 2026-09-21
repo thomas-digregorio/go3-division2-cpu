@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "scope": "Registration/stop-on-first-failure synthetic tests only; no competition solve",
+  "tests": 13,
+  "checked_at_utc": "2026-09-21T19:27:48.9956914Z",
+  "source_sha256": {
+    "run.py": "2c5caee784a18252ba08128e34f59123088ec56849abf722d7d9d206b59b55fc",
+    "authorization.json": "812c49f512af58e62badac032e12d5d2639c4504ee8f41f39aca98cde6648e2f",
+    "test_harness.py": "892bea2a566f3fe487d3a862cdbe80fdad6ab17175a20cc7c875fbffa8301fe2"
+  },
+  "original_frozen_source_inventory_matches": true,
+  "component_gate": "Separate complete frozen component suite must also pass before launch",
+  "setup_note": "Restored 111 checkout files to their recorded original byte hashes after core.autocrlf changed line endings. No numerical edits."
+}
