@@ -1,0 +1,1 @@
+{"epoch_seconds":1.789987273538e9,"event":"compaction_proof_rows","pid":16572,"required_rows":20211928,"stage":"exact_compaction","checked_rows":10485760,"remaining_work_seconds":3755.0220420360565}

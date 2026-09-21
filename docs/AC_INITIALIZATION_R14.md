@@ -1,8 +1,10 @@
 # r14: complete current-schedule initialization and preserved primal restarts
 
 Status: focused tests and the complete source-matched regression gate passed.
-One cold r14 full-case attempt is registered, subject to frozen-commit preflight.
-The component pass is not a full-case feasibility or optimality claim.
+The one cold r14 full-case attempt completed with **NO_VERIFIED_INCUMBENT**:
+initialization was confirmed, but the first AC hour failed its residual screen.
+See [the terminal report](CAMPAIGN_N23643_R14.md). The component pass is not a
+full-case feasibility or optimality claim.
 
 ## Evidence motivating the change
 
