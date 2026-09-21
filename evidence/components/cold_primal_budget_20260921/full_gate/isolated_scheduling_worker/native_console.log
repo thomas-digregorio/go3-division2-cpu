@@ -1,0 +1,113 @@
+GO3_PROGRESS {"epoch_seconds":1.789963839771e9,"event":"isolated_native_worker_started","raw_case_parsed":false,"pid":29828,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":0.0019998550415039062,"remaining_work_seconds":217.8688108921051}
+GO3_PROGRESS {"epoch_seconds":1.789963840503e9,"event":"isolated_native_import_begin","options":{"highs_analysis_level":384,"random_seed":0,"parallel":"off","threads":1,"mip_feasibility_tolerance":1.0e-9,"primal_feasibility_tolerance":1.0e-9,"mip_lp_solver":"simplex","mip_rel_gap":1.0e-6,"log_dev_level":1},"pid":29828,"raw_case_parsed":false,"extraction_metadata_loaded":false,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":0.7339999675750732,"remaining_work_seconds":217.13681077957153}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+GO3_PROGRESS {"epoch_seconds":1.789963840805e9,"event":"isolated_native_import_complete","pid":29828,"variables":153,"nonzeros":481,"rows":171,"stage":"isolated_native_scheduling","seconds":0.24200010299682617,"elapsed_native_worker_seconds":1.0360000133514404,"remaining_work_seconds":216.83481073379517}
+GO3_PROGRESS {"epoch_seconds":1.789963840815e9,"event":"economic_solve_begin","pid":29828,"stage":"isolated_native_scheduling","actual_solver_limit_seconds":15.0,"elapsed_native_worker_seconds":1.0460000038146973,"remaining_work_seconds":216.8248107433319}
+ MIP      : 
+Rows      : 171
+Cols      : 153
+Nonzeros  : 481
+Integer   : 18 (15 binary)
+Coefficient ranges:
+  Matrix  [1e-02, 3e+00]
+  Cost    [3e-03, 1e+03]
+  Bound   [5e-01, 4e+00]
+  RHS     [5e-01, 3e+00]
+Presolving model
+Permitted suppression of presolve rules via presolve_rule_off option:
+   Rule  6 (set bit  6 =    64): Forcing row
+   Rule  7 (set bit  7 =   128): Forcing col
+   Rule  8 (set bit  8 =   256): Free col substitution
+   Rule  9 (set bit  9 =   512): Doubleton equation
+   Rule 10 (set bit 10 =  1024): Dependent equations
+   Rule 11 (set bit 11 =  2048): Dependent free columns
+   Rule 12 (set bit 12 =  4096): Aggregator
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+   Rule 14 (set bit 14 = 16384): Sparsify
+   Rule 15 (set bit 15 = 32768): Probing
+   Rule 16 (set bit 16 = 65536): Enumeration
+   Rule 17 (set bit 17 = 131072): Dual fixing
+   Rule 18 (set bit 18 = 262144): Col stuffing
+   Rule 19 (set bit 19 = 524288): Initial sweep
+68 rows, 54 cols, 177 nonzeros 0s
+57 rows, 45 cols, 168 nonzeros 0s
+Fixed 3 dominated columns and strengthened 0 bounds
+7 probing evaluations: 0 deleted rows, 0 deleted columns, 0 lifted nonzeros
+38 rows, 39 cols, 119 nonzeros 0s
+Presolve reductions: rows 38(-133); columns 39(-114); nonzeros 119(-362) 
+MIP-Timing:      0.0011 - completed presolve
+MIP-Timing:      0.0011 - starting  setup
+
+Solving MIP model with:
+   38 rows
+   39 cols (7 binary, 0 integer, 0 implied int., 32 continuous, 0 domain fixed)
+   119 nonzeros
+   Thread count 1 (of 24 threads). Using 1 max workers. Parallel search off
+MIP-Timing:      0.0011 - completed setup
+Feasibility Jump: starting solve. weightUpdateDecay=1, relaxContinuous=0  
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   inf             -26.425            Large        0      0      0         0     0.0s
+MIP-Timing:      0.0063 - starting evaluate root node
+MIP-Timing:      0.0064 - starting analytic centre calculation
+MIP-Timing:      0.0064 - start first LP solve (without basis)
+MIP-Timing:      0.0069 - finish first LP solve
+ T       0       0         0   0.00%   1737.275        1732.1479          0.30%        0      0      0        12     0.0s
+MIP-Timing:      0.0069 - completed evaluate root node
+         1       0         1 100.00%   1732.1479       1732.1479          0.00%        0      0      0        12     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1732.1479
+  Dual bound        1732.1479
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      0.0328443565215
+  Solution status   feasible
+                    1732.1479 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01
+                    0.00 (Presolve)
+                    0.01 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     12
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+getKktFailures:: cost norm =    1e+03; bound norm =        3
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility  5.2e-18 /  1.3e-18            0 /        0      5.2e-18 /  1.3e-18
+
+MIP sub-solver profiling: number of threads used = 1
+
+Thread 0
+Solver                    Calls    Time       Time/call      MIP%
+MIP                           1  7.0119e-03  7.0119e-03
+Du simplex (basis)            1  2.9802e-05  2.9802e-05       0.4
+Du simplex (no basis)         1  1.8191e-04  1.8191e-04       2.6
+TOTAL                            2.1172e-04                   3.0
+
+Percent (sub-)MIP time by thread
+
+MIP sub-solver            0
+Du simplex (basis)      0.4
+Du simplex (no basis)   2.6
+===========================
+Total                   3.0
+===========================
+GO3_PROGRESS {"epoch_seconds":1.789963840825e9,"event":"economic_solve_returned","native_returncode":0,"pid":29828,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":1.055999994277954,"wall_seconds":0.006999969482421875,"remaining_work_seconds":216.81481075286865}
+GO3_PROGRESS {"epoch_seconds":1.789963840879e9,"event":"native_model_released","pid":29828,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":1.1099998950958252,"remaining_work_seconds":216.76081085205078}
+GO3_PROGRESS {"epoch_seconds":1.789963840946e9,"event":"isolated_native_destroyed","pid":29828,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":1.1770000457763672,"remaining_work_seconds":216.69381070137024}

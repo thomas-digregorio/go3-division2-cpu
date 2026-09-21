@@ -1,0 +1,39 @@
+{
+  "round": 2,
+  "master": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_g504args\\phase_one\\reserve_decomposition\\rounds\\round_0002\\master\\result.json",
+    "sha256": "7ce9c1a3fc95fb6816c7942aebdf32c11477049057365d538cec43235398cde7"
+  },
+  "master_statistics": {
+    "solve_seconds": 0.022500276565551758,
+    "objective": -0.4999999999999999,
+    "bound": null,
+    "termination_scope": "last_constructor_or_restricted_LP_not_original_economic_MILP",
+    "bound_scope": "none_for_original_MILP_primal_heuristic_only",
+    "has_primal": true,
+    "selected_primal": "fixed_commitment_cost_lp",
+    "native_status": 7,
+    "termination": "OPTIMAL",
+    "simplex_iterations": 0,
+    "barrier_iterations": -1,
+    "nodes": 0,
+    "solve_wall_seconds": 0.02200007438659668,
+    "relative_gap": null
+  },
+  "master_start": {
+    "supplied": false,
+    "native_consumption_reported": false,
+    "scope": "cold construction within this attempt; fresh cost LP without start or basis"
+  },
+  "master_process_wall_seconds": 5.164697100000922,
+  "master_upper_bound": null,
+  "recourse": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_g504args\\phase_one\\reserve_decomposition\\rounds\\round_0002\\recourse\\result.json",
+    "sha256": "20b4a7a50ab171d38229a665d7a24479cbe27a9c67e026030aca1b09defa1c8c"
+  },
+  "verified_incumbent": -2.0000000000000004,
+  "recourse_process_wall_seconds": 5.417531600047369,
+  "all_source_hours_feasible": true,
+  "added_cuts": 1,
+  "relative_gap": null
+}

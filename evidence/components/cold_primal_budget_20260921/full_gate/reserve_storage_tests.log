@@ -1,0 +1,15 @@
+Rounded shunt steps:
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+Rounded shunt steps:
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+Test Summary:                                                     | Pass  Total   Time
+GO3 bounded reserve storage preserves all numeric upstream awards |  110    110  13.3s
+Rounded shunt steps:
+Test Summary:                                                    | Pass  Total  Time
+GO3 bounded reserve storage rechecks budget before each interval |    5      5  0.3s

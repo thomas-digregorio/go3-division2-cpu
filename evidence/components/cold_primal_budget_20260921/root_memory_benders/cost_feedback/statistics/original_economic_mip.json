@@ -1,0 +1,135 @@
+{
+  "native_status": 7,
+  "termination": "OPTIMAL",
+  "termination_origin": "decomposition_gap_or_budget_not_a_single_HiGHS_status",
+  "has_primal": true,
+  "objective": -0.75,
+  "bound": -0.7499999999999991,
+  "relative_gap": 1.1842378929335002e-15,
+  "solve_seconds": 0.013542890548706055,
+  "solve_wall_seconds": 19.641545200021937,
+  "simplex_iterations": 0,
+  "barrier_iterations": null,
+  "nodes": 0,
+  "decomposition": {
+    "schema": "go3_source_reserve_benders_summary_v1",
+    "complete": true,
+    "pid": 7644,
+    "policy": "source_reserve_benders_v1",
+    "identity": {
+      "partition_manifest_sha256": "18232d137cd617dd12b1c0f6201ae33102ffcb44ca5feb2477dfc1760d927aba",
+      "source_manifest_sha256": "bfc4188510a2132f3a5a23c2c1d8fe16bc9db78eba9e8fb481ba04fabc9a1784"
+    },
+    "reason": "scheduling_gap_met",
+    "rounds": [
+      {
+        "round": 1,
+        "master": {
+          "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_5k4zn63b\\cost_feedback\\reserve_decomposition\\rounds\\round_0001\\master\\result.json",
+          "sha256": "311d90545c4eb12f354b7a4ca4e952ad9720bbb246099d854d7a7980ab807964"
+        },
+        "master_statistics": {
+          "solve_seconds": 0.012094974517822266,
+          "objective": 0.0,
+          "bound": -0.0,
+          "has_primal": true,
+          "native_status": 7,
+          "termination": "OPTIMAL",
+          "simplex_iterations": 0,
+          "barrier_iterations": -1,
+          "nodes": 0,
+          "solve_wall_seconds": 0.011999845504760742,
+          "relative_gap": 0.0
+        },
+        "master_start": {
+          "supplied": false,
+          "native_consumption_reported": false,
+          "native_log_evidence": []
+        },
+        "master_process_wall_seconds": 4.13385499996366,
+        "master_upper_bound": -0.0,
+        "recourse": {
+          "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_5k4zn63b\\cost_feedback\\reserve_decomposition\\rounds\\round_0001\\recourse\\result.json",
+          "sha256": "4b3aceb8cb1de2f18ec314111ea4252f91cdc520d1392df0263190186fefaf80"
+        },
+        "verified_incumbent": -3.0,
+        "recourse_process_wall_seconds": 5.4067218999844044,
+        "all_source_hours_feasible": true,
+        "added_cuts": 1,
+        "relative_gap": 1.0
+      },
+      {
+        "round": 2,
+        "master": {
+          "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_5k4zn63b\\cost_feedback\\reserve_decomposition\\rounds\\round_0002\\master\\result.json",
+          "sha256": "7bc584a4d1a35509c980b122b0d3770adb8592b5f6f1c0d747e720599e17d458"
+        },
+        "master_statistics": {
+          "solve_seconds": 0.0006549358367919922,
+          "objective": -0.7499999999999991,
+          "bound": -0.7499999999999991,
+          "has_primal": true,
+          "native_status": 7,
+          "termination": "OPTIMAL",
+          "simplex_iterations": 0,
+          "barrier_iterations": -1,
+          "nodes": 0,
+          "solve_wall_seconds": 0.002000093460083008,
+          "relative_gap": 0.0
+        },
+        "master_start": {
+          "supplied": true,
+          "scope": "complete within-attempt primal; no external seed",
+          "native_consumption_reported": false,
+          "source_result": {
+            "sha256": "4b3aceb8cb1de2f18ec314111ea4252f91cdc520d1392df0263190186fefaf80",
+            "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_5k4zn63b\\cost_feedback\\reserve_decomposition\\rounds\\round_0001\\recourse\\result.json"
+          },
+          "api_returncode": 0,
+          "api_accepted": true,
+          "original_master_audit": {
+            "variables": 3,
+            "scope": "Original scheduling rows, bounds, integer domains and objective; not full GO3 verification",
+            "rows": 1,
+            "objective": -3.0,
+            "complete": true,
+            "pass": true,
+            "maximum_residual": 0.0,
+            "tolerance": 1e-08
+          },
+          "maximum_cut_violation": 0.0,
+          "native_log_evidence": []
+        },
+        "master_process_wall_seconds": 4.638390400039498,
+        "master_upper_bound": -0.7499999999999991,
+        "recourse": {
+          "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_5k4zn63b\\cost_feedback\\reserve_decomposition\\rounds\\round_0002\\recourse\\result.json",
+          "sha256": "212f1a7de863e6223e17c69168b9861fc3de6553d4761f30b171267927e56433"
+        },
+        "verified_incumbent": -0.75,
+        "recourse_process_wall_seconds": 5.418455799983349,
+        "all_source_hours_feasible": true,
+        "added_cuts": 1,
+        "relative_gap": 1.1842378929335002e-15
+      }
+    ],
+    "solve_calls": 4,
+    "solve_calls_scope": "Returned calls in completed stages; interrupted stage evidence is separate",
+    "interrupted_stages": [],
+    "incumbent": {
+      "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_5k4zn63b\\cost_feedback\\reserve_decomposition\\rounds\\round_0002\\recourse\\result.json",
+      "sha256": "212f1a7de863e6223e17c69168b9861fc3de6553d4761f30b171267927e56433"
+    },
+    "objective": -0.75,
+    "bound": -0.7499999999999991,
+    "relative_gap": 1.1842378929335002e-15,
+    "scheduling_gap_met": true,
+    "all_source_hours_required": [
+      1
+    ],
+    "wall_seconds": 19.641545200021937,
+    "native_master_and_recourse_processes_never_overlap": true,
+    "primal_policy": "off",
+    "scope": "Original joint scheduling subproblem only; not full AC or GO3 optimality"
+  }
+}

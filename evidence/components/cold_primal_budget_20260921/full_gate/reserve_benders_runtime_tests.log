@@ -1,0 +1,139 @@
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 2 rows; 1 col; 2 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [3e+00, 3e+00]
+  Bound   [0e+00, 0e+00]
+  RHS     [1e+00, 1e+00]
+Presolving model
+Problem status detected on presolve: Infeasible
+Model status        : Infeasible
+Objective value     :  0.0000000000e+00
+HiGHS run time      :          0.00
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 2 rows; 3 cols; 4 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [1e+00, 1e+00]
+  Bound   [0e+00, 0e+00]
+  RHS     [1e+00, 1e+00]
+Presolving model
+1 rows, 2 cols, 2 nonzeros 0s
+0 rows, 0 cols, 0 nonzeros 0s
+Presolve reductions: rows 0(-2); columns 0(-3); nonzeros 0(-4) - Reduced to empty
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Objective value     :  1.0000000000e+00
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 2 rows; 1 col; 2 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [3e+00, 3e+00]
+  Bound   [0e+00, 0e+00]
+  RHS     [2e-01, 8e-01]
+Presolving model
+Problem status detected on presolve: Infeasible
+Model status        : Infeasible
+Objective value     :  0.0000000000e+00
+HiGHS run time      :          0.00
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 2 rows; 3 cols; 4 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [1e+00, 1e+00]
+  Bound   [0e+00, 0e+00]
+  RHS     [2e-01, 8e-01]
+Presolving model
+2 rows, 3 cols, 4 nonzeros 0s
+2 rows, 3 cols, 4 nonzeros 0s
+Presolve reductions: rows 2(-0); columns 3(-0); nonzeros 4(-0) - Not reduced
+Problem not reduced by presolve: solving the LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     0.0000000000e+00 Pr: 1(0.75) 0.0s
+          2     5.0000000000e-01 Pr: 0(0) 0.0s
+
+Model status        : Optimal
+Simplex   iterations: 2
+Objective value     :  5.0000000000e-01
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 2 rows; 1 col; 2 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [3e+00, 3e+00]
+  Bound   [0e+00, 0e+00]
+  RHS     [5e-01, 5e-01]
+Presolving model
+0 rows, 0 cols, 0 nonzeros 0s
+0 rows, 0 cols, 0 nonzeros 0s
+Presolve reductions: rows 0(-2); columns 0(-1); nonzeros 0(-2) - Reduced to empty
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Objective value     :  1.5000000000e+00
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 2 rows; 1 col; 2 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [3e+00, 3e+00]
+  Bound   [0e+00, 0e+00]
+  RHS     [2e-01, 8e-01]
+Presolving model
+0 rows, 0 cols, 0 nonzeros 0s
+0 rows, 0 cols, 0 nonzeros 0s
+Presolve reductions: rows 0(-2); columns 0(-1); nonzeros 0(-2) - Reduced to empty
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Objective value     :  7.5000000000e-01
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 2 rows; 1 col; 2 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [3e+00, 3e+00]
+  Bound   [0e+00, 0e+00]
+  RHS     [1e+00, 1e+00]
+Presolving model
+0 rows, 0 cols, 0 nonzeros 0s
+0 rows, 0 cols, 0 nonzeros 0s
+Presolve reductions: rows 0(-2); columns 0(-1); nonzeros 0(-2) - Reduced to empty
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Objective value     :  0.0000000000e+00
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+Test Summary:                                       | Pass  Total  Time
+Native reserve LP dual and feasibility certificates |   31     31  2.1s
+Test Summary:                                     | Pass  Total  Time
+Benders native cut encoding and hash-bound arrays |   15     15  0.3s

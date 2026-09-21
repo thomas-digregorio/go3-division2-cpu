@@ -1,0 +1,70 @@
+{
+  "schema": "go3_source_reserve_benders_summary_v1",
+  "complete": true,
+  "pid": 2604,
+  "policy": "source_reserve_benders_v1",
+  "identity": {
+    "partition_manifest_sha256": "81d6fe6912938f61372bce8e07f925ca596dd9575569043619d5769effb2dd67",
+    "source_manifest_sha256": "8f6f3801f13c6d8f03e839e100c4d8c7ccaab391f1010c7db0c7dc8142a0a82b"
+  },
+  "reason": "source_feasible_constructed_schedule",
+  "rounds": [
+    {
+      "round": 1,
+      "master": {
+        "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_g504args\\bounded_incumbent\\reserve_decomposition\\rounds\\round_0001\\master\\result.json",
+        "sha256": "d79e9ff1dc98891fdd8c7fc36d079c4431196a3e34467cf2990d0ca1a7535d2a"
+      },
+      "master_statistics": {
+        "solve_seconds": 0.012529134750366211,
+        "objective": -0.25,
+        "bound": null,
+        "termination_scope": "last_constructor_or_restricted_LP_not_original_economic_MILP",
+        "bound_scope": "none_for_original_MILP_primal_heuristic_only",
+        "has_primal": true,
+        "selected_primal": "fixed_commitment_cost_lp",
+        "native_status": 7,
+        "termination": "OPTIMAL",
+        "simplex_iterations": 0,
+        "barrier_iterations": -1,
+        "nodes": 0,
+        "solve_wall_seconds": 0.014000177383422852,
+        "relative_gap": null
+      },
+      "master_start": {
+        "supplied": false,
+        "native_consumption_reported": false,
+        "scope": "cold construction within this attempt; fresh cost LP without start or basis"
+      },
+      "master_process_wall_seconds": 4.899636899994221,
+      "master_upper_bound": null,
+      "recourse": {
+        "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_g504args\\bounded_incumbent\\reserve_decomposition\\rounds\\round_0001\\recourse\\result.json",
+        "sha256": "110c1cc686024996d30d53c25cdf9d6120dfb55662404866bc7611394f6273f5"
+      },
+      "verified_incumbent": -3.25,
+      "recourse_process_wall_seconds": 5.405171600054018,
+      "all_source_hours_feasible": true,
+      "added_cuts": 1,
+      "relative_gap": null
+    }
+  ],
+  "solve_calls": 3,
+  "solve_calls_scope": "Returned calls in completed stages; interrupted stage evidence is separate",
+  "interrupted_stages": [],
+  "incumbent": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_g504args\\bounded_incumbent\\reserve_decomposition\\rounds\\round_0001\\recourse\\result.json",
+    "sha256": "110c1cc686024996d30d53c25cdf9d6120dfb55662404866bc7611394f6273f5"
+  },
+  "objective": -3.25,
+  "bound": null,
+  "relative_gap": null,
+  "scheduling_gap_met": false,
+  "all_source_hours_required": [
+    1
+  ],
+  "wall_seconds": 10.328404599975329,
+  "native_master_and_recourse_processes_never_overlap": true,
+  "primal_policy": "cold_online_then_fixed_cost_v1",
+  "scope": "Original joint scheduling subproblem only; not full AC or GO3 optimality"
+}

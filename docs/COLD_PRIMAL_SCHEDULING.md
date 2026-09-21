@@ -136,3 +136,28 @@ null original-MILP bounds/gaps and `SOLUTION_LIMIT`, not economic optimality.
 nested pipelines. Every copied file was SHA256-compared against its original;
 the archive summary records inventories. All originals remain local and nothing
 was deleted. A successful 23,643-bus run remains unproven by this evidence.
+
+## Completed r11 pre-run gate
+
+The fresh gate at `tmp/pilot002_component_gate_ehct1eyy` passed all 78 stages,
+160 Python tests and 16,535 Julia assertions. Its manifest SHA256 is
+`82d876e4bda9fe6e916ea69cb619be80f2434554a0316dd19a35d9f91f9557fa`.
+The post-run audit independently matched the exact evidence directory, every
+stage-log hash, complete current source inventory and dependency runtime.
+Summed stage wall time was 2,601.477779 seconds. No full-case solve was launched
+by this gate.
+
+The cold-primal integration at `tmp/reserve_loop_components_g504args` passed
+all eight stages and checked ten native worker identities against the pinned
+root-progress library. Its final independent and official tiny-pipeline check
+passed all 9/9 contingency evaluations, with both official feasibility flags
+equal to one and objective agreement. The final objective was
+1732.1459647319407; the candidate hash remained
+`1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`.
+The original economic MILP bounds/gaps remained null for the primal-heuristic
+fixtures. These tests validate implementation contracts, not large-case runtime
+or feasibility.
+
+The full gate and all five nested integration evidence trees are retained in
+`evidence/components/cold_primal_budget_20260921`, together with their manifest
+and hash-audited archive summary. All original evidence remains local.

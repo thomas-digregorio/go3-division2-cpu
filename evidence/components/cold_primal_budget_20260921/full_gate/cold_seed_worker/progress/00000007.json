@@ -1,0 +1,1 @@
+{"elapsed_scheduling_seconds":13.049000024795532,"event":"construction_audit_complete","objective":-2941.4249999999997,"stage":"scheduling_event","maximum_residual":5.551115123125783e-17,"constraints_including_bounds_and_integrality":433,"variables":153,"elapsed_worker_seconds":13.910000085830688,"complete":true,"pass":true,"remaining_work_seconds":91.53852987289429}

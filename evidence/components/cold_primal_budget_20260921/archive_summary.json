@@ -1,0 +1,52 @@
+{
+  "operation": "Completed component evidence copy and SHA256 verification only; no solve or reevaluation",
+  "pass": true,
+  "complete": true,
+  "full_case_runs": 0,
+  "files_deleted": 0,
+  "stages": 78,
+  "python_tests": 160,
+  "julia_assertions": 16535,
+  "manifest_sha256": "82d876e4bda9fe6e916ea69cb619be80f2434554a0316dd19a35d9f91f9557fa",
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_ehct1eyy",
+  "archives": {
+    "full_gate": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_ehct1eyy",
+      "files": 1421,
+      "bytes": 4959553,
+      "inventory_sha256": "bcc475899d3ce95d4c8eb53e25fe9d0f74ba52dcdda03a55466e315f8364316d"
+    },
+    "stock_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components__0tvlbs7",
+      "files": 741,
+      "bytes": 1022843,
+      "inventory_sha256": "fa3aee3a4028b6257a517dfe6f0f704df3e5727c9145696418eada21917cac2f"
+    },
+    "setup_guard_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_i8jlpp3z",
+      "files": 741,
+      "bytes": 1032868,
+      "inventory_sha256": "f47b12a07089f34d39eeeb183a855a646eed4d6173bd678875025626df25dba8"
+    },
+    "root_memory_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_5k4zn63b",
+      "files": 741,
+      "bytes": 1037679,
+      "inventory_sha256": "2abecb04bef8f3a27e8a79054e4a84ad7a2bee2379ca81b08c170a8fd9239d86"
+    },
+    "root_progress_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_a15ssp43",
+      "files": 742,
+      "bytes": 1045728,
+      "inventory_sha256": "ab38764caad4484e41aa1b8407a4174e353c86f6fabf8f32ef035be3f25c48a6"
+    },
+    "cold_primal_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_g504args",
+      "files": 660,
+      "bytes": 887120,
+      "inventory_sha256": "f7d9ceaf6d52abe50fe28851efd4fba0ed2ca210d35669c29b6af581745aa9a8"
+    }
+  },
+  "inventory_encoding": "UTF-8 concatenation in source FullName sort order: slash-separated relative path, NUL, decimal byte count, NUL, lowercase SHA256, LF. Every copied file separately compared to original.",
+  "original_evidence_retained": true
+}
