@@ -295,7 +295,10 @@ function run_worker(case_path, output, config, work_deadline)
     initial_reserve_policy in ("reallocate","use_joint_schedule_unverified") || error("Unknown initial reserve policy")
     initial_reserves = if initial_reserve_policy=="use_joint_schedule_unverified"
         get(config,"scheduling_include_reserves",false) || error("Initial reserve reuse requires joint scheduling")
-        schedule # This is explicitly unverified until the original full-case checks.
+        awards,audit=current_schedule_reserve_handoff(input,schedule)
+        statistics["initial_reserve_storage"]=audit
+        progress("initial_reserve_handoff";extra=audit)
+        awards # Explicitly unverified until the original full-case checks.
     else
         awards,audit=source_reserve_allocation(input,initial;policy=reserve_storage_policy,
             optimizer_for_interval=i->optimizer_with_attributes(HiGHS.Optimizer,"threads"=>config["highs_threads"],

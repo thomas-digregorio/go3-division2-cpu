@@ -51,7 +51,11 @@ def bounded_reserve_pipeline_audit(evidence, worker="bounded_reserve_worker"):
                 or audit["intervals_completed"]!=3 or audit["intervals_required"]!=3
                 or audit["maximum_live_interval_models"]!=1 or not audit["all_models_released"]
                 or [r["interval"] for r in audit["intervals"]]!=[1,2,3]
-                or any(not r["model_released"] for r in audit["intervals"])):
+                or any(not r["model_released"] or not r["accepted"]
+                       or not r["has_feasible_primal"] or r["result_count"]<1
+                       or not r["extraction_attempted"] or not r["projection_completed"]
+                       or r["maximum_model_residual"]>1e-8 or r["failure_reason"] is not None
+                       for r in audit["intervals"])):
             raise RuntimeError("Tiny reserve pipeline failed the bounded, source-identical lifetime contract")
     return audits
 
@@ -246,6 +250,23 @@ def main():
         "--solution",str(evidence/"bounded_reserve_worker/candidate_final.json"),
         "--output",str(evidence/"bounded_reserve_verification"),"--seconds","60"])
     bounded_reserve_dc=dc_pipeline_audit(evidence,"bounded_reserve_worker","bounded_reserve_verification")
+    stage("tiny_reserve_handoff_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/dc_problem.json",str(evidence/"reserve_handoff_worker"),
+        "config/tiny_reserve_handoff.json",str(time.time()+120)],timeout=125)
+    stage("tiny_reserve_handoff_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dc_problem.json",
+        "--solution",str(evidence/"reserve_handoff_worker/candidate_final.json"),
+        "--output",str(evidence/"reserve_handoff_verification"),"--seconds","60"])
+    handoff_dc=dc_pipeline_audit(evidence,"reserve_handoff_worker","reserve_handoff_verification")
+    handoff_stats=json.loads((evidence/"reserve_handoff_worker/solver_statistics.json").read_text())
+    handoff=handoff_stats["initial_reserve_storage"]
+    final_reserves=handoff_stats["final_reserve_storage"]
+    if (handoff["source"]!="current_attempt_joint_schedule" or handoff["optimization_calls"]!=0
+            or handoff["external_solution_read"] or handoff["initial_solution_verified"]
+            or not handoff["final_reserve_optimization_required"] or not handoff["full_case_checks_required"]
+            or final_reserves["intervals_completed"]!=3 or not final_reserves["all_models_released"]
+            or any(not r["accepted"] or r["maximum_model_residual"]>1e-8 for r in final_reserves["intervals"])):
+        raise RuntimeError("Tiny reserve handoff omitted final optimization or claimed initial verification")
     stage("tiny_batched_official_check",[sys.executable,"scripts/verify_candidate.py",
         "--input","tmp/official_tiny/dc_problem.json",
         "--solution",str(evidence/"bounded_reserve_worker/candidate_final.json"),
@@ -714,7 +735,7 @@ def main():
                     continuation_certificate,original_guard_certificate,guarded_recovery_certificate,
                     native_scheduling_certificate,exact_ramp_certificate,dc_audit["certificate"],
                     bounded_reserve_dc["certificate"],disk_dc["certificate"],isolated_dc["certificate"],
-                    compacted_dc["certificate"]):
+                    compacted_dc["certificate"],handoff_dc["certificate"]):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -723,7 +744,8 @@ def main():
                  "reserve_ac_worker","source_features_worker","cold_seed_worker","correction_worker",
                  "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
                  "guarded_recovery_worker","native_scheduling_worker","exact_ramp_worker","dc_worker",
-                 "bounded_reserve_worker","disk_scheduling_worker","isolated_scheduling_worker","compacted_scheduling_worker"):
+                 "bounded_reserve_worker","disk_scheduling_worker","isolated_scheduling_worker","compacted_scheduling_worker",
+                 "reserve_handoff_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -786,6 +808,8 @@ def main():
         "tiny_exact_ramp_statistics":exact_ramp_stats,
         "tiny_dc_pipeline":dc_audit,
         "tiny_bounded_reserve_pipeline":bounded_reserve_dc,
+        "tiny_reserve_handoff_pipeline":handoff_dc,
+        "tiny_reserve_handoff_statistics":handoff_stats,
         "tiny_batched_official_pipeline":batched_dc,
         "tiny_trimmed_scheduling_pipeline":trimmed_dc,
         "tiny_trimmed_scheduling_storage":trimmed_storage,

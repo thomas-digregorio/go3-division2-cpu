@@ -66,6 +66,10 @@ def collect(attempt, *, root=ROOT):
             "verification/schedule/certificate.json", "verification/final/certificate.json")
     compact_files += tuple(str(p.relative_to(run)) for p in
         sorted((run/"worker/native_correction").rglob("*.json")))
+    # Reserve result-count/status diagnostics are flushed here even when a
+    # failing interval prevents final solver_statistics.json serialization.
+    compact_files += tuple(str(p.relative_to(run)) for p in
+        sorted((run/"worker/progress").glob("*.json")))
     # A stopped native stage may have no result.json. Preserve its request,
     # console/progress and memory records, plus the source partition proof.
     # Large binary matrices/primal vectors remain in the retained run only.
