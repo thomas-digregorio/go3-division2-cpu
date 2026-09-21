@@ -50,6 +50,11 @@ function optimize_audited_ac!(model;policy="legacy_v1",interval,phase,deadline=I
         "floating_point_bits"=>64,"model_structure_changed"=>false,
         "source_bounds_changed"=>false,
         "timing_scope"=>"API time includes optimizer setup; native Ipopt timings are logged separately")
+    if haskey(model.ext,:ac_zero_reserve_proof)
+        record["pre_solve_exact_zero_reduction"]=true
+        record["source_feasible_set_changed"]=false
+        record["model_structure_change_scope"]="No further change during this numerical call; exact reserve reduction occurred before optimizer attachment"
+    end
     if policy==AC_NUMERICS_POLICY
         record["mu_strategy"]=get_optimizer_attribute(model,"mu_strategy")
         record["mu_strategy"]=="adaptive" || error("Native barrier policy changed unexpectedly")

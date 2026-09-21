@@ -82,9 +82,9 @@ def symbolic_ac_pipeline_audit(evidence, worker="symbolic_ac_worker", verificati
     return {"verification":verified,"statistics":stats}
 
 
-def complete_initialization_pipeline_audit(evidence):
+def complete_initialization_pipeline_audit(evidence,worker="initialized_ac_worker",verification="initialized_ac_verification"):
     import math
-    result=symbolic_ac_pipeline_audit(evidence,"initialized_ac_worker","initialized_ac_verification")
+    result=symbolic_ac_pipeline_audit(evidence,worker,verification)
     dual_transfers=0
     for interval in result["statistics"]["ac_intervals"]:
         info=interval["reserve_ac"]
@@ -120,6 +120,27 @@ def complete_initialization_pipeline_audit(evidence):
     if dual_transfers==0:
         raise RuntimeError("Tiny initialization pipeline did not preserve eligible dual transfer")
     result["verified_dual_transfers"]=dual_transfers
+    return result
+
+
+def zero_reserve_pipeline_audit(evidence):
+    import math
+    result=complete_initialization_pipeline_audit(evidence,"zero_reserve_worker","zero_reserve_verification")
+    for interval in result["statistics"]["ac_intervals"]:
+        info=interval["reserve_ac"]
+        record=info["zero_reserve_domains"]
+        if (record["policy"]!="exact_zero_reserve_domains_v1" or not record["enabled"]
+                or not record["proof_replayed"] or record["proof_tolerance"]!=0.0
+                or record["source_feasible_set_changed"] or record["source_parameters_changed"]
+                or record["dispatch_or_PMIN_modified"] or record["objective_changed"]
+                or record["floating_point_bits"]!=64 or record["variables_deleted"]!=0
+                or record["implied_zero_variables"]<=0 or record["constant_satisfied_rows_removed"]<=0
+                or record["original_row_audits"]<len(info["phases"])
+                or not math.isfinite(record["last_original_row_maximum_residual"])
+                or record["last_original_row_maximum_residual"]>1e-8
+                or any(not call["pre_solve_exact_zero_reduction"] or call["source_feasible_set_changed"]
+                       for call in info["numerical_calls"])):
+            raise RuntimeError("Exact reserve-domain pipeline lost a source-equivalence or original-row audit gate")
     return result
 
 
@@ -197,6 +218,8 @@ def main():
         "scripts/test_ac_numerics.jl"],timeout=180)
     stage("ac_initialization_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_initialization.jl"],timeout=180)
+    stage("ac_zero_reserve_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_ac_zero_reserves.jl"],timeout=180)
     stage("ac_ramp_bound_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_ramp_bounds.jl"])
     stage("ac_primal_guard_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -350,6 +373,14 @@ def main():
         "--solution",str(evidence/"initialized_ac_worker/candidate_final.json"),
         "--output",str(evidence/"initialized_ac_verification"),"--seconds","60"])
     initialized_ac=complete_initialization_pipeline_audit(evidence)
+    stage("tiny_zero_reserve_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/dc_problem.json",str(evidence/"zero_reserve_worker"),
+        "config/tiny_ac_zero_reserves.json",str(time.time()+180)],timeout=185)
+    stage("tiny_zero_reserve_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dc_problem.json",
+        "--solution",str(evidence/"zero_reserve_worker/candidate_final.json"),
+        "--output",str(evidence/"zero_reserve_verification"),"--seconds","60"])
+    zero_reserve_ac=zero_reserve_pipeline_audit(evidence)
     stage("tiny_batched_official_check",[sys.executable,"scripts/verify_candidate.py",
         "--input","tmp/official_tiny/dc_problem.json",
         "--solution",str(evidence/"bounded_reserve_worker/candidate_final.json"),
@@ -819,7 +850,8 @@ def main():
                     native_scheduling_certificate,exact_ramp_certificate,dc_audit["certificate"],
                     bounded_reserve_dc["certificate"],disk_dc["certificate"],isolated_dc["certificate"],
                     compacted_dc["certificate"],handoff_dc["certificate"],
-                    symbolic_ac["verification"]["certificate"],initialized_ac["verification"]["certificate"]):
+                    symbolic_ac["verification"]["certificate"],initialized_ac["verification"]["certificate"],
+                    zero_reserve_ac["verification"]["certificate"]):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -829,7 +861,7 @@ def main():
                  "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
                  "guarded_recovery_worker","native_scheduling_worker","exact_ramp_worker","dc_worker",
                  "bounded_reserve_worker","disk_scheduling_worker","isolated_scheduling_worker","compacted_scheduling_worker",
-                 "reserve_handoff_worker","symbolic_ac_worker","initialized_ac_worker"):
+                 "reserve_handoff_worker","symbolic_ac_worker","initialized_ac_worker","zero_reserve_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -860,6 +892,7 @@ def main():
     for name,expected_sets in (("reserve_benders_certificate_tests",5),
                                ("ac_numerics_tests",2),
                                ("ac_initialization_tests",3),
+                               ("ac_zero_reserve_tests",4),
                                ("reserve_benders_partition_tests",3),
                                ("reserve_benders_runtime_tests",2),
                                ("cold_benders_primal_tests",2),
@@ -898,6 +931,7 @@ def main():
         "tiny_reserve_handoff_statistics":handoff_stats,
         "tiny_symbolic_ac_pipeline":symbolic_ac,
         "tiny_initialized_ac_pipeline":initialized_ac,
+        "tiny_zero_reserve_pipeline":zero_reserve_ac,
         "tiny_batched_official_pipeline":batched_dc,
         "tiny_trimmed_scheduling_pipeline":trimmed_dc,
         "tiny_trimmed_scheduling_storage":trimmed_storage,

@@ -107,7 +107,19 @@
     "external_optimized_start": false,
     "full_case_runs_registered": 1
   },
+  "ac_zero_domain_goal_continuation": {
+    "registered_next_attempt": "campaign_n23643_s003_r15",
+    "scope": "One cold attempt under the active low-RAM goal after fresh complete source-matched component tests, archived evidence, a frozen pushed revision and preflight. Use exact zero-domain proofs for reserve auxiliaries and remove only algebraically constant satisfied rows from the solver representation. Retain and check every original removed row and bound in every local residual audit; final independent and official exhaustive checks remain mandatory. Do not change source data, dispatch or PMIN, costs, FP64, tolerances, all 48 periods, any source contingency, quality target, budgets or resource floors. Preserve r14 scheduling and numerical policies and all previous used latches. No previous optimized point or spool is reused. This is an implementation choice within the existing iterative goal, not a quoted user algorithm selection; full-case success is not promised.",
+    "source_or_quality_gate_relaxation": false,
+    "external_optimized_start": false,
+    "full_case_runs_registered": 1
+  },
   "attempts": {
+    "campaign_n23643_s003_r15": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5"
+    },
     "campaign_n23643_s003_r14": {
       "network": "C3E4N23643D2",
       "scenario": "003",

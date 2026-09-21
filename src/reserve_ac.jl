@@ -151,7 +151,7 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         rounded_seconds=nothing,work_deadline=Inf,rounded_max_iter=500,interval_seed=nothing,
         numerical_recovery="off",recovery_seconds=360.0,recovery_max_iter=1000,
         primal_guard="off",numerics_policy="legacy_v1",
-        initialization_policy="legacy_v1",schedule_seed=nothing)
+        initialization_policy="legacy_v1",schedule_seed=nothing,zero_reserve_policy="off")
     shunt_primal_start in ("off","within_interval_complete_v1","within_interval_primal_dual_v1") ||
         error("Unknown AC primal start policy")
     shunt_primal_start=="within_interval_primal_dual_v1" && !audit_phases &&
@@ -167,6 +167,9 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         primal_guard==AC_PRIMAL_GUARD_POLICY && shunt_primal_start!="off") &&
         error("Complete AC initialization requires audited symbolic solves, starts and primal guard")
     !preserve_initialization && schedule_seed!==nothing && error("Unused current schedule seed")
+    zero_reserve_policy in ("off",AC_ZERO_RESERVES_POLICY) || error("Unknown AC zero-domain policy")
+    zero_reserve_policy=="off" || preserve_initialization ||
+        error("Exact reserve-domain reduction requires complete audited initialization")
     if numerical_recovery!="off"
         recovery_seconds isa Real && !(recovery_seconds isa Bool) &&
             isfinite(recovery_seconds) && recovery_seconds>0 || error("Invalid AC recovery budget")
@@ -176,6 +179,11 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
     build_started=time()
     model,reserve=build_reserve_aware_ac(working,source,i;on_status,real_power,curves)
     model.ext[:reserve_ac]["model_build_seconds"]=time()-build_started
+    zero_record=compact_ac_zero_reserves!(model,
+        (v for group in values(reserve.variables) for v in group);policy=zero_reserve_policy)
+    model.ext[:reserve_ac]["zero_reserve_domains"]=zero_record
+    zero_reserve_policy!="off" &&
+        (println("GO3_AC_ZERO_DOMAINS ",JSON.json(merge(Dict("interval"=>i),zero_record)));flush(stdout))
     numerical_calls=Any[]
     model.ext[:reserve_ac]["numerical_calls"]=numerical_calls
     set_optimizer(model,optimizer)

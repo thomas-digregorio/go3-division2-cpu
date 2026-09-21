@@ -2,13 +2,34 @@ import json
 from pathlib import Path
 import unittest
 
-from go3cpu.ac_numerics import AC_NUMERICS_POLICY, AC_INITIALIZATION_POLICY, validate_ac_numerics
+from go3cpu.ac_numerics import AC_NUMERICS_POLICY, AC_INITIALIZATION_POLICY, AC_ZERO_RESERVES_POLICY, validate_ac_numerics
 from go3cpu.speedup import final_verification_required
 
 ROOT=Path(__file__).resolve().parents[1]
 
 
 class AcNumericsTests(unittest.TestCase):
+    def test_exact_reserve_reduction_requires_audited_initialization(self):
+        cfg=json.loads((ROOT/"config/campaign_n23643_s003_r15.json").read_text())
+        self.assertEqual(cfg["ac_zero_reserve_policy"],AC_ZERO_RESERVES_POLICY)
+        validate_ac_numerics(cfg)
+        for change in ({"ac_zero_reserve_policy":"approximate"},
+                       {"ac_initialization_policy":"legacy_v1"},
+                       {"ac_primal_guard":"off"}, {"ac_correction_policy":"other"}):
+            with self.assertRaises(ValueError):
+                validate_ac_numerics({**cfg,**change})
+        previous=json.loads((ROOT/"config/campaign_n23643_s003_r14.json").read_text())
+        self.assertEqual({k for k in previous.keys()|cfg.keys() if previous.get(k)!=cfg.get(k)},
+                         {"pilot_id","ac_zero_reserve_policy"})
+        tiny=json.loads((ROOT/"config/tiny_ac_zero_reserves.json").read_text())
+        validate_ac_numerics(tiny)
+        old_tiny=json.loads((ROOT/"config/tiny_ac_complete_initialization.json").read_text())
+        self.assertEqual({k for k in old_tiny.keys()|tiny.keys() if old_tiny.get(k)!=tiny.get(k)},
+                         {"ac_zero_reserve_policy"})
+        auth=json.loads((ROOT/"manifests/authorization_campaign.json").read_text())
+        self.assertEqual(auth["attempts"][cfg["pilot_id"]],
+                         {k:cfg[k] for k in ("network","scenario","input_sha256")})
+
     def test_complete_initialization_requires_supported_audited_path(self):
         cfg=json.loads((ROOT/"config/campaign_n23643_s003_r14.json").read_text())
         self.assertEqual(cfg["ac_initialization_policy"],AC_INITIALIZATION_POLICY)

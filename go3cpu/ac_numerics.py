@@ -3,6 +3,7 @@ import math
 
 AC_NUMERICS_POLICY = "symbolic_adaptive_v1"
 AC_INITIALIZATION_POLICY = "current_schedule_preserving_restarts_v1"
+AC_ZERO_RESERVES_POLICY = "exact_zero_reserve_domains_v1"
 
 
 def validate_ac_numerics(config):
@@ -33,3 +34,8 @@ def validate_ac_numerics(config):
                 "within_interval_complete_v1", "within_interval_primal_dual_v1")
             or config.get("ac_interval_primal_start") != "previous_screened_interval_v1"):
         raise ValueError("Complete AC initialization requires audited symbolic solves, starts and primal guard")
+    zeros = config.get("ac_zero_reserve_policy", "off")
+    if zeros not in ("off", AC_ZERO_RESERVES_POLICY):
+        raise ValueError("Unknown AC zero-domain policy")
+    if zeros == AC_ZERO_RESERVES_POLICY and initialization != AC_INITIALIZATION_POLICY:
+        raise ValueError("Exact reserve-domain reduction requires complete audited initialization")

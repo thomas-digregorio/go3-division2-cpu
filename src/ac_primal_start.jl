@@ -50,9 +50,12 @@ function ac_primal_residual(model,point)
     variables==point.variables && length(variables)==length(point.values) ||
         error("Cannot audit an incomplete AC point")
     all(isfinite,point.values) || error("Cannot audit a nonfinite AC point")
-    report=primal_feasibility_report(model,Dict(zip(variables,point.values));atol=0.0)
+    point_values=Dict(zip(variables,point.values))
+    report=primal_feasibility_report(model,point_values;atol=0.0)
     all(isfinite,values(report)) || error("AC residual evaluation is nonfinite")
-    maximum(values(report);init=0.0)
+    residual=maximum(values(report);init=0.0)
+    haskey(model.ext,:ac_zero_reserve_proof) ?
+        max(residual,ac_removed_zero_rows_residual(model,point_values)) : residual
 end
 
 function ac_requires_stop(metadata,enabled)
