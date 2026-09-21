@@ -150,7 +150,8 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         optimizer,set_silent=false,shunt_primal_start="off",audit_phases=false,
         rounded_seconds=nothing,work_deadline=Inf,rounded_max_iter=500,interval_seed=nothing,
         numerical_recovery="off",recovery_seconds=360.0,recovery_max_iter=1000,
-        primal_guard="off",numerics_policy="legacy_v1")
+        primal_guard="off",numerics_policy="legacy_v1",
+        initialization_policy="legacy_v1",schedule_seed=nothing)
     shunt_primal_start in ("off","within_interval_complete_v1","within_interval_primal_dual_v1") ||
         error("Unknown AC primal start policy")
     shunt_primal_start=="within_interval_primal_dual_v1" && !audit_phases &&
@@ -160,6 +161,12 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
     numerical_recovery=="off" || audit_phases || error("AC recovery requires phase residual audits")
     primal_guard in ("off",AC_PRIMAL_GUARD_POLICY) || error("Unknown AC primal guard policy")
     primal_guard=="off" || audit_phases || error("AC primal guard requires phase residual audits")
+    initialization_policy in ("legacy_v1",AC_INITIALIZATION_POLICY) || error("Unknown AC initialization policy")
+    preserve_initialization=initialization_policy==AC_INITIALIZATION_POLICY
+    preserve_initialization && !(audit_phases && numerics_policy==AC_NUMERICS_POLICY &&
+        primal_guard==AC_PRIMAL_GUARD_POLICY && shunt_primal_start!="off") &&
+        error("Complete AC initialization requires audited symbolic solves, starts and primal guard")
+    !preserve_initialization && schedule_seed!==nothing && error("Unused current schedule seed")
     if numerical_recovery!="off"
         recovery_seconds isa Real && !(recovery_seconds isa Bool) &&
             isfinite(recovery_seconds) && recovery_seconds>0 || error("Invalid AC recovery budget")
@@ -178,15 +185,35 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         record=apply_ac_interval_start!(model,source,i,interval_seed,real_power)
         model.ext[:reserve_ac]["interval_primal_start"]=record
         println("GO3_AC_INTERVAL_START ",JSON.json(record));flush(stdout)
+    elseif preserve_initialization
+        schedule_seed===nothing && error("Missing same-attempt current schedule")
+        record,_=initialize_ac_from_current_schedule!(model,reserve,source,i,schedule_seed,real_power)
+        model.ext[:reserve_ac]["interval_primal_start"]=record
+        println("GO3_AC_INTERVAL_START ",JSON.json(record));flush(stdout)
     else
         model.ext[:reserve_ac]["interval_primal_start"]=Dict("policy"=>"cold_defaults",
             "target_interval"=>i,"external_solution_read"=>false)
+    end
+    initialization=Dict{String,Any}("policy"=>initialization_policy)
+    model.ext[:reserve_ac]["initialization"]=initialization
+    guarded_phases=Any[]
+    initial_guard=nothing
+    if preserve_initialization
+        initialization["continuous_primal_options"]=preserve_ac_primal_initialization!(model)
+        initial_guard=install_ac_primal_guard!(model;policy=AC_CANDIDATE_GUARD_POLICY,
+            phase="continuous_shunt_candidate",expected_start=complete_requested_ac_start(model),
+            audit_only=true,audit_initial_residual=true,residual_screen="native_original_unscaled")
     end
     # Use the configured Ipopt accuracy/iteration/wall limits. Do not use the
     # upstream early callback, which may stop at a 1e-3 primal residual.
     phase_started=time()
     push!(numerical_calls,optimize_audited_ac!(model;policy=numerics_policy,
         interval=i,phase="continuous_shunts",deadline=work_deadline))
+    if initial_guard!==nothing
+        record=finish_ac_primal_guard!(model,initial_guard)
+        push!(guarded_phases,record)
+        println("GO3_AC_INITIALIZATION_AUDIT ",JSON.json(merge(Dict("interval"=>i),record)));flush(stdout)
+    end
     has_values(model) || error("Reserve-aware AC solve returned no primal point")
     point=(audit_phases || shunt_primal_start!="off") ? capture_complete_ac_primal(model) : nothing
     phases=Any[]
@@ -235,6 +262,9 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         elseif shunt_primal_start=="within_interval_primal_dual_v1"
             start_record["dual_skip_reason"]="First point was not a converged residual-verified point with duals; retained complete primal only"
         end
+        if preserve_initialization && dual_point===nothing
+            start_record["primal_initialization_options"]=preserve_ac_primal_initialization!(model)
+        end
         model.ext[:reserve_ac]["shunt_primal_start"]=start_record
         println("GO3_AC_PRIMAL_START ",JSON.json(merge(Dict("interval"=>i),start_record)));flush(stdout)
     end
@@ -242,8 +272,10 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         set_optimizer_attribute(model,"max_wall_time",rounded_ac_time_limit(rounded_seconds,work_deadline))
         set_optimizer_attribute(model,"max_iter",rounded_max_iter)
     end
-    guarded_phases=Any[]
-    guard=install_ac_primal_guard!(model;policy=primal_guard,phase="rounded_shunts")
+    guard=install_ac_primal_guard!(model;policy=primal_guard,phase="rounded_shunts",
+        expected_start=preserve_initialization ? complete_requested_ac_start(model) : nothing,
+        audit_initial_residual=preserve_initialization,
+        residual_screen=preserve_initialization ? "native_original_unscaled" : "callback_internal")
     phase_started=time()
     push!(numerical_calls,optimize_audited_ac!(model;policy=numerics_policy,
         interval=i,phase="rounded_shunts",deadline=work_deadline))
@@ -262,13 +294,19 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
             recovery_record=prepare_ac_recovery!(model,optimizer,point;
                 seconds=recovery_seconds,deadline=work_deadline,max_iter=recovery_max_iter)
             configure_ac_numerics!(model,numerics_policy)
+            if preserve_initialization
+                merge!(recovery_record["options"],preserve_ac_primal_initialization!(model))
+            end
             set_silent && JuMP.set_silent(model)
             # Recompute immediately before optimize: mapping/audit time counts.
             allowance=rounded_ac_time_limit(recovery_seconds,work_deadline)
             set_optimizer_attribute(model,"max_wall_time",allowance)
             recovery_record["options"]["max_wall_time"]=allowance
             println("GO3_AC_NUMERICAL_RECOVERY ",JSON.json(merge(Dict("interval"=>i),recovery_record)));flush(stdout)
-            guard=install_ac_primal_guard!(model;policy=primal_guard,phase="numerical_recovery")
+            guard=install_ac_primal_guard!(model;policy=primal_guard,phase="numerical_recovery",
+                expected_start=preserve_initialization ? complete_requested_ac_start(model) : nothing,
+                audit_initial_residual=preserve_initialization,
+                residual_screen=preserve_initialization ? "native_original_unscaled" : "callback_internal")
             phase_started=time()
             push!(numerical_calls,optimize_audited_ac!(model;policy=numerics_policy,
                 interval=i,phase="numerical_recovery",deadline=work_deadline))

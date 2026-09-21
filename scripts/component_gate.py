@@ -60,9 +60,9 @@ def bounded_reserve_pipeline_audit(evidence, worker="bounded_reserve_worker"):
     return audits
 
 
-def symbolic_ac_pipeline_audit(evidence):
-    verified=dc_pipeline_audit(evidence,"symbolic_ac_worker","symbolic_ac_verification")
-    stats=json.loads((evidence/"symbolic_ac_worker/solver_statistics.json").read_text())
+def symbolic_ac_pipeline_audit(evidence, worker="symbolic_ac_worker", verification="symbolic_ac_verification"):
+    verified=dc_pipeline_audit(evidence,worker,verification)
+    stats=json.loads((evidence/worker/"solver_statistics.json").read_text())
     for interval in stats["ac_intervals"]:
         info=interval["reserve_ac"]
         calls=info["numerical_calls"]
@@ -80,6 +80,47 @@ def symbolic_ac_pipeline_audit(evidence):
             or any(not r["accepted"] for r in reserves["intervals"])):
         raise RuntimeError("Symbolic AC pipeline omitted final source reserve optimization")
     return {"verification":verified,"statistics":stats}
+
+
+def complete_initialization_pipeline_audit(evidence):
+    import math
+    result=symbolic_ac_pipeline_audit(evidence,"initialized_ac_worker","initialized_ac_verification")
+    dual_transfers=0
+    for interval in result["statistics"]["ac_intervals"]:
+        info=interval["reserve_ac"]
+        if info["initialization"]["policy"]!="current_schedule_preserving_restarts_v1":
+            raise RuntimeError("Complete AC initialization policy was not applied")
+        start=info["interval_primal_start"]
+        if interval["interval"]==1:
+            if (start["source"]!="current_attempt_joint_schedule" or start["optimization_calls"]!=0
+                    or start["external_solution_read"] or start["feasibility_claimed"]
+                    or not start["complete_current_primal_vector"] or start["source_bounds_changed"]):
+                raise RuntimeError("First AC start was not complete, cold and source-preserving")
+        elif start["source_interval"]!=interval["interval"]-1 or not start["complete_current_primal_vector"]:
+            raise RuntimeError("Complete initialization broke within-run interval continuation")
+        guards=info["primal_guard"]["phases"]
+        if len(guards)!=len(info["phases"]) or not guards[0]["audit_only"] or guards[0]["stop_requested"]:
+            raise RuntimeError("Continuous initialization audit altered termination")
+        for guard in guards:
+            native=guard["native_initialization"]
+            if (not native["complete_mapping"] or native["iteration"]!=0
+                    or not math.isfinite(native["maximum_absolute_change_from_requested_start"])
+                    or not math.isfinite(native["maximum_relative_change_from_requested_start"])
+                    or not math.isfinite(native["original_unscaled_residual"])
+                    or guard["residual_screen"]!="native_original_unscaled"
+                    or guard["discrete_solution_claimed"]):
+                raise RuntimeError("Native initialization and original-residual audits are incomplete")
+        primal=info["shunt_primal_start"]
+        if primal["dual_transfer_used"]:
+            if not primal["dual_start"]["complete_current_mapping"]:
+                raise RuntimeError("Valid dual transfer lost its mapping")
+            dual_transfers+=1
+        elif primal["primal_initialization_options"]["bound_push"]!=1e-8:
+            raise RuntimeError("Primal-only rounded restart lost small pushes")
+    if dual_transfers==0:
+        raise RuntimeError("Tiny initialization pipeline did not preserve eligible dual transfer")
+    result["verified_dual_transfers"]=dual_transfers
+    return result
 
 
 def main():
@@ -154,6 +195,8 @@ def main():
         "scripts/test_ac_interval_start.jl"])
     stage("ac_numerics_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_numerics.jl"],timeout=180)
+    stage("ac_initialization_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_ac_initialization.jl"],timeout=180)
     stage("ac_ramp_bound_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_ramp_bounds.jl"])
     stage("ac_primal_guard_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -299,6 +342,14 @@ def main():
         "--solution",str(evidence/"symbolic_ac_worker/candidate_final.json"),
         "--output",str(evidence/"symbolic_ac_verification"),"--seconds","60"])
     symbolic_ac=symbolic_ac_pipeline_audit(evidence)
+    stage("tiny_initialized_ac_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/dc_problem.json",str(evidence/"initialized_ac_worker"),
+        "config/tiny_ac_complete_initialization.json",str(time.time()+180)],timeout=185)
+    stage("tiny_initialized_ac_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dc_problem.json",
+        "--solution",str(evidence/"initialized_ac_worker/candidate_final.json"),
+        "--output",str(evidence/"initialized_ac_verification"),"--seconds","60"])
+    initialized_ac=complete_initialization_pipeline_audit(evidence)
     stage("tiny_batched_official_check",[sys.executable,"scripts/verify_candidate.py",
         "--input","tmp/official_tiny/dc_problem.json",
         "--solution",str(evidence/"bounded_reserve_worker/candidate_final.json"),
@@ -768,7 +819,7 @@ def main():
                     native_scheduling_certificate,exact_ramp_certificate,dc_audit["certificate"],
                     bounded_reserve_dc["certificate"],disk_dc["certificate"],isolated_dc["certificate"],
                     compacted_dc["certificate"],handoff_dc["certificate"],
-                    symbolic_ac["verification"]["certificate"]):
+                    symbolic_ac["verification"]["certificate"],initialized_ac["verification"]["certificate"]):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -778,7 +829,7 @@ def main():
                  "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
                  "guarded_recovery_worker","native_scheduling_worker","exact_ramp_worker","dc_worker",
                  "bounded_reserve_worker","disk_scheduling_worker","isolated_scheduling_worker","compacted_scheduling_worker",
-                 "reserve_handoff_worker","symbolic_ac_worker"):
+                 "reserve_handoff_worker","symbolic_ac_worker","initialized_ac_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -808,6 +859,7 @@ def main():
     # Count their summaries explicitly rather than silently omitting them.
     for name,expected_sets in (("reserve_benders_certificate_tests",5),
                                ("ac_numerics_tests",2),
+                               ("ac_initialization_tests",3),
                                ("reserve_benders_partition_tests",3),
                                ("reserve_benders_runtime_tests",2),
                                ("cold_benders_primal_tests",2),
@@ -845,6 +897,7 @@ def main():
         "tiny_reserve_handoff_pipeline":handoff_dc,
         "tiny_reserve_handoff_statistics":handoff_stats,
         "tiny_symbolic_ac_pipeline":symbolic_ac,
+        "tiny_initialized_ac_pipeline":initialized_ac,
         "tiny_batched_official_pipeline":batched_dc,
         "tiny_trimmed_scheduling_pipeline":trimmed_dc,
         "tiny_trimmed_scheduling_storage":trimmed_storage,

@@ -13,8 +13,12 @@ end
 function install_ac_primal_guard!(model;policy="off",phase,
         min_iterations=20,window=8,objective_relative_range=1e-7,
         primal_tolerance=AC_POINT_RESIDUAL_TOLERANCE,expected_start=nothing,
-        residual_screen="callback_internal",original_probe_interval=5)
+        residual_screen="callback_internal",original_probe_interval=5,
+        audit_only=false,audit_initial_residual=false)
     policy in ("off",AC_PRIMAL_GUARD_POLICY,AC_CANDIDATE_GUARD_POLICY) || error("Unknown AC primal guard policy")
+    audit_only isa Bool && audit_initial_residual isa Bool || error("Invalid native audit flags")
+    !(audit_only || audit_initial_residual) ||
+        (policy!="off" && expected_start!==nothing) || error("Native initialization audit requires a complete start")
     residual_screen in ("callback_internal","native_original_unscaled") || error("Unknown primal residual screen")
     original_probe_interval isa Integer && !(original_probe_interval isa Bool) && original_probe_interval>0 ||
         error("Invalid original-residual probe interval")
@@ -41,6 +45,7 @@ function install_ac_primal_guard!(model;policy="off",phase,
             error("Primal guard is restricted to fixed rounded-shunt solves")
     end
     record["candidate_only"]=candidate_only
+    record["audit_only"]=audit_only
     record["discrete_solution_claimed"]=false # Full final verification is always separate.
     min_iterations isa Integer && !(min_iterations isa Bool) && min_iterations>=0 ||
         error("Invalid primal guard minimum iterations")
@@ -135,9 +140,17 @@ function install_ac_primal_guard!(model;policy="off",phase,
                     "variable_count"=>length(variables),
                     "maximum_absolute_change_from_requested_start"=>
                         maximum(abs.(initial.values.-expected_start.values);init=0.0),
+                    "maximum_relative_change_from_requested_start"=>
+                        maximum(abs.(initial.values.-expected_start.values)./max.(1.0,abs.(expected_start.values));init=0.0),
                     "audit_seconds"=>time()-began,"source_bounds_changed"=>false,
                     "scope"=>"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate")
+                if audit_initial_residual
+                    record["native_initialization"]["original_unscaled_residual"]=current_original_residual()
+                    println("GO3_AC_NATIVE_INITIALIZATION ",JSON.json(merge(
+                        Dict("phase"=>phase),record["native_initialization"])));flush(stdout)
+                end
             end
+            audit_only && return true
             push!(history,Float64(obj))
             length(history)>window && popfirst!(history)
             (iteration>=min_iterations && length(history)==window &&

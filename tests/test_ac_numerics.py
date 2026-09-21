@@ -2,13 +2,37 @@ import json
 from pathlib import Path
 import unittest
 
-from go3cpu.ac_numerics import AC_NUMERICS_POLICY, validate_ac_numerics
+from go3cpu.ac_numerics import AC_NUMERICS_POLICY, AC_INITIALIZATION_POLICY, validate_ac_numerics
 from go3cpu.speedup import final_verification_required
 
 ROOT=Path(__file__).resolve().parents[1]
 
 
 class AcNumericsTests(unittest.TestCase):
+    def test_complete_initialization_requires_supported_audited_path(self):
+        cfg=json.loads((ROOT/"config/campaign_n23643_s003_r14.json").read_text())
+        self.assertEqual(cfg["ac_initialization_policy"],AC_INITIALIZATION_POLICY)
+        validate_ac_numerics(cfg)
+        for change in ({"ac_initialization_policy":"unknown"},
+                {"ac_numerics_policy":"legacy_v1"},{"ac_primal_guard":"off"},
+                {"ac_shunt_primal_start":"off"},{"ac_interval_primal_start":"off"},
+                {"ac_correction_policy":"continuous_shunt_candidate_v1"}):
+            with self.assertRaises(ValueError):
+                validate_ac_numerics({**cfg,**change})
+        validate_ac_numerics({**cfg,"ac_shunt_primal_start":"within_interval_complete_v1"})
+
+    def test_r14_changes_only_initialization_and_registered_attempt(self):
+        previous=json.loads((ROOT/"config/campaign_n23643_s003_r13.json").read_text())
+        current=json.loads((ROOT/"config/campaign_n23643_s003_r14.json").read_text())
+        changed={k for k in previous.keys()|current.keys() if previous.get(k)!=current.get(k)}
+        self.assertEqual(changed,{"pilot_id","ac_initialization_policy"})
+        auth=json.loads((ROOT/"manifests/authorization_campaign.json").read_text())
+        self.assertEqual(auth["attempts"][current["pilot_id"]],
+            {k:current[k] for k in ("network","scenario","input_sha256")})
+        tiny=json.loads((ROOT/"config/tiny_ac_complete_initialization.json").read_text())
+        validate_ac_numerics(tiny)
+        self.assertEqual(tiny["ac_initialization_policy"],current["ac_initialization_policy"])
+
     def test_legacy_and_explicit_backend_scope(self):
         validate_ac_numerics({})
         valid={"ac_numerics_policy":AC_NUMERICS_POLICY,

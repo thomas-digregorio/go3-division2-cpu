@@ -17,6 +17,7 @@ include(joinpath(@__DIR__,"ac_ramp_bounds.jl"))
 include(joinpath(@__DIR__,"ac_recovery.jl"))
 include(joinpath(@__DIR__,"ac_primal_guard.jl"))
 include(joinpath(@__DIR__,"ac_numerics.jl"))
+include(joinpath(@__DIR__,"ac_initialization.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
 include(joinpath(@__DIR__,"reserve_storage.jl"))
 include(joinpath(@__DIR__,"ac_correction.jl"))
@@ -193,6 +194,12 @@ function run_worker(case_path, output, config, work_deadline)
     ac_numerics in ("legacy_v1",AC_NUMERICS_POLICY) || error("Unknown AC numerics policy")
     ac_numerics=="legacy_v1" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" &&
         ac_fail_fast && ac_correction=="off") || error("Explicit AC numerics requires audited reserve-aware AC")
+    ac_initialization=get(config,"ac_initialization_policy","legacy_v1")
+    ac_initialization in ("legacy_v1",AC_INITIALIZATION_POLICY) || error("Unknown AC initialization policy")
+    ac_initialization=="legacy_v1" || (ac_numerics==AC_NUMERICS_POLICY &&
+        ac_guard==AC_PRIMAL_GUARD_POLICY && ac_shunt_primal_start!="off" &&
+        ac_interval_start=="previous_screened_interval_v1") ||
+        error("Complete schedule initialization requires audited symbolic AC and interval continuation")
     (ac_correction=="off" || ac_correction in AC_CORRECTION_POLICIES) || error("Unknown network correction policy")
     ac_correction=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
         error("Network corrections require the full reserve-aware AC model and residual screen")
@@ -386,7 +393,9 @@ function run_worker(case_path, output, config, work_deadline)
                 numerical_recovery=ac_recovery,
                 recovery_seconds=get(config,"ac_recovery_seconds_per_solve",360.0),
                 recovery_max_iter=get(config,"ac_recovery_max_iterations",1000),
-                primal_guard=ac_guard,numerics_policy=ac_numerics)
+                primal_guard=ac_guard,numerics_policy=ac_numerics,
+                initialization_policy=ac_initialization,
+                schedule_seed=ac_initialization=="legacy_v1" ? nothing : schedule)
         else
             ac_model, result = GO3.compute_optimal_power_flow_at_interval(working,i;
                 on_status=current_on,real_power=current_p,optimizer=ipopt,

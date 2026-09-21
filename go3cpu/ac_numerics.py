@@ -2,6 +2,7 @@
 import math
 
 AC_NUMERICS_POLICY = "symbolic_adaptive_v1"
+AC_INITIALIZATION_POLICY = "current_schedule_preserving_restarts_v1"
 
 
 def validate_ac_numerics(config):
@@ -22,3 +23,13 @@ def validate_ac_numerics(config):
     if config.get("final_verification_policy", "legacy_v1") not in (
             "legacy_v1", "complete_pipeline_only_v1"):
         raise ValueError("Unknown final verification policy")
+    initialization = config.get("ac_initialization_policy", "legacy_v1")
+    if initialization not in ("legacy_v1", AC_INITIALIZATION_POLICY):
+        raise ValueError("Unknown AC initialization policy")
+    if initialization == AC_INITIALIZATION_POLICY and (
+            policy != AC_NUMERICS_POLICY
+            or config.get("ac_primal_guard") != "verified_stable_rounded_primal_v1"
+            or config.get("ac_shunt_primal_start") not in (
+                "within_interval_complete_v1", "within_interval_primal_dual_v1")
+            or config.get("ac_interval_primal_start") != "previous_screened_interval_v1"):
+        raise ValueError("Complete AC initialization requires audited symbolic solves, starts and primal guard")
