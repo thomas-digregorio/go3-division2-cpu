@@ -1,0 +1,7 @@
+{
+  "pid": 9092,
+  "returncode": 0,
+  "exited_before_native_launch": true,
+  "process_wall_seconds": 6.326701499987394,
+  "manifest_sha256": "2e382375d068625294f91c11275fa467b43593f7ccb652ddca0ab453ea5c067b"
+}

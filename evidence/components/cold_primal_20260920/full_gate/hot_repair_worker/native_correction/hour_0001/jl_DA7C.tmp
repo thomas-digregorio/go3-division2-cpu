@@ -1,0 +1,81 @@
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 69 rows; 67 cols; 223 nonzeros
+Coefficient ranges:
+  Matrix  [1e-02, 1e+01]
+  Cost    [5e-03, 5e+02]
+  Bound   [2e-01, 3e+01]
+  RHS     [1e-16, 9e+00]
+WARNING: Problem has some excessively small row bounds
+Presolving model
+30 rows, 30 cols, 103 nonzeros 0s
+15 rows, 16 cols, 54 nonzeros 0s
+10 rows, 13 cols, 41 nonzeros 0s
+Dependent equations search running on 2 equations with time limit of 1.00s
+Dependent equations search removed 0 rows and 0 nonzeros in 0.00s (limit = 1.00s)
+10 rows, 13 cols, 41 nonzeros 0s
+Presolve reductions: rows 10(-59); columns 13(-54); nonzeros 41(-182) 
+Solving the presolved LP
+IPX model has 10 rows, 13 columns and 41 nonzeros
+Input
+    Number of variables:                                13
+    Number of free variables:                           0
+    Number of constraints:                              10
+    Number of equality constraints:                     2
+    Number of matrix entries:                           41
+    Matrix range:                                       [1e-02, 3e+01]
+    RHS range:                                          [5e-02, 1e+00]
+    Objective range:                                    [5e-03, 5e+02]
+    Bounds range:                                       [5e-01, 1e+00]
+Preprocessing
+    Dualized model:                                     no
+    Number of dense columns:                            0
+    Range of scaling factors:                           [5.00e-01, 1.00e+00]
+    Scaled cost norm:                                   505
+    Scaled bounds norm:                                 2.2
+IPX version 1.0
+Interior point solve
+ Iter       primal obj         dual obj       pinf       dinf       gap      time
+   0   -1.02096041e+02  -2.37426937e+03   7.17e-01   7.46e-01  1.83e+00       0.0
+   1   -1.92546067e+02  -1.84424097e+03   1.07e-01   2.74e-02  1.62e+00       0.0
+   2   -4.20344976e+02  -8.80045564e+02   1.56e-03   2.74e-08  7.06e-01       0.0
+   3   -4.82907853e+02  -5.45548489e+02   3.54e-04   3.06e-09  1.22e-01       0.0
+   4   -4.94677252e+02  -4.96483583e+02   3.26e-06   8.92e-11  3.64e-03       0.0
+   5   -4.94865147e+02  -4.95046553e+02   1.24e-06   3.82e-12  3.66e-04       0.0
+   6   -4.94944648e+02  -4.95005043e+02   4.27e-07   6.83e-13  1.22e-04       0.0
+   7   -4.94979279e+02  -4.94990248e+02   8.29e-08   8.13e-14  2.21e-05       0.0
+   8   -4.94986102e+02  -4.94987723e+02   1.34e-08   1.36e-15  3.27e-06       0.0
+   9   -4.94987238e+02  -4.94987446e+02   1.94e-09   1.49e-16  4.20e-07       0.0
+  10   -4.94987428e+02  -4.94987429e+02   3.95e-12   1.65e-16  2.51e-09       0.0
+  11*  -4.94987428e+02  -4.94987428e+02   1.42e-13   1.53e-16  5.24e-11       0.0
+ Constructing starting basis...
+ Iter       primal obj         dual obj       pinf       dinf       gap      time
+Summary
+    Runtime:                                            0.00s
+    Status interior point solve:                        optimal
+    Status crossover:                                   not run
+    objective value:                                    -4.94987428e+02
+    interior solution primal residual (abs/rel):        9.13e-13 / 4.15e-13
+    interior solution dual residual (abs/rel):          5.68e-14 / 1.12e-16
+    interior solution objective gap (abs/rel):          2.60e-08 / 5.24e-11
+Ipx: IPM       optimal
+
+Performed postsolve
+WARNING: Solution optimality conditions
+num/max      0 / 6.63e-13 (relative      0 / 3.16e-13) primal infeasibilities     (tolerance = 1e-09)
+num/max     26 /      250 (relative     26 /    0.499)   dual infeasibilities     (tolerance = 1e-09)
+num/max      0 /  2.5e-16 (relative      0 / 1.19e-16) primal residual errors     (tolerance = 1e-07)
+num/max     47 /    1e+03 (relative     47 /        2)   dual residual errors     (tolerance = 1e-07)
+                                         1 / 6.35e-05  P-D objective error        (tolerance = 1e-07)
+WARNING: LP solver claims optimality, but with
+WARNING:    num/max     26 /    0.499 relative   dual infeasibilities (tolerance = 1e-09)
+WARNING:    num/max     47 /        2 relative   dual residual errors (tolerance = 1e-07)
+WARNING:                     6.35e-05 relative P-D objective error    (tolerance = 1e-07)
+WARNING: Model status changed from "Optimal" to "Unknown" since relative violation of tolerances is 4.99e+08
+
+Model status        : Unknown
+IPM       iterations: 11
+Objective value     :  4.9498742838e+02
+P-D objective error :  6.3517119820e-05
+HiGHS run time      :          0.00

@@ -74,3 +74,41 @@ pipeline covers recourse cost, certified Phase-I feasibility cuts, retained
 incumbent status and independent/official AC/DC-link contingency verification.
 The complete source-matched regression gate must pass before the registered
 large-case run. Tiny successes do not establish large-case runtime or quality.
+
+## Read-only aggregate sanity check before r10
+
+The unchanged scenario 003 raw source was parsed without a solver call while
+the regression gate ran. Its SHA256 still matched the registered input. Assuming
+every source-available unit is online, aggregate producer minimum output is
+815.3175997959008 p.u. in each of the 48 hours; aggregate producer maximum
+output is 3216.7989999999986 p.u. Maximum consumer demand ranges from
+4372.395000000026 to 7468.615 p.u. The largest minimum-generation / maximum-load
+ratio is 0.18646933769613588; no hour has minimum generation above maximum load.
+
+This rules out only that simple aggregate over-generation obstruction. It
+ignores startup/shutdown power, intertemporal constraints, reactive capability
+and network physics; it is not a feasible commitment or a security certificate.
+No optimized start, timing experiment, raw-case edit or full-case solve was
+performed by this diagnostic. Cold initialization means no prior optimized
+solution is supplied, not that operating-system file caches are flushed.
+
+## Completed r10 pre-run gate
+
+The full gate at `tmp/pilot002_component_gate_106v5bfr` passed all 78 stages,
+159 Python tests and 16,535 Julia assertions. Its manifest SHA256 is
+`2d82c54b6eac72a16f28c85b9ac074e221b9fe88dd0e0f7242d0822020ef50aa`;
+the full source inventory and dependency runtime matched at the post-run audit.
+Summed stage wall time was 2,601.216059 seconds (setup, not a large-case run).
+
+The new policy's tiny pipeline passed independent and official checking,
+including all 9/9 contingencies, with both official feasibility flags equal to
+one. Its final objective was 1732.1459647319407 and candidate SHA256
+`1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`,
+byte-identical to the earlier tiny baseline. Ten native worker identities were
+checked. Source-feasible but suboptimal scheduling fixtures correctly retained
+null original-MILP bounds/gaps and `SOLUTION_LIMIT`, not economic optimality.
+
+`evidence/components/cold_primal_20260920` preserves the full gate and all five
+nested pipelines. Every copied file was SHA256-compared against its original;
+the archive summary records inventories. All originals remain local and nothing
+was deleted. A successful 23,643-bus run remains unproven by this evidence.

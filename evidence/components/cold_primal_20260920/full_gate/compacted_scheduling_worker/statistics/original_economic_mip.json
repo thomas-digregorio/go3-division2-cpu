@@ -1,0 +1,1 @@
+{"solve_seconds":0.006830930709838867,"objective":1732.1479,"bound":1732.1479,"has_primal":true,"native_status":7,"termination":"OPTIMAL","simplex_iterations":12,"barrier_iterations":-1,"nodes":1,"solve_wall_seconds":0.0070002079010009766,"relative_gap":0.0}

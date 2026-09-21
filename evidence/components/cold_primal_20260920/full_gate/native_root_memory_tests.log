@@ -1,0 +1,8 @@
+NATIVE_ROOT_MEMORY_IDENTITY {"analytic_center_requested":false,"git_hash":"04024d7","library_sha256":"06fa04b2f66ae80f3446e8e2a95ad1bea09faa0414b3151c1764bbb6bf7395c8","root_presolve_only_requested":true,"version":"1.15.1","policy":"root_memory_guard_v1","library_path":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\environments\\highs-root-memory-build\\bin\\libhighs.dll","highs_int_bits":32,"manifest_sha256":"73ceb849300d5ec00761156f21326c61e5343e1acb856a3206410eee69eba794","floating_point_bits":64,"objective_clique_max_size":0}
+Test Summary:                                                              | Pass  Total  Time
+Optional analytic center and root-only presolve preserve enumerated optima |  416    416  1.1s
+Test Summary:                                                | Pass  Total  Time
+Root memory guard keeps infeasible integer models infeasible |    8      8  0.0s
+Test Summary:                                                    | Pass  Total  Time
+Root-only presolve API contract retains the initial MIP presolve |   23     23  0.1s
+NATIVE_ROOT_MEMORY_MATH_PASS {"feasible_solves":16,"infeasible_solves":4,"tiny_only":true,"identity":{"analytic_center_requested":false,"git_hash":"04024d7","library_sha256":"06fa04b2f66ae80f3446e8e2a95ad1bea09faa0414b3151c1764bbb6bf7395c8","root_presolve_only_requested":true,"version":"1.15.1","policy":"root_memory_guard_v1","library_path":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\environments\\highs-root-memory-build\\bin\\libhighs.dll","highs_int_bits":32,"manifest_sha256":"73ceb849300d5ec00761156f21326c61e5343e1acb856a3206410eee69eba794","floating_point_bits":64,"objective_clique_max_size":0},"root_progress":false,"known_optimum_fixtures":4,"full_case_runs":0}

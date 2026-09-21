@@ -1,0 +1,63 @@
+{
+  "operation": "Completed component evidence copy and SHA256 verification only; no solve or reevaluation",
+  "pass": true,
+  "complete": true,
+  "full_case_runs": 0,
+  "files_deleted": 0,
+  "stages": 78,
+  "python_tests": 159,
+  "julia_assertions": 16535,
+  "manifest_sha256": "2d82c54b6eac72a16f28c85b9ac074e221b9fe88dd0e0f7242d0822020ef50aa",
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_106v5bfr",
+  "archives": {
+    "full_gate": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_106v5bfr",
+      "files": 1421,
+      "bytes": 4959125,
+      "inventory_sha256": "d903ed2257b1ae79d54625dc68b3e17a220f754cacc7f5663587490eaebac7fd"
+    },
+    "stock_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_28czs39_",
+      "files": 741,
+      "bytes": 1023376,
+      "inventory_sha256": "765537354726b5fc25f953533392167e36fe905742ec68a0e4b0319989b01dc2"
+    },
+    "setup_guard_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_mh9amo4_",
+      "files": 741,
+      "bytes": 1033034,
+      "inventory_sha256": "0120d44ca5a8b9b6f46d20538ed1afd3ffbcfb8894afcbc02025483eb19c438d"
+    },
+    "root_memory_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_s0btqtr5",
+      "files": 741,
+      "bytes": 1039919,
+      "inventory_sha256": "20e8f1f465e3662113685d184ecf38a799e5674886c2d3d268100dee99a88580"
+    },
+    "root_progress_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_wtcyf2gq",
+      "files": 742,
+      "bytes": 1045477,
+      "inventory_sha256": "2ce841fd2d689f748fb0ae67b9f0846654deeab6bd0ab429184d1d083e130980"
+    },
+    "cold_primal_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_jnrvbh7m",
+      "files": 660,
+      "bytes": 888171,
+      "inventory_sha256": "6d9324a481a345459251a38b097f81d0142d7aba52b22bf893dc7790ecc669a2"
+    }
+  },
+  "inventory_encoding": "UTF-8 concatenation in source FullName sort order: slash-separated relative path, NUL, decimal byte count, NUL, lowercase SHA256, LF. Every copied file separately compared to original.",
+  "original_evidence_retained": true,
+  "source_inventory_matches_when_archived": true,
+  "runtime_matches_completed_tests": true,
+  "tiny_checks": {
+    "independent_hard_pass": true,
+    "official_feas": 1,
+    "official_phys_feas": 1,
+    "contingencies_completed": 9,
+    "contingencies_required": 9,
+    "objective": 1732.1459647319407,
+    "candidate_sha256": "1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65"
+  }
+}

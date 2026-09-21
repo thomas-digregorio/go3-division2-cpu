@@ -1,0 +1,1 @@
+{"elapsed_scheduling_seconds":13.98800015449524,"event":"cost_lp_solve_begin","elapsed_worker_seconds":14.78499984741211,"stage":"scheduling_event","solver":"ipx","remaining_work_seconds":90.33517718315125}
