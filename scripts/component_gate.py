@@ -91,6 +91,8 @@ def main():
         "scripts/test_reserve_benders_partition.jl"],timeout=180)
     stage("reserve_benders_runtime_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_reserve_benders_runtime.jl"],timeout=120)
+    stage("cold_benders_primal_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_reserve_benders_primal.jl"],timeout=120)
     from go3cpu.native_highs import native_environment
     guard_config=json.loads((ROOT/"config/tiny_reserve_benders_native_guard.json").read_text())
     guard_env=native_environment(guard_config,root=ROOT,base_environment=env)
@@ -414,6 +416,23 @@ def main():
             progress_certificate["input_sha256"]!=stock_certificate["input_sha256"] or
             abs(progress_certificate["objective"]-stock_certificate["objective"])>1e-8):
         raise RuntimeError("Root-progress guard failed the complete equivalent tiny integration")
+    stage("cold_benders_primal_integration",[sys.executable,"scripts/test_reserve_benders_pipeline.py",
+        "--integration-only","--cold-primal"],timeout=420)
+    cold_log=(evidence/"cold_benders_primal_integration.log").read_text()
+    cold_match=re.search(r"^BENDERS_COMPONENT_EVIDENCE (.+)$",cold_log,re.MULTILINE)
+    if cold_match is None:
+        raise RuntimeError("Missing current cold primal integration evidence")
+    cold_directory=Path(cold_match.group(1).strip())
+    cold_result=json.loads((cold_directory/"result.json").read_text())
+    cold_certificate=cold_result["results"]["source_dc_ac_pipeline"]["certificate"]
+    if (not cold_result["pass"] or not cold_result["complete"] or
+            cold_result["evidence_directory"]!=str(cold_directory) or
+            cold_result["source_hashes"]!=source_hashes() or cold_result["full_case_runs"]!=0 or
+            cold_result["results"]["native_guard"]["workers_checked"]<10 or
+            not cold_certificate["pass"] or not cold_certificate["complete"] or
+            cold_certificate["input_sha256"]!=stock_certificate["input_sha256"] or
+            cold_certificate["official_phys_feas"]!=1):
+        raise RuntimeError("Cold primal failed source-checked complete tiny integration")
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -735,6 +754,7 @@ def main():
     for name,expected_sets in (("reserve_benders_certificate_tests",5),
                                ("reserve_benders_partition_tests",3),
                                ("reserve_benders_runtime_tests",2),
+                               ("cold_benders_primal_tests",2),
                                ("native_highs_guard_tests",2),
                                ("guarded_reserve_benders_runtime_tests",2),
                                ("native_root_memory_tests",3),
@@ -785,6 +805,7 @@ def main():
         "tiny_native_guard_benders_integration":guard_result,
         "tiny_root_memory_benders_integration":root_memory_result,
         "tiny_root_progress_benders_integration":root_progress_result,
+        "tiny_cold_primal_benders_integration":cold_result,
         "tiny_bounded_reserve_storage":bounded_reserve_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,

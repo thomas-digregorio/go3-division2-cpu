@@ -74,7 +74,16 @@
     "registered_next_attempt": "campaign_n23643_s003_r09",
     "scope": "One new cold attempt under the active low-RAM goal after a fresh complete source-matched gate. Preserve r08's entire model, FP64, PMIN, tolerances, 7200-second global budget, verification reserve and memory/disk floors. Add opt-in ordinary root-LP logging without solver debug checks, in a separately hashed native build, and raise only the per-master cap from 600 to 1100 seconds within the unchanged 1500-second scheduling-stage budget. These are implementation choices, not quoted user selections. Do not reuse r08's latch."
   },
+  "cold_primal_goal_continuation": {
+    "registered_next_attempt": "campaign_n23643_s003_r10",
+    "scope": "One cold attempt under the active low-RAM goal after complete source-matched component tests. Construct a within-attempt feasible scheduling commitment by maximizing source online intervals, then restore source economics in a fresh presolved fixed-integer LP. Retain every source row and reserve subproblem, exact PMIN, FP64, tolerances, 48 periods, all contingency checks, score target, 7200-second deadline and safety floors. Construction and restricted LP bounds are never original MILP certificates. A saved constructed master point still owes all reserve and original-scheduling audits before AC. Preserve prior algorithms and immutable run latches. These are implementation choices, not quoted user selections."
+  },
   "attempts": {
+    "campaign_n23643_s003_r10": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5"
+    },
     "campaign_n23643_s003_r09": {
       "network": "C3E4N23643D2",
       "scenario": "003",

@@ -22,6 +22,7 @@ from go3cpu.native_highs import backend_record, native_environment
 
 POLICY="source_reserve_benders_v1"
 ROUND_SCHEMA="go3_source_reserve_benders_round_v1"
+PRIMAL_POLICY="cold_online_then_fixed_cost_v1"
 
 
 def artifact(path):
@@ -51,6 +52,8 @@ def terminal_status(reason,gap_met):
         return 7,"OPTIMAL"
     if reason=="round_limit":
         return 14,"ITERATION_LIMIT"
+    if reason=="source_feasible_constructed_schedule":
+        return 16,"SOLUTION_LIMIT"
     if reason in ("master_absolute_deadline","recourse_absolute_deadline",
                   "master_native_call_deadline","recourse_native_call_deadline",
                   "scheduling_budget_reserved_for_recourse_and_finalization",
@@ -77,6 +80,45 @@ def validate_configuration(config):
         raise ValueError("Invalid Benders round limit")
     if config["scheduling_benders_recourse_reserve_seconds"]+config["scheduling_benders_finalize_seconds"]>=config["scheduling_seconds"]:
         raise ValueError("No scheduling time reserved for a master solve")
+    policy=config.get("scheduling_benders_primal_policy","off")
+    phase_keys=("scheduling_benders_construction_seconds","scheduling_benders_fixed_cost_seconds")
+    if policy not in ("off",PRIMAL_POLICY):
+        raise ValueError("Unknown Benders primal policy")
+    if policy==PRIMAL_POLICY:
+        for key in phase_keys:
+            value=config.get(key)
+            if (isinstance(value,bool) or not isinstance(value,(int,float))
+                    or not math.isfinite(value) or value<=0):
+                raise ValueError(f"Invalid cold primal phase budget: {key}")
+        if sum(config[k] for k in phase_keys)>config["scheduling_benders_master_round_seconds"]:
+            raise ValueError("Cold primal phases exceed the registered master allowance")
+    elif any(k in config for k in phase_keys):
+        raise ValueError("Cold phase budgets require the explicit primal policy")
+
+
+def interrupted_construction(directory,request,config):
+    """A saved master point still owes every reserve/original/AC check."""
+    path=directory/"construction_result.json"
+    if (request["mode"]!="master" or config.get("scheduling_benders_primal_policy")!=PRIMAL_POLICY
+            or not path.exists()):
+        return None
+    record=json.loads(path.read_text())
+    if (record.get("schema")!=ROUND_SCHEMA or not record.get("complete")
+            or record.get("identity")!=request["identity"] or record.get("mode")!="master"
+            or record.get("request_sha256")!=sha256(directory/"request.json")
+            or record.get("primal_policy")!=PRIMAL_POLICY
+            or not record.get("statistics",{}).get("has_primal")
+            or record["statistics"].get("bound") is not None
+            or record["statistics"].get("relative_gap") is not None
+            or not record.get("audit",{}).get("complete") or not record["audit"].get("pass")
+            or record["audit"].get("maximum_cut_violation",math.inf)>1e-8):
+        raise ValueError("Interrupted construction has no complete original-master audit")
+    vector=checked_path(record["primal"])
+    if (vector.parent!=directory or vector.stat().st_size!=record["primal"]["bytes"]
+            or record["primal"]["bytes"]!=8*record["primal"]["elements"]
+            or record["primal"]["elements"]!=record["audit"]["variables"]):
+        raise ValueError("Interrupted construction primal escaped its immutable stage")
+    return record,artifact(path)
 
 
 def run_stage(common,output,config_path,request,directory,deadline,config):
@@ -88,6 +130,7 @@ def run_stage(common,output,config_path,request,directory,deadline,config):
     atomic_json(request_path,request,exclusive=True)
     native_limit=config["scheduling_benders_master_round_seconds"] if request["mode"]=="master" else config["scheduling_benders_recourse_seconds"]
     environment=native_environment(config,root=ROOT)
+    started=time.perf_counter()
     try:
         pid,code,wall=launch_stage(common+[str(ROOT/"src/solve_reserve_benders_worker.jl"),str(output),
             str(config_path),str(request_path),str(directory),str(deadline)],deadline=deadline,
@@ -103,7 +146,17 @@ def run_stage(common,output,config_path,request,directory,deadline,config):
             "kind":"native_call_deadline" if isinstance(exc,NativeCallDeadlineExceeded) else "absolute_stage_deadline",
             "native_call":getattr(exc,"details",None),"launch_cleanup_completed":True,
             "no_relaunch":True,"stage_deadline_epoch":deadline},exclusive=True)
-        raise
+        saved=interrupted_construction(directory,request,config)
+        if saved is None:
+            raise
+        record,ref=saved
+        record["process_wall_seconds"]=time.perf_counter()-started
+        record["interrupted_stage_ref"]=artifact(directory/"interruption.json")
+        atomic_json(directory/"exit.json",{"pid":record["pid"],"returncode":None,
+            "process_wall_seconds":record["process_wall_seconds"],"interrupted":True,
+            "exited_before_next_native_stage":True,"result_sha256":ref["sha256"],
+            "accepted_saved_original_master_point":True,"reserve_and_full_original_audit_still_required":True},exclusive=True)
+        return record,ref
     path=directory/"result.json"
     record=json.loads(path.read_text())
     if (record.get("schema")!=ROUND_SCHEMA or not record.get("complete")
@@ -152,7 +205,12 @@ def run(julia,output,config_path,deadline):
             reason="master_native_call_deadline" if isinstance(exc,NativeCallDeadlineExceeded) else "master_absolute_deadline"
             interruptions.append(artifact(directory/"master/interruption.json"));break
         options=master["options"];solve_calls+=master["solve_calls"]
+        if "interrupted_stage_ref" in master:
+            interruptions.append(master["interrupted_stage_ref"])
         stats=master["statistics"]
+        if config.get("scheduling_benders_primal_policy")==PRIMAL_POLICY and (
+                stats["bound"] is not None or stats["relative_gap"] is not None):
+            raise ValueError("A heuristic construction/restricted LP cannot certify the economic MILP gap")
         if stats["native_status"]==8 and best is not None:
             raise RuntimeError("Master declared infeasible despite a fully audited prior incumbent")
         if stats["bound"] is not None and stats["native_status"]!=8:
@@ -188,6 +246,8 @@ def run(julia,output,config_path,deadline):
             "verified_incumbent":None if best is None else best["objective"],"relative_gap":gap})
         rounds.append(row);atomic_json(directory/"summary.json",row,exclusive=True)
         print("BENDERS_ROUND "+json.dumps(row,allow_nan=False),flush=True)
+        if config.get("scheduling_benders_primal_policy")==PRIMAL_POLICY and best is not None:
+            reason="source_feasible_constructed_schedule";break
         if gap is not None and gap<=config["scheduling_relative_gap"]:
             reason="scheduling_gap_met";break
     gap=scheduling_gap(upper,None if best is None else best["objective"])
@@ -199,6 +259,7 @@ def run(julia,output,config_path,deadline):
         "relative_gap":gap,"scheduling_gap_met":gap is not None and gap<=config["scheduling_relative_gap"],
         "all_source_hours_required":partition["periods"],"wall_seconds":time.perf_counter()-started,
         "native_master_and_recourse_processes_never_overlap":True,
+        "primal_policy":config.get("scheduling_benders_primal_policy","off"),
         "scope":"Original joint scheduling subproblem only; not full AC or GO3 optimality"}
     atomic_json(root/"summary.json",summary,exclusive=True)
     if best is None:

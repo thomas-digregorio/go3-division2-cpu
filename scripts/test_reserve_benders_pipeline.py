@@ -15,7 +15,7 @@ from run_pilot import JULIA, runtime_environment
 from run_disk_worker import compact_stage, reserve_partition_stage
 
 
-def audit_loop(output, *, minimum_rounds=1, expected=None, phase_one=False, require_gap=True):
+def audit_loop(output, *, minimum_rounds=1, expected=None, phase_one=False, require_gap=True, require_starts=True):
     summary=json.loads((output/"reserve_decomposition/summary.json").read_text())
     native=json.loads((output/"native_result.json").read_text())
     rows=summary["rounds"]
@@ -44,7 +44,7 @@ def audit_loop(output, *, minimum_rounds=1, expected=None, phase_one=False, requ
                 if result["hours_completed"]!=result["hours_required"]:
                     raise AssertionError("Source reserve hour omitted")
                 kinds.extend(h["kind"] for h in result["hours"])
-    if minimum_rounds>=2 and not starts:
+    if minimum_rounds>=2 and require_starts and not starts:
         raise AssertionError("Multiround component never tested a complete prior primal start")
     if phase_one and "feasibility" not in kinds:
         raise AssertionError("Phase I never exercised a certified continuous-domain feasibility cut")
@@ -54,8 +54,8 @@ def audit_loop(output, *, minimum_rounds=1, expected=None, phase_one=False, requ
         "feasibility_cuts":kinds.count("feasibility"),"original_audit":native["storage"]["original_scheduling_audit"]}
 
 
-def main(integration_only=False,native_guard=False,root_memory=False,root_progress=False):
-    if sum((native_guard,root_memory,root_progress))>1:
+def main(integration_only=False,native_guard=False,root_memory=False,root_progress=False,cold_primal=False):
+    if sum((native_guard,root_memory,root_progress,cold_primal))>1:
         raise ValueError("Select one native backend per component pipeline")
     evidence=Path(tempfile.mkdtemp(prefix="reserve_loop_components_",dir=ROOT/"tmp"))
     print("BENDERS_COMPONENT_EVIDENCE "+str(evidence),flush=True)
@@ -80,7 +80,8 @@ def main(integration_only=False,native_guard=False,root_memory=False,root_progre
             raise RuntimeError(f"Tiny Benders gate failed: {name}")
         return row
     common=[str(JULIA),"--startup-file=no",f"--project={ROOT}"]
-    config=ROOT/("config/tiny_reserve_benders_root_progress.json" if root_progress else
+    config=ROOT/("config/tiny_reserve_benders_cold_primal.json" if cold_primal else
+        "config/tiny_reserve_benders_root_progress.json" if root_progress else
         "config/tiny_reserve_benders_root_memory.json" if root_memory else
         "config/tiny_reserve_benders_native_guard.json" if native_guard else "config/tiny_reserve_benders.json")
     results={}
@@ -105,7 +106,17 @@ def main(integration_only=False,native_guard=False,root_memory=False,root_progre
         stage(kind+"_loop",[sys.executable,"scripts/run_reserve_benders.py",str(JULIA),str(output),
             str(fixture_config),str(time.time()+180)])
         expected=json.loads((output/"expected.json").read_text())
-        if kind=="bounded_incumbent":
+        if cold_primal:
+            results[kind]=audit_loop(output,expected=-2.0 if kind=="phase_one" else -3.25,
+                minimum_rounds=2 if kind=="phase_one" else 1,phase_one=kind=="phase_one",
+                require_gap=False,require_starts=False)
+            summary=json.loads((output/"reserve_decomposition/summary.json").read_text())
+            native=json.loads((output/"native_result.json").read_text())
+            if (summary["reason"]!="source_feasible_constructed_schedule" or summary["scheduling_gap_met"]
+                    or summary["relative_gap"] is not None or summary["bound"] is not None
+                    or native["statistics"]["termination"]!="SOLUTION_LIMIT"):
+                raise AssertionError("Cold heuristic was falsely certified as the economic MILP optimum")
+        elif kind=="bounded_incumbent":
             results[kind]=audit_loop(output,expected=-3.0,require_gap=False)
             summary=json.loads((output/"reserve_decomposition/summary.json").read_text())
             native=json.loads((output/"native_result.json").read_text())
@@ -118,14 +129,14 @@ def main(integration_only=False,native_guard=False,root_memory=False,root_progre
     output=evidence/"dc_worker"
     stage("tiny_source_ac_pipeline",[sys.executable,"scripts/run_disk_worker.py",str(JULIA),
         "tmp/official_tiny/dc_problem.json",str(output),str(config),str(time.time()+240)],seconds=245)
-    results["source_dc_loop"]=audit_loop(output)
+    results["source_dc_loop"]=audit_loop(output,require_gap=not cold_primal)
     stage("independent_official_verification",[sys.executable,"scripts/verify_candidate.py",
         "--input","tmp/official_tiny/dc_problem.json","--solution",str(output/"candidate_final.json"),
         "--output",str(evidence/"dc_verification"),"--seconds","60",
         "--official-contingency-batch-size","2"],seconds=90)
     from component_gate import dc_pipeline_audit
     results["source_dc_ac_pipeline"]=dc_pipeline_audit(evidence)
-    if native_guard or root_memory or root_progress:
+    if native_guard or root_memory or root_progress or cold_primal:
         from go3cpu.native_highs import backend_record
         native=backend_record(json.loads(config.read_text()),root=ROOT)
         checked=[];root_options_checked=0
@@ -154,7 +165,16 @@ def main(integration_only=False,native_guard=False,root_memory=False,root_progre
                 if record["mode"]=="master" and record["options"].get("mip_root_lp_logging") is not True:
                     raise AssertionError("Native master did not accept the logging option")
             checked.append(str(path))
-        if len(checked)<16:
+            if cold_primal and record["mode"]=="master":
+                if (record["statistics"]["bound"] is not None or record["statistics"]["relative_gap"] is not None
+                        or len(record["phases"])!=2 or not record["audit"]["pass"]
+                        or record["phases"][1]["presolve"]!="on"
+                        or record["options"].get("mip_compute_analytic_center") is not False
+                        or record["options"].get("mip_root_presolve_only") is not True
+                        or record["options"].get("mip_root_lp_logging") is not True
+                        or not (path.parent/"construction_result.json").exists()):
+                    raise AssertionError("Cold native master lost its saved point or bound scope")
+        if len(checked)<(10 if cold_primal else 16):
             raise AssertionError("Incomplete native master/recourse identity coverage")
         results["native_guard"]={"policy":native["policy"],"workers_checked":len(checked),
                                  "library_sha256":native["manifest"]["files"]["library"]["sha256"]}
@@ -177,8 +197,9 @@ def main(integration_only=False,native_guard=False,root_memory=False,root_progre
 
 if __name__=="__main__":
     if (len(set(sys.argv[1:]))!=len(sys.argv[1:]) or
-            not set(sys.argv[1:])<={"--integration-only","--native-guard","--root-memory","--root-progress"} or
-            len({"--native-guard","--root-memory","--root-progress"}&set(sys.argv[1:]))>1):
+            not set(sys.argv[1:])<={"--integration-only","--native-guard","--root-memory","--root-progress","--cold-primal"} or
+            len({"--native-guard","--root-memory","--root-progress","--cold-primal"}&set(sys.argv[1:]))>1):
         raise SystemExit("Use --integration-only and at most one native backend flag")
     main(integration_only="--integration-only" in sys.argv,native_guard="--native-guard" in sys.argv,
-         root_memory="--root-memory" in sys.argv,root_progress="--root-progress" in sys.argv)
+         root_memory="--root-memory" in sys.argv,root_progress="--root-progress" in sys.argv,
+         cold_primal="--cold-primal" in sys.argv)

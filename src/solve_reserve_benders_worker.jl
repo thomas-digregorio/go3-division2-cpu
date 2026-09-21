@@ -2,6 +2,7 @@ include(joinpath(@__DIR__,"solve_scheduling_native.jl"))
 include(joinpath(@__DIR__,"reserve_benders_partition.jl"))
 include(joinpath(@__DIR__,"reserve_benders_certificate.jl"))
 include(joinpath(@__DIR__,"reserve_benders_runtime.jl"))
+include(joinpath(@__DIR__,"reserve_benders_primal.jl"))
 
 function run_benders_stage(output,config_path,request_path,directory,deadline)
     output=spool_local(output);directory=spool_local(directory)
@@ -22,7 +23,10 @@ function run_benders_stage(output,config_path,request_path,directory,deadline)
     native_backend=native_highs_identity(config)
     event("reserve_benders_worker_started",Dict("raw_case_parsed"=>false,"native_backend"=>native_backend))
     result=if request["mode"]=="master"
-        rb_master_round(ctx,config,request,directory;deadline=deadline,on_event=event)
+        policy=get(config,"scheduling_benders_primal_policy","off")
+        policy in ("off",RB_COLD_PRIMAL_POLICY) || error("Unknown Benders primal policy")
+        policy=="off" ? rb_master_round(ctx,config,request,directory;deadline=deadline,on_event=event) :
+            rb_cold_master_round(ctx,config,request,directory;deadline=deadline,on_event=event)
     elseif request["mode"]=="recourse"
         rb_recourse_round(ctx,config,request,directory;deadline=deadline,on_event=event)
     else
