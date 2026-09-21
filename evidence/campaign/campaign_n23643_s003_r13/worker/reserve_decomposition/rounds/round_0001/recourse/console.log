@@ -1,0 +1,1491 @@
+GO3_PROGRESS {"epoch_seconds":1.789980396031e9,"event":"reserve_benders_worker_started","raw_case_parsed":false,"pid":19676,"native_backend":{"analytic_center_requested":false,"git_hash":"04024d7","library_sha256":"892447b910bab933e5fad23035f8f5c06cf25ac24f93be5b44633edb6e1bb349","root_presolve_only_requested":true,"version":"1.15.1","policy":"root_progress_guard_v1","library_path":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\environments\\highs-root-progress-build\\bin\\libhighs.dll","highs_int_bits":32,"manifest_sha256":"abb3c9ff808b89d844804cf4c987701f7055d8cdb849fd0fe48cf52ea7bed4a6","floating_point_bits":64,"objective_clique_max_size":4096,"root_lp_logging_requested":true},"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1372.1675424575806}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980398007e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":1,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1370.1915423870087}
+LP has 210447 rows; 150174 cols; 553067 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40179 rows, 68324 cols, 212365 nonzeros 0s
+37312 rows, 68324 cols, 203764 nonzeros 0s
+Presolve reductions: rows 37312(-173135); columns 68324(-81850); nonzeros 203764(-349303) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.5967249924e+03 Pr: 96(7643.77) 0.2s
+      21064     4.2257175987e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21064
+Objective value     :  4.2257175987e+08
+P-D objective error :  2.6094643130e-15
+HiGHS run time      :          0.72
+GO3_PROGRESS {"epoch_seconds":1.78998039874e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7223129272460938,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21064,"barrier_iterations":0,"has_primal":true,"period":1,"native_status":7,"solve_wall_seconds":0.7250001430511475,"round":1,"remaining_work_seconds":1369.4585423469543}
+GO3_PROGRESS {"epoch_seconds":1.789980399435e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":1,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":1,"round":1,"remaining_work_seconds":1368.7635424137115}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980399618e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":2,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1368.5805423259735}
+LP has 210423 rows; 150150 cols; 553019 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40313 rows, 68772 cols, 214130 nonzeros 0s
+37517 rows, 68772 cols, 205742 nonzeros 0s
+Presolve reductions: rows 37517(-172906); columns 68772(-81378); nonzeros 205742(-347277) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.4423210113e+03 Pr: 96(7704.55) 0.2s
+      21026     4.3109297216e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21026
+Objective value     :  4.3109297216e+08
+P-D objective error :  1.9356961950e-15
+HiGHS run time      :          0.75
+GO3_PROGRESS {"epoch_seconds":1.789980400376e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7535278797149658,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21026,"barrier_iterations":0,"has_primal":true,"period":2,"native_status":7,"solve_wall_seconds":0.7549998760223389,"round":1,"remaining_work_seconds":1367.8225424289703}
+GO3_PROGRESS {"epoch_seconds":1.789980400455e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":2,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":2,"round":1,"remaining_work_seconds":1367.743542432785}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980400637e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":3,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1367.5615422725677}
+LP has 210413 rows; 150140 cols; 552999 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40370 rows, 68935 cols, 214940 nonzeros 0s
+37637 rows, 68935 cols, 206741 nonzeros 0s
+Presolve reductions: rows 37637(-172776); columns 68935(-81205); nonzeros 206741(-346258) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.4816930057e+03 Pr: 96(7729.52) 0.2s
+      21265     4.3385820926e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21265
+Objective value     :  4.3385820925e+08
+P-D objective error :  2.4728899485e-15
+HiGHS run time      :          0.79
+GO3_PROGRESS {"epoch_seconds":1.789980401425e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7858059406280518,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21265,"barrier_iterations":0,"has_primal":true,"period":3,"native_status":7,"solve_wall_seconds":0.7869999408721924,"round":1,"remaining_work_seconds":1366.7735424041748}
+GO3_PROGRESS {"epoch_seconds":1.789980401509e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":3,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":3,"round":1,"remaining_work_seconds":1366.6895422935486}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.78998040169e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":4,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1366.5085422992706}
+LP has 210401 rows; 150128 cols; 552975 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [3e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40401 rows, 68960 cols, 215288 nonzeros 0s
+37699 rows, 68960 cols, 207182 nonzeros 0s
+Presolve reductions: rows 37699(-172702); columns 68960(-81168); nonzeros 207182(-345793) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.0771390993e+03 Pr: 96(7732.94) 0.2s
+      21159     4.3413435781e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21159
+Objective value     :  4.3413435781e+08
+P-D objective error :  2.7459077419e-15
+HiGHS run time      :          0.78
+GO3_PROGRESS {"epoch_seconds":1.78998040247e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7769222259521484,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21159,"barrier_iterations":0,"has_primal":true,"period":4,"native_status":7,"solve_wall_seconds":0.7780001163482666,"round":1,"remaining_work_seconds":1365.7285423278809}
+GO3_PROGRESS {"epoch_seconds":1.78998040256e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":4,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":4,"round":1,"remaining_work_seconds":1365.6385424137115}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980402739e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":5,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1365.459542274475}
+LP has 210383 rows; 150110 cols; 552939 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40452 rows, 68997 cols, 215582 nonzeros 0s
+37719 rows, 68997 cols, 207383 nonzeros 0s
+Presolve reductions: rows 37719(-172664); columns 68997(-81113); nonzeros 207383(-345556) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.1178370067e+03 Pr: 96(7736.28) 0.2s
+      20706     4.3481482530e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20706
+Objective value     :  4.3481482530e+08
+P-D objective error :  2.2618286692e-15
+HiGHS run time      :          0.78
+GO3_PROGRESS {"epoch_seconds":1.789980403521e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7792258262634277,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20706,"barrier_iterations":0,"has_primal":true,"period":5,"native_status":7,"solve_wall_seconds":0.7809998989105225,"round":1,"remaining_work_seconds":1364.6775424480438}
+GO3_PROGRESS {"epoch_seconds":1.789980403604e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":5,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":5,"round":1,"remaining_work_seconds":1364.5945422649384}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980403784e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":6,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1364.4145424365997}
+LP has 210407 rows; 150134 cols; 552987 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [3e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40394 rows, 69007 cols, 215302 nonzeros 0s
+37683 rows, 69007 cols, 207169 nonzeros 0s
+Presolve reductions: rows 37683(-172724); columns 69007(-81127); nonzeros 207169(-345818) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.3385580024e+03 Pr: 96(7755.93) 0.2s
+      21157     4.3783509198e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21157
+Objective value     :  4.3783509198e+08
+P-D objective error :  3.0630356736e-15
+HiGHS run time      :          0.79
+GO3_PROGRESS {"epoch_seconds":1.789980404577e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7887868881225586,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21157,"barrier_iterations":0,"has_primal":true,"period":6,"native_status":7,"solve_wall_seconds":0.7909998893737793,"round":1,"remaining_work_seconds":1363.6215424537659}
+GO3_PROGRESS {"epoch_seconds":1.789980404669e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":6,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":6,"round":1,"remaining_work_seconds":1363.5295424461365}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980404857e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":7,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1363.3415422439575}
+LP has 210437 rows; 150164 cols; 553047 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40396 rows, 69030 cols, 215087 nonzeros 0s
+37611 rows, 69030 cols, 206732 nonzeros 0s
+Presolve reductions: rows 37611(-172826); columns 69030(-81134); nonzeros 206732(-346315) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     3.0080379978e+03 Pr: 96(7785.87) 0.2s
+      20918     4.4269902621e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20918
+Objective value     :  4.4269902621e+08
+P-D objective error :  2.9620624983e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980405628e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7681849002838135,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20918,"barrier_iterations":0,"has_primal":true,"period":7,"native_status":7,"solve_wall_seconds":0.7699999809265137,"round":1,"remaining_work_seconds":1362.5705423355103}
+GO3_PROGRESS {"epoch_seconds":1.789980405722e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":7,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":7,"round":1,"remaining_work_seconds":1362.4765424728394}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980405906e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":8,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1362.2925424575806}
+LP has 210441 rows; 150168 cols; 553055 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40351 rows, 68839 cols, 214182 nonzeros 0s
+37498 rows, 68839 cols, 205623 nonzeros 0s
+Presolve reductions: rows 37498(-172943); columns 68839(-81329); nonzeros 205623(-347432) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.5670319969e+03 Pr: 96(7798.6) 0.2s
+      20915     4.4550272587e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20915
+Objective value     :  4.4550272587e+08
+P-D objective error :  2.6089415492e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980406675e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7661690711975098,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20915,"barrier_iterations":0,"has_primal":true,"period":8,"native_status":7,"solve_wall_seconds":0.7679998874664307,"round":1,"remaining_work_seconds":1361.5235424041748}
+GO3_PROGRESS {"epoch_seconds":1.789980406766e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":8,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":8,"round":1,"remaining_work_seconds":1361.4325423240662}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980406953e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":9,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1361.2455422878265}
+LP has 210455 rows; 150182 cols; 553083 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40240 rows, 68444 cols, 212685 nonzeros 0s
+37343 rows, 68444 cols, 203994 nonzeros 0s
+Presolve reductions: rows 37343(-173112); columns 68444(-81738); nonzeros 203994(-349089) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     3.2444320025e+03 Pr: 96(7770.28) 0.2s
+      21158     4.4135735801e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21158
+Objective value     :  4.4135735801e+08
+P-D objective error :  2.8360182880e-15
+HiGHS run time      :          0.78
+GO3_PROGRESS {"epoch_seconds":1.789980407736e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7806382179260254,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21158,"barrier_iterations":0,"has_primal":true,"period":9,"native_status":7,"solve_wall_seconds":0.7820000648498535,"round":1,"remaining_work_seconds":1360.462542295456}
+GO3_PROGRESS {"epoch_seconds":1.78998040783e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":9,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":9,"round":1,"remaining_work_seconds":1360.368542432785}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980408019e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":10,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1360.1795423030853}
+LP has 210471 rows; 150198 cols; 553115 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40055 rows, 67939 cols, 210903 nonzeros 0s
+37085 rows, 67939 cols, 201993 nonzeros 0s
+Presolve reductions: rows 37085(-173386); columns 67939(-82259); nonzeros 201993(-351122) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.3730620071e+03 Pr: 96(7779.93) 0.2s
+      21079     4.4397079604e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21079
+Objective value     :  4.4397079604e+08
+P-D objective error :  3.3563381443e-15
+HiGHS run time      :          0.76
+GO3_PROGRESS {"epoch_seconds":1.789980408781e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7604269981384277,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21079,"barrier_iterations":0,"has_primal":true,"period":10,"native_status":7,"solve_wall_seconds":0.7609999179840088,"round":1,"remaining_work_seconds":1359.4175424575806}
+GO3_PROGRESS {"epoch_seconds":1.789980408877e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":10,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":10,"round":1,"remaining_work_seconds":1359.321542263031}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980409054e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":11,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1359.1445424556732}
+LP has 210489 rows; 150216 cols; 553151 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40049 rows, 67671 cols, 210074 nonzeros 0s
+36988 rows, 67671 cols, 200891 nonzeros 0s
+Presolve reductions: rows 36988(-173501); columns 67671(-82545); nonzeros 200891(-352260) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.8034970073e+03 Pr: 96(7758.42) 0.2s
+      21068     4.4058649002e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21068
+Objective value     :  4.4058649002e+08
+P-D objective error :  3.5850465698e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980409828e9,"event":"reserve_benders_solve_returned","solve_seconds":0.769355058670044,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21068,"barrier_iterations":0,"has_primal":true,"period":11,"native_status":7,"solve_wall_seconds":0.7720000743865967,"round":1,"remaining_work_seconds":1358.3705422878265}
+GO3_PROGRESS {"epoch_seconds":1.789980409914e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":11,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":11,"round":1,"remaining_work_seconds":1358.2845423221588}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980410094e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":12,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1358.1045422554016}
+LP has 210499 rows; 150226 cols; 553171 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40109 rows, 67632 cols, 209914 nonzeros 0s
+36957 rows, 67632 cols, 200458 nonzeros 0s
+Presolve reductions: rows 36957(-173542); columns 67632(-82594); nonzeros 200458(-352713) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.6167840009e+03 Pr: 96(7767.03) 0.2s
+      21168     4.4186952787e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21168
+Objective value     :  4.4186952787e+08
+P-D objective error :  4.0467586662e-15
+HiGHS run time      :          0.74
+GO3_PROGRESS {"epoch_seconds":1.789980410834e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7364048957824707,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21168,"barrier_iterations":0,"has_primal":true,"period":12,"native_status":7,"solve_wall_seconds":0.7380001544952393,"round":1,"remaining_work_seconds":1357.3645422458649}
+GO3_PROGRESS {"epoch_seconds":1.789980410922e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":12,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":12,"round":1,"remaining_work_seconds":1357.2765424251556}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980411103e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":13,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1357.0955424308777}
+LP has 210517 rows; 150244 cols; 553207 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40117 rows, 67590 cols, 209706 nonzeros 0s
+36915 rows, 67590 cols, 200100 nonzeros 0s
+Presolve reductions: rows 36915(-173602); columns 67590(-82654); nonzeros 200100(-353107) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.7685330027e+03 Pr: 96(7725.51) 0.2s
+      20835     4.3597049710e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20835
+Objective value     :  4.3597049710e+08
+P-D objective error :  2.8710601914e-15
+HiGHS run time      :          0.76
+GO3_PROGRESS {"epoch_seconds":1.789980411862e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7566587924957275,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20835,"barrier_iterations":0,"has_primal":true,"period":13,"native_status":7,"solve_wall_seconds":0.7579998970031738,"round":1,"remaining_work_seconds":1356.3365423679352}
+GO3_PROGRESS {"epoch_seconds":1.789980411958e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":13,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":13,"round":1,"remaining_work_seconds":1356.2405424118042}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980412141e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":14,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1356.0575423240662}
+LP has 210505 rows; 150232 cols; 553183 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40113 rows, 67567 cols, 209481 nonzeros 0s
+36877 rows, 67567 cols, 199773 nonzeros 0s
+Presolve reductions: rows 36877(-173628); columns 67567(-82665); nonzeros 199773(-353410) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.4596300058e+03 Pr: 96(7721.56) 0.2s
+      20707     4.3552329140e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20707
+Objective value     :  4.3552329140e+08
+P-D objective error :  3.6951534829e-15
+HiGHS run time      :          0.75
+GO3_PROGRESS {"epoch_seconds":1.789980412893e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7499210834503174,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20707,"barrier_iterations":0,"has_primal":true,"period":14,"native_status":7,"solve_wall_seconds":0.750999927520752,"round":1,"remaining_work_seconds":1355.3055424690247}
+GO3_PROGRESS {"epoch_seconds":1.789980412978e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":14,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":14,"round":1,"remaining_work_seconds":1355.2205424308777}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.78998041316e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":15,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1355.0385422706604}
+LP has 210517 rows; 150244 cols; 553207 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40128 rows, 67539 cols, 209300 nonzeros 0s
+36835 rows, 67539 cols, 199421 nonzeros 0s
+Presolve reductions: rows 36835(-173682); columns 67539(-82705); nonzeros 199421(-353786) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.3790930026e+03 Pr: 96(7726.21) 0.2s
+      21134     4.3712185890e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21134
+Objective value     :  4.3712185890e+08
+P-D objective error :  2.7271408873e-15
+HiGHS run time      :          0.76
+GO3_PROGRESS {"epoch_seconds":1.789980413927e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7648930549621582,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21134,"barrier_iterations":0,"has_primal":true,"period":15,"native_status":7,"solve_wall_seconds":0.7660000324249268,"round":1,"remaining_work_seconds":1354.2715423107147}
+GO3_PROGRESS {"epoch_seconds":1.789980414021e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":15,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":15,"round":1,"remaining_work_seconds":1354.1775424480438}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980414202e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":16,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1353.9965424537659}
+LP has 210529 rows; 150256 cols; 553231 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40128 rows, 67507 cols, 208996 nonzeros 0s
+36795 rows, 67507 cols, 198997 nonzeros 0s
+Presolve reductions: rows 36795(-173734); columns 67507(-82749); nonzeros 198997(-354234) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.5607870013e+03 Pr: 96(7746.27) 0.2s
+      20536     4.4281063548e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20536
+Objective value     :  4.4281063548e+08
+P-D objective error :  2.8267106492e-15
+HiGHS run time      :          0.74
+GO3_PROGRESS {"epoch_seconds":1.789980414946e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7405180931091309,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20536,"barrier_iterations":0,"has_primal":true,"period":16,"native_status":7,"solve_wall_seconds":0.7420001029968262,"round":1,"remaining_work_seconds":1353.252542257309}
+GO3_PROGRESS {"epoch_seconds":1.789980415041e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":16,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":16,"round":1,"remaining_work_seconds":1353.1575424671173}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980415222e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":17,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1352.9765424728394}
+LP has 210545 rows; 150272 cols; 553263 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39756 rows, 67078 cols, 207093 nonzeros 0s
+36501 rows, 67078 cols, 197328 nonzeros 0s
+Presolve reductions: rows 36501(-174044); columns 67078(-83194); nonzeros 197328(-355935) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.6838480049e+03 Pr: 96(7740.13) 0.2s
+      20088     4.4201169047e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20088
+Objective value     :  4.4201169047e+08
+P-D objective error :  2.7643957001e-15
+HiGHS run time      :          0.73
+GO3_PROGRESS {"epoch_seconds":1.789980415952e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7274360656738281,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20088,"barrier_iterations":0,"has_primal":true,"period":17,"native_status":7,"solve_wall_seconds":0.7289998531341553,"round":1,"remaining_work_seconds":1352.2465424537659}
+GO3_PROGRESS {"epoch_seconds":1.789980416039e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":17,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":17,"round":1,"remaining_work_seconds":1352.1595423221588}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980416227e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":18,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1351.9715423583984}
+LP has 210543 rows; 150270 cols; 553259 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39752 rows, 67071 cols, 207017 nonzeros 0s
+36490 rows, 67071 cols, 197231 nonzeros 0s
+Presolve reductions: rows 36490(-174053); columns 67071(-83199); nonzeros 197231(-356028) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.9092750070e+03 Pr: 96(7729.25) 0.2s
+      20739     4.4038158652e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20739
+Objective value     :  4.4038158652e+08
+P-D objective error :  2.3009112802e-15
+HiGHS run time      :          0.75
+GO3_PROGRESS {"epoch_seconds":1.789980416978e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7482271194458008,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20739,"barrier_iterations":0,"has_primal":true,"period":18,"native_status":7,"solve_wall_seconds":0.748999834060669,"round":1,"remaining_work_seconds":1351.2205424308777}
+GO3_PROGRESS {"epoch_seconds":1.789980417071e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":18,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":18,"round":1,"remaining_work_seconds":1351.127542257309}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980417251e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":19,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1350.9475424289703}
+LP has 210533 rows; 150260 cols; 553239 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39765 rows, 67074 cols, 207073 nonzeros 0s
+36504 rows, 67074 cols, 197290 nonzeros 0s
+Presolve reductions: rows 36504(-174029); columns 67074(-83186); nonzeros 197290(-355949) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.0862459991e+03 Pr: 96(7713.48) 0.2s
+      20676     4.3778560343e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20676
+Objective value     :  4.3778560343e+08
+P-D objective error :  3.3356825439e-15
+HiGHS run time      :          0.75
+GO3_PROGRESS {"epoch_seconds":1.789980418004e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7505941390991211,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20676,"barrier_iterations":0,"has_primal":true,"period":19,"native_status":7,"solve_wall_seconds":0.7519998550415039,"round":1,"remaining_work_seconds":1350.1945424079895}
+GO3_PROGRESS {"epoch_seconds":1.789980418098e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":19,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":19,"round":1,"remaining_work_seconds":1350.1005423069}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980418276e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":20,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1349.922542333603}
+LP has 210531 rows; 150258 cols; 553235 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39841 rows, 67130 cols, 207433 nonzeros 0s
+36580 rows, 67130 cols, 197650 nonzeros 0s
+Presolve reductions: rows 36580(-173951); columns 67130(-83128); nonzeros 197650(-355585) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.6087010041e+03 Pr: 96(7708.48) 0.2s
+      20579     4.3834429618e+08 Pr: 0(0) 0.5s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20579
+Objective value     :  4.3834429618e+08
+P-D objective error :  3.6033845963e-15
+HiGHS run time      :          0.70
+GO3_PROGRESS {"epoch_seconds":1.789980418983e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7035007476806641,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20579,"barrier_iterations":0,"has_primal":true,"period":20,"native_status":7,"solve_wall_seconds":0.7049999237060547,"round":1,"remaining_work_seconds":1349.2155423164368}
+GO3_PROGRESS {"epoch_seconds":1.789980419075e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":20,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":20,"round":1,"remaining_work_seconds":1349.1235423088074}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980419254e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":21,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1348.9445424079895}
+LP has 210513 rows; 150240 cols; 553199 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40165 rows, 67554 cols, 209409 nonzeros 0s
+36872 rows, 67554 cols, 199530 nonzeros 0s
+Presolve reductions: rows 36872(-173641); columns 67554(-82686); nonzeros 199530(-353669) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.1950949997e+03 Pr: 96(7655.52) 0.2s
+      21244     4.2619480701e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21244
+Objective value     :  4.2619480701e+08
+P-D objective error :  2.8669875755e-15
+HiGHS run time      :          0.75
+GO3_PROGRESS {"epoch_seconds":1.789980420004e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7479801177978516,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21244,"barrier_iterations":0,"has_primal":true,"period":21,"native_status":7,"solve_wall_seconds":0.75,"round":1,"remaining_work_seconds":1348.1945424079895}
+GO3_PROGRESS {"epoch_seconds":1.789980420089e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":21,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":21,"round":1,"remaining_work_seconds":1348.1095423698425}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980420269e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":22,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1347.9295423030853}
+LP has 210509 rows; 150236 cols; 553191 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40143 rows, 67578 cols, 209696 nonzeros 0s
+36927 rows, 67578 cols, 200048 nonzeros 0s
+Presolve reductions: rows 36927(-173582); columns 67578(-82658); nonzeros 200048(-353143) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.7719989976e+03 Pr: 96(7632.82) 0.2s
+      20851     4.2195037264e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20851
+Objective value     :  4.2195037264e+08
+P-D objective error :  3.1783465375e-15
+HiGHS run time      :          0.76
+GO3_PROGRESS {"epoch_seconds":1.789980421033e9,"event":"reserve_benders_solve_returned","solve_seconds":0.761544942855835,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20851,"barrier_iterations":0,"has_primal":true,"period":22,"native_status":7,"solve_wall_seconds":0.7620000839233398,"round":1,"remaining_work_seconds":1347.1655423641205}
+GO3_PROGRESS {"epoch_seconds":1.789980421124e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":22,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":22,"round":1,"remaining_work_seconds":1347.0745422840118}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980421304e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":23,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1346.8945424556732}
+LP has 210503 rows; 150230 cols; 553179 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40047 rows, 67642 cols, 209927 nonzeros 0s
+36960 rows, 67642 cols, 200666 nonzeros 0s
+Presolve reductions: rows 36960(-173543); columns 67642(-82588); nonzeros 200666(-352513) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.3931110074e+03 Pr: 96(7661.21) 0.2s
+      20908     4.2600884450e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20908
+Objective value     :  4.2600884450e+08
+P-D objective error :  3.9175948418e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980422078e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7707180976867676,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20908,"barrier_iterations":0,"has_primal":true,"period":23,"native_status":7,"solve_wall_seconds":0.7720000743865967,"round":1,"remaining_work_seconds":1346.1205422878265}
+GO3_PROGRESS {"epoch_seconds":1.789980422173e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":23,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":23,"round":1,"remaining_work_seconds":1346.0255422592163}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980422353e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":24,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1345.8455424308777}
+LP has 210471 rows; 150198 cols; 553115 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40127 rows, 68105 cols, 211483 nonzeros 0s
+37167 rows, 68105 cols, 202603 nonzeros 0s
+Presolve reductions: rows 37167(-173304); columns 68105(-82093); nonzeros 202603(-350512) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.2527829964e+03 Pr: 96(7684.71) 0.2s
+      20776     4.2998596403e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20776
+Objective value     :  4.2998596403e+08
+P-D objective error :  2.3565396194e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980423125e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7680959701538086,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20776,"barrier_iterations":0,"has_primal":true,"period":24,"native_status":7,"solve_wall_seconds":0.7699999809265137,"round":1,"remaining_work_seconds":1345.073542356491}
+GO3_PROGRESS {"epoch_seconds":1.789980423217e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":24,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":24,"round":1,"remaining_work_seconds":1344.9815423488617}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980423393e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":25,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1344.8055424690247}
+LP has 210451 rows; 150178 cols; 553075 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40277 rows, 68590 cols, 213301 nonzeros 0s
+37416 rows, 68590 cols, 204718 nonzeros 0s
+Presolve reductions: rows 37416(-173035); columns 68590(-81588); nonzeros 204718(-348357) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.0389330150e+03 Pr: 96(7702.1) 0.2s
+      21279     4.3092213770e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21279
+Objective value     :  4.3092213770e+08
+P-D objective error :  2.2822606490e-15
+HiGHS run time      :          0.78
+GO3_PROGRESS {"epoch_seconds":1.789980424176e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7790529727935791,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21279,"barrier_iterations":0,"has_primal":true,"period":25,"native_status":7,"solve_wall_seconds":0.7820000648498535,"round":1,"remaining_work_seconds":1344.0225422382355}
+GO3_PROGRESS {"epoch_seconds":1.789980424254e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":25,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":25,"round":1,"remaining_work_seconds":1343.9445424079895}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980424434e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":26,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1343.7645423412323}
+LP has 210435 rows; 150162 cols; 553043 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40418 rows, 68888 cols, 214762 nonzeros 0s
+37572 rows, 68888 cols, 206224 nonzeros 0s
+Presolve reductions: rows 37572(-172863); columns 68888(-81274); nonzeros 206224(-346819) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.2682350079e+03 Pr: 96(7735.08) 0.2s
+      21188     4.3555232072e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21188
+Objective value     :  4.3555232072e+08
+P-D objective error :  2.7369682985e-15
+HiGHS run time      :          0.78
+GO3_PROGRESS {"epoch_seconds":1.789980425214e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7773511409759521,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21188,"barrier_iterations":0,"has_primal":true,"period":26,"native_status":7,"solve_wall_seconds":0.7790000438690186,"round":1,"remaining_work_seconds":1342.9845423698425}
+GO3_PROGRESS {"epoch_seconds":1.789980425304e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":26,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":26,"round":1,"remaining_work_seconds":1342.8945424556732}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980425486e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":27,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1342.712542295456}
+LP has 210411 rows; 150138 cols; 552995 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40433 rows, 69001 cols, 215309 nonzeros 0s
+37675 rows, 69001 cols, 207035 nonzeros 0s
+Presolve reductions: rows 37675(-172736); columns 69001(-81137); nonzeros 207035(-345960) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.9311920032e+03 Pr: 96(7760.85) 0.2s
+      21003     4.3875314114e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21003
+Objective value     :  4.3875314114e+08
+P-D objective error :  2.9887015285e-15
+HiGHS run time      :          0.78
+GO3_PROGRESS {"epoch_seconds":1.789980426271e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7820038795471191,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21003,"barrier_iterations":0,"has_primal":true,"period":27,"native_status":7,"solve_wall_seconds":0.7839999198913574,"round":1,"remaining_work_seconds":1341.9275424480438}
+GO3_PROGRESS {"epoch_seconds":1.789980426351e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":27,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":27,"round":1,"remaining_work_seconds":1341.8475422859192}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980426532e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":28,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1341.6665422916412}
+LP has 210401 rows; 150128 cols; 552975 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [3e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40453 rows, 68992 cols, 215512 nonzeros 0s
+37719 rows, 68992 cols, 207310 nonzeros 0s
+Presolve reductions: rows 37719(-172682); columns 68992(-81136); nonzeros 207310(-345665) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.9156130009e+03 Pr: 96(7764.72) 0.2s
+      20848     4.3891119509e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20848
+Objective value     :  4.3891119509e+08
+P-D objective error :  2.3086195371e-15
+HiGHS run time      :          0.78
+GO3_PROGRESS {"epoch_seconds":1.789980427314e9,"event":"reserve_benders_solve_returned","solve_seconds":0.779552698135376,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20848,"barrier_iterations":0,"has_primal":true,"period":28,"native_status":7,"solve_wall_seconds":0.7809998989105225,"round":1,"remaining_work_seconds":1340.88454246521}
+GO3_PROGRESS {"epoch_seconds":1.789980427405e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":28,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":28,"round":1,"remaining_work_seconds":1340.7935423851013}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980427585e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":29,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1340.6135423183441}
+LP has 210399 rows; 150126 cols; 552971 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [3e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40432 rows, 68949 cols, 215370 nonzeros 0s
+37687 rows, 68949 cols, 207135 nonzeros 0s
+Presolve reductions: rows 37687(-172712); columns 68949(-81177); nonzeros 207135(-345836) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.1304190042e+03 Pr: 96(7773.12) 0.2s
+      20889     4.4013182254e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20889
+Objective value     :  4.4013182254e+08
+P-D objective error :  2.9793396351e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980428356e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7686421871185303,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20889,"barrier_iterations":0,"has_primal":true,"period":29,"native_status":7,"solve_wall_seconds":0.7699999809265137,"round":1,"remaining_work_seconds":1339.8425424098969}
+GO3_PROGRESS {"epoch_seconds":1.789980428443e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":29,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":29,"round":1,"remaining_work_seconds":1339.7555422782898}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980428626e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":30,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1339.5725424289703}
+LP has 210407 rows; 150134 cols; 552987 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40403 rows, 68991 cols, 215222 nonzeros 0s
+37646 rows, 68991 cols, 206951 nonzeros 0s
+Presolve reductions: rows 37646(-172761); columns 68991(-81143); nonzeros 206951(-346036) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.1898680050e+03 Pr: 96(7780.83) 0.2s
+      20779     4.4159142091e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20779
+Objective value     :  4.4159142091e+08
+P-D objective error :  3.0369804358e-15
+HiGHS run time      :          0.76
+GO3_PROGRESS {"epoch_seconds":1.789980429394e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7644362449645996,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20779,"barrier_iterations":0,"has_primal":true,"period":30,"native_status":7,"solve_wall_seconds":0.7660000324249268,"round":1,"remaining_work_seconds":1338.8045423030853}
+GO3_PROGRESS {"epoch_seconds":1.789980429486e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":30,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":30,"round":1,"remaining_work_seconds":1338.712542295456}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.78998042967e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":31,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1338.5285422801971}
+LP has 210429 rows; 150156 cols; 553031 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40388 rows, 69001 cols, 214906 nonzeros 0s
+37567 rows, 69001 cols, 206443 nonzeros 0s
+Presolve reductions: rows 37567(-172862); columns 69001(-81155); nonzeros 206443(-346588) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.3794909936e+03 Pr: 96(7785.39) 0.2s
+      21198     4.4298618026e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21198
+Objective value     :  4.4298618025e+08
+P-D objective error :  2.4892106712e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980430447e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7743937969207764,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21198,"barrier_iterations":0,"has_primal":true,"period":31,"native_status":7,"solve_wall_seconds":0.7760000228881836,"round":1,"remaining_work_seconds":1337.7515423297882}
+GO3_PROGRESS {"epoch_seconds":1.789980430532e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":31,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":31,"round":1,"remaining_work_seconds":1337.6665422916412}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980430716e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":32,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1337.4825422763824}
+LP has 210451 rows; 150178 cols; 553075 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40270 rows, 68685 cols, 213474 nonzeros 0s
+37425 rows, 68685 cols, 204939 nonzeros 0s
+Presolve reductions: rows 37425(-173026); columns 68685(-81493); nonzeros 204939(-348136) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.2572110208e+03 Pr: 96(7782.14) 0.2s
+      21200     4.4249209131e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21200
+Objective value     :  4.4249209130e+08
+P-D objective error :  2.7613944758e-15
+HiGHS run time      :          0.79
+GO3_PROGRESS {"epoch_seconds":1.789980431509e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7889997959136963,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21200,"barrier_iterations":0,"has_primal":true,"period":32,"native_status":7,"solve_wall_seconds":0.7899999618530273,"round":1,"remaining_work_seconds":1336.6895422935486}
+GO3_PROGRESS {"epoch_seconds":1.789980431603e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":32,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":32,"round":1,"remaining_work_seconds":1336.5955424308777}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980431791e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":33,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1336.4075424671173}
+LP has 210463 rows; 150190 cols; 553099 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40116 rows, 68133 cols, 211544 nonzeros 0s
+37181 rows, 68133 cols, 202739 nonzeros 0s
+Presolve reductions: rows 37181(-173282); columns 68133(-82057); nonzeros 202739(-350360) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.0486970010e+03 Pr: 96(7800.74) 0.2s
+      20943     4.4709667530e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20943
+Objective value     :  4.4709667530e+08
+P-D objective error :  3.3328722847e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980432561e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7678959369659424,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20943,"barrier_iterations":0,"has_primal":true,"period":33,"native_status":7,"solve_wall_seconds":0.7690000534057617,"round":1,"remaining_work_seconds":1335.6375422477722}
+GO3_PROGRESS {"epoch_seconds":1.78998043265e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":33,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":33,"round":1,"remaining_work_seconds":1335.5485422611237}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980432832e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":34,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1335.366542339325}
+LP has 210481 rows; 150208 cols; 553135 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40078 rows, 67735 cols, 210307 nonzeros 0s
+37018 rows, 67735 cols, 201127 nonzeros 0s
+Presolve reductions: rows 37018(-173463); columns 67735(-82473); nonzeros 201127(-352008) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.5155569977e+03 Pr: 96(7787.45) 0.2s
+      20904     4.4466415731e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20904
+Objective value     :  4.4466415731e+08
+P-D objective error :  3.0159941698e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980433602e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7673788070678711,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20904,"barrier_iterations":0,"has_primal":true,"period":34,"native_status":7,"solve_wall_seconds":0.7690000534057617,"round":1,"remaining_work_seconds":1334.5965423583984}
+GO3_PROGRESS {"epoch_seconds":1.789980433695e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":34,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":34,"round":1,"remaining_work_seconds":1334.5035424232483}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980433877e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":35,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1334.321542263031}
+LP has 210497 rows; 150224 cols; 553167 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40102 rows, 67632 cols, 209894 nonzeros 0s
+36948 rows, 67632 cols, 200432 nonzeros 0s
+Presolve reductions: rows 36948(-173549); columns 67632(-82592); nonzeros 200432(-352735) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.7426759981e+03 Pr: 96(7779.26) 0.2s
+      20947     4.4404857921e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20947
+Objective value     :  4.4404857921e+08
+P-D objective error :  3.5570952340e-15
+HiGHS run time      :          0.76
+GO3_PROGRESS {"epoch_seconds":1.789980434635e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7555210590362549,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20947,"barrier_iterations":0,"has_primal":true,"period":35,"native_status":7,"solve_wall_seconds":0.7569999694824219,"round":1,"remaining_work_seconds":1333.5635423660278}
+GO3_PROGRESS {"epoch_seconds":1.789980434729e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":35,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":35,"round":1,"remaining_work_seconds":1333.4695422649384}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980434911e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":36,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1333.2875423431396}
+LP has 210509 rows; 150236 cols; 553191 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40082 rows, 67549 cols, 209448 nonzeros 0s
+36863 rows, 67549 cols, 199791 nonzeros 0s
+Presolve reductions: rows 36863(-173646); columns 67549(-82687); nonzeros 199791(-353400) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.2687340072e+03 Pr: 96(7768.76) 0.2s
+      20969     4.4227477041e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20969
+Objective value     :  4.4227477041e+08
+P-D objective error :  3.7735140313e-15
+HiGHS run time      :          0.74
+GO3_PROGRESS {"epoch_seconds":1.789980435659e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7443230152130127,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20969,"barrier_iterations":0,"has_primal":true,"period":36,"native_status":7,"solve_wall_seconds":0.745999813079834,"round":1,"remaining_work_seconds":1332.5395424365997}
+GO3_PROGRESS {"epoch_seconds":1.789980435752e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":36,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":36,"round":1,"remaining_work_seconds":1332.446542263031}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980435943e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":37,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1332.2555422782898}
+LP has 210515 rows; 150242 cols; 553203 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40112 rows, 67541 cols, 209315 nonzeros 0s
+36830 rows, 67541 cols, 199469 nonzeros 0s
+Presolve reductions: rows 36830(-173685); columns 67541(-82701); nonzeros 199469(-353734) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.0532700096e+03 Pr: 96(7768.29) 0.2s
+      21001     4.4326856477e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21001
+Objective value     :  4.4326856477e+08
+P-D objective error :  3.4961215064e-15
+HiGHS run time      :          0.75
+GO3_PROGRESS {"epoch_seconds":1.789980436695e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7496199607849121,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21001,"barrier_iterations":0,"has_primal":true,"period":37,"native_status":7,"solve_wall_seconds":0.75,"round":1,"remaining_work_seconds":1331.5035424232483}
+GO3_PROGRESS {"epoch_seconds":1.789980436789e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":37,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":37,"round":1,"remaining_work_seconds":1331.4095423221588}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.78998043698e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":38,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1331.2185423374176}
+LP has 210517 rows; 150244 cols; 553207 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40145 rows, 67596 cols, 209277 nonzeros 0s
+36826 rows, 67596 cols, 199320 nonzeros 0s
+Presolve reductions: rows 36826(-173691); columns 67596(-82648); nonzeros 199320(-353887) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.0190959983e+03 Pr: 96(7776.14) 0.2s
+      20958     4.4634307337e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20958
+Objective value     :  4.4634307337e+08
+P-D objective error :  3.8726593952e-15
+HiGHS run time      :          0.74
+GO3_PROGRESS {"epoch_seconds":1.789980437721e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7394859790802002,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20958,"barrier_iterations":0,"has_primal":true,"period":38,"native_status":7,"solve_wall_seconds":0.7400000095367432,"round":1,"remaining_work_seconds":1330.47754240036}
+GO3_PROGRESS {"epoch_seconds":1.789980437821e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":38,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":38,"round":1,"remaining_work_seconds":1330.377542257309}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980438009e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":39,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1330.1895422935486}
+LP has 210537 rows; 150264 cols; 553247 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39739 rows, 67073 cols, 207044 nonzeros 0s
+36490 rows, 67073 cols, 197297 nonzeros 0s
+Presolve reductions: rows 36490(-174047); columns 67073(-83191); nonzeros 197297(-355950) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.8359430047e+03 Pr: 96(7782.3) 0.2s
+      20713     4.4865975332e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20713
+Objective value     :  4.4865975332e+08
+P-D objective error :  3.7198122620e-15
+HiGHS run time      :          0.71
+GO3_PROGRESS {"epoch_seconds":1.789980438727e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7148640155792236,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20713,"barrier_iterations":0,"has_primal":true,"period":39,"native_status":7,"solve_wall_seconds":0.7160000801086426,"round":1,"remaining_work_seconds":1329.4715423583984}
+GO3_PROGRESS {"epoch_seconds":1.789980438813e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":39,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":39,"round":1,"remaining_work_seconds":1329.3855423927307}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980439e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":40,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1329.198542356491}
+LP has 210545 rows; 150272 cols; 553263 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39693 rows, 67060 cols, 206830 nonzeros 0s
+36429 rows, 67060 cols, 197038 nonzeros 0s
+Presolve reductions: rows 36429(-174116); columns 67060(-83212); nonzeros 197038(-356225) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.1834270030e+03 Pr: 96(7728.8) 0.2s
+      21127     4.4052348697e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21127
+Objective value     :  4.4052348697e+08
+P-D objective error :  3.6532113603e-15
+HiGHS run time      :          0.75
+GO3_PROGRESS {"epoch_seconds":1.789980439752e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7487213611602783,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21127,"barrier_iterations":0,"has_primal":true,"period":40,"native_status":7,"solve_wall_seconds":0.751000165939331,"round":1,"remaining_work_seconds":1328.446542263031}
+GO3_PROGRESS {"epoch_seconds":1.789980439843e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":40,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":40,"round":1,"remaining_work_seconds":1328.355542421341}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980440029e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":41,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1328.169542312622}
+LP has 210547 rows; 150274 cols; 553267 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39599 rows, 66988 cols, 206363 nonzeros 0s
+36326 rows, 66988 cols, 196544 nonzeros 0s
+Presolve reductions: rows 36326(-174221); columns 66988(-83286); nonzeros 196544(-356723) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.2513580044e+03 Pr: 96(7724.11) 0.2s
+      20584     4.4007628974e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20584
+Objective value     :  4.4007628974e+08
+P-D objective error :  3.7923653028e-15
+HiGHS run time      :          0.72
+GO3_PROGRESS {"epoch_seconds":1.789980440748e9,"event":"reserve_benders_solve_returned","solve_seconds":0.718209981918335,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20584,"barrier_iterations":0,"has_primal":true,"period":41,"native_status":7,"solve_wall_seconds":0.7179999351501465,"round":1,"remaining_work_seconds":1327.4505424499512}
+GO3_PROGRESS {"epoch_seconds":1.789980440838e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":41,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":41,"round":1,"remaining_work_seconds":1327.3605422973633}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980441025e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":42,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1327.1735422611237}
+LP has 210547 rows; 150274 cols; 553267 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39608 rows, 66969 cols, 206341 nonzeros 0s
+36304 rows, 66969 cols, 196429 nonzeros 0s
+Presolve reductions: rows 36304(-174243); columns 66969(-83305); nonzeros 196429(-356838) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.1097060066e+03 Pr: 96(7719.27) 0.2s
+      20766     4.3906469630e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20766
+Objective value     :  4.3906469630e+08
+P-D objective error :  1.9684282420e-15
+HiGHS run time      :          0.71
+GO3_PROGRESS {"epoch_seconds":1.789980441741e9,"event":"reserve_benders_solve_returned","solve_seconds":0.713874101638794,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20766,"barrier_iterations":0,"has_primal":true,"period":42,"native_status":7,"solve_wall_seconds":0.7149999141693115,"round":1,"remaining_work_seconds":1326.4575424194336}
+GO3_PROGRESS {"epoch_seconds":1.789980441834e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":42,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":42,"round":1,"remaining_work_seconds":1326.3645422458649}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980442022e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":43,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1326.1765422821045}
+LP has 210543 rows; 150270 cols; 553259 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39661 rows, 66992 cols, 206529 nonzeros 0s
+36358 rows, 66992 cols, 196620 nonzeros 0s
+Presolve reductions: rows 36358(-174185); columns 66992(-83278); nonzeros 196620(-356639) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.1515600026e+03 Pr: 96(7707.83) 0.2s
+      20791     4.3762508819e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20791
+Objective value     :  4.3762508819e+08
+P-D objective error :  2.8602051679e-15
+HiGHS run time      :          0.74
+GO3_PROGRESS {"epoch_seconds":1.789980442761e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7357950210571289,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20791,"barrier_iterations":0,"has_primal":true,"period":43,"native_status":7,"solve_wall_seconds":0.7369999885559082,"round":1,"remaining_work_seconds":1325.437542438507}
+GO3_PROGRESS {"epoch_seconds":1.789980442858e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":43,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":43,"round":1,"remaining_work_seconds":1325.3405423164368}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.78998044304e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":44,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1325.158542394638}
+LP has 210541 rows; 150268 cols; 553255 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+39774 rows, 67045 cols, 207004 nonzeros 0s
+36471 rows, 67045 cols, 197095 nonzeros 0s
+Presolve reductions: rows 36471(-174070); columns 67045(-83223); nonzeros 197095(-356160) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.9453009988e+03 Pr: 96(7712.68) 0.2s
+      20752     4.3829815777e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20752
+Objective value     :  4.3829815777e+08
+P-D objective error :  4.2837193700e-15
+HiGHS run time      :          0.76
+GO3_PROGRESS {"epoch_seconds":1.789980443803e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7605600357055664,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20752,"barrier_iterations":0,"has_primal":true,"period":44,"native_status":7,"solve_wall_seconds":0.7620000839233398,"round":1,"remaining_work_seconds":1324.395542383194}
+GO3_PROGRESS {"epoch_seconds":1.789980443892e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":44,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":44,"round":1,"remaining_work_seconds":1324.3065423965454}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980444074e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":45,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1324.1245424747467}
+LP has 210525 rows; 150252 cols; 553223 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40155 rows, 67459 cols, 208937 nonzeros 0s
+36799 rows, 67459 cols, 198869 nonzeros 0s
+Presolve reductions: rows 36799(-173726); columns 67459(-82793); nonzeros 198869(-354354) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.8319889970e+03 Pr: 96(7741.47) 0.2s
+      21107     4.4324294315e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21107
+Objective value     :  4.4324294315e+08
+P-D objective error :  3.8997455532e-15
+HiGHS run time      :          0.74
+GO3_PROGRESS {"epoch_seconds":1.789980444816e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7395448684692383,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21107,"barrier_iterations":0,"has_primal":true,"period":45,"native_status":7,"solve_wall_seconds":0.7409999370574951,"round":1,"remaining_work_seconds":1323.3825423717499}
+GO3_PROGRESS {"epoch_seconds":1.789980444905e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":45,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":45,"round":1,"remaining_work_seconds":1323.2935423851013}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980445081e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":46,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1323.1175422668457}
+LP has 210503 rows; 150230 cols; 553179 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40156 rows, 67563 cols, 209543 nonzeros 0s
+36892 rows, 67563 cols, 199751 nonzeros 0s
+Presolve reductions: rows 36892(-173611); columns 67563(-82667); nonzeros 199751(-353428) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.6234980072e+03 Pr: 96(7682) 0.2s
+      20990     4.3011112374e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 20990
+Objective value     :  4.3011112374e+08
+P-D objective error :  3.1873317210e-15
+HiGHS run time      :          0.75
+GO3_PROGRESS {"epoch_seconds":1.789980445836e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7518079280853271,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":20990,"barrier_iterations":0,"has_primal":true,"period":46,"native_status":7,"solve_wall_seconds":0.7539999485015869,"round":1,"remaining_work_seconds":1322.3625423908234}
+GO3_PROGRESS {"epoch_seconds":1.789980445933e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":46,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":46,"round":1,"remaining_work_seconds":1322.265542268753}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980446112e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":47,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1322.0865423679352}
+LP has 210493 rows; 150220 cols; 553159 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40151 rows, 67751 cols, 210279 nonzeros 0s
+37001 rows, 67751 cols, 200829 nonzeros 0s
+Presolve reductions: rows 37001(-173492); columns 67751(-82469); nonzeros 200829(-352330) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.2251310117e+03 Pr: 96(7694.61) 0.2s
+      21260     4.3114586776e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21260
+Objective value     :  4.3114586776e+08
+P-D objective error :  3.3870527460e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980446883e9,"event":"reserve_benders_solve_returned","solve_seconds":0.7668900489807129,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21260,"barrier_iterations":0,"has_primal":true,"period":47,"native_status":7,"solve_wall_seconds":0.7689998149871826,"round":1,"remaining_work_seconds":1321.315542459488}
+GO3_PROGRESS {"epoch_seconds":1.789980446966e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":47,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":47,"round":1,"remaining_work_seconds":1321.2325422763824}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789980447144e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":30.0,"pid":19676,"period":48,"mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1321.0545423030853}
+LP has 210487 rows; 150214 cols; 553147 nonzeros
+Coefficient ranges:
+  Matrix  [1e+00, 2e+01]
+  Cost    [1e+02, 5e+05]
+  Bound   [1e-05, 6e+03]
+  RHS     [1e-20, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+40173 rows, 68164 cols, 211633 nonzeros 0s
+37170 rows, 68164 cols, 202624 nonzeros 0s
+Presolve reductions: rows 37170(-173317); columns 68164(-82050); nonzeros 202624(-350523) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.9086440110e+03 Pr: 96(7731.24) 0.2s
+      21337     4.3720356051e+08 Pr: 0(0) 0.6s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 21337
+Objective value     :  4.3720356051e+08
+P-D objective error :  3.2037917280e-15
+HiGHS run time      :          0.77
+GO3_PROGRESS {"epoch_seconds":1.789980447918e9,"event":"reserve_benders_solve_returned","solve_seconds":0.772334098815918,"pid":19676,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":21337,"barrier_iterations":0,"has_primal":true,"period":48,"native_status":7,"solve_wall_seconds":0.7730000019073486,"round":1,"remaining_work_seconds":1320.2805423736572}
+GO3_PROGRESS {"epoch_seconds":1.789980448005e9,"event":"reserve_benders_hour_complete","pid":19676,"mode":"recourse","hours_completed":48,"stage":"source_reserve_benders","hours_required":48,"kind":"cost","period":48,"round":1,"remaining_work_seconds":1320.1935422420502}
+GO3_PROGRESS {"epoch_seconds":1.789980501706e9,"event":"reserve_benders_incumbent_audited","pid":19676,"mode":"recourse","objective":-2.0572608194137283e10,"stage":"source_reserve_benders","round":1,"maximum_residual":6.000000010719653e-10,"remaining_work_seconds":1266.4925422668457}
+GO3_PROGRESS {"epoch_seconds":1.78998050175e9,"event":"reserve_benders_stage_complete","pid":19676,"result_sha256":"e9671af5911be55240766fe2eb8dfc70a80e1734a99c8c7a2cd4e8887ea8f4be","mode":"recourse","stage":"source_reserve_benders","round":1,"remaining_work_seconds":1266.448542356491}

@@ -1,0 +1,116 @@
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+ MIP      : 
+Rows      : 10931162
+Cols      : 8043170
+Nonzeros  : 32733724
+Integer   : 2592720 (2592720 binary)
+Coefficient ranges:
+  Matrix  [1e-05, 6e+03]
+  Cost    [1e+00, 1e+00]
+  Bound   [1e-04, 3e+02]
+  RHS     [1e-05, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+Presolve rules not allowed:
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+7116004 rows, 7957228 cols, 26749979 nonzeros 13s
+6114368 rows, 4136935 cols, 21846778 nonzeros 17s
+Sparsify removed 0.0% of nonzeros
+Strengthened 140 coefficients
+Enumeration presolve fixed 2580 columns, tightened 0 bounds and performed 0 substitutions
+Enumeration presolve fixed 80 columns, tightened 7 bounds and performed 0 substitutions
+1002 probing evaluations: 134 deleted rows, 0 deleted columns, 39 lifted nonzeros
+5921874 rows, 4104204 cols, 27039772 nonzeros 109s
+Presolve reductions: rows 5921874(-5009288); columns 4104204(-3938966); nonzeros 27039772(-5693952) 
+MIP-Timing:     1.1e+02 - completed presolve
+MIP-Timing:     1.1e+02 - starting  setup
+GO3-HIGHS-Setup stage=initialization solve_elapsed=114.227208
+GO3-HIGHS-Setup stage=transpose_and_locks solve_elapsed=114.381549
+GO3-HIGHS-Setup stage=row_integrality solve_elapsed=114.548793
+GO3-HIGHS-Setup stage=objective_clique_partition solve_elapsed=114.594303
+GO3-HIGHS-Setup optional_objective_clique_skipped binary_columns=839144 limit=4096 source_model_unchanged=1
+GO3-HIGHS-Setup stage=objective_propagation solve_elapsed=114.595378
+GO3-HIGHS-Setup stage=row_activities solve_elapsed=114.597565
+GO3-HIGHS-Setup stage=domain_propagation solve_elapsed=114.818794
+GO3-HIGHS-Setup stage=domain_propagation_complete solve_elapsed=114.826756
+GO3-HIGHS-Setup stage=objective_integrality solve_elapsed=114.826795
+Objective function is integral with scale 1
+GO3-HIGHS-Setup stage=basis_transfer solve_elapsed=114.906938
+GO3-HIGHS-Setup stage=basis_transfer_complete solve_elapsed=114.906981
+
+Solving MIP model with:
+   5921874 rows
+   4104204 cols (2479424 binary, 0 integer, 0 implied int., 1624780 continuous, 0 domain fixed)
+   27039772 nonzeros
+   Thread count 1 (of 24 threads). Using 1 max workers. Parallel search off
+GO3-HIGHS-Setup stage=heuristic_columns solve_elapsed=114.907005
+GO3-HIGHS-Setup stage=heuristic_columns_complete solve_elapsed=117.882452
+MIP-Timing:     1.2e+02 - completed setup
+Feasibility Jump: starting solve. weightUpdateDecay=1, relaxContinuous=0  
+MIP-Timing:     1.8e+02 - starting evaluate root node
+GO3-HIGHS-Root stage=begin solve_elapsed=176.387689
+GO3-HIGHS-Root optional_analytic_center_skipped source_model_unchanged=1
+GO3-HIGHS-Root stage=load_model_begin solve_elapsed=204.971683
+GO3-HIGHS-Root stage=load_model_complete solve_elapsed=205.317557
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   864370          -inf                 inf        0      0      0         0   205.3s
+GO3-HIGHS-Root stage=first_lp_begin solve_elapsed=205.318043
+MIP-Timing:     2.1e+02 - start first LP solve (without basis)
+MIP-Timing:     4.1e+02 - finish first LP solve
+ T       0       0         0   0.00%   864370          864240             0.02%        0      0      0     1248k   413.0s
+GO3-HIGHS-Root stage=first_lp_complete solve_elapsed=412.964030
+MIP-Timing:     4.1e+02 - completed evaluate root node
+         1       0         1 100.00%   864240          864240             0.00%        0      0      0     1248k   413.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      864240
+  Dual bound        864240
+  Gap               0% (tolerance: 0.1%)
+  P-D integral      2.90129732713e-06
+  Solution status   feasible
+                    864240 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            412.99
+                    113.84 (Presolve)
+                    298.76 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     1248520
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+getKktFailures:: cost norm =        1; bound norm =    6e+03
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility 1.26e-11 /  2.1e-15            0 /        0     1.26e-11 /  2.1e-15
+Inconsistent max bound violation: MIP solver (         0); LP ( 1.258e-11); Difference of  1.258e-11
+
+MIP sub-solver profiling: number of threads used = 1
+
+Thread 0
+Solver                    Calls    Time       Time/call      MIP%
+MIP                           1  4.1299e+02  4.1299e+02
+Du simplex (no basis)         1  2.0709e+02  2.0709e+02      50.1
+TOTAL                            2.0709e+02                  50.1
+
+Percent (sub-)MIP time by thread
+
+MIP sub-solver            0
+Du simplex (no basis)  50.1
+===========================
+Total                  50.1
+===========================

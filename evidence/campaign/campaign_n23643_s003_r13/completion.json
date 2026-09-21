@@ -1,0 +1,14 @@
+{
+  "status": "NO_VERIFIED_INCUMBENT",
+  "final_result_serialization_seconds": 0.03725839999970049,
+  "result_sha256": "ac0cb41ecb10daa18b7d8486ebdbe5d104de356b2b04a92d8f74cc7b3d3c6d3b",
+  "elapsed_through_result_serialization_seconds": 3488.5196880000294,
+  "within_local_deadline": true,
+  "runtime_target": {
+    "target_seconds": 7200,
+    "hard_safety_limit_seconds": 7200,
+    "within_target": true,
+    "within_hard_limit": true,
+    "target_is_hard_deadline": true
+  }
+}

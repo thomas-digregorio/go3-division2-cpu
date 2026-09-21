@@ -125,3 +125,9 @@ was `1.5916157281026244e-11`.
 
 The immutable evidence archive is `evidence/components/ac_numerics_20260921`.
 These are component-test results only, not a verified 23,643-bus result.
+
+The subsequent single cold large-case attempt is documented in
+[CAMPAIGN_N23643_R13.md](CAMPAIGN_N23643_R13.md). All three native AC calls
+confirmed the intended derivative engine, but interval 1 failed the unchanged
+residual screen after its phase budgets. The backend-selection issue is fixed;
+large-case numerical convergence is not established.
