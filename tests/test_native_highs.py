@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from go3cpu.native_highs import (backend_record, native_environment, POLICY, MANIFEST,
-    ROOT_POLICY, ROOT_MANIFEST, STOCK_ARTIFACT, SOURCE_COMMIT)
+    ROOT_POLICY, ROOT_MANIFEST, PROGRESS_POLICY, PROGRESS_MANIFEST, STOCK_ARTIFACT, SOURCE_COMMIT)
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -125,6 +125,45 @@ class NativeHighsPolicyTests(unittest.TestCase):
             record=backend_record(self.config(scheduling_native_backend_policy=ROOT_POLICY,
                 scheduling_native_analytic_center=False,scheduling_native_root_presolve_only=value),root=ROOT)
             self.assertIs(record["root_presolve_only_requested"],value)
+
+    def test_root_progress_requires_explicit_boolean_and_scope(self):
+        for value in (False,0,1,"true",None):
+            with self.subTest(value=value),self.assertRaisesRegex(ValueError,"logging enabled"):
+                backend_record(self.config(scheduling_native_backend_policy=PROGRESS_POLICY,
+                    scheduling_native_analytic_center=False,scheduling_native_root_lp_logging=value),root=ROOT)
+        for policy in (POLICY,ROOT_POLICY,"upstream_jll_v1"):
+            values={"scheduling_native_backend_policy":policy,"scheduling_native_root_lp_logging":True}
+            if policy==ROOT_POLICY:
+                values["scheduling_native_analytic_center"]=False
+            with self.subTest(policy=policy),self.assertRaises(ValueError):
+                backend_record(self.config(**values),root=ROOT)
+
+    def test_root_progress_preserves_the_r08_library(self):
+        config=json.loads((ROOT/"config/tiny_reserve_benders_root_progress.json").read_text())
+        record=backend_record(config,root=ROOT)
+        self.assertIs(record["root_lp_logging_requested"],True)
+        self.assertIs(record["root_presolve_only_requested"],True)
+        self.assertIs(record["analytic_center_requested"],False)
+        old=backend_record(json.loads((ROOT/"config/tiny_reserve_benders_root_memory.json").read_text()),root=ROOT)
+        self.assertEqual(old["manifest"]["files"]["library"]["sha256"],
+            "06fa04b2f66ae80f3446e8e2a95ad1bea09faa0414b3151c1764bbb6bf7395c8")
+        self.assertNotEqual(record["manifest"]["artifact_directory"],old["manifest"]["artifact_directory"])
+        from go3cpu.provenance import source_hashes
+        self.assertIn(PROGRESS_MANIFEST,source_hashes(ROOT))
+
+    def test_r09_only_extends_master_allowance_and_logging(self):
+        from go3cpu.controller import registered_latch
+        old=json.loads((ROOT/"config/campaign_n23643_s003_r08.json").read_text())
+        new=json.loads((ROOT/"config/campaign_n23643_s003_r09.json").read_text())
+        self.assertEqual({k for k in old.keys()|new.keys() if old.get(k)!=new.get(k)},
+            {"pilot_id","scheduling_native_backend_policy","scheduling_native_root_lp_logging",
+             "scheduling_benders_master_round_seconds"})
+        self.assertEqual(new["scheduling_benders_master_round_seconds"],1100)
+        self.assertEqual(new["scheduling_seconds"],1500)
+        self.assertEqual(new["total_seconds"],7200)
+        self.assertEqual(new["evaluation_reserve_seconds"],2400)
+        self.assertEqual(new["minimum_available_memory_gib"],2)
+        self.assertNotEqual(registered_latch(ROOT,new),registered_latch(ROOT,old))
 
 
 if __name__=="__main__":

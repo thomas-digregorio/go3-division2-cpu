@@ -1,7 +1,10 @@
 using Test
 include(joinpath(@__DIR__,"..","src","solve_reserve_benders_worker.jl"))
 
-config=JSON.parsefile(joinpath(@__DIR__,"..","config","tiny_reserve_benders_root_memory.json"))
+ARGS in (String[],["--root-progress"]) || error("Only --root-progress is supported")
+root_progress=ARGS==["--root-progress"]
+config=JSON.parsefile(joinpath(@__DIR__,"..","config",root_progress ?
+    "tiny_reserve_benders_root_progress.json" : "tiny_reserve_benders_root_memory.json"))
 identity=native_highs_identity(config)
 println("NATIVE_ROOT_MEMORY_IDENTITY ",JSON.json(identity))
 directory=mktempdir(joinpath(@__DIR__,"..","tmp");prefix="native_root_memory_math_")
@@ -14,10 +17,15 @@ directory=mktempdir(joinpath(@__DIR__,"..","tmp");prefix="native_root_memory_mat
             all(x[j]+x[mod1(j+1,n)]<=1 for j in 1:n) || continue
             expected=min(expected,-sum(x)+0.375*max(0,2-sum(x)))
         end
-        for analytic in (true,false), root_only in (true,false)
+        for analytic in (true,false), root_only in (true,false), logging in (root_progress ? (true,false) : (nothing,))
             model=direct_model(HiGHS.Optimizer())
-            path=joinpath(directory,"n$(n)_center$(analytic)_rootonly$(root_only).log")
+            path=joinpath(directory,"n$(n)_center$(analytic)_rootonly$(root_only)_logging$(logging).log")
             try
+                if root_progress
+                    set_optimizer_attribute(model,"mip_root_lp_logging",logging)
+                    @test get_optimizer_attribute(model,"mip_root_lp_logging")==logging
+                end
+                @test get_optimizer_attribute(model,"highs_debug_level")==0
                 for (key,value) in ("threads"=>1,"parallel"=>"off","presolve"=>"off",
                     "mip_objective_clique_max_size"=>0,"mip_compute_analytic_center"=>analytic,
                     "mip_root_presolve_only"=>root_only,
@@ -50,6 +58,16 @@ directory=mktempdir(joinpath(@__DIR__,"..","tmp");prefix="native_root_memory_mat
             @test occursin("GO3-HIGHS-Root stage=first_lp_complete",log)
             @test occursin("optional_analytic_center_skipped",log)==!analytic
             @test occursin("starting analytic centre calculation",log)==analytic
+            if root_progress
+                root_log=path*".root_lp.log"
+                @test isfile(root_log)==logging
+                if logging
+                    text=read(root_log,String)
+                    @test occursin("GO3-HIGHS-Root-LP logging_enabled=1 highs_debug_level=0",text)
+                    @test occursin("Iteration",text)
+                    @test occursin("Model status",text)
+                end
+            end
         end
     end
 end
@@ -78,6 +96,7 @@ end
     options=isolated_options(config)
     @test options["mip_root_presolve_only"]===true
     @test options["mip_compute_analytic_center"]===false
+    root_progress && @test options["mip_root_lp_logging"]===true
     @test !haskey(options,"presolve")
     model=HiGHS.Optimizer()
     try
@@ -100,5 +119,25 @@ end
         @test_throws Exception isolated_options(invalid)
     end
 end
+if root_progress
+    @testset "Root progress logging remains opt-in without debug checks" begin
+        for bad in (false,0,1,"true",nothing)
+            invalid=copy(config);invalid["scheduling_native_root_lp_logging"]=bad
+            @test_throws Exception isolated_options(invalid)
+        end
+        for policy in (NATIVE_ROOT_MEMORY_POLICY,NATIVE_SETUP_GUARD_POLICY,"upstream_jll_v1")
+            invalid=Dict("highs_threads"=>1,"scheduling_relative_gap"=>1e-3,
+                "scheduling_native_backend_policy"=>policy,"scheduling_native_root_lp_logging"=>true)
+            if policy!= "upstream_jll_v1"
+                invalid["scheduling_native_objective_clique_max_size"]=0
+            end
+            if policy==NATIVE_ROOT_MEMORY_POLICY
+                invalid["scheduling_native_analytic_center"]=false
+            end
+            @test_throws Exception isolated_options(invalid)
+        end
+    end
+end
 println("NATIVE_ROOT_MEMORY_MATH_PASS ",JSON.json(Dict("tiny_only"=>true,"full_case_runs"=>0,
-    "known_optimum_fixtures"=>4,"feasible_solves"=>16,"infeasible_solves"=>4,"identity"=>identity)))
+    "known_optimum_fixtures"=>4,"feasible_solves"=>root_progress ? 32 : 16,
+    "infeasible_solves"=>4,"identity"=>identity,"root_progress"=>root_progress)))

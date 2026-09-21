@@ -54,8 +54,8 @@ def audit_loop(output, *, minimum_rounds=1, expected=None, phase_one=False, requ
         "feasibility_cuts":kinds.count("feasibility"),"original_audit":native["storage"]["original_scheduling_audit"]}
 
 
-def main(integration_only=False,native_guard=False,root_memory=False):
-    if native_guard and root_memory:
+def main(integration_only=False,native_guard=False,root_memory=False,root_progress=False):
+    if sum((native_guard,root_memory,root_progress))>1:
         raise ValueError("Select one native backend per component pipeline")
     evidence=Path(tempfile.mkdtemp(prefix="reserve_loop_components_",dir=ROOT/"tmp"))
     print("BENDERS_COMPONENT_EVIDENCE "+str(evidence),flush=True)
@@ -80,7 +80,8 @@ def main(integration_only=False,native_guard=False,root_memory=False):
             raise RuntimeError(f"Tiny Benders gate failed: {name}")
         return row
     common=[str(JULIA),"--startup-file=no",f"--project={ROOT}"]
-    config=ROOT/("config/tiny_reserve_benders_root_memory.json" if root_memory else
+    config=ROOT/("config/tiny_reserve_benders_root_progress.json" if root_progress else
+        "config/tiny_reserve_benders_root_memory.json" if root_memory else
         "config/tiny_reserve_benders_native_guard.json" if native_guard else "config/tiny_reserve_benders.json")
     results={}
     if not integration_only:
@@ -124,7 +125,7 @@ def main(integration_only=False,native_guard=False,root_memory=False):
         "--official-contingency-batch-size","2"],seconds=90)
     from component_gate import dc_pipeline_audit
     results["source_dc_ac_pipeline"]=dc_pipeline_audit(evidence)
-    if native_guard or root_memory:
+    if native_guard or root_memory or root_progress:
         from go3cpu.native_highs import backend_record
         native=backend_record(json.loads(config.read_text()),root=ROOT)
         checked=[];root_options_checked=0
@@ -136,9 +137,9 @@ def main(integration_only=False,native_guard=False,root_memory=False):
                     identity["manifest_sha256"]!=native["manifest_sha256"] or
                     identity["objective_clique_max_size"]!=0):
                 raise AssertionError("Tiny native worker did not load the exact guarded library")
-            if root_memory and identity.get("analytic_center_requested") is not False:
+            if (root_memory or root_progress) and identity.get("analytic_center_requested") is not False:
                 raise AssertionError("Root-memory worker did not retain the disabled auxiliary LP policy")
-            if root_memory:
+            if root_memory or root_progress:
                 if identity.get("root_presolve_only_requested") is not True:
                     raise AssertionError("Root-memory worker did not record the root-only presolve policy")
                 if record["mode"]=="master":
@@ -147,17 +148,24 @@ def main(integration_only=False,native_guard=False,root_memory=False):
                             "presolve" in record["options"]):
                         raise AssertionError("Native master did not accept the registered memory options")
                     root_options_checked+=1
+            if root_progress:
+                if identity.get("root_lp_logging_requested") is not True:
+                    raise AssertionError("Root-progress worker did not record its logging policy")
+                if record["mode"]=="master" and record["options"].get("mip_root_lp_logging") is not True:
+                    raise AssertionError("Native master did not accept the logging option")
             checked.append(str(path))
         if len(checked)<16:
             raise AssertionError("Incomplete native master/recourse identity coverage")
         results["native_guard"]={"policy":native["policy"],"workers_checked":len(checked),
                                  "library_sha256":native["manifest"]["files"]["library"]["sha256"]}
-        if root_memory:
+        if root_memory or root_progress:
             if root_options_checked<8:
                 raise AssertionError("Incomplete native master option coverage")
             results["native_guard"]["analytic_center_requested"]=False
             results["native_guard"]["root_presolve_only_requested"]=True
             results["native_guard"]["master_options_checked"]=root_options_checked
+        if root_progress:
+            results["native_guard"]["root_lp_logging_requested"]=True
     if source_hashes(ROOT)!=hashes:
         raise RuntimeError("Source changed during the component gate")
     result={"pass":True,"complete":True,"tiny_only":True,"full_case_runs":0,
@@ -169,8 +177,8 @@ def main(integration_only=False,native_guard=False,root_memory=False):
 
 if __name__=="__main__":
     if (len(set(sys.argv[1:]))!=len(sys.argv[1:]) or
-            not set(sys.argv[1:])<={"--integration-only","--native-guard","--root-memory"} or
-            {"--native-guard","--root-memory"}<=set(sys.argv[1:])):
-        raise SystemExit("Use --integration-only and at most one of --native-guard or --root-memory")
+            not set(sys.argv[1:])<={"--integration-only","--native-guard","--root-memory","--root-progress"} or
+            len({"--native-guard","--root-memory","--root-progress"}&set(sys.argv[1:]))>1):
+        raise SystemExit("Use --integration-only and at most one native backend flag")
     main(integration_only="--integration-only" in sys.argv,native_guard="--native-guard" in sys.argv,
-         root_memory="--root-memory" in sys.argv)
+         root_memory="--root-memory" in sys.argv,root_progress="--root-progress" in sys.argv)

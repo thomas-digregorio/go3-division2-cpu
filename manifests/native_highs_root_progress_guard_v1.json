@@ -1,0 +1,55 @@
+{
+  "schema": "go3_native_highs_build_v1",
+  "policy": "root_progress_guard_v1",
+  "version": "1.15.1",
+  "source_commit": "04024d701f79feb8e2f18bc3df0dffc04ef05088",
+  "source_url": "https://github.com/ERGO-Code/HiGHS",
+  "stock_artifact": "7b3fde6a10989de897c61b0c6880e7e7d97cccd4",
+  "floating_point_bits": 64,
+  "highs_int_bits": 32,
+  "compiler": "w64devkit 2.10.0 GCC 16.2.0",
+  "toolchain_archive_sha256": "18d0a4c71a166f8401ab6305781bec5882b40b5e06ba9807c61cb5f3b3c6325e",
+  "cmake": "4.4.3",
+  "build_options": {
+    "CMAKE_BUILD_TYPE": "Release",
+    "BUILD_SHARED_LIBS": "ON",
+    "BUILD_TESTING": "OFF",
+    "BUILD_EXAMPLES": "OFF",
+    "BUILD_CXX_EXE": "ON",
+    "HIPO": "OFF",
+    "ZLIB": "OFF",
+    "CUPDLP_GPU": "OFF",
+    "HIGHSINT64": "OFF"
+  },
+  "flags_note": "Same compiler, flags and memory controls as r08. Adds opt-in ordinary first-root-LP logging only, with debug checks left disabled. FP64, 32-bit sparse indices, serial simplex. All prior builds and the installed JLL remain unchanged.",
+  "artifact_directory": "environments/highs-root-progress-build",
+  "overlay_directory": "environments/highs-root-progress-depot",
+  "installed_jll_modified": false,
+  "files": {
+    "executable": {
+      "path": "environments/highs-root-progress-build/bin/highs.exe",
+      "sha256": "51722dd7e206e08605e0e9306a6e699812b8f739898395d5b2b9744eb096222c",
+      "bytes": 3456375
+    },
+    "library": {
+      "path": "environments/highs-root-progress-build/bin/libhighs.dll",
+      "sha256": "892447b910bab933e5fad23035f8f5c06cf25ac24f93be5b44633edb6e1bb349",
+      "bytes": 10058363
+    },
+    "override": {
+      "path": "environments/highs-root-progress-depot/artifacts/Overrides.toml",
+      "sha256": "32d823989054468c23832b4d93bd1898ea4d89208068d6a4405ced93cbc73d2b",
+      "bytes": 127
+    },
+    "patch": {
+      "path": "patches/highs-1.15.1-root-progress-guard.patch",
+      "sha256": "ad4ed749e149193c15a7fa5b5c8ebfd657ec34f9a916b68e723d8624b6eec897",
+      "bytes": 11992
+    },
+    "extras": {
+      "path": "environments/highs-root-progress-build/bin/libhighs_extras.dll",
+      "sha256": "2147821f40d8be3e0207e77285ef32d4a94bd9b2a23ee1c2d5b2eb8ad3548ced",
+      "bytes": 40610
+    }
+  }
+}

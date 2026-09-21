@@ -37,7 +37,7 @@ function isolated_options(config)
     elseif haskey(config,"scheduling_native_objective_clique_max_size")
         error("Objective-clique cap requires the registered native backend")
     end
-    if policy==NATIVE_ROOT_MEMORY_POLICY
+    if policy in NATIVE_ROOT_POLICIES
         get(config,"scheduling_native_analytic_center",nothing)===false ||
             error("Root-memory guard requires analytic center disabled")
         options["mip_compute_analytic_center"]=false
@@ -45,12 +45,19 @@ function isolated_options(config)
         error("Analytic-center control requires the root-memory backend")
     end
     if haskey(config,"scheduling_native_root_presolve_only")
-        policy==NATIVE_ROOT_MEMORY_POLICY || error("Root-only presolve requires the root-memory backend")
+        policy in NATIVE_ROOT_POLICIES || error("Root-only presolve requires the root-memory backend")
         value=config["scheduling_native_root_presolve_only"]
         value isa Bool || error("Root-only presolve must be Boolean")
         # Existing upstream option: preserve initial MIP presolve, but avoid
         # a second LP presolve and optional sub-MIP presolves/workspaces.
         options["mip_root_presolve_only"]=value
+    end
+    if policy==NATIVE_ROOT_PROGRESS_POLICY
+        get(config,"scheduling_native_root_lp_logging",nothing)===true ||
+            error("Root-progress guard requires explicit logging enabled")
+        options["mip_root_lp_logging"]=true
+    elseif haskey(config,"scheduling_native_root_lp_logging")
+        error("Root-LP logging requires the root-progress backend")
     end
     options
 end

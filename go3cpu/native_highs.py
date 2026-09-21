@@ -9,11 +9,15 @@ from .safety import local_path
 
 POLICY = "setup_clique_guard_v1"
 ROOT_POLICY = "root_memory_guard_v1"
+PROGRESS_POLICY = "root_progress_guard_v1"
 STOCK_ARTIFACT = "7b3fde6a10989de897c61b0c6880e7e7d97cccd4"
 SOURCE_COMMIT = "04024d701f79feb8e2f18bc3df0dffc04ef05088"
 MANIFEST = "manifests/native_highs_setup_guard_v1.json"
 ROOT_MANIFEST = "manifests/native_highs_root_memory_guard_v1.json"
-POLICY_MANIFESTS = {POLICY: MANIFEST, ROOT_POLICY: ROOT_MANIFEST}
+PROGRESS_MANIFEST = "manifests/native_highs_root_progress_guard_v1.json"
+ROOT_POLICIES = (ROOT_POLICY, PROGRESS_POLICY)
+POLICY_MANIFESTS = {POLICY: MANIFEST, ROOT_POLICY: ROOT_MANIFEST,
+                    PROGRESS_POLICY: PROGRESS_MANIFEST}
 
 
 def digest(path):
@@ -26,19 +30,24 @@ def backend_record(config, *, root):
     if policy == "upstream_jll_v1":
         if any(key in config for key in (
                 "scheduling_native_objective_clique_max_size", "scheduling_native_analytic_center",
-                "scheduling_native_root_presolve_only")):
+                "scheduling_native_root_presolve_only", "scheduling_native_root_lp_logging")):
             raise ValueError("Native setup controls require the registered native backend")
         return {"policy": policy}
     if policy not in POLICY_MANIFESTS:
         raise ValueError("Unknown native backend policy")
-    if policy == ROOT_POLICY:
+    if policy in ROOT_POLICIES:
         if config.get("scheduling_native_analytic_center") is not False:
             raise ValueError("Root-memory policy requires the optional analytic center disabled")
     elif "scheduling_native_analytic_center" in config:
         raise ValueError("Analytic-center control requires the root-memory backend")
     if "scheduling_native_root_presolve_only" in config:
-        if policy != ROOT_POLICY or type(config["scheduling_native_root_presolve_only"]) is not bool:
+        if policy not in ROOT_POLICIES or type(config["scheduling_native_root_presolve_only"]) is not bool:
             raise ValueError("Root-only presolve requires a Boolean and the root-memory backend")
+    if policy == PROGRESS_POLICY:
+        if config.get("scheduling_native_root_lp_logging") is not True:
+            raise ValueError("Root-progress policy requires explicit Boolean logging enabled")
+    elif "scheduling_native_root_lp_logging" in config:
+        raise ValueError("Root-LP logging requires the root-progress backend")
     cap = config.get("scheduling_native_objective_clique_max_size")
     if type(cap) is not int or not 0 <= cap <= 4096:
         raise ValueError("Registered objective-clique cap must be an integer in [0,4096]")
@@ -68,10 +77,12 @@ def backend_record(config, *, root):
         raise ValueError("Unexpected native override; no global JLL changes are permitted")
     result = {"policy": policy, "manifest_sha256": digest(manifest_path),
               "manifest": record, "objective_clique_max_size": cap}
-    if policy == ROOT_POLICY:
+    if policy in ROOT_POLICIES:
         result["analytic_center_requested"] = False
         if "scheduling_native_root_presolve_only" in config:
             result["root_presolve_only_requested"] = config["scheduling_native_root_presolve_only"]
+    if policy == PROGRESS_POLICY:
+        result["root_lp_logging_requested"] = True
     return result
 
 

@@ -104,6 +104,12 @@ def main():
         "scripts/test_native_root_memory_guard.jl"],timeout=120,stage_env=root_memory_env)
     stage("root_memory_reserve_benders_runtime_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_reserve_benders_runtime.jl"],timeout=120,stage_env=root_memory_env)
+    root_progress_config=json.loads((ROOT/"config/tiny_reserve_benders_root_progress.json").read_text())
+    root_progress_env=native_environment(root_progress_config,root=ROOT,base_environment=env)
+    stage("native_root_progress_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_native_root_memory_guard.jl","--root-progress"],timeout=120,stage_env=root_progress_env)
+    stage("root_progress_reserve_benders_runtime_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_reserve_benders_runtime.jl"],timeout=120,stage_env=root_progress_env)
     stage("consumer_dominance_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_consumer_dominance.jl"])
     stage("reserve_ac_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -388,6 +394,26 @@ def main():
             root_certificate["input_sha256"]!=stock_certificate["input_sha256"] or
             abs(root_certificate["objective"]-stock_certificate["objective"])>1e-8):
         raise RuntimeError("Root-memory guard failed the complete equivalent tiny integration")
+    stage("native_root_progress_benders_integration",[sys.executable,"scripts/test_reserve_benders_pipeline.py",
+        "--integration-only","--root-progress"],timeout=420)
+    root_progress_log=(evidence/"native_root_progress_benders_integration.log").read_text()
+    root_progress_match=re.search(r"^BENDERS_COMPONENT_EVIDENCE (.+)$",root_progress_log,re.MULTILINE)
+    if root_progress_match is None:
+        raise RuntimeError("Missing current root-progress integration evidence")
+    root_progress_directory=Path(root_progress_match.group(1).strip())
+    root_progress_result=json.loads((root_progress_directory/"result.json").read_text())
+    progress_certificate=root_progress_result["results"]["source_dc_ac_pipeline"]["certificate"]
+    progress_guard=root_progress_result["results"]["native_guard"]
+    if (not root_progress_result["pass"] or not root_progress_result["complete"] or
+            root_progress_result["evidence_directory"]!=str(root_progress_directory) or
+            root_progress_result["source_hashes"]!=source_hashes() or root_progress_result["full_case_runs"]!=0 or
+            progress_guard["workers_checked"]<16 or progress_guard.get("master_options_checked",0)<8 or
+            progress_guard.get("analytic_center_requested") is not False or
+            progress_guard.get("root_presolve_only_requested") is not True or
+            progress_guard.get("root_lp_logging_requested") is not True or
+            progress_certificate["input_sha256"]!=stock_certificate["input_sha256"] or
+            abs(progress_certificate["objective"]-stock_certificate["objective"])>1e-8):
+        raise RuntimeError("Root-progress guard failed the complete equivalent tiny integration")
     stage("tiny_cold_seed_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
         "tmp/official_tiny/source_features_problem.json",str(evidence/"cold_seed_worker"),
         "config/tiny_cold_scheduling_seed.json",str(time.time()+120)],timeout=125)
@@ -712,7 +738,9 @@ def main():
                                ("native_highs_guard_tests",2),
                                ("guarded_reserve_benders_runtime_tests",2),
                                ("native_root_memory_tests",3),
-                               ("root_memory_reserve_benders_runtime_tests",2)):
+                               ("root_memory_reserve_benders_runtime_tests",2),
+                               ("native_root_progress_tests",4),
+                               ("root_progress_reserve_benders_runtime_tests",2)):
         counts=re.findall(r"^[^\n|]+\|\s+(\d+)\s+(\d+)\s+",
                           (evidence/(name+".log")).read_text(),re.MULTILINE)
         if len(counts)!=expected_sets or any(a!=b for a,b in counts):
@@ -756,6 +784,7 @@ def main():
         "tiny_reserve_benders_integration":benders_result,
         "tiny_native_guard_benders_integration":guard_result,
         "tiny_root_memory_benders_integration":root_memory_result,
+        "tiny_root_progress_benders_integration":root_progress_result,
         "tiny_bounded_reserve_storage":bounded_reserve_audit,
         "tiny_forced_recovery_certificate":recovery_certificate,
         "tiny_cold_seed_certificate":cold_seed_certificate,

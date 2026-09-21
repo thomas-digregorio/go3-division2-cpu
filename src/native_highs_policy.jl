@@ -2,9 +2,12 @@ using Libdl
 
 const NATIVE_SETUP_GUARD_POLICY="setup_clique_guard_v1"
 const NATIVE_ROOT_MEMORY_POLICY="root_memory_guard_v1"
+const NATIVE_ROOT_PROGRESS_POLICY="root_progress_guard_v1"
+const NATIVE_ROOT_POLICIES=(NATIVE_ROOT_MEMORY_POLICY,NATIVE_ROOT_PROGRESS_POLICY)
 const NATIVE_GUARD_MANIFESTS=Dict(
     NATIVE_SETUP_GUARD_POLICY=>"native_highs_setup_guard_v1.json",
-    NATIVE_ROOT_MEMORY_POLICY=>"native_highs_root_memory_guard_v1.json")
+    NATIVE_ROOT_MEMORY_POLICY=>"native_highs_root_memory_guard_v1.json",
+    NATIVE_ROOT_PROGRESS_POLICY=>"native_highs_root_progress_guard_v1.json")
 
 function native_highs_identity(config)
     policy=get(config,"scheduling_native_backend_policy","upstream_jll_v1")
@@ -23,7 +26,7 @@ function native_highs_identity(config)
             result["highs_int_bits"]==32 || error("Unregistered native library loaded")
         result["manifest_sha256"]=spool_sha(manifest)
         result["objective_clique_max_size"]=config["scheduling_native_objective_clique_max_size"]
-        if policy==NATIVE_ROOT_MEMORY_POLICY
+        if policy in NATIVE_ROOT_POLICIES
             get(config,"scheduling_native_analytic_center",nothing)===false ||
                 error("Root-memory guard requires analytic center disabled")
             result["analytic_center_requested"]=false
@@ -32,6 +35,11 @@ function native_highs_identity(config)
                     error("Root-only presolve must be Boolean")
                 result["root_presolve_only_requested"]=config["scheduling_native_root_presolve_only"]
             end
+        end
+        if policy==NATIVE_ROOT_PROGRESS_POLICY
+            get(config,"scheduling_native_root_lp_logging",nothing)===true ||
+                error("Root-progress guard requires explicit logging enabled")
+            result["root_lp_logging_requested"]=true
         end
     end
     result

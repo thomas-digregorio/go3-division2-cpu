@@ -1,0 +1,280 @@
+diff --git a/highs/lp_data/HighsOptions.h b/highs/lp_data/HighsOptions.h
+index 070af6c..86d0af9 100644
+--- a/highs/lp_data/HighsOptions.h
++++ b/highs/lp_data/HighsOptions.h
+@@ -483,6 +483,8 @@ struct HighsOptionsStruct {
+   // Options for MIP solver
+   bool mip_detect_symmetry;
+   bool mip_allow_restart;
++  bool mip_compute_analytic_center;
++  bool mip_root_lp_logging;
+   HighsInt mip_max_nodes;
+   HighsInt mip_max_stall_nodes;
+   HighsInt mip_max_start_nodes;
+@@ -493,6 +495,7 @@ struct HighsOptionsStruct {
+   HighsInt mip_pool_soft_limit;
+   HighsInt mip_pscost_minreliable;
+   HighsInt mip_min_cliquetable_entries_for_parallelism;
++  HighsInt mip_objective_clique_max_size;
+   HighsInt mip_report_level;
+   double mip_feasibility_tolerance;
+   double mip_rel_gap;
+@@ -649,6 +652,8 @@ struct HighsOptionsStruct {
+         icrash_breakpoints(false),
+         mip_detect_symmetry(false),
+         mip_allow_restart(false),
++        mip_compute_analytic_center(false),
++        mip_root_lp_logging(false),
+         mip_max_nodes(0),
+         mip_max_stall_nodes(0),
+         mip_max_start_nodes(0),
+@@ -659,6 +664,7 @@ struct HighsOptionsStruct {
+         mip_pool_soft_limit(0),
+         mip_pscost_minreliable(0),
+         mip_min_cliquetable_entries_for_parallelism(0),
++        mip_objective_clique_max_size(0),
+         mip_report_level(0),
+         mip_feasibility_tolerance(0.0),
+         mip_rel_gap(0.0),
+@@ -1095,6 +1101,20 @@ class HighsOptions : public HighsOptionsStruct {
+         &write_iis_model_file, kHighsFilenameDefault);
+     records.push_back(record_string);
+ 
++    record_bool = new OptionRecordBool(
++        "mip_compute_analytic_center",
++        "Compute the optional MIP analytic center using a separate LP; "
++        "disabling retains ordinary root LP and source model",
++        now_advanced, &mip_compute_analytic_center, true);
++    records.push_back(record_bool);
++
++    record_bool = new OptionRecordBool(
++        "mip_root_lp_logging",
++        "Forward ordinary first-root-LP progress to console and a separate "
++        "root_lp log without enabling solver debug checks",
++        now_advanced, &mip_root_lp_logging, false);
++    records.push_back(record_bool);
++
+     record_bool = new OptionRecordBool(
+         "mip_detect_symmetry", "Whether MIP symmetry should be detected",
+         advanced, &mip_detect_symmetry, true);
+@@ -1209,6 +1229,13 @@ class HighsOptions : public HighsOptionsStruct {
+         kHighsIInf);
+     records.push_back(record_int);
+ 
++    record_int = new OptionRecordInt(
++        "mip_objective_clique_max_size",
++        "Skip optional objective clique partitioning above this number of "
++        "objective binary columns; source model and tolerances are unchanged",
++        now_advanced, &mip_objective_clique_max_size, 0, kHighsIInf, kHighsIInf);
++    records.push_back(record_int);
++
+     record_int =
+         new OptionRecordInt("mip_report_level", "MIP solver reporting level",
+                             now_advanced, &mip_report_level, 0, 1, 2);
+diff --git a/highs/mip/HighsMipSolverData.cpp b/highs/mip/HighsMipSolverData.cpp
+index c26129c..9f72c9c 100644
+--- a/highs/mip/HighsMipSolverData.cpp
++++ b/highs/mip/HighsMipSolverData.cpp
+@@ -830,6 +830,13 @@ void HighsMipSolverData::runMipPresolve(
+ 
+ void HighsMipSolverData::runSetup() {
+   const HighsLp& model = *mipsolver.model_;
++  const auto setupStage = [&](const char* name) {
++    if (mipsolver.options_mip_->log_dev_level > 0 && !mipsolver.submip)
++      highsLogUser(mipsolver.options_mip_->log_options, HighsLogType::kInfo,
++                   "GO3-HIGHS-Setup stage=%s solve_elapsed=%.6f\n", name,
++                   mipsolver.timer_.read());
++  };
++  setupStage("initialization");
+ 
+   // Indicate that the first LP has not been solved
+   this->getLp().setSolvedFirstLp(false);
+@@ -914,6 +921,7 @@ void HighsMipSolverData::runSetup() {
+   integral_cols.clear();
+ 
+   rowMatrixSet = false;
++  setupStage("transpose_and_locks");
+   if (!rowMatrixSet) {
+     rowMatrixSet = true;
+     highsSparseTranspose(model.num_row_, model.num_col_, model.a_matrix_.start_,
+@@ -945,6 +953,7 @@ void HighsMipSolverData::runSetup() {
+   }
+ 
+   rowintegral.resize(mipsolver.numRow());
++  setupStage("row_integrality");
+ 
+   // compute the maximal absolute coefficients to filter propagation
+   maxAbsRowCoef.resize(mipsolver.numRow());
+@@ -976,10 +985,26 @@ void HighsMipSolverData::runSetup() {
+   }
+ 
+   // compute row activities and propagate all rows once
+-  objectiveFunction.setupCliquePartition(getDomain(), cliquetable);
++  setupStage("objective_clique_partition");
++  if (!mipsolver.submip &&
++      objectiveFunction.getNumBinariesInObjective() >
++          mipsolver.options_mip_->mip_objective_clique_max_size)
++    highsLogUser(mipsolver.options_mip_->log_options, HighsLogType::kInfo,
++                 "GO3-HIGHS-Setup optional_objective_clique_skipped "
++                 "binary_columns=%" HIGHSINT_FORMAT " limit=%" HIGHSINT_FORMAT
++                 " source_model_unchanged=1\n",
++                 objectiveFunction.getNumBinariesInObjective(),
++                 mipsolver.options_mip_->mip_objective_clique_max_size);
++  objectiveFunction.setupCliquePartition(
++      getDomain(), cliquetable,
++      mipsolver.options_mip_->mip_objective_clique_max_size);
++  setupStage("objective_propagation");
+   getDomain().setupObjectivePropagation();
++  setupStage("row_activities");
+   getDomain().computeRowActivities();
++  setupStage("domain_propagation");
+   getDomain().propagate();
++  setupStage("domain_propagation_complete");
+   if (getDomain().infeasible()) {
+     mipsolver.modelstatus_ = HighsModelStatus::kInfeasible;
+ 
+@@ -1003,6 +1028,7 @@ void HighsMipSolverData::runSetup() {
+ 
+   getLp().getLpSolver().setOptionValue("presolve", kHighsOffString);
+ 
++  setupStage("objective_integrality");
+   checkObjIntegrality();
+   rootlpsol.clear();
+   firstlpsol.clear();
+@@ -1069,7 +1095,9 @@ void HighsMipSolverData::runSetup() {
+     }
+   }
+ 
++  setupStage("basis_transfer");
+   basisTransfer();
++  setupStage("basis_transfer_complete");
+ 
+   numintegercols = integer_cols.size();
+   detectSymmetries = detectSymmetries && num_binary > 0;
+@@ -1127,7 +1155,9 @@ void HighsMipSolverData::runSetup() {
+                  mipsolver.numNonzero() == 1 ? "" : "s");
+   }
+ 
++  setupStage("heuristic_columns");
+   heuristics.setupIntCols();
++  setupStage("heuristic_columns_complete");
+ 
+ #ifdef HIGHS_DEBUGSOL
+   if (debugSolution.debugSolActive) {
+@@ -1985,8 +2015,19 @@ static void clockOff(HighsProfiling* profiling) {
+ }
+ 
+ void HighsMipSolverData::evaluateRootNode(HighsMipWorker& worker) {
+-  const bool compute_analytic_centre = true;
+-  if (!compute_analytic_centre) printf("NOT COMPUTING ANALYTIC CENTRE!\n");
++  const bool compute_analytic_centre =
++      mipsolver.options_mip_->mip_compute_analytic_center;
++  const auto rootStage = [&](const char* name) {
++    if (mipsolver.options_mip_->log_dev_level > 0 && !mipsolver.submip)
++      highsLogUser(mipsolver.options_mip_->log_options, HighsLogType::kInfo,
++                   "GO3-HIGHS-Root stage=%s solve_elapsed=%.6f\n", name,
++                   mipsolver.timer_.read());
++  };
++  rootStage("begin");
++  if (!compute_analytic_centre && !mipsolver.submip)
++    highsLogUser(mipsolver.options_mip_->log_options, HighsLogType::kInfo,
++                 "GO3-HIGHS-Root optional_analytic_center_skipped "
++                 "source_model_unchanged=1\n");
+   HighsInt maxSepaRounds = mipsolver.submip ? 5 : kHighsIInf;
+   if (numRestarts == 0)
+     maxSepaRounds =
+@@ -2016,7 +2057,9 @@ restart:
+   // lp.getLpSolver().setOptionValue(
+   //     "dual_simplex_cost_perturbation_multiplier", 10.0);
+   getLp().setIterationLimit();
++  rootStage("load_model_begin");
+   getLp().loadModel();
++  rootStage("load_model_complete");
+   getDomain().clearChangedCols();
+   getLp().setObjectiveLimit(upper_limit);
+ 
+@@ -2045,12 +2088,49 @@ restart:
+   //  lp.getLpSolver().setOptionValue("log_file",
+   //  mipsolver.options_mip_->log_file);
+ 
++  // Opt-in observability only. Never enable highs_debug_level just to see
++  // progress: that option also turns on expensive solver checks. Do not share
++  // the parent's FILE handle or log path with this separate Highs instance.
++  const bool root_lp_logging =
++      mipsolver.options_mip_->mip_root_lp_logging && !mipsolver.submip;
++  const HighsInt previous_root_log_dev_level =
++      getLp().getLpSolver().getOptions().log_dev_level;
++  const bool previous_root_log_to_console =
++      getLp().getLpSolver().getOptions().log_to_console;
++  const std::string previous_root_log_file =
++      getLp().getLpSolver().getOptions().log_file;
++  if (root_lp_logging) {
++    Highs& root_solver = getLp().getLpSolver();
++    root_solver.setOptionValue("log_dev_level",
++                              mipsolver.options_mip_->log_dev_level);
++    root_solver.setOptionValue("log_to_console",
++                              mipsolver.options_mip_->log_to_console);
++    if (!mipsolver.options_mip_->log_file.empty())
++      root_solver.setOptionValue("log_file",
++                                mipsolver.options_mip_->log_file +
++                                    ".root_lp.log");
++    root_solver.setOptionValue("output_flag",
++                              mipsolver.options_mip_->output_flag);
++    highsLogUser(root_solver.getOptions().log_options, HighsLogType::kInfo,
++                 "GO3-HIGHS-Root-LP logging_enabled=1 highs_debug_level=%d\n",
++                 int(root_solver.getOptions().highs_debug_level));
++  }
++
+   profiling->start(kMipClockEvaluateRootLp);
++  rootStage("first_lp_begin");
+   HighsLpRelaxation::Status status = evaluateRootLp(worker);
++  rootStage("first_lp_complete");
+   profiling->stop(kMipClockEvaluateRootLp);
+   if (numRestarts == 0) firstrootlpiters = total_lp_iterations;
+ 
+   getLp().getLpSolver().setOptionValue("output_flag", false);
++  if (root_lp_logging) {
++    getLp().getLpSolver().setOptionValue("log_file", previous_root_log_file);
++    getLp().getLpSolver().setOptionValue("log_dev_level",
++                                       previous_root_log_dev_level);
++    getLp().getLpSolver().setOptionValue("log_to_console",
++                                       previous_root_log_to_console);
++  }
+   getLp().getLpSolver().setOptionValue("presolve", kHighsOffString);
+   getLp().getLpSolver().setOptionValue("parallel", kHighsOffString);
+ 
+diff --git a/highs/mip/HighsObjectiveFunction.cpp b/highs/mip/HighsObjectiveFunction.cpp
+index 08be70f..49f3722 100644
+--- a/highs/mip/HighsObjectiveFunction.cpp
++++ b/highs/mip/HighsObjectiveFunction.cpp
+@@ -62,7 +62,16 @@ HighsObjectiveFunction::HighsObjectiveFunction(const HighsMipSolver& mipsolver)
+ }
+ 
+ void HighsObjectiveFunction::setupCliquePartition(
+-    const HighsDomain& globaldom, HighsCliqueTable& cliqueTable) {
++    const HighsDomain& globaldom, HighsCliqueTable& cliqueTable,
++    HighsInt maximum_size) {
++  // Objective clique grouping only strengthens objective-bound propagation.
++  // An empty partition retains ordinary independent-variable propagation;
++  // it does not alter a row, column, cost, integer domain or feasibility test.
++  if (numBinary > maximum_size) {
++    cliquePartitionStart.assign(1, 0);
++    std::fill(colToPartition.begin(), colToPartition.end(), -1);
++    return;
++  }
+   // skip if not more than 1 binary column is present
+   if (numBinary <= 1) return;
+ 
+diff --git a/highs/mip/HighsObjectiveFunction.h b/highs/mip/HighsObjectiveFunction.h
+index 0598146..2d474da 100644
+--- a/highs/mip/HighsObjectiveFunction.h
++++ b/highs/mip/HighsObjectiveFunction.h
+@@ -33,7 +33,7 @@ class HighsObjectiveFunction {
+   HighsObjectiveFunction(const HighsMipSolver& mipsolver);
+ 
+   void setupCliquePartition(const HighsDomain& globaldom,
+-                            HighsCliqueTable& cliqueTable);
++                            HighsCliqueTable& cliqueTable, HighsInt maximum_size);
+ 
+   void checkIntegrality(double epsilon);
+ 
