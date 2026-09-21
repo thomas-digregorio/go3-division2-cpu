@@ -1,0 +1,10 @@
+{
+  "mode": "master",
+  "round": 1,
+  "identity": {
+    "partition_manifest_sha256": "039868d0a4fa0a701354bdd313947ef8b118e3cea2be9a3d417df98e95023780",
+    "source_manifest_sha256": "1933b0991cec89c114e1076c239d3496512fed98bda1e1b213093febcfac07e9"
+  },
+  "recourse_history": [],
+  "start": null
+}

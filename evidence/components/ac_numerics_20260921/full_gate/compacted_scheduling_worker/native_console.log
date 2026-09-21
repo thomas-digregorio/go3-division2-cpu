@@ -1,0 +1,100 @@
+GO3_PROGRESS {"epoch_seconds":1.789977008286e9,"event":"isolated_native_worker_started","raw_case_parsed":false,"pid":26428,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":0.002000093460083008,"remaining_work_seconds":213.98399353027344}
+GO3_PROGRESS {"epoch_seconds":1.789977009035e9,"event":"isolated_native_import_begin","options":{"highs_analysis_level":384,"random_seed":0,"parallel":"off","threads":1,"mip_feasibility_tolerance":1.0e-9,"primal_feasibility_tolerance":1.0e-9,"mip_lp_solver":"simplex","mip_rel_gap":1.0e-6,"presolve_rule_off":8192,"log_dev_level":1},"pid":26428,"raw_case_parsed":false,"extraction_metadata_loaded":false,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":0.751000165939331,"remaining_work_seconds":213.2349934577942}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+GO3_PROGRESS {"epoch_seconds":1.789977009344e9,"event":"isolated_native_import_complete","pid":26428,"variables":97,"nonzeros":314,"rows":121,"stage":"isolated_native_scheduling","seconds":0.25,"elapsed_native_worker_seconds":1.0600001811981201,"remaining_work_seconds":212.9259934425354}
+GO3_PROGRESS {"epoch_seconds":1.789977009367e9,"event":"economic_solve_begin","pid":26428,"stage":"isolated_native_scheduling","actual_solver_limit_seconds":15.0,"elapsed_native_worker_seconds":1.0830001831054688,"remaining_work_seconds":212.90299344062805}
+ MIP      : 
+Rows      : 121
+Cols      : 97
+Nonzeros  : 314
+Integer   : 18 (15 binary)
+Coefficient ranges:
+  Matrix  [1e-02, 3e+00]
+  Cost    [3e-03, 1e+03]
+  Bound   [5e-01, 4e+00]
+  RHS     [5e-01, 3e+00]
+Presolving model
+Presolve rules not allowed:
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+68 rows, 54 cols, 177 nonzeros 0s
+57 rows, 45 cols, 168 nonzeros 0s
+Fixed 3 dominated columns and strengthened 0 bounds
+7 probing evaluations: 0 deleted rows, 0 deleted columns, 0 lifted nonzeros
+51 rows, 39 cols, 150 nonzeros 0s
+Presolve reductions: rows 51(-70); columns 39(-58); nonzeros 150(-164) 
+MIP-Timing:       0.001 - completed presolve
+MIP-Timing:       0.001 - starting  setup
+
+Solving MIP model with:
+   51 rows
+   39 cols (7 binary, 0 integer, 0 implied int., 32 continuous, 0 domain fixed)
+   150 nonzeros
+   Thread count 1 (of 24 threads). Using 1 max workers. Parallel search off
+MIP-Timing:      0.0011 - completed setup
+Feasibility Jump: starting solve. weightUpdateDecay=1, relaxContinuous=0  
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   inf             -23.675275         Large        0      0      0         0     0.0s
+MIP-Timing:       0.006 - starting evaluate root node
+MIP-Timing:       0.006 - starting analytic centre calculation
+MIP-Timing:      0.0061 - start first LP solve (without basis)
+MIP-Timing:      0.0065 - finish first LP solve
+ T       0       0         0   0.00%   1737.275        1732.1479          0.30%        0      0      0        12     0.0s
+MIP-Timing:      0.0066 - completed evaluate root node
+         1       0         1 100.00%   1732.1479       1732.1479          0.00%        0      0      0        12     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1732.1479
+  Dual bound        1732.1479
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      0.037187058829
+  Solution status   feasible
+                    1732.1479 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01
+                    0.00 (Presolve)
+                    0.01 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     12
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+getKktFailures:: cost norm =    1e+03; bound norm =        3
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility  5.2e-18 /  1.3e-18            0 /        0      5.2e-18 /  1.3e-18
+
+MIP sub-solver profiling: number of threads used = 1
+
+Thread 0
+Solver                    Calls    Time       Time/call      MIP%
+MIP                           1  6.7248e-03  6.7248e-03
+Du simplex (basis)            1  3.7909e-05  3.7909e-05       0.6
+Du simplex (no basis)         1  1.7619e-04  1.7619e-04       2.6
+TOTAL                            2.1410e-04                   3.2
+
+Percent (sub-)MIP time by thread
+
+MIP sub-solver            0
+Du simplex (basis)      0.6
+Du simplex (no basis)   2.6
+===========================
+Total                   3.2
+===========================
+GO3_PROGRESS {"epoch_seconds":1.789977009376e9,"event":"economic_solve_returned","native_returncode":0,"pid":26428,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":1.0920000076293945,"wall_seconds":0.006999969482421875,"remaining_work_seconds":212.89399361610413}
+GO3_PROGRESS {"epoch_seconds":1.789977009429e9,"event":"native_model_released","pid":26428,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":1.1449999809265137,"remaining_work_seconds":212.840993642807}
+GO3_PROGRESS {"epoch_seconds":1.78997700969e9,"event":"isolated_native_destroyed","pid":26428,"stage":"isolated_native_scheduling","elapsed_native_worker_seconds":1.4060001373291016,"remaining_work_seconds":212.57999348640442}

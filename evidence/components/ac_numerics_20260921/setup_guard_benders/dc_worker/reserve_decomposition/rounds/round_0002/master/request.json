@@ -1,0 +1,18 @@
+{
+  "mode": "master",
+  "round": 2,
+  "identity": {
+    "partition_manifest_sha256": "039868d0a4fa0a701354bdd313947ef8b118e3cea2be9a3d417df98e95023780",
+    "source_manifest_sha256": "1933b0991cec89c114e1076c239d3496512fed98bda1e1b213093febcfac07e9"
+  },
+  "recourse_history": [
+    {
+      "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_v2eiar5x\\dc_worker\\reserve_decomposition\\rounds\\round_0001\\recourse\\result.json",
+      "sha256": "4006559f5861e8910acb77ee9745f5215839e288480c3003c83d276ebfc49196"
+    }
+  ],
+  "start": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_v2eiar5x\\dc_worker\\reserve_decomposition\\rounds\\round_0001\\recourse\\result.json",
+    "sha256": "4006559f5861e8910acb77ee9745f5215839e288480c3003c83d276ebfc49196"
+  }
+}

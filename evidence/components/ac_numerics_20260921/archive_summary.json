@@ -1,0 +1,58 @@
+{
+  "operation": "Completed component evidence copy and SHA256 verification only; no solve or reevaluation",
+  "pass": true,
+  "complete": true,
+  "full_case_runs": 0,
+  "files_deleted": 0,
+  "stages": 83,
+  "python_tests": 166,
+  "julia_assertions": 16640,
+  "manifest_sha256": "1869faf8a35e1b15ceddfe87916c380eb8f6efe1992137ad1d92d8476e2a6782",
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_esh6mvpd",
+  "archives": {
+    "full_gate": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_esh6mvpd",
+      "files": 1542,
+      "bytes": 5616134,
+      "inventory_sha256": "c56d4b8c53fa53c9d073115ab0e51518cb238747acd775dde0ea5d5094a05826"
+    },
+    "stock_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_ft8oppa0",
+      "files": 741,
+      "bytes": 1045404,
+      "inventory_sha256": "b2f06d2e62ac84b80d83d5f22fdd8856fb833d88a8da65adf0caf07b0a2bea95"
+    },
+    "setup_guard_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_v2eiar5x",
+      "files": 741,
+      "bytes": 1053528,
+      "inventory_sha256": "0a7b7200987fa537b5b566fbff4925accdb0d4fb9ee6c81d18a778bc317ed76b"
+    },
+    "root_memory_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_tc78qtwy",
+      "files": 741,
+      "bytes": 1060372,
+      "inventory_sha256": "21f0037b6f6afc6c535430ce09cb7e71fc6420b848a337906901ec6dd1ff8a1c"
+    },
+    "root_progress_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_wwjdq81i",
+      "files": 742,
+      "bytes": 1066871,
+      "inventory_sha256": "497ba96a406eb656b3314af16ed909c15bc5761fb8b5f2f63563d6be59879183"
+    },
+    "cold_primal_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_y6tliaxp",
+      "files": 660,
+      "bytes": 907878,
+      "inventory_sha256": "e20dd56710666848e44bfb68e07e47e262835409cf17903e28ac864acae96380"
+    },
+    "focused_development": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\ac_numerics_development_zx1eucq_",
+      "files": 59,
+      "bytes": 247919,
+      "inventory_sha256": "62677360462e571d66ae4aced6a784977617ee6e27ddb71a7d6fdbf0c24e135c"
+    }
+  },
+  "inventory_encoding": "UTF-8 concatenation in source FullName sort order: slash-separated relative path, NUL, decimal byte count, NUL, lowercase SHA256, LF. Every copied file separately compared to original.",
+  "original_evidence_retained": true
+}

@@ -1,0 +1,22 @@
+Rounded shunt steps:
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+Rounded shunt steps:
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+Test Summary:                                                     | Pass  Total   Time
+GO3 bounded reserve storage preserves all numeric upstream awards |  116    116  14.2s
+Rounded shunt steps:
+Test Summary:                                                          | Pass  Total  Time
+GO3 reserve failures report actual status before any primal extraction |   30     30  0.9s
+Test Summary:                                                          | Pass  Total  Time
+GO3 reserve primal guard checks original rows not just a solver status |   13     13  0.4s
+Test Summary:                                                        | Pass  Total  Time
+GO3 initial reserve handoff never claims a verified full-case result |    7      7  0.1s
+Rounded shunt steps:
+Test Summary:                                                    | Pass  Total  Time
+GO3 bounded reserve storage rechecks budget before each interval |    5      5  0.3s

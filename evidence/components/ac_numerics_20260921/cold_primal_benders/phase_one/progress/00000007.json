@@ -1,0 +1,1 @@
+{"epoch_seconds":1.7899778981e9,"event":"cold_online_objective_ready","objective_scope":"sum_source_online_intervals_not_economics","pid":25804,"source_online_columns":1,"mode":"master","stage":"source_reserve_benders","external_start_used":false,"eliminated_zero_online_columns":0,"nonzero_master_costs":1,"round":1,"remaining_work_seconds":86.51868057250977}

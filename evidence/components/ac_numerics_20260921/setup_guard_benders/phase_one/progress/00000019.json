@@ -1,0 +1,1 @@
+{"epoch_seconds":1.789977318718e9,"event":"reserve_benders_master_loaded","cut_count":1,"pid":14764,"start":{"supplied":false},"mode":"master","stage":"source_reserve_benders","variables":3,"nonzeros":3,"rows":2,"round":2,"remaining_work_seconds":76.48190689086914}

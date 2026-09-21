@@ -102,3 +102,26 @@ check its exact evidence/log/runtime/source hashes, archive the evidence,
 commit/push the frozen implementation, and pass the read-only preflight. Only
 then may the single registered cold r13 run start. This document is not a claim
 that the gate or large-case run has completed.
+
+## Completed full regression gate
+
+The fresh gate `tmp/pilot002_component_gate_esh6mvpd` completed successfully:
+83 stages, 166 Python tests and 16,640 Julia assertions, with zero full-case
+runs. A separate read-only audit checked all 207 covered source fingerprints,
+the current runtime identity, all 123 stage-log hashes (including the five
+nested decomposition integrations), and the saved certificates. The component
+manifest SHA256 is
+`1869faf8a35e1b15ceddfe87916c380eb8f6efe1992137ad1d92d8476e2a6782`.
+
+The final-source symbolic pipeline again completed three AC intervals, final
+source reserves and all 9/9 independent/official contingency checks. Both
+official feasibility flags were one. All six AC optimizer calls confirmed
+the instantiated `MathOptInterface.Nonlinear.SymbolicAD.Evaluator`, FP64 and
+unchanged model structure/bounds. Its objective and candidate SHA256 match
+the focused pipeline above; maximum hard residual was
+`2.7755575615628914e-17`, maximum P/Q imbalances were
+`1.4432899320127035e-15` / `1.2628786905111156e-14`, and objective discrepancy
+was `1.5916157281026244e-11`.
+
+The immutable evidence archive is `evidence/components/ac_numerics_20260921`.
+These are component-test results only, not a verified 23,643-bus result.

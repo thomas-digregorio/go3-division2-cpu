@@ -1,0 +1,1 @@
+{"epoch_seconds":1.789977208168e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":5.0,"pid":24264,"period":2,"mode":"recourse","stage":"source_reserve_benders","round":2,"remaining_work_seconds":95.16584062576294}

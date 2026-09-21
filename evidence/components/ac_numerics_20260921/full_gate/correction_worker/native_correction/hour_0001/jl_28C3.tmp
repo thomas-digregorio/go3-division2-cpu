@@ -1,0 +1,29 @@
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 69 rows; 67 cols; 217 nonzeros
+Coefficient ranges:
+  Matrix  [1e-02, 1e+01]
+  Cost    [5e-03, 5e+02]
+  Bound   [2e-01, 3e+01]
+  RHS     [1e-02, 9e+00]
+Presolving model
+30 rows, 29 cols, 102 nonzeros 0s
+15 rows, 15 cols, 53 nonzeros 0s
+5 rows, 8 cols, 12 nonzeros 0s
+5 rows, 7 cols, 12 nonzeros 0s
+Presolve reductions: rows 5(-64); columns 7(-60); nonzeros 12(-205) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0    -4.9500000000e+02 Pr: 4(0.19) 0.0s
+          2    -4.9499940000e+02 Pr: 0(0) 0.0s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 2
+Objective value     :  4.9499940000e+02
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00

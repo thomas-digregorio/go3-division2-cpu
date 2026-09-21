@@ -1,0 +1,111 @@
+GO3_PROGRESS {"epoch_seconds":1.789977390606e9,"event":"reserve_benders_worker_started","raw_case_parsed":false,"pid":24116,"native_backend":{"git_hash":"04024d7","library_sha256":"09e8b2b6eafd425f03390dc5aa192820aa79f825025ee3be54e71a792b75634d","floating_point_bits":64,"objective_clique_max_size":0,"policy":"setup_clique_guard_v1","library_path":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\environments\\highs-setup-guard-build\\bin\\libhighs.dll","highs_int_bits":32,"version":"1.15.1","manifest_sha256":"ee5a6438fae2a94379ae0fabe8c17e118d07ba8ad39e02a21f5e776caf4667c7"},"mode":"master","stage":"source_reserve_benders","round":1,"remaining_work_seconds":87.05973052978516}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789977391371e9,"event":"reserve_benders_master_loaded","cut_count":0,"pid":24116,"start":{"supplied":false},"mode":"master","stage":"source_reserve_benders","variables":46,"nonzeros":143,"rows":70,"round":1,"remaining_work_seconds":86.29473042488098}
+GO3_PROGRESS {"epoch_seconds":1.789977391474e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":10.0,"pid":24116,"mode":"master","stage":"source_reserve_benders","round":1,"remaining_work_seconds":86.19173049926758}
+ MIP      : 
+Rows      : 70
+Cols      : 46
+Nonzeros  : 143
+Integer   : 18 (15 binary)
+Coefficient ranges:
+  Matrix  [2e-01, 3e+00]
+  Cost    [3e-02, 1e+03]
+  Bound   [1e+00, 3e+00]
+  RHS     [5e-01, 2e+00]
+Presolving model
+Presolve rules not allowed:
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+29 rows, 27 cols, 69 nonzeros 0s
+21 rows, 20 cols, 64 nonzeros 0s
+Fixed 3 dominated columns and strengthened 0 bounds
+7 probing evaluations: 0 deleted rows, 0 deleted columns, 0 lifted nonzeros
+13 rows, 13 cols, 42 nonzeros 0s
+Presolve reductions: rows 13(-57); columns 13(-33); nonzeros 42(-101) 
+MIP-Timing:       0.011 - completed presolve
+MIP-Timing:       0.011 - starting  setup
+GO3-HIGHS-Setup stage=initialization solve_elapsed=0.010749
+GO3-HIGHS-Setup stage=transpose_and_locks solve_elapsed=0.010762
+GO3-HIGHS-Setup stage=row_integrality solve_elapsed=0.010773
+GO3-HIGHS-Setup stage=objective_clique_partition solve_elapsed=0.010781
+GO3-HIGHS-Setup optional_objective_clique_skipped binary_columns=7 limit=0 source_model_unchanged=1
+GO3-HIGHS-Setup stage=objective_propagation solve_elapsed=0.010795
+GO3-HIGHS-Setup stage=row_activities solve_elapsed=0.010804
+GO3-HIGHS-Setup stage=domain_propagation solve_elapsed=0.010812
+GO3-HIGHS-Setup stage=domain_propagation_complete solve_elapsed=0.010821
+GO3-HIGHS-Setup stage=objective_integrality solve_elapsed=0.010830
+GO3-HIGHS-Setup stage=basis_transfer solve_elapsed=0.010838
+GO3-HIGHS-Setup stage=basis_transfer_complete solve_elapsed=0.010845
+
+Solving MIP model with:
+   13 rows
+   13 cols (7 binary, 0 integer, 0 implied int., 6 continuous, 0 domain fixed)
+   42 nonzeros
+   Thread count 1 (of 24 threads). Using 1 max workers. Parallel search off
+GO3-HIGHS-Setup stage=heuristic_columns solve_elapsed=0.010865
+GO3-HIGHS-Setup stage=heuristic_columns_complete solve_elapsed=0.010874
+MIP-Timing:       0.011 - completed setup
+Feasibility Jump: starting solve. weightUpdateDecay=1, relaxContinuous=0  
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   inf             492.725            Large        0      0      0         0     0.0s
+MIP-Timing:       0.016 - starting evaluate root node
+MIP-Timing:       0.016 - starting analytic centre calculation
+MIP-Timing:       0.016 - start first LP solve (without basis)
+MIP-Timing:       0.016 - finish first LP solve
+ T       0       0         0 100.00%   1732.275        1732.15            0.01%        0      0      0         4     0.0s
+MIP-Timing:       0.016 - completed evaluate root node
+         1       0         1 100.00%   1732.15         1732.15            0.00%        0      0      0         4     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1732.15
+  Dual bound        1732.15
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      0.000943472047568
+  Solution status   feasible
+                    1732.15 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.02
+                    0.01 (Presolve)
+                    0.01 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     4
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+getKktFailures:: cost norm =    1e+03; bound norm =        1
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility        0 /        0            0 /        0            0 /        0
+
+MIP sub-solver profiling: number of threads used = 1
+
+Thread 0
+Solver                    Calls    Time       Time/call      MIP%
+MIP                           1  1.6153e-02  1.6153e-02
+Du simplex (basis)            1  1.5020e-05  1.5020e-05       0.1
+Du simplex (no basis)         1  1.5283e-04  1.5283e-04       0.9
+TOTAL                            1.6785e-04                   1.0
+
+Percent (sub-)MIP time by thread
+
+MIP sub-solver            0
+Du simplex (basis)      0.1
+Du simplex (no basis)   0.9
+===========================
+Total                   1.0
+===========================
+GO3_PROGRESS {"epoch_seconds":1.789977391501e9,"event":"reserve_benders_solve_returned","solve_seconds":0.016232967376708984,"pid":24116,"mode":"master","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":4,"barrier_iterations":-1,"has_primal":true,"native_status":7,"solve_wall_seconds":0.016000032424926758,"round":1,"remaining_work_seconds":86.16473054885864}
+GO3_PROGRESS {"epoch_seconds":1.78997739176e9,"event":"reserve_benders_stage_complete","pid":24116,"result_sha256":"303f3b558155fadf24bbae1031c6bbc6fa14d4da649c056c4c861cf6db3361de","mode":"master","stage":"source_reserve_benders","round":1,"remaining_work_seconds":85.90573048591614}

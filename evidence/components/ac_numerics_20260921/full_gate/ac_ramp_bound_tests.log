@@ -1,0 +1,10 @@
+Rounded shunt steps:
+Rounded shunt steps:
+Test Summary:                                                     | Pass  Total  Time
+GO3 exact ramp intersections prevent accumulated export imbalance |   23     23  1.7s
+lb: 1.0, ub: 0.999999995, tolerance = 0.0
+Interval: 2
+UID: g1
+p_prev: 0.999999995
+Test Summary:                                                                | Pass  Total  Time
+GO3 exact ramp intersections preserve positive PMIN and reject empty domains |   11     11  0.1s
