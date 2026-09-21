@@ -54,6 +54,7 @@ def collect(attempt, *, root=ROOT):
             "agent_stop_reason.json",
             "resource_stop.json",
             "worker/solver_statistics.json", "worker/worker_error.json", "worker/schedule_balance.json",
+            "worker/console.log",
             "runtime_case_manifest.json", "worker/native_result.json", "worker/native_exit.json",
             "worker/scheduling_builder.json", "worker/native_memory.jsonl",
             "worker/compaction_exit.json", "worker/compaction_memory.jsonl",
@@ -70,6 +71,15 @@ def collect(attempt, *, root=ROOT):
     # failing interval prevents final solver_statistics.json serialization.
     compact_files += tuple(str(p.relative_to(run)) for p in
         sorted((run/"worker/progress").glob("*.json")))
+    # A fail-fast AC exit may only have per-interval statistics. Retain both
+    # those audits and the controller's verification disposition; a cancelled
+    # evaluation has no complete certificate and must not be mistaken for one.
+    compact_files += tuple(str(p.relative_to(run)) for p in
+        sorted((run/"worker/statistics").glob("ac_*.json")))
+    compact_files += tuple(str(p.relative_to(run)) for p in
+        sorted((run/"worker/statistics").glob("export_projection_*.json")))
+    compact_files += tuple(str(p.relative_to(run)) for p in
+        sorted((run/"verification_records").glob("*.json")))
     # A stopped native stage may have no result.json. Preserve its request,
     # console/progress and memory records, plus the source partition proof.
     # Large binary matrices/primal vectors remain in the retained run only.

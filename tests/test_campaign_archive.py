@@ -87,6 +87,30 @@ class CampaignArchiveTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"hash mismatch"):
                 collect(ATTEMPT,root=root)
 
+    def test_failed_ac_and_cancelled_verification_evidence_is_retained(self):
+        with tempfile.TemporaryDirectory(dir=ROOT/"tmp") as d:
+            root=Path(d);run=finished_fixture(root)
+            atomic_json(run/"worker/statistics/ac_0001.json",
+                {"interval":1,"termination":"TIME_LIMIT","max_primal_residual":1e-4})
+            atomic_json(run/"worker/statistics/export_projection_0001.json",
+                {"full_horizon_claimed":False})
+            (run/"worker/console.log").write_bytes(b"GO3_AC_PHASE rejected\r\n")
+            atomic_json(run/"verification_records/final.json",
+                {"certificate":{"pass":False,"complete":False},"retained":False})
+            atomic_json(run/"agent_stop_reason.json",
+                {"classification":"POST_FAILURE_VERIFICATION_CANCELLED","solver_interrupted":False})
+            report=collect(ATTEMPT,root=root)
+            output=root/"evidence/campaign"/ATTEMPT
+            for relative in ("worker/statistics/ac_0001.json",
+                    "worker/statistics/export_projection_0001.json","worker/console.log",
+                    "verification_records/final.json","agent_stop_reason.json"):
+                self.assertEqual((run/relative).read_bytes(),(output/relative).read_bytes())
+            self.assertIsNone(report["objective"])
+            self.assertFalse(report["quality_gate"]["pass"])
+            self.assertFalse((output/"verification/final/certificate.json").exists())
+            self.assertFalse((run/"verification/final/certificate.json").exists())
+            self.assertEqual(json.loads((output/"retained_manifest.json").read_text())["files_deleted"],0)
+
 
 if __name__ == "__main__":
     unittest.main()

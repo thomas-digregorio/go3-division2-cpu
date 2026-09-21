@@ -1,0 +1,61 @@
+{
+  "epoch_seconds": 1789974753.9514077,
+  "classification": "POST_FAILURE_VERIFICATION_CANCELLED",
+  "reason": "AC interval 1 failed its registered residual screen; worker exited; 47 later intervals were not attempted. The required complete-horizon gate cannot pass, irrespective of further evaluation.",
+  "solver_interrupted": false,
+  "verification_complete": false,
+  "success_claimed": false,
+  "code_or_configuration_changed_during_run": false,
+  "checkpoint_preserved": true,
+  "controller_pid": 18500,
+  "targets": [
+    {
+      "pid": 12232,
+      "create_time": 1789974461.486442,
+      "command": [
+        "\\??\\C:\\Windows\\system32\\conhost.exe",
+        "0x4"
+      ]
+    },
+    {
+      "pid": 7064,
+      "create_time": 1789974461.499643,
+      "command": [
+        "C:\\Users\\thoma\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\scripts\\verify_candidate.py",
+        "--input",
+        "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\data\\raw\\C3E4N23643D2_s003\\scenario.json",
+        "--input-sha256",
+        "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5",
+        "--solution",
+        "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N23643D2_s003_campaign_n23643_s003_r12_20260921T061534Z\\worker\\checkpoints\\candidate_ac_0001.json",
+        "--output",
+        "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N23643D2_s003_campaign_n23643_s003_r12_20260921T061534Z\\verification\\final",
+        "--seconds",
+        "4042.8267462999793",
+        "--official-contingency-batch-size",
+        "512"
+      ]
+    },
+    {
+      "pid": 2320,
+      "create_time": 1789974461.4758563,
+      "command": [
+        "C:\\Users\\thoma\\Documents\\goc2-ac-score-check\\evaluator-venv\\Scripts\\python.exe",
+        "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\scripts\\verify_candidate.py",
+        "--input",
+        "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\data\\raw\\C3E4N23643D2_s003\\scenario.json",
+        "--input-sha256",
+        "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5",
+        "--solution",
+        "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N23643D2_s003_campaign_n23643_s003_r12_20260921T061534Z\\worker\\checkpoints\\candidate_ac_0001.json",
+        "--output",
+        "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N23643D2_s003_campaign_n23643_s003_r12_20260921T061534Z\\verification\\final",
+        "--seconds",
+        "4042.8267462999793",
+        "--official-contingency-batch-size",
+        "512"
+      ]
+    }
+  ]
+}

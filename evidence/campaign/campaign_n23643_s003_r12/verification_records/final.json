@@ -1,0 +1,16 @@
+{
+  "label": "final",
+  "solution": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N23643D2_s003_campaign_n23643_s003_r12_20260921T061534Z\\worker\\checkpoints\\candidate_ac_0001.json",
+  "process": {
+    "timeout": false,
+    "returncode": 15
+  },
+  "wall_seconds": 292.60854809999,
+  "certificate": {
+    "pass": false,
+    "complete": false,
+    "candidate_sha256": "6370f08f2a95dfeb65c953894c9163812c5777e12962cec1b4e94f1f29379c5c",
+    "error": "Verification timed out or exited before writing a complete certificate"
+  },
+  "retained": false
+}
