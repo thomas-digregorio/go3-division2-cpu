@@ -1,0 +1,1 @@
+{"objective":-0.0012000000000000001,"stage":"initial_reserve_allocation","termination":"OPTIMAL","collection_seconds":0.21200013160705566,"variables":28,"elapsed_worker_seconds":15.210000038146973,"constraints":85,"interval":2,"model_released":true,"solver_seconds":0.00027680397033691406,"remaining_work_seconds":130.00319933891296}

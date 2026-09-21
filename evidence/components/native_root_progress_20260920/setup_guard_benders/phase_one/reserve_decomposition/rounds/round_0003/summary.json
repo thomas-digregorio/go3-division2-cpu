@@ -1,0 +1,54 @@
+{
+  "round": 3,
+  "master": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_578xic35\\phase_one\\reserve_decomposition\\rounds\\round_0003\\master\\result.json",
+    "sha256": "81fa9f2f8b1be278feb55cc938d597e2ca65d1087507813074e0b2a87fd6a971"
+  },
+  "master_statistics": {
+    "solve_seconds": 0.0006558895111083984,
+    "objective": -0.7499999999999991,
+    "bound": -0.7499999999999991,
+    "has_primal": true,
+    "native_status": 7,
+    "termination": "OPTIMAL",
+    "simplex_iterations": 0,
+    "barrier_iterations": -1,
+    "nodes": 0,
+    "solve_wall_seconds": 0.010999917984008789,
+    "relative_gap": 0.0
+  },
+  "master_start": {
+    "supplied": true,
+    "scope": "complete within-attempt primal; no external seed",
+    "native_consumption_reported": false,
+    "source_result": {
+      "sha256": "0d6278534ab26fd4f003674d9a065df5ab8ff93db38f7311922d190fdae6806a",
+      "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_578xic35\\phase_one\\reserve_decomposition\\rounds\\round_0002\\recourse\\result.json"
+    },
+    "api_returncode": 0,
+    "api_accepted": true,
+    "original_master_audit": {
+      "variables": 3,
+      "scope": "Original scheduling rows, bounds, integer domains and objective; not full GO3 verification",
+      "rows": 1,
+      "objective": -2.0000000000000004,
+      "complete": true,
+      "pass": true,
+      "maximum_residual": 0.0,
+      "tolerance": 1e-08
+    },
+    "maximum_cut_violation": 0.0,
+    "native_log_evidence": []
+  },
+  "master_process_wall_seconds": 4.6391583000076935,
+  "master_upper_bound": -0.7499999999999991,
+  "recourse": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_578xic35\\phase_one\\reserve_decomposition\\rounds\\round_0003\\recourse\\result.json",
+    "sha256": "4c67156b32ceb6608388fa09c105cbcd999c9a8c9d40889e75b38fa6ff600315"
+  },
+  "verified_incumbent": -0.75,
+  "recourse_process_wall_seconds": 5.412468099966645,
+  "all_source_hours_feasible": true,
+  "added_cuts": 1,
+  "relative_gap": 1.1842378929335002e-15
+}

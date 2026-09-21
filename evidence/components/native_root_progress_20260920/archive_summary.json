@@ -1,0 +1,49 @@
+{
+  "operation": "Completed component evidence copy and SHA256 verification only; no solve or reevaluation",
+  "pass": true,
+  "complete": true,
+  "full_case_runs": 0,
+  "files_deleted": 0,
+  "stages": 76,
+  "python_tests": 155,
+  "julia_assertions": 16498,
+  "manifest_sha256": "41fbc3ad276df9f7a79d40bf59fc61dbb9eec5f6d4507f0ef122543d575f04d7",
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_tgmkaley",
+  "archives": {
+    "full_gate": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_tgmkaley",
+      "files": 1419,
+      "bytes": 4943824,
+      "inventory_sha256": "3f0c2ebe87150cde87f7f2bda1c43e66a454441f93a9721021be3b7fa8e35528"
+    },
+    "stock_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_v19nh5u7",
+      "files": 741,
+      "bytes": 1014771,
+      "inventory_sha256": "1ef133e3dfa2900159365c97e35d233a055816eaf3babd3cea34ede9f2dc0b85"
+    },
+    "setup_guard_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_578xic35",
+      "files": 741,
+      "bytes": 1022697,
+      "inventory_sha256": "348baee46bc087206128a6f06e222a12ca3f5309147c5b0072f4362f8bfc2546"
+    },
+    "root_memory_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_wzqenu62",
+      "files": 741,
+      "bytes": 1031973,
+      "inventory_sha256": "cd14964dfd057dc6340aae6ab9c0d3062a593cd8398a22539e55d53a31fdc16f"
+    },
+    "root_progress_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_n7l3fw2y",
+      "files": 742,
+      "bytes": 1037931,
+      "inventory_sha256": "b42c7d148b4c951d442dec346a1cacf2422e745f2d3e3b0eb4c0b8e0966b9304"
+    }
+  },
+  "inventory_encoding": "UTF-8 concatenation in source FullName sort order: slash-separated relative path, NUL, decimal byte count, NUL, lowercase SHA256, LF. Every copied file separately compared to original.",
+  "original_evidence_retained": true,
+  "total_copied_files": 4385,
+  "total_copied_bytes": 9725308,
+  "total_scope": "Copied evidence trees and component_tests.json; this archive_summary.json excluded"
+}

@@ -1,0 +1,7 @@
+{
+  "pid": 15052,
+  "returncode": 0,
+  "process_wall_seconds": 5.412468099966645,
+  "exited_before_next_native_stage": true,
+  "result_sha256": "4c67156b32ceb6608388fa09c105cbcd999c9a8c9d40889e75b38fa6ff600315"
+}

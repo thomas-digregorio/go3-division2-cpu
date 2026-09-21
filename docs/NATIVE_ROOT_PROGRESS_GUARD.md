@@ -73,3 +73,31 @@ More time may still be insufficient, or memory may grow later. This is an
 observable, preregistered next attempt, not a promise of a feasible result. r08
 remains failed and immutable; r09 needs its own clean pushed freeze and unused
 latch.
+
+## Completed full regression gate
+
+`tmp/pilot002_component_gate_tgmkaley` completed successfully on 2026-09-20:
+**76 stages, 155 Python tests, and 16,498 Julia assertions**. All stages returned
+zero. The final manifest names this exact evidence directory, records no
+competition-case runs, and its runtime and complete source inventory match the
+current revision. Summed stage wall time was 2404.768 seconds (setup, not a
+competition benchmark). All owned test processes exited.
+
+All four stock/setup-guard/root-memory/root-progress decomposition pipelines
+passed. The new pipeline is `tmp/reserve_loop_components_n7l3fw2y`; it checked
+16 native worker identities and eight master option records. Its final tiny
+candidate passed independent and official verification with all 9/9 contingency
+checks and both official feasibility flags equal to 1. Objective:
+1732.1459647319407. Candidate SHA256:
+`1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`,
+identical to the earlier tiny baseline.
+
+The complete evidence directory, all four nested integrations and final manifest
+were copied to `evidence/components/native_root_progress_20260920` and every
+copied file was SHA256-compared against its original. The archive summary
+records counts and per-tree inventory hashes. Original evidence and prior native
+builds remain intact; nothing was deleted. The completed manifest SHA256 is
+`41fbc3ad276df9f7a79d40bf59fc61dbb9eec5f6d4507f0ef122543d575f04d7`.
+
+This qualifies r09 for the normal clean/pushed preflight. It is not evidence of
+a successful 23,643-bus solution or of adequate memory for the full root LP.
