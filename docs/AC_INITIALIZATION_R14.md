@@ -1,8 +1,8 @@
 # r14: complete current-schedule initialization and preserved primal restarts
 
-Status: focused tests passed; full regression gate pending. No r14 full-case run
-has started. This is an initialization experiment, not a full-case feasibility
-or optimality claim.
+Status: focused tests and the complete source-matched regression gate passed.
+One cold r14 full-case attempt is registered, subject to frozen-commit preflight.
+The component pass is not a full-case feasibility or optimality claim.
 
 ## Evidence motivating the change
 
@@ -91,6 +91,33 @@ retained eligible valid dual transfers. Tiny objective: `1732.1459693041643`;
 maximum P/Q imbalance: `8.0491e-16` / `1.2688e-14` p.u.; official feasibility and
 physical-feasibility flags both 1. This focused check is not authorization to
 skip the full source-matched regression gate.
+
+## Complete regression evidence
+
+The new gate `tmp/pilot002_component_gate_wbxlbv_w` finished with exit code 0:
+86 top-level stages, 168 Python tests and 16,723 Julia assertions. An additional
+read-only audit checked all 211 source-file hashes, all 126 parent/nested stage
+log hashes, the five nested eight-stage decomposition integrations and their
+certificates. No competition-case solve ran during the gate.
+
+The new complete-initialization pipeline refined all three tiny hours, retained
+three eligible complete dual transfers, and passed independent and official
+verification of all 9/9 contingency/hour pairs. Its objective and candidate hash
+match the focused check above. The older symbolic-policy pipeline also passed;
+these are separate tiny tests, not repeated full-case benchmarks.
+
+- Component manifest SHA256:
+  `261a6cc1400832655f053c14fdd980fbc62051488fe99e1804ce393bfe5b65f1`.
+- New tiny candidate SHA256:
+  `8bae61f23793651190154f6e9acfbdada062cdc01243293bf5e9079b3717563d`.
+- Sum of recorded regression-stage times: `2828.7090863` seconds, setup only.
+- Immutable archive:
+  [component evidence](../evidence/components/ac_initialization_20260921/archive_summary.json).
+
+All original temporary evidence remains retained. Archive copying and Git byte
+auditing perform no solve and no reevaluation. The r14 full-case outcome will
+be reported separately; a component pass never substitutes for its required
+48-hour physical, exhaustive-contingency and quality checks.
 
 ## Solver reference
 

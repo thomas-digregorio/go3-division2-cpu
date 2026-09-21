@@ -1,0 +1,33 @@
+{
+  "policy": "pinned_official_outage_batches_v1",
+  "batch_size": 2,
+  "complete": true,
+  "invocations": 1,
+  "batches": [
+    {
+      "start_inclusive": 0,
+      "stop_exclusive": 2,
+      "checks": 6,
+      "seconds": 0.003099899971857667
+    },
+    {
+      "start_inclusive": 2,
+      "stop_exclusive": 3,
+      "checks": 3,
+      "seconds": 0.0021936999983154237
+    }
+  ],
+  "original_source_sha256": "0876bc72009fa9c91040ae0442fef1a74f854852b5ca994ecce1b912305d6f00",
+  "upstream_files_modified": false,
+  "all_monitored_branches_retained": true,
+  "global_aggregation": "original_evaluator_over_complete_source_order_t_k_z",
+  "source_contingencies": 3,
+  "intervals": 3,
+  "required_checks": 9,
+  "completed_checks": 9,
+  "source_uid_sha256": "4817507d9942bf24635535b19b1588bb44e00d2b51314536926f3580c7f5d896",
+  "monitored_ac_branches": 3,
+  "network_buses": 2,
+  "source_order_preserved": true,
+  "max_batch_columns": 2
+}

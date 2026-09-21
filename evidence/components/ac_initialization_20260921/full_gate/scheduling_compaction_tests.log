@@ -1,0 +1,4 @@
+Test Summary:                                            | Pass  Total  Time
+GO3 exact zero alias compaction mathematical equivalence |  156    156  5.9s
+Test Summary:                                       | Pass  Total   Time
+GO3 exact compaction source feature and DC fixtures |   40     40  14.7s

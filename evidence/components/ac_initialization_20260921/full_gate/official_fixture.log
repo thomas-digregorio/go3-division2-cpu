@@ -1,0 +1,5 @@
+C:\Users\thoma\Documents\go3-division2-cpu\.cache\upstream\C3DataUtilities\datautilities\ctgmodel.py:126: SparseEfficiencyWarning: splu converted its input to CSC format
+  a_factors = scipy.sparse.linalg.splu(a_mat)
+C:\Users\thoma\Documents\go3-division2-cpu\.cache\upstream\C3DataUtilities\datautilities\ctgmodel.py:379: SparseEfficiencyWarning: splu converted its input to CSC format
+  a_factors_t = scipy.sparse.linalg.splu(a_mat_t)
+{"feas": 1, "obj": -1906.099999999998, "log": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\official_tiny\\official.log"}
