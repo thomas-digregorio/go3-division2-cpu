@@ -1,0 +1,34 @@
+{
+  "schema": "go3_native_stage_interruption_v1",
+  "identity": {
+    "partition_manifest_sha256": "3793d7ff8dda5d121759190e27f7917da8c589c64e05a3c6bf3f5fc3e3166f09",
+    "source_manifest_sha256": "1dd9f2dc9b5e65881a04f003f2f344e219b49e9499fb5b8f273285fef666b7f5"
+  },
+  "request_sha256": "1bbce3beaab12ffbcab164c1a6f0a0541d46be1a887a2314e5e2566c43323a05",
+  "mode": "master",
+  "round": 1,
+  "error": "Native master call exceeded its 600-second wall limit",
+  "kind": "native_call_deadline",
+  "native_call": {
+    "pid": 26904,
+    "begin_event": {
+      "epoch_seconds": 1789950944.203,
+      "event": "reserve_benders_solve_begin",
+      "actual_limit_seconds": 600.0,
+      "pid": 26904,
+      "mode": "master",
+      "stage": "source_reserve_benders",
+      "round": 1,
+      "remaining_work_seconds": 1162.633961200714
+    },
+    "observed_epoch_seconds": 1789951544.3870907,
+    "native_deadline_epoch": 1789951544.203,
+    "native_elapsed_seconds": 600.1840906143188,
+    "process_wall_seconds": 607.5399072999717,
+    "poll_interval_seconds": 0.25,
+    "stage_deadline_epoch": 1789952106.8369613
+  },
+  "launch_cleanup_completed": true,
+  "no_relaunch": true,
+  "stage_deadline_epoch": 1789952106.8369613
+}

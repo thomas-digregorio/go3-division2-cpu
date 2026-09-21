@@ -62,6 +62,11 @@ consumer at the observed stop point. The logs do not attribute memory by routine
 or prove that this task alone caused the stop; the root LP itself may still exceed
 the available memory. No analytic-centre change or further experiment was made.
 
+Subsequent source audit and experiment (not part of r07): with one solver thread,
+the auxiliary task is queued and its start log is not proof that it executed
+before the ordinary LP. `NATIVE_ROOT_MEMORY_GUARD.md` records this correction.
+The separately frozen r08 controls and outcome are in `CAMPAIGN_N23643_R08.md`.
+
 ### Retained evidence
 
 `evidence/campaign/campaign_n23643_s003_r07` retains 142 copied compact evidence

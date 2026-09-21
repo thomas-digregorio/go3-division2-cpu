@@ -168,3 +168,14 @@ manifest are retained under
 directories are also retained. This qualifies the unchanged registered r08
 configuration for preflight; it does not establish large-case memory sufficiency
 or successful solution of the 23,643-bus case.
+
+## Full-case r08 outcome
+
+The registered r08 attempt is now complete, with `NO_VERIFIED_INCUMBENT` after
+1816.156 seconds. Its memory guard did not fire (minimum sampled native-stage
+host availability 2.574 GiB), but the first native master exceeded its 600-second
+allowance while the ordinary root LP remained unfinished. No AC refinement or
+final large-case verification ran. See `CAMPAIGN_N23643_R08.md` and the retained
+interruption record. The numerical matrix/bounds/cost/domain/name fingerprints
+match r07. This is progress in identifying the limiting gate, not proof that the
+full solve fits memory or that the 23,643-bus goal has been achieved.
