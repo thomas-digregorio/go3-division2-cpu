@@ -1,0 +1,1 @@
+{"solve_seconds":0.005991935729980469,"bound_and_gap_queried":true,"objective":1732.3229,"termination":"OPTIMAL","simplex_iterations":5,"bound":1732.3229,"barrier_iterations":0,"nodes":1,"native_relative_gap":0.0,"primal_status":"FEASIBLE_POINT","phase":"original_economic_mip","wall_seconds":0.019999980926513672,"relative_gap":0.0}

@@ -1,0 +1,47 @@
+{
+  "schema": "go3_compact_component_archive_v1",
+  "pass": true,
+  "complete": true,
+  "full_case_runs": 0,
+  "stages": 73,
+  "python_tests": 152,
+  "julia_assertions": 15451,
+  "summed_stage_seconds": 2201.67512729991,
+  "source_inventory_matches": true,
+  "component_manifest_sha256": "350e1549672fe6515c3b06a9576ed6e9efc022ac870eb871848e80ae2eaf700b",
+  "copied_files_excluding_this_summary": 3640,
+  "copied_bytes_excluding_this_summary": 8632867,
+  "every_copied_file_sha256_verified": true,
+  "original_evidence_deleted": false,
+  "inventory_encoding": "UTF-8 without BOM, relative POSIX path plus one space plus lowercase SHA256, sorted by source FullName, LF between lines and no trailing LF",
+  "directories": [
+    {
+      "archive": "full_gate",
+      "source": "tmp/pilot002_component_gate_r_75l1ov",
+      "files": 1416,
+      "bytes": 4928642,
+      "inventory_sha256": "af6b9a23330934255afa839897b823dcad30e2b5b5271730cb8f43218d7bc712"
+    },
+    {
+      "archive": "stock_benders",
+      "source": "tmp/reserve_loop_components_x7acdsc_",
+      "files": 741,
+      "bytes": 1011582,
+      "inventory_sha256": "8bc9bf8c9b775a001d6c8fe0ee9392a09a73ce6b692583b12d788bd064f402e7"
+    },
+    {
+      "archive": "setup_guard_benders",
+      "source": "tmp/reserve_loop_components_ni7rfog0",
+      "files": 741,
+      "bytes": 1023476,
+      "inventory_sha256": "52cb0af62d660f6f2dd7992b2afac28bac88675bf6c12ee50f667c44629940c5"
+    },
+    {
+      "archive": "root_memory_benders",
+      "source": "tmp/reserve_loop_components_kz8ec4la",
+      "files": 741,
+      "bytes": 1028683,
+      "inventory_sha256": "fa0acd413634224a01184b04f4496aa12b3fec79e3a8721fdc0e6c9157459964"
+    }
+  ]
+}

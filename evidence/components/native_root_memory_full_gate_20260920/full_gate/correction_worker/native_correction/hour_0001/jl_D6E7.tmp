@@ -1,0 +1,32 @@
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+LP has 69 rows; 67 cols; 223 nonzeros
+Coefficient ranges:
+  Matrix  [1e-02, 9e+00]
+  Cost    [5e-03, 5e+02]
+  Bound   [2e-01, 3e+01]
+  RHS     [1e-16, 9e+00]
+WARNING: Problem has some excessively small row bounds
+Presolving model
+30 rows, 29 cols, 102 nonzeros 0s
+15 rows, 15 cols, 53 nonzeros 0s
+11 rows, 14 cols, 39 nonzeros 0s
+Dependent equations search running on 3 equations with time limit of 1.00s
+Dependent equations search removed 0 rows and 0 nonzeros in 0.00s (limit = 1.00s)
+11 rows, 14 cols, 39 nonzeros 0s
+Presolve reductions: rows 11(-58); columns 14(-53); nonzeros 39(-184) 
+Solving the presolved LP
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     0.0000000000e+00 Ph1: 0(0) 0.0s
+         10    -4.9498898288e+02 Pr: 0(0) 0.0s
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Simplex   iterations: 10
+Objective value     :  4.9498898288e+02
+P-D objective error :  3.4416558688e-16
+HiGHS run time      :          0.00

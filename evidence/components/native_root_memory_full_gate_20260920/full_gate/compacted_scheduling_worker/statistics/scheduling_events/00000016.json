@@ -1,0 +1,1 @@
+{"epoch_seconds":1.789948532015e9,"event":"isolated_native_import_complete","pid":2528,"variables":97,"nonzeros":314,"rows":121,"stage":"isolated_native_scheduling","seconds":0.25,"elapsed_native_worker_seconds":1.0430002212524414,"remaining_work_seconds":212.95196866989136}

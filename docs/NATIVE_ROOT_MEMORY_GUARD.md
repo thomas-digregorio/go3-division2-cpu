@@ -145,3 +145,26 @@ The hash-verified archive is
 stop record preserves the intentional cancellation of the superseded incomplete
 suite. No full-case run or authorization latch has been consumed for r08. The
 next required gate is a fresh complete source-matched regression suite.
+
+## Complete regression gate
+
+The fresh suite `tmp/pilot002_component_gate_r_75l1ov` finished successfully on
+2026-09-20: **73 stages, 152 Python tests and 15,451 Julia assertions**. Summed
+stage wall time was 2201.675 seconds (setup, not a competition-case timing).
+Every stage returned zero; the final manifest is complete, names this exact
+evidence directory, and its complete source inventory matches the frozen code.
+All test processes exited. No full-case run was started by this gate.
+
+The stock, setup-guard and root-memory decomposition pipelines all passed. The
+root-memory pipeline independently checked all 16 worker identities and all
+eight master option records. Its final solution again has SHA256
+`1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`,
+objective 1732.1459647319407, hard residual 0, both official feasibility flags 1,
+and complete independent/official coverage of all nine tiny contingency checks.
+
+The full suite, all three nested decomposition integrations, and the completed
+manifest are retained under
+`evidence/components/native_root_memory_full_gate_20260920`. Original evidence
+directories are also retained. This qualifies the unchanged registered r08
+configuration for preflight; it does not establish large-case memory sufficiency
+or successful solution of the 23,643-bus case.
