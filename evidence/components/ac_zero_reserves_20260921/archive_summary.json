@@ -1,0 +1,58 @@
+{
+  "operation": "Completed component evidence copy and SHA256 verification only; no solve or reevaluation",
+  "pass": true,
+  "complete": true,
+  "full_case_runs": 0,
+  "files_deleted": 0,
+  "stages": 89,
+  "python_tests": 169,
+  "julia_assertions": 16801,
+  "manifest_sha256": "bcba56b0d5ac2dabfbdbad2062708ac4a8eade9b763d83b254d9d99cd390a603",
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv",
+  "archives": {
+    "full_gate": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv",
+      "files": 1658,
+      "bytes": 6176036,
+      "inventory_sha256": "18e308251d20d040b35d5330286a7a2dd5bd33810604f108969733410db4eff2"
+    },
+    "stock_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_5fgogf4m",
+      "files": 741,
+      "bytes": 1046376,
+      "inventory_sha256": "c7403e4e3f115876f31778e17f2b9fc0591fe58dc4359380d00928727a8fc813"
+    },
+    "setup_guard_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components__j2te6n2",
+      "files": 741,
+      "bytes": 1057602,
+      "inventory_sha256": "2111d703c669fe88b9de2ebfb3434e7331a9d32c8111ffac23dbf32e99b60c03"
+    },
+    "root_memory_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_xiricyjb",
+      "files": 741,
+      "bytes": 1062035,
+      "inventory_sha256": "c9e44eff9f070bb570a13f9fa72e005332c32e6154627a6e79dea72651f13f18"
+    },
+    "root_progress_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_x3baq5hn",
+      "files": 742,
+      "bytes": 1072148,
+      "inventory_sha256": "507ea71368700c0a156223163003022a10ba59184a6813389b5b3027046b2261"
+    },
+    "cold_primal_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_404rw6xa",
+      "files": 660,
+      "bytes": 912144,
+      "inventory_sha256": "e765c694d46c836005ac5b19e54b43fc157d493ec5205ea2b1d930a199e36f3f"
+    },
+    "focused_development": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\focused_ac_zero_reserves_ap77mpq_",
+      "files": 59,
+      "bytes": 301818,
+      "inventory_sha256": "58fc95111e92a8b85ea9ac2064b95eea6b4e54378e6c1b736e6c743833ed85cc"
+    }
+  },
+  "inventory_encoding": "UTF-8 concatenation in source FullName sort order: slash-separated relative path, NUL, decimal byte count, NUL, lowercase SHA256, LF. Every copied file separately compared to original.",
+  "original_evidence_retained": true
+}

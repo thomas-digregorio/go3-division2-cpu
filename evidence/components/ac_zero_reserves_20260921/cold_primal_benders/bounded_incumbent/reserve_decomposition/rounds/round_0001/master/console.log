@@ -1,0 +1,109 @@
+GO3_PROGRESS {"epoch_seconds":1.789993565726e9,"event":"reserve_benders_worker_started","raw_case_parsed":false,"pid":6552,"native_backend":{"analytic_center_requested":false,"git_hash":"04024d7","library_sha256":"892447b910bab933e5fad23035f8f5c06cf25ac24f93be5b44633edb6e1bb349","root_presolve_only_requested":true,"version":"1.15.1","policy":"root_progress_guard_v1","library_path":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\environments\\highs-root-progress-build\\bin\\libhighs.dll","highs_int_bits":32,"manifest_sha256":"abb3c9ff808b89d844804cf4c987701f7055d8cdb849fd0fe48cf52ea7bed4a6","floating_point_bits":64,"objective_clique_max_size":0,"root_lp_logging_requested":true},"mode":"master","stage":"source_reserve_benders","round":1,"remaining_work_seconds":87.03933501243591}
+GO3_PROGRESS {"epoch_seconds":1.789993566323e9,"event":"cold_online_objective_ready","objective_scope":"sum_source_online_intervals_not_economics","pid":6552,"source_online_columns":1,"mode":"master","stage":"source_reserve_benders","external_start_used":false,"eliminated_zero_online_columns":0,"nonzero_master_costs":1,"round":1,"remaining_work_seconds":86.44233512878418}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789993566566e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":4.0,"pid":6552,"mode":"master","stage":"source_reserve_benders","phase":"online_construction","round":1,"remaining_work_seconds":86.1993350982666}
+ MIP      : 
+Row      : 1
+Cols      : 3
+Nonzeros  : 2
+Integer   : 1 (1 binary)
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [1e+00, 1e+00]
+  Bound   [1e+00, 1e+00]
+  RHS     [0e+00, 0e+00]
+Presolving model
+Presolve rules not allowed:
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+0 rows, 0 cols, 0 nonzeros 0s
+0 rows, 0 cols, 0 nonzeros 0s
+Presolve reductions: rows 0(-1); columns 0(-3); nonzeros 0(-2) - Reduced to empty
+MIP-Timing:       0.011 - completed presolve
+Presolve: Optimal
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   1               1                  0.00%        0      0      0         0     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1
+  Dual bound        1
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      0
+  Solution status   feasible
+                    1 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01
+                    0.01 (Presolve)
+                    0.00 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             0
+  Repair LPs        0
+  LP iterations     0
+getKktFailures:: cost norm =        1; bound norm =        1
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility        0 /        0            0 /        0            0 /        0
+
+MIP sub-solver profiling: number of threads used = 1
+
+Thread 0
+Solver                    Calls    Time       Time/call      MIP%
+MIP                           1  1.1063e-02  1.1063e-02
+GO3_PROGRESS {"epoch_seconds":1.789993566599e9,"event":"reserve_benders_solve_returned","solve_seconds":0.01114797592163086,"pid":6552,"mode":"master","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":0,"barrier_iterations":-1,"has_primal":true,"native_status":7,"solve_wall_seconds":0.012000083923339844,"phase":"online_construction","round":1,"remaining_work_seconds":86.166335105896}
+GO3_PROGRESS {"epoch_seconds":1.78999356715e9,"event":"cold_constructed_master_saved","not_yet_reserve_or_AC_verified":true,"pid":6552,"mode":"master","objective":-0.25,"stage":"source_reserve_benders","round":1,"maximum_residual":0.0,"remaining_work_seconds":85.61533498764038}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.78999356735e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":4.0,"pid":6552,"mode":"master","stage":"source_reserve_benders","phase":"fixed_commitment_cost_lp","round":1,"remaining_work_seconds":85.41533517837524}
+  LP      : 
+Row      : 1
+Cols      : 3
+Nonzeros  : 2
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [2e-01, 1e+00]
+  Bound   [1e+00, 1e+00]
+  RHS     [0e+00, 0e+00]
+Presolving model
+Presolve rules not allowed:
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+0 rows, 0 cols, 0 nonzeros 0s
+0 rows, 0 cols, 0 nonzeros 0s
+Presolve reductions: rows 0(-1); columns 0(-3); nonzeros 0(-2) - Reduced to empty
+Performed postsolve
+Solving the original LP from the solution after postsolve
+Scaling: Matrix has [min, max] values of [1, 1] within [0.2, 5] so no scaling performed
+getKktFailures:: cost norm =        0; bound norm =        1
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility        0 /        0            0 /        0            0 /        0
+getKktFailures:   dual infeasibility        0 /        0            0 /        0            0 /        0
+getKktFailures: objective gap               0
+Solution optimality conditions
+num/max      0 /        0 (relative      0 /        0) primal infeasibilities     (tolerance = 1e-09)
+num/max      0 /        0 (relative      0 /        0)   dual infeasibilities     (tolerance = 1e-09)
+                                         0 /        0  P-D objective error        (tolerance = 1e-07)
+
+Postsolve  : 0
+Time           :     0.00
+Time Pre       :     0.00
+Time OriginalLP:     0.00
+For LP                     : Presolve     0.00 (  5%)    : Postsolve     0.00 (  0%)    : Solve original LP     0.00 ( 12%)
+Strange: Solve time = 0.00142837; Sum times = 0.00025773: relative difference = 0.819563
+Model status        : Optimal
+Objective value     : -2.5000000000e-01
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00
+
+MIP sub-solver profiling: number of threads used = 1
+GO3_PROGRESS {"epoch_seconds":1.789993567353e9,"event":"reserve_benders_solve_returned","solve_seconds":0.00152587890625,"pid":6552,"mode":"master","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":0,"barrier_iterations":0,"has_primal":true,"native_status":7,"solve_wall_seconds":0.0019998550415039062,"phase":"fixed_commitment_cost_lp","round":1,"remaining_work_seconds":85.41233515739441}
+GO3_PROGRESS {"epoch_seconds":1.789993567451e9,"event":"reserve_benders_stage_complete","pid":6552,"result_sha256":"532dcc1f948d2e1fe549e51592a74bb43295332495d460dc5e4f3ab5842dfbee","mode":"master","stage":"source_reserve_benders","round":1,"remaining_work_seconds":85.31433510780334}

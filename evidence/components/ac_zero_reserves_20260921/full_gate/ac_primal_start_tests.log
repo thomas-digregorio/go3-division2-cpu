@@ -1,0 +1,20 @@
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Test Summary:                                     | Pass  Total  Time
+GO3 complete primal map and start-only projection |   13     13  0.7s
+Test Summary:                                                      | Pass  Total  Time
+GO3 primal-dual transfer preserves row identities and native signs |   68     68  8.8s
+Test Summary:                                                | Pass  Total  Time
+GO3 rounded solve allowance respects remaining work deadline |   15     15  0.0s
+Test Summary:                                                       | Pass  Total  Time
+GO3 native Ipopt consumes primal start and nonlinear residual audit |    8      8  0.2s
+Rounded shunt steps:
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":1,"policy":"legacy_tolerance_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":1.0e-8,"enforced":false,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+Test Summary:                                                | Pass  Total  Time
+GO3 fail-fast is residual-based and checkpoint precedes stop |   13     13  3.9s

@@ -1,0 +1,1 @@
+{"epoch_seconds":1.78999311871e9,"event":"reserve_benders_hour_complete","pid":22736,"mode":"recourse","hours_completed":1,"stage":"source_reserve_benders","hours_required":1,"kind":"cost","period":1,"round":2,"remaining_work_seconds":95.71959781646729}

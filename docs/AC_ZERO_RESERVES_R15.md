@@ -1,8 +1,9 @@
 # r15: exact reserve zero-domain reduction before AC optimization
 
-Status: implementation and focused checks; the complete source-matched gate and
-one separately registered cold 23,643-bus attempt are still required. This is
-not a claim that the large case now converges or passes its score target.
+Status at the pre-run freeze: implementation, focused checks and the complete
+source-matched gate passed. One separately registered cold 23,643-bus attempt
+is still required. This is not a claim that the large case now converges or
+passes its score target.
 
 ## Measured motivation
 
@@ -113,5 +114,46 @@ feasibility flags one, with independent objective agreement. Candidate SHA256:
 `2762b292c78cb7e9c934d7b066ead73344f672e30998413aec1082d28cac082f`.
 
 The no-solve structural source audit and this focused evidence are archived
-under `evidence/components/ac_zero_reserves_focused_20260921`. They do not
-replace the pending full regression gate or the required 23k full-case result.
+under `evidence/components/ac_zero_reserves_focused_20260921`. Those focused
+checks alone did not authorize the full case; the complete gate is recorded
+below. A verified 23k full-case result remains required.
+
+## Completed source-matched regression gate
+
+The single complete regression session finished successfully with exact
+evidence directory `tmp/pilot002_component_gate_iukqiizv`. It was not restarted
+after observation interruptions. The older r14 manifest was not used as proof.
+
+| Gate | Verified result |
+|---|---:|
+| Top-level stages | 89/89 passed |
+| Python tests | 169 passed |
+| Julia assertions | 16,801 passed |
+| Covered source-file fingerprints | 215 matched |
+| Top-level and nested stage-log hashes | 129 matched |
+| Nested decomposition integrations | 5/5 complete, eight stages each |
+| Full-case optimization runs performed by this gate | 0 |
+
+The integrated exact-zero pipeline passed all three AC intervals, final
+original reserve allocation, original removed-row audits and all 9/9
+independent/official contingency-hour checks. Both official feasibility flags
+are one, and independent objective agreement passed. Its objective, maximum
+residuals and candidate SHA256 match the final focused evidence above. Three
+eligible complete dual transfers were verified.
+
+Current component manifest SHA256:
+`bcba56b0d5ac2dabfbdbad2062708ac4a8eade9b763d83b254d9d99cd390a603`.
+The new complete archive is
+[`evidence/components/ac_zero_reserves_20260921`](../evidence/components/ac_zero_reserves_20260921).
+It contains 5,344 files: the main gate, five nested integrations, final focused
+development evidence, manifest and archive summary. Every copied file was
+hash-compared with its retained original, and all 5,344 staged Git blobs were
+checked against the archived working bytes. No evidence or old run was deleted.
+
+The registered r15 configuration SHA256 is
+`3461ca1c30ce434f8a274624377c74a2a30b87b973c21a0d445378113c12338f`.
+A semantic comparison with r14 confirmed only the attempt ID and the new
+exact-zero policy differ. Preflight must still check the pushed frozen commit,
+clean worktree, unused latch, current source/runtime identity and available
+RAM/disk before the single cold full-case attempt starts. Component success
+does not substitute for any of the 48-hour, exhaustive, score or time gates.

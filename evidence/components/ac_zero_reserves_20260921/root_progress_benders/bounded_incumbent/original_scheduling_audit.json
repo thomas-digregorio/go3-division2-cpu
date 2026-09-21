@@ -1,0 +1,11 @@
+{
+  "variables": 3,
+  "scope": "Original scheduling rows, bounds, integer domains and objective; not full GO3 verification",
+  "rows": 2,
+  "objective": -3.0,
+  "complete": true,
+  "pass": true,
+  "maximum_residual": 0.0,
+  "objective_agreement": true,
+  "tolerance": 1e-08
+}

@@ -1,0 +1,754 @@
+GO3_PROGRESS {"elapsed_worker_seconds":0.07400012016296387,"stage":"loading","remaining_work_seconds":164.41149377822876}
+GO3_PROGRESS {"elapsed_worker_seconds":0.690000057220459,"stage":"scheduling","remaining_work_seconds":163.79549384117126}
+GO3_SCHEDULING_MODEL {"reserve_policy":"joint_scheduling_then_full_reallocation","constraints_excluding_variable_bounds":171,"source_pq_bound_devices":0,"variables":153,"build_seconds":6.730000019073486,"include_reserves":true,"consumer_online_dominance":{"fixed_online_variables":0,"generator_commitments_changed":0,"policy":"proven_zero_minimum_consumer_online_dominance_v1","eligible_consumers":0,"source_values_changed":false,"rejected_consumers":{"d":["nonzero_online_cost","nonzero_source_pmin","online_ramp_down_can_restrict_dispatch","online_ramp_up_can_restrict_dispatch"]},"eligible_consumer_uids":[]},"source_startup_windows":{"membership":"begin-tol <= interval_start < end-tol","time_equality_tolerance":1.0e-6,"source_values_changed":false,"windows":0}}
+GO3_PROGRESS {"elapsed_scheduling_seconds":10.828999996185303,"event":"model_built","elapsed_worker_seconds":11.582000017166138,"build_seconds":6.997999906539917,"stage":"scheduling_event","remaining_work_seconds":152.9034938812256}
+GO3_PROGRESS {"elapsed_scheduling_seconds":10.891999959945679,"event":"native_handoff_begin","variables":153,"elapsed_worker_seconds":11.611999988555908,"stage":"scheduling_event","remaining_work_seconds":152.87349390983582}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+GO3_PROGRESS {"elapsed_scheduling_seconds":13.001000165939331,"event":"native_handoff_complete","constraint_inventory":{"VariableRef in MathOptInterface.ZeroOne":18,"AffExpr in MathOptInterface.EqualTo{Float64}":36,"AffExpr in MathOptInterface.GreaterThan{Float64}":39,"VariableRef in MathOptInterface.GreaterThan{Float64}":132,"VariableRef in MathOptInterface.LessThan{Float64}":96,"VariableRef in MathOptInterface.EqualTo{Float64}":9,"AffExpr in MathOptInterface.LessThan{Float64}":96},"mapped_extraction_symbols":["p","p_balance_slack_neg","p_balance_slack_pos","p_nsc","p_on_status","p_rgd","p_rgu","p_rrd_off","p_rrd_on","p_rru_off","p_rru_on","p_scr","q","q_balance_slack_neg","q_balance_slack_pos","q_qrd","q_qru"],"policy":"native_handoff_v1","scope":"Storage-only public MOI copy; no presolve or external initialization","native_mode":"DIRECT","stage":"scheduling_event","post_handoff_gc_seconds":0.28299999237060547,"rows_or_columns_eliminated":0,"source_values_changed":false,"whole_model_copy":true,"variables":153,"elapsed_worker_seconds":13.74399995803833,"cached_model_emptied":true,"handoff_seconds_before_gc":1.5980000495910645,"remaining_work_seconds":150.7414939403534}
+GO3_PROGRESS {"elapsed_scheduling_seconds":13.078999996185303,"event":"economic_solve_begin","elapsed_worker_seconds":13.776000022888184,"stage":"scheduling_event","remaining_work_seconds":150.70949387550354}
+ MIP      : 
+Rows      : 171
+Cols      : 153
+Nonzeros  : 481
+Integer   : 18 (15 binary)
+Coefficient ranges:
+  Matrix  [1e-02, 3e+00]
+  Cost    [3e-03, 1e+03]
+  Bound   [5e-01, 4e+00]
+  RHS     [5e-01, 3e+00]
+Presolving model
+Permitted suppression of presolve rules via presolve_rule_off option:
+   Rule  6 (set bit  6 =    64): Forcing row
+   Rule  7 (set bit  7 =   128): Forcing col
+   Rule  8 (set bit  8 =   256): Free col substitution
+   Rule  9 (set bit  9 =   512): Doubleton equation
+   Rule 10 (set bit 10 =  1024): Dependent equations
+   Rule 11 (set bit 11 =  2048): Dependent free columns
+   Rule 12 (set bit 12 =  4096): Aggregator
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+   Rule 14 (set bit 14 = 16384): Sparsify
+   Rule 15 (set bit 15 = 32768): Probing
+   Rule 16 (set bit 16 = 65536): Enumeration
+   Rule 17 (set bit 17 = 131072): Dual fixing
+   Rule 18 (set bit 18 = 262144): Col stuffing
+   Rule 19 (set bit 19 = 524288): Initial sweep
+68 rows, 54 cols, 177 nonzeros 0s
+57 rows, 45 cols, 168 nonzeros 0s
+Fixed 3 dominated columns and strengthened 0 bounds
+7 probing evaluations: 0 deleted rows, 0 deleted columns, 0 lifted nonzeros
+38 rows, 39 cols, 119 nonzeros 0s
+Presolve reductions: rows 38(-133); columns 39(-114); nonzeros 119(-362) 
+
+Solving MIP model with:
+   38 rows
+   39 cols (7 binary, 0 integer, 0 implied int., 32 continuous, 0 domain fixed)
+   119 nonzeros
+   Thread count 4 (of 24 threads). Using 1 max workers. Parallel search off
+Feasibility Jump: starting solve. weightUpdateDecay=1, relaxContinuous=0  
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   inf             -26.425            Large        0      0      0         0     0.0s
+ T       0       0         0   0.00%   1737.275        1732.1479          0.30%        0      0      0        12     0.0s
+         1       0         1 100.00%   1732.1479       1732.1479          0.00%        0      0      0        12     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1732.1479
+  Dual bound        1732.1479
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      0.0304255881041
+  Solution status   feasible
+                    1732.1479 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01
+                    0.00 (Presolve)
+                    0.01 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     12
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+getKktFailures:: cost norm =    1e+03; bound norm =        3
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility  5.2e-18 /  1.3e-18            0 /        0      5.2e-18 /  1.3e-18
+
+MIP sub-solver profiling: number of threads used = 1
+
+Thread 0
+Solver                    Calls    Time       Time/call      MIP%
+MIP                           1  6.5148e-03  6.5148e-03
+Du simplex (basis)            1  3.4094e-05  3.4094e-05       0.5
+Du simplex (no basis)         1  1.7595e-04  1.7595e-04       2.7
+TOTAL                            2.1005e-04                   3.2
+
+Percent (sub-)MIP time by thread
+
+MIP sub-solver            0
+Du simplex (basis)      0.5
+Du simplex (no basis)   2.7
+===========================
+Total                   3.2
+===========================
+GO3_PROGRESS {"elapsed_scheduling_seconds":13.115000009536743,"event":"economic_solve_returned","elapsed_worker_seconds":13.808000087738037,"stage":"scheduling_event","wall_seconds":0.03600001335144043,"remaining_work_seconds":150.6774938106537}
+Rounded shunt steps:
+GO3_PROGRESS {"devices":2,"final_reserve_optimization_required":true,"full_case_checks_required":true,"policy":"use_joint_schedule_unverified","external_solution_read":false,"initial_solution_verified":false,"stage":"initial_reserve_handoff","source_values_changed":false,"periods":3,"optimization_calls":0,"elapsed_worker_seconds":15.25600004196167,"source":"current_attempt_joint_schedule","reserve_fields":10,"remaining_work_seconds":149.22949385643005}
+GO3_PROGRESS {"elapsed_worker_seconds":15.338000059127808,"stage":"schedule_candidate_ready","remaining_work_seconds":149.14749383926392}
+GO3_PROGRESS {"elapsed_worker_seconds":16.6010000705719,"interval":1,"stage":"ac_optimization","interval_count":3,"remaining_work_seconds":147.88449382781982}
+GO3_AC_ZERO_DOMAINS {"variable_count":71,"solver_representation_changed":true,"dispatch_or_PMIN_modified":false,"original_row_count":185,"implied_zero_variables":2,"variables_deleted":0,"source_feasible_set_changed":false,"proof_rows":2,"interval":1,"last_original_row_maximum_residual":null,"constant_satisfied_rows_removed":15,"eligible_reserve_variables":20,"objective_changed":false,"source_parameters_changed":false,"original_row_audits":0,"passes":2,"policy":"exact_zero_reserve_domains_v1","proof_replayed":true,"scope":"Exact implied reserve fixings and reserve-related constant-row removal; original rows and domains remain mandatory in every residual audit","proof_tolerance":0.0,"seconds":0.8489999771118164,"original_exact_zero_domains":20,"floating_point_bits":64,"enabled":true,"solver_row_count":168}
+GO3_AC_INTERVAL_START {"variable_count":71,"optimization_calls":0,"cost_blocks_initialized":2,"initialization_seconds":0.753000020980835,"interval":1,"objective_changed":false,"reserve_values_initialized":20,"model_structure_changed":false,"feasibility_claimed":false,"policy":"current_schedule_preserving_restarts_v1","external_solution_read":false,"bounds_adjusted_start_assignments":2,"scope":"Complete same-attempt primal only; AC and exhaustive verification remain mandatory","complete_current_primal_vector":true,"source_devices":2,"source":"current_attempt_joint_schedule","source_bounds_changed":false}
+GO3_AC_SOLVE_BEGIN {"epoch_seconds":1.789992394282e9,"policy":"symbolic_adaptive_v1","interval":1,"phase":"continuous_shunts"}
+GO3_AC_NATIVE_INITIALIZATION {"complete_mapping":true,"maximum_relative_change_from_requested_start":1.0e-8,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":1.0e-8,"audit_seconds":0.026999950408935547,"phase":"continuous_shunt_candidate","scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":1.0,"source_bounds_changed":false}
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+This is Ipopt version 3.14.19, running with linear solver MUMPS 5.9.0.
+
+Number of nonzeros in equality constraint Jacobian...:       92
+Number of nonzeros in inequality constraint Jacobian.:       72
+Number of nonzeros in Lagrangian Hessian.............:      129
+
+Total number of variables............................:       48
+                     variables with only lower bounds:       16
+                variables with lower and upper bounds:       30
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       22
+Total number of inequality constraints...............:       29
+        inequality constraints with only lower bounds:       12
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:       14
+
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+   0  4.9499939e+02 1.00e+00 4.89e+00   0.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1  4.9499145e+02 1.00e-02 7.44e+02  -5.1 5.22e-01    -  3.96e-03 9.90e-01h  1
+   2  4.9499618e+02 9.79e-03 7.29e+02  -5.1 2.60e-02    -  2.06e-02 2.06e-02h  1
+   3  4.9499723e+02 9.30e-03 2.34e+04  -5.1 2.56e-02    -  3.69e-01 5.04e-02h  1
+   4  4.9499501e+02 4.63e-03 1.97e+04  -5.3 2.42e-02    -  6.64e-01 5.02e-01h  1
+   5  4.9499170e+02 4.63e-05 1.44e+04  -5.8 1.17e-02    -  5.59e-01 9.90e-01h  1
+   6  4.9499196e+02 4.32e-06 5.85e+04  -6.2 7.63e-03    -  9.51e-01 9.90e-01h  1
+In iteration 6, 2 Slacks too small, adjusting variable bounds
+   7  4.9499481e+02 6.05e-04 6.57e+05  -7.5 8.55e-02    -  9.00e-01 9.90e-01h  1
+   8  4.9499761e+02 2.40e-03 1.68e+06  -8.5 1.12e-01    -  7.87e-01 1.00e+00h  1
+   9  4.9499805e+02 1.19e-03 3.46e+05  -9.1 5.08e-02    -  8.08e-01 1.00e+00h  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  10  4.9499825e+02 2.87e-04 8.16e+03  -9.9 2.08e-02    -  9.78e-01 1.00e+00h  1
+  11  4.9499830e+02 2.35e-05 1.72e+02 -11.0 7.27e-03    -  9.88e-01 1.00e+00h  1
+  12  4.9499830e+02 9.62e-06 1.71e+00 -11.0 1.78e-03    -  9.90e-01 5.91e-01h  1
+  13  4.9499830e+02 1.03e-06 4.86e+01 -10.5 5.17e-01    -  1.00e+00 9.55e-01h  1
+  14  4.9499830e+02 4.54e-08 4.25e-12 -10.5 5.13e-01    -  1.00e+00 1.00e+00h  1
+  15  4.9499830e+02 4.70e-11 1.73e-14 -11.0 4.03e-03    -  1.00e+00 1.00e+00h  1
+
+Number of Iterations....: 15
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8999659359829337e+01    4.9499829679914666e+02
+Dual infeasibility......:   1.7288985965942705e-14    8.6444929829713523e-14
+Constraint violation....:   4.6960407784624181e-11    4.6960407784624181e-11
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   1.0698864019119242e-11    5.3494320095596210e-11
+Overall NLP error.......:   4.6960407784624181e-11    5.3494320095596210e-11
+
+
+Number of objective function evaluations             = 16
+Number of objective gradient evaluations             = 16
+Number of equality constraint evaluations            = 16
+Number of inequality constraint evaluations          = 16
+Number of equality constraint Jacobian evaluations   = 16
+Number of inequality constraint Jacobian evaluations = 16
+Number of Lagrangian Hessian evaluations             = 15
+Total seconds in IPOPT (w/o function evaluations)    =      0.701
+Total seconds in NLP function evaluations            =      0.066
+
+
+Timing Statistics:
+
+OverallAlgorithm....................:      0.766 (sys:      0.000 wall:      0.766)
+ PrintProblemStatistics.............:      0.000 (sys:      0.000 wall:      0.000)
+ InitializeIterates.................:      0.338 (sys:      0.000 wall:      0.338)
+ UpdateHessian......................:      0.023 (sys:      0.000 wall:      0.023)
+ OutputIteration....................:      0.000 (sys:      0.000 wall:      0.000)
+ UpdateBarrierParameter.............:      0.001 (sys:      0.000 wall:      0.003)
+ ComputeSearchDirection.............:      0.000 (sys:      0.000 wall:      0.001)
+ ComputeAcceptableTrialPoint........:      0.001 (sys:      0.000 wall:      0.001)
+ AcceptTrialPoint...................:      0.001 (sys:      0.000 wall:      0.000)
+ CheckConvergence...................:      0.402 (sys:      0.000 wall:      0.401)
+PDSystemSolverTotal.................:      0.000 (sys:      0.000 wall:      0.003)
+ PDSystemSolverSolveOnce............:      0.000 (sys:      0.000 wall:      0.002)
+ ComputeResiduals...................:      0.000 (sys:      0.000 wall:      0.000)
+ StdAugSystemSolverMultiSolve.......:      0.001 (sys:      0.000 wall:      0.003)
+ LinearSystemScaling................:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemSymbolicFactorization..:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemFactorization..........:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemBackSolve..............:      0.001 (sys:      0.000 wall:      0.001)
+ LinearSystemStructureConverter.....:      0.000 (sys:      0.000 wall:      0.000)
+  LinearSystemStructureConverterInit:      0.000 (sys:      0.000 wall:      0.000)
+QualityFunctionSearch...............:      0.001 (sys:      0.000 wall:      0.000)
+TryCorrector........................:      0.000 (sys:      0.000 wall:      0.000)
+Task1...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task2...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task3...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task4...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task5...............................:      0.001 (sys:      0.000 wall:      0.000)
+Task6...............................:      0.000 (sys:      0.000 wall:      0.000)
+Function Evaluations................:      0.066 (sys:      0.000 wall:      0.066)
+ Objective function.................:      0.013 (sys:      0.000 wall:      0.013)
+ Objective function gradient........:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraints...............:      0.001 (sys:      0.000 wall:      0.000)
+ Inequality constraints.............:      0.029 (sys:      0.000 wall:      0.029)
+ Equality constraint Jacobian.......:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraint Jacobian.....:      0.000 (sys:      0.000 wall:      0.000)
+ Lagrangian Hessian.................:      0.023 (sys:      0.000 wall:      0.023)
+
+EXIT: Optimal Solution Found.
+GO3_AC_SOLVE_RETURNED {"timing_scope":"API time includes optimizer setup; native Ipopt timings are logged separately","effective_native_evaluator":"MathOptInterface.Nonlinear.SymbolicAD.Evaluator","native_backend_confirmed":true,"source_feasible_set_changed":false,"interval":1,"model_structure_change_scope":"No further change during this numerical call; exact reserve reduction occurred before optimizer attachment","model_structure_changed":false,"policy":"symbolic_adaptive_v1","pre_solve_exact_zero_reduction":true,"mu_strategy":"adaptive","optimizer_reported_seconds":1.4110000133514404,"floating_point_bits":64,"phase":"continuous_shunts","effective_native_backend":"MathOptInterface.Nonlinear.SymbolicMode","optimize_api_wall_seconds":2.1080000400543213,"source_bounds_changed":false}
+GO3_AC_INITIALIZATION_AUDIT {"native_mapping_complete":true,"variable_count":71,"objective_window_iterations":8,"discrete_solution_claimed":false,"native_original_probe_seconds":0.004999876022338867,"native_original_row_count":51,"interval":1,"original_probe_interval":5,"certificate_scope":"continuous-shunt candidate only; not an admissible discrete solution, KKT certificate or global bound","minimum_iterations":20,"audit_only":true,"audit_count":0,"native_original_probe_count":1,"model_structure_changed":false,"native_variable_count":71,"candidate_only":true,"native_initialization_audit_requested":true,"external_solution_read":false,"policy":"verified_continuous_shunt_candidate_v1","callback_count":16,"primal_residual_limit":1.0e-8,"residual_screen":"native_original_unscaled","native_initialization":{"complete_mapping":true,"maximum_relative_change_from_requested_start":1.0e-8,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":1.0e-8,"audit_seconds":0.026999950408935547,"scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":1.0,"source_bounds_changed":false},"audit_seconds":0.0,"phase":"continuous_shunt_candidate","objective_relative_range_limit":1.0e-7,"enabled":true,"last_native_original_residual":1.0,"stop_requested":false,"source_bounds_changed":false}
+GO3_AC_PHASE {"solve_seconds":1.4110000133514404,"bound_and_gap_queried":true,"max_primal_residual":4.696040778462418e-11,"objective":494.99829679914666,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":15,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":15.0,"interval":1,"primal_status":"FEASIBLE_POINT","phase":"continuous_shunts","residual_audit_seconds":0.9980001449584961,"wall_through_audit_seconds":3.3990001678466797,"wall_seconds":2.380000114440918,"complete_finite_point":true,"relative_gap":null}
+GO3_AC_PRIMAL_START {"requested_policy":"within_interval_primal_dual_v1","policy":"within_interval_complete_v1","variable_count":71,"external_solution_read":false,"dual_start":{"options":{"warm_start_init_point":"yes","warm_start_bound_push":1.0e-8,"warm_start_slack_bound_push":1.0e-8,"warm_start_same_structure":"no","compl_inf_tol":1.0e-8,"warm_start_slack_bound_frac":1.0e-8,"warm_start_mult_bound_push":1.0e-8,"warm_start_bound_frac":1.0e-8,"mu_init":1.0e-6},"new_fixed_shunt_zero_duals":1,"largest_transferred_absolute_dual":2218.5244849404817,"reused_dual_count":166,"source":"same_interval_continuous_shunt_solve","accepted_interface_count":167,"constraint_count":167,"complete_current_mapping":true,"removed_shunt_bound_duals":2,"legacy_nonlinear_count":0},"acceptance_scope":"MOI primal attributes set and read back; installed Ipopt wrapper copies them into native x","interval":1,"source":"continuous_shunt_solve_in_same_interval_and_attempt","dual_or_basis_start":true,"bounds_adjusted_start_count":1,"dual_transfer_used":true,"accepted_interface_count":71,"complete":true,"source_bounds_changed":false,"basis_start":false}
+GO3_AC_SOLVE_BEGIN {"epoch_seconds":1.789992401791e9,"policy":"symbolic_adaptive_v1","interval":1,"phase":"rounded_shunts"}
+GO3_AC_NATIVE_INITIALIZATION {"complete_mapping":true,"maximum_relative_change_from_requested_start":9.999800000000001e-9,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":9.999800000000001e-9,"audit_seconds":0.0,"phase":"rounded_shunts","scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":0.00040070335602040985,"source_bounds_changed":false}
+This is Ipopt version 3.14.19, running with linear solver MUMPS 5.9.0.
+
+Number of nonzeros in equality constraint Jacobian...:       91
+Number of nonzeros in inequality constraint Jacobian.:       72
+Number of nonzeros in Lagrangian Hessian.............:      128
+
+Total number of variables............................:       47
+                     variables with only lower bounds:       16
+                variables with lower and upper bounds:       29
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       22
+Total number of inequality constraints...............:       29
+        inequality constraints with only lower bounds:       12
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:       14
+
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+   0  4.9499829e+02 4.01e-04 1.00e-08   0.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1  4.9499830e+02 1.61e-07 3.32e-08 -11.0 4.01e-04    -  1.00e+00 1.00e+00h  1
+In iteration 1, 2 Slacks too small, adjusting variable bounds
+   2  4.9499830e+02 2.58e-14 4.01e-07 -11.0 2.53e-03    -  1.00e+00 1.00e+00h  1
+   3  4.9499830e+02 1.97e-15 2.52e-15 -11.0 1.55e-05    -  1.00e+00 1.00e+00h  1
+
+Number of Iterations....: 3
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8999659359829323e+01    4.9499829679914660e+02
+Dual infeasibility......:   2.5210411015719192e-15    1.2605205507859596e-14
+Constraint violation....:   1.9654416982817224e-15    1.9654416982817224e-15
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   1.0000022640227239e-11    5.0000113201136193e-11
+Overall NLP error.......:   1.0000022640227239e-11    5.0000113201136193e-11
+
+
+Number of objective function evaluations             = 4
+Number of objective gradient evaluations             = 4
+Number of equality constraint evaluations            = 4
+Number of inequality constraint evaluations          = 5
+Number of equality constraint Jacobian evaluations   = 4
+Number of inequality constraint Jacobian evaluations = 4
+Number of Lagrangian Hessian evaluations             = 3
+Total seconds in IPOPT (w/o function evaluations)    =      0.001
+Total seconds in NLP function evaluations            =      0.000
+
+
+Timing Statistics:
+
+OverallAlgorithm....................:      0.001 (sys:      0.000 wall:      0.001)
+ PrintProblemStatistics.............:      0.000 (sys:      0.000 wall:      0.000)
+ InitializeIterates.................:      0.000 (sys:      0.000 wall:      0.000)
+ UpdateHessian......................:      0.000 (sys:      0.000 wall:      0.000)
+ OutputIteration....................:      0.000 (sys:      0.000 wall:      0.000)
+ UpdateBarrierParameter.............:      0.001 (sys:      0.000 wall:      0.001)
+ ComputeSearchDirection.............:      0.000 (sys:      0.000 wall:      0.000)
+ ComputeAcceptableTrialPoint........:      0.000 (sys:      0.000 wall:      0.000)
+ AcceptTrialPoint...................:      0.000 (sys:      0.000 wall:      0.000)
+ CheckConvergence...................:      0.000 (sys:      0.000 wall:      0.000)
+PDSystemSolverTotal.................:      0.001 (sys:      0.000 wall:      0.001)
+ PDSystemSolverSolveOnce............:      0.001 (sys:      0.000 wall:      0.001)
+ ComputeResiduals...................:      0.000 (sys:      0.000 wall:      0.000)
+ StdAugSystemSolverMultiSolve.......:      0.001 (sys:      0.000 wall:      0.001)
+ LinearSystemScaling................:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemSymbolicFactorization..:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemFactorization..........:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemBackSolve..............:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemStructureConverter.....:      0.000 (sys:      0.000 wall:      0.000)
+  LinearSystemStructureConverterInit:      0.000 (sys:      0.000 wall:      0.000)
+QualityFunctionSearch...............:      0.000 (sys:      0.000 wall:      0.000)
+TryCorrector........................:      0.000 (sys:      0.000 wall:      0.000)
+Task1...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task2...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task3...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task4...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task5...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task6...............................:      0.000 (sys:      0.000 wall:      0.000)
+Function Evaluations................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function.................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function gradient........:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraints...............:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraints.............:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraint Jacobian.......:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraint Jacobian.....:      0.000 (sys:      0.000 wall:      0.000)
+ Lagrangian Hessian.................:      0.000 (sys:      0.000 wall:      0.000)
+
+EXIT: Optimal Solution Found.
+GO3_AC_SOLVE_RETURNED {"timing_scope":"API time includes optimizer setup; native Ipopt timings are logged separately","effective_native_evaluator":"MathOptInterface.Nonlinear.SymbolicAD.Evaluator","native_backend_confirmed":true,"source_feasible_set_changed":false,"interval":1,"model_structure_change_scope":"No further change during this numerical call; exact reserve reduction occurred before optimizer attachment","model_structure_changed":false,"policy":"symbolic_adaptive_v1","pre_solve_exact_zero_reduction":true,"mu_strategy":"adaptive","optimizer_reported_seconds":0.003000020980834961,"floating_point_bits":64,"phase":"rounded_shunts","effective_native_backend":"MathOptInterface.Nonlinear.SymbolicMode","optimize_api_wall_seconds":0.004000186920166016,"source_bounds_changed":false}
+GO3_AC_PRIMAL_GUARD {"native_mapping_complete":true,"variable_count":71,"objective_window_iterations":8,"discrete_solution_claimed":false,"native_original_probe_seconds":0.0,"native_original_row_count":51,"interval":1,"original_probe_interval":5,"certificate_scope":"local model feasibility only; objective stagnation is heuristic; no KKT or global optimality claim","minimum_iterations":20,"audit_only":false,"audit_count":0,"native_original_probe_count":1,"model_structure_changed":false,"native_variable_count":71,"candidate_only":false,"native_initialization_audit_requested":true,"external_solution_read":false,"policy":"verified_stable_rounded_primal_v1","callback_count":4,"primal_residual_limit":1.0e-8,"residual_screen":"native_original_unscaled","native_initialization":{"complete_mapping":true,"maximum_relative_change_from_requested_start":9.999800000000001e-9,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":9.999800000000001e-9,"audit_seconds":0.0,"scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":0.00040070335602040985,"source_bounds_changed":false},"audit_seconds":0.0,"phase":"rounded_shunts","objective_relative_range_limit":1.0e-7,"enabled":true,"last_native_original_residual":0.00040070335602040985,"stop_requested":false,"source_bounds_changed":false}
+GO3_AC_PHASE {"solve_seconds":0.003000020980834961,"bound_and_gap_queried":true,"max_primal_residual":1.9654416982817224e-15,"objective":494.9982967991466,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":3,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":15.0,"interval":1,"primal_status":"FEASIBLE_POINT","phase":"rounded_shunts","residual_audit_seconds":0.01699995994567871,"wall_through_audit_seconds":0.021000146865844727,"wall_seconds":0.004000186920166016,"complete_finite_point":true,"relative_gap":null}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":1,"policy":"exact_source_intersections_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":0.0,"enforced":true,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+GO3_PROGRESS {"elapsed_worker_seconds":32.76699995994568,"interval":2,"stage":"ac_optimization","interval_count":3,"remaining_work_seconds":131.71849393844604}
+GO3_AC_ZERO_DOMAINS {"variable_count":71,"solver_representation_changed":true,"dispatch_or_PMIN_modified":false,"original_row_count":185,"implied_zero_variables":2,"variables_deleted":0,"source_feasible_set_changed":false,"proof_rows":2,"interval":2,"last_original_row_maximum_residual":null,"constant_satisfied_rows_removed":15,"eligible_reserve_variables":20,"objective_changed":false,"source_parameters_changed":false,"original_row_audits":0,"passes":2,"policy":"exact_zero_reserve_domains_v1","proof_replayed":true,"scope":"Exact implied reserve fixings and reserve-related constant-row removal; original rows and domains remain mandatory in every residual audit","proof_tolerance":0.0,"seconds":0.0009999275207519531,"original_exact_zero_domains":20,"floating_point_bits":64,"enabled":true,"solver_row_count":168}
+GO3_AC_INTERVAL_START {"source_local_residual":1.9654416982817224e-15,"source_interval":1,"current_variable_count":71,"policy":"previous_screened_interval_v1","external_solution_read":false,"complete_current_primal_vector":true,"target_interval":2,"start_model_residual":1.9654416982817224e-15,"dual_start":false,"bounds_adjusted_starts":0,"options":{"warm_start_init_point":"no","bound_push":1.0e-8,"slack_bound_push":1.0e-8,"bound_frac":1.0e-8,"mu_init":1.0e-6,"slack_bound_frac":1.0e-8},"default_or_new_values":2,"acceptance_scope":"MOI starts on complete current vector; final feasibility still requires re-solve and verification","current_cost_blocks_initialized":2,"reused_named_values":69,"source_bounds_changed":false}
+GO3_AC_SOLVE_BEGIN {"epoch_seconds":1.789992403051e9,"policy":"symbolic_adaptive_v1","interval":2,"phase":"continuous_shunts"}
+GO3_AC_NATIVE_INITIALIZATION {"complete_mapping":true,"maximum_relative_change_from_requested_start":1.0e-8,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":1.0e-8,"audit_seconds":0.0,"phase":"continuous_shunt_candidate","scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":9.99999993922529e-9,"source_bounds_changed":false}
+This is Ipopt version 3.14.19, running with linear solver MUMPS 5.9.0.
+
+Number of nonzeros in equality constraint Jacobian...:       92
+Number of nonzeros in inequality constraint Jacobian.:       72
+Number of nonzeros in Lagrangian Hessian.............:      129
+
+Total number of variables............................:       48
+                     variables with only lower bounds:       16
+                variables with lower and upper bounds:       30
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       22
+Total number of inequality constraints...............:       29
+        inequality constraints with only lower bounds:       12
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:       14
+
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+   0  9.8999657e+02 1.00e-08 4.89e+00   0.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1  9.8998844e+02 5.05e-09 3.70e+02  -5.1 4.22e-05    -  7.87e-03 4.95e-01f  2
+   2  6.4023732e+02 2.68e-02 3.86e+07   0.8 2.58e+01    -  1.86e-06 3.23e-02f  1
+   3  5.3823071e+02 2.44e-02 6.25e+06   0.8 1.24e+01    -  5.91e-02 2.35e-02f  1
+   4  1.7056805e+02 3.72e-02 2.84e+08   0.8 6.07e+00    -  3.60e-01 1.39e-01f  1
+   5 -5.3120228e+02 2.79e-03 3.01e+08   0.8 6.24e+00    -  8.84e-01 7.31e-01f  1
+   6 -4.4229675e+02 5.04e-04 2.41e+08   0.8 8.21e+00    -  9.45e-01 9.90e-01h  1
+   7 -4.4438835e+02 4.12e-06 5.44e+09   0.8 2.11e+00    -  1.00e+00 9.90e-01h  1
+   8  7.8470358e+02 3.30e-08 1.09e+11   0.1 9.46e+00    -  1.00e+00 9.90e-01f  1
+In iteration 8, 2 Slacks too small, adjusting variable bounds
+   9  7.5046223e+02 6.38e-09 1.08e+13   0.1 1.41e-01    -  1.00e+00 9.90e-01f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  10  7.4982987e+02 1.13e-09 1.21e-05   0.1 2.66e-02    -  1.00e+00 1.00e+00h  1
+  11  9.4770025e+02 1.08e-08 5.01e+11  -0.6 1.58e+00    -  9.45e-01 8.90e-01f  1
+  12  9.4967053e+02 5.77e-08 4.88e-04  -0.6 1.49e-01    -  1.00e+00 1.00e+00f  1
+  13  9.8351833e+02 1.39e-07 4.87e+10  -1.3 1.93e-01    -  1.00e+00 9.73e-01f  1
+  14  9.8258118e+02 2.16e-06 2.89e-05  -1.3 5.14e-02    -  1.00e+00 1.00e+00f  1
+  15  9.8855767e+02 3.10e-06 1.68e-04  -2.0 3.86e-02    -  1.00e+00 1.00e+00f  1
+  16  9.8979421e+02 9.59e-05 8.24e+08  -3.0 9.88e-02    -  9.83e-01 9.93e-01f  1
+  17  9.8982472e+02 5.86e-04 4.71e-03  -3.0 3.20e-01    -  1.00e+00 1.00e+00h  1
+  18  9.8982178e+02 1.83e-05 3.43e-04  -3.0 2.17e-02    -  1.00e+00 1.00e+00h  1
+  19  9.8996561e+02 2.58e-04 1.34e+09  -4.5 3.03e-01    -  8.08e-01 9.61e-01h  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  20  9.8998448e+02 4.47e-04 1.80e+08  -4.5 5.37e-01    -  8.93e-01 1.00e+00h  1
+  21  9.8998833e+02 3.60e-04 7.70e-04  -4.5 6.04e-01    -  1.00e+00 1.00e+00h  1
+  22  9.8998819e+02 2.31e-05 4.59e-06  -4.5 3.18e-02    -  1.00e+00 1.00e+00h  1
+  23  9.8999563e+02 3.75e-04 7.37e+07  -6.8 4.72e-01    -  6.76e-01 9.44e-01h  1
+  24  9.8999626e+02 1.98e-04 6.22e+06  -6.8 6.34e-02    -  8.72e-01 6.63e-01h  1
+  25  9.8999651e+02 8.07e-05 7.11e+05  -6.8 1.94e-02    -  1.00e+00 8.63e-01h  1
+  26  9.8999655e+02 1.79e-06 5.39e-07  -6.8 3.39e-03    -  1.00e+00 1.00e+00h  1
+  27  9.8999655e+02 1.21e-08 3.55e-11  -6.8 7.48e-04    -  1.00e+00 1.00e+00h  1
+  28  9.8999659e+02 9.76e-08 2.25e+05 -10.0 1.59e-03    -  9.97e-01 8.46e-01h  1
+  29  9.8999659e+02 4.58e-10 9.20e-09 -10.0 2.63e-04    -  1.00e+00 1.00e+00h  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  30  9.8999659e+02 2.75e-13 3.58e-13 -11.0 2.66e-06    -  1.00e+00 1.00e+00h  1
+
+Number of Iterations....: 30
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8999659359829622e+01    9.8999659359829616e+02
+Dual infeasibility......:   3.5764163990295505e-13    3.5764163990295505e-12
+Constraint violation....:   2.7494499732494404e-13    2.7494499732494404e-13
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   1.0330446535069008e-11    1.0330446535069008e-10
+Overall NLP error.......:   1.0330446535069008e-11    1.0330446535069008e-10
+
+
+Number of objective function evaluations             = 32
+Number of objective gradient evaluations             = 31
+Number of equality constraint evaluations            = 32
+Number of inequality constraint evaluations          = 32
+Number of equality constraint Jacobian evaluations   = 31
+Number of inequality constraint Jacobian evaluations = 31
+Number of Lagrangian Hessian evaluations             = 30
+Total seconds in IPOPT (w/o function evaluations)    =      0.006
+Total seconds in NLP function evaluations            =      0.000
+
+
+Timing Statistics:
+
+OverallAlgorithm....................:      0.007 (sys:      0.000 wall:      0.007)
+ PrintProblemStatistics.............:      0.000 (sys:      0.000 wall:      0.000)
+ InitializeIterates.................:      0.000 (sys:      0.000 wall:      0.000)
+ UpdateHessian......................:      0.000 (sys:      0.000 wall:      0.000)
+ OutputIteration....................:      0.000 (sys:      0.000 wall:      0.000)
+ UpdateBarrierParameter.............:      0.000 (sys:      0.000 wall:      0.000)
+ ComputeSearchDirection.............:      0.005 (sys:      0.000 wall:      0.004)
+ ComputeAcceptableTrialPoint........:      0.001 (sys:      0.000 wall:      0.001)
+ AcceptTrialPoint...................:      0.000 (sys:      0.000 wall:      0.000)
+ CheckConvergence...................:      0.001 (sys:      0.000 wall:      0.001)
+PDSystemSolverTotal.................:      0.004 (sys:      0.000 wall:      0.004)
+ PDSystemSolverSolveOnce............:      0.004 (sys:      0.000 wall:      0.004)
+ ComputeResiduals...................:      0.000 (sys:      0.000 wall:      0.000)
+ StdAugSystemSolverMultiSolve.......:      0.004 (sys:      0.000 wall:      0.004)
+ LinearSystemScaling................:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemSymbolicFactorization..:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemFactorization..........:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemBackSolve..............:      0.001 (sys:      0.000 wall:      0.001)
+ LinearSystemStructureConverter.....:      0.000 (sys:      0.000 wall:      0.000)
+  LinearSystemStructureConverterInit:      0.000 (sys:      0.000 wall:      0.000)
+QualityFunctionSearch...............:      0.000 (sys:      0.000 wall:      0.000)
+TryCorrector........................:      0.000 (sys:      0.000 wall:      0.000)
+Task1...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task2...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task3...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task4...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task5...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task6...............................:      0.000 (sys:      0.000 wall:      0.000)
+Function Evaluations................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function.................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function gradient........:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraints...............:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraints.............:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraint Jacobian.......:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraint Jacobian.....:      0.000 (sys:      0.000 wall:      0.000)
+ Lagrangian Hessian.................:      0.000 (sys:      0.000 wall:      0.000)
+
+EXIT: Optimal Solution Found.
+GO3_AC_SOLVE_RETURNED {"timing_scope":"API time includes optimizer setup; native Ipopt timings are logged separately","effective_native_evaluator":"MathOptInterface.Nonlinear.SymbolicAD.Evaluator","native_backend_confirmed":true,"source_feasible_set_changed":false,"interval":2,"model_structure_change_scope":"No further change during this numerical call; exact reserve reduction occurred before optimizer attachment","model_structure_changed":false,"policy":"symbolic_adaptive_v1","pre_solve_exact_zero_reduction":true,"mu_strategy":"adaptive","optimizer_reported_seconds":0.009000062942504883,"floating_point_bits":64,"phase":"continuous_shunts","effective_native_backend":"MathOptInterface.Nonlinear.SymbolicMode","optimize_api_wall_seconds":0.009999990463256836,"source_bounds_changed":false}
+GO3_AC_INITIALIZATION_AUDIT {"native_mapping_complete":true,"variable_count":71,"objective_window_iterations":8,"discrete_solution_claimed":false,"native_original_probe_seconds":0.0010001659393310547,"native_original_row_count":51,"interval":2,"original_probe_interval":5,"certificate_scope":"continuous-shunt candidate only; not an admissible discrete solution, KKT certificate or global bound","minimum_iterations":20,"audit_only":true,"audit_count":0,"native_original_probe_count":1,"model_structure_changed":false,"native_variable_count":71,"candidate_only":true,"native_initialization_audit_requested":true,"external_solution_read":false,"policy":"verified_continuous_shunt_candidate_v1","callback_count":31,"primal_residual_limit":1.0e-8,"residual_screen":"native_original_unscaled","native_initialization":{"complete_mapping":true,"maximum_relative_change_from_requested_start":1.0e-8,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":1.0e-8,"audit_seconds":0.0,"scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":9.99999993922529e-9,"source_bounds_changed":false},"audit_seconds":0.0,"phase":"continuous_shunt_candidate","objective_relative_range_limit":1.0e-7,"enabled":true,"last_native_original_residual":9.99999993922529e-9,"stop_requested":false,"source_bounds_changed":false}
+GO3_AC_PHASE {"solve_seconds":0.009000062942504883,"bound_and_gap_queried":true,"max_primal_residual":2.7494499732494404e-13,"objective":989.9965935982962,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":30,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":10.0,"interval":2,"primal_status":"FEASIBLE_POINT","phase":"continuous_shunts","residual_audit_seconds":0.0009999275207519531,"wall_through_audit_seconds":0.010999917984008789,"wall_seconds":0.009999990463256836,"complete_finite_point":true,"relative_gap":null}
+GO3_AC_PRIMAL_START {"requested_policy":"within_interval_primal_dual_v1","policy":"within_interval_complete_v1","variable_count":71,"external_solution_read":false,"dual_start":{"options":{"warm_start_init_point":"yes","warm_start_bound_push":1.0e-8,"warm_start_slack_bound_push":1.0e-8,"warm_start_same_structure":"no","compl_inf_tol":1.0e-8,"warm_start_slack_bound_frac":1.0e-8,"warm_start_mult_bound_push":1.0e-8,"warm_start_bound_frac":1.0e-8,"mu_init":1.0e-6},"new_fixed_shunt_zero_duals":1,"largest_transferred_absolute_dual":1020.023075259031,"reused_dual_count":166,"source":"same_interval_continuous_shunt_solve","accepted_interface_count":167,"constraint_count":167,"complete_current_mapping":true,"removed_shunt_bound_duals":2,"legacy_nonlinear_count":0},"acceptance_scope":"MOI primal attributes set and read back; installed Ipopt wrapper copies them into native x","interval":2,"source":"continuous_shunt_solve_in_same_interval_and_attempt","dual_or_basis_start":true,"bounds_adjusted_start_count":1,"dual_transfer_used":true,"accepted_interface_count":71,"complete":true,"source_bounds_changed":false,"basis_start":false}
+GO3_AC_SOLVE_BEGIN {"epoch_seconds":1.789992403063e9,"policy":"symbolic_adaptive_v1","interval":2,"phase":"rounded_shunts"}
+GO3_AC_NATIVE_INITIALIZATION {"complete_mapping":true,"maximum_relative_change_from_requested_start":9.999800000000004e-9,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":9.999800000000004e-9,"audit_seconds":0.0,"phase":"rounded_shunts","scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":0.0006427103081159263,"source_bounds_changed":false}
+This is Ipopt version 3.14.19, running with linear solver MUMPS 5.9.0.
+
+Number of nonzeros in equality constraint Jacobian...:       91
+Number of nonzeros in inequality constraint Jacobian.:       72
+Number of nonzeros in Lagrangian Hessian.............:      128
+
+Total number of variables............................:       47
+                     variables with only lower bounds:       16
+                variables with lower and upper bounds:       29
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       22
+Total number of inequality constraints...............:       29
+        inequality constraints with only lower bounds:       12
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:       14
+
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+   0  9.8999657e+02 6.43e-04 1.00e-08   0.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1  9.8999659e+02 4.13e-07 3.32e-08 -11.0 6.43e-04    -  9.99e-01 9.99e-01h  1
+In iteration 1, 2 Slacks too small, adjusting variable bounds
+   2  9.8999659e+02 1.71e-13 6.43e-07 -11.0 5.19e-07    -  1.00e+00 1.00e+00h  1
+   3  9.8999659e+02 1.36e-15 2.39e-15 -11.0 5.97e-08    -  1.00e+00 1.00e+00h  1
+
+Number of Iterations....: 3
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8999659359829323e+01    9.8999659359829320e+02
+Dual infeasibility......:   2.3902321094615431e-15    2.3902321094615431e-14
+Constraint violation....:   1.3565537582138631e-15    1.3565537582138631e-15
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   1.0000105184997060e-11    1.0000105184997060e-10
+Overall NLP error.......:   1.0000105184997060e-11    1.0000105184997060e-10
+
+
+Number of objective function evaluations             = 4
+Number of objective gradient evaluations             = 4
+Number of equality constraint evaluations            = 4
+Number of inequality constraint evaluations          = 5
+Number of equality constraint Jacobian evaluations   = 4
+Number of inequality constraint Jacobian evaluations = 4
+Number of Lagrangian Hessian evaluations             = 3
+Total seconds in IPOPT (w/o function evaluations)    =      0.001
+Total seconds in NLP function evaluations            =      0.000
+
+
+Timing Statistics:
+
+OverallAlgorithm....................:      0.002 (sys:      0.000 wall:      0.001)
+ PrintProblemStatistics.............:      0.000 (sys:      0.000 wall:      0.000)
+ InitializeIterates.................:      0.001 (sys:      0.000 wall:      0.000)
+ UpdateHessian......................:      0.000 (sys:      0.000 wall:      0.000)
+ OutputIteration....................:      0.000 (sys:      0.000 wall:      0.000)
+ UpdateBarrierParameter.............:      0.001 (sys:      0.000 wall:      0.001)
+ ComputeSearchDirection.............:      0.000 (sys:      0.000 wall:      0.000)
+ ComputeAcceptableTrialPoint........:      0.000 (sys:      0.000 wall:      0.000)
+ AcceptTrialPoint...................:      0.000 (sys:      0.000 wall:      0.000)
+ CheckConvergence...................:      0.000 (sys:      0.000 wall:      0.000)
+PDSystemSolverTotal.................:      0.001 (sys:      0.000 wall:      0.001)
+ PDSystemSolverSolveOnce............:      0.001 (sys:      0.000 wall:      0.001)
+ ComputeResiduals...................:      0.000 (sys:      0.000 wall:      0.000)
+ StdAugSystemSolverMultiSolve.......:      0.001 (sys:      0.000 wall:      0.001)
+ LinearSystemScaling................:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemSymbolicFactorization..:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemFactorization..........:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemBackSolve..............:      0.001 (sys:      0.000 wall:      0.000)
+ LinearSystemStructureConverter.....:      0.000 (sys:      0.000 wall:      0.000)
+  LinearSystemStructureConverterInit:      0.000 (sys:      0.000 wall:      0.000)
+QualityFunctionSearch...............:      0.000 (sys:      0.000 wall:      0.000)
+TryCorrector........................:      0.000 (sys:      0.000 wall:      0.000)
+Task1...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task2...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task3...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task4...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task5...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task6...............................:      0.000 (sys:      0.000 wall:      0.000)
+Function Evaluations................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function.................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function gradient........:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraints...............:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraints.............:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraint Jacobian.......:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraint Jacobian.....:      0.000 (sys:      0.000 wall:      0.000)
+ Lagrangian Hessian.................:      0.000 (sys:      0.000 wall:      0.000)
+
+EXIT: Optimal Solution Found.
+GO3_AC_SOLVE_RETURNED {"timing_scope":"API time includes optimizer setup; native Ipopt timings are logged separately","effective_native_evaluator":"MathOptInterface.Nonlinear.SymbolicAD.Evaluator","native_backend_confirmed":true,"source_feasible_set_changed":false,"interval":2,"model_structure_change_scope":"No further change during this numerical call; exact reserve reduction occurred before optimizer attachment","model_structure_changed":false,"policy":"symbolic_adaptive_v1","pre_solve_exact_zero_reduction":true,"mu_strategy":"adaptive","optimizer_reported_seconds":0.003000020980834961,"floating_point_bits":64,"phase":"rounded_shunts","effective_native_backend":"MathOptInterface.Nonlinear.SymbolicMode","optimize_api_wall_seconds":0.003000020980834961,"source_bounds_changed":false}
+GO3_AC_PRIMAL_GUARD {"native_mapping_complete":true,"variable_count":71,"objective_window_iterations":8,"discrete_solution_claimed":false,"native_original_probe_seconds":0.0,"native_original_row_count":51,"interval":2,"original_probe_interval":5,"certificate_scope":"local model feasibility only; objective stagnation is heuristic; no KKT or global optimality claim","minimum_iterations":20,"audit_only":false,"audit_count":0,"native_original_probe_count":1,"model_structure_changed":false,"native_variable_count":71,"candidate_only":false,"native_initialization_audit_requested":true,"external_solution_read":false,"policy":"verified_stable_rounded_primal_v1","callback_count":4,"primal_residual_limit":1.0e-8,"residual_screen":"native_original_unscaled","native_initialization":{"complete_mapping":true,"maximum_relative_change_from_requested_start":9.999800000000004e-9,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":9.999800000000004e-9,"audit_seconds":0.0,"scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":0.0006427103081159263,"source_bounds_changed":false},"audit_seconds":0.0,"phase":"rounded_shunts","objective_relative_range_limit":1.0e-7,"enabled":true,"last_native_original_residual":0.0006427103081159263,"stop_requested":false,"source_bounds_changed":false}
+GO3_AC_PHASE {"solve_seconds":0.003000020980834961,"bound_and_gap_queried":true,"max_primal_residual":3.1329105976141136e-15,"objective":989.9965935982932,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":3,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":15.0,"interval":2,"primal_status":"FEASIBLE_POINT","phase":"rounded_shunts","residual_audit_seconds":0.0009999275207519531,"wall_through_audit_seconds":0.003999948501586914,"wall_seconds":0.003000020980834961,"complete_finite_point":true,"relative_gap":null}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":2,"policy":"exact_source_intersections_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":0.0,"enforced":true,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+GO3_PROGRESS {"elapsed_worker_seconds":33.19000005722046,"interval":3,"stage":"ac_optimization","interval_count":3,"remaining_work_seconds":131.29549384117126}
+GO3_AC_ZERO_DOMAINS {"variable_count":71,"solver_representation_changed":true,"dispatch_or_PMIN_modified":false,"original_row_count":185,"implied_zero_variables":2,"variables_deleted":0,"source_feasible_set_changed":false,"proof_rows":2,"interval":3,"last_original_row_maximum_residual":null,"constant_satisfied_rows_removed":15,"eligible_reserve_variables":20,"objective_changed":false,"source_parameters_changed":false,"original_row_audits":0,"passes":2,"policy":"exact_zero_reserve_domains_v1","proof_replayed":true,"scope":"Exact implied reserve fixings and reserve-related constant-row removal; original rows and domains remain mandatory in every residual audit","proof_tolerance":0.0,"seconds":0.0,"original_exact_zero_domains":20,"floating_point_bits":64,"enabled":true,"solver_row_count":168}
+GO3_AC_INTERVAL_START {"source_local_residual":3.1329105976141136e-15,"source_interval":2,"current_variable_count":71,"policy":"previous_screened_interval_v1","external_solution_read":false,"complete_current_primal_vector":true,"target_interval":3,"start_model_residual":3.1329105976141136e-15,"dual_start":false,"bounds_adjusted_starts":0,"options":{"warm_start_init_point":"no","bound_push":1.0e-8,"slack_bound_push":1.0e-8,"bound_frac":1.0e-8,"mu_init":1.0e-6,"slack_bound_frac":1.0e-8},"default_or_new_values":2,"acceptance_scope":"MOI starts on complete current vector; final feasibility still requires re-solve and verification","current_cost_blocks_initialized":2,"reused_named_values":69,"source_bounds_changed":false}
+GO3_AC_SOLVE_BEGIN {"epoch_seconds":1.789992403073e9,"policy":"symbolic_adaptive_v1","interval":3,"phase":"continuous_shunts"}
+GO3_AC_NATIVE_INITIALIZATION {"complete_mapping":true,"maximum_relative_change_from_requested_start":1.0e-8,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":1.0e-8,"audit_seconds":0.0,"phase":"continuous_shunt_candidate","scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":9.99999993922529e-9,"source_bounds_changed":false}
+This is Ipopt version 3.14.19, running with linear solver MUMPS 5.9.0.
+
+Number of nonzeros in equality constraint Jacobian...:       92
+Number of nonzeros in inequality constraint Jacobian.:       72
+Number of nonzeros in Lagrangian Hessian.............:      129
+
+Total number of variables............................:       48
+                     variables with only lower bounds:       16
+                variables with lower and upper bounds:       30
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       22
+Total number of inequality constraints...............:       29
+        inequality constraints with only lower bounds:       12
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:       14
+
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+   0  2.4749914e+02 1.00e-08 4.89e+00   0.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1  2.4749711e+02 5.05e-09 3.69e+02  -5.1 4.21e-05    -  7.89e-03 4.95e-01f  2
+   2  1.6009711e+02 2.68e-02 3.86e+07   0.8 2.57e+01    -  1.86e-06 3.24e-02f  1
+   3  1.3467776e+02 2.44e-02 6.25e+06   0.8 1.24e+01    -  5.93e-02 2.36e-02f  1
+   4  4.2923918e+01 3.72e-02 2.84e+08   0.8 6.05e+00    -  3.60e-01 1.39e-01f  1
+   5 -1.3189153e+02 2.86e-03 3.01e+08   0.8 6.23e+00    -  8.86e-01 7.32e-01f  1
+   6 -1.0976162e+02 5.10e-04 2.25e+08   0.8 8.17e+00    -  9.48e-01 9.90e-01h  1
+   7 -1.1023303e+02 4.15e-06 5.46e+09   0.8 2.10e+00    -  1.00e+00 9.90e-01h  1
+   8  1.9630012e+02 3.27e-08 1.09e+11   0.1 9.44e+00    -  1.00e+00 9.90e-01f  1
+In iteration 8, 2 Slacks too small, adjusting variable bounds
+   9  1.8777338e+02 6.47e-09 1.08e+13   0.1 1.42e-01    -  1.00e+00 9.90e-01f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  10  1.8761144e+02 1.13e-09 1.20e-05   0.1 2.65e-02    -  1.00e+00 1.00e+00h  1
+  11  2.3695024e+02 1.08e-08 5.06e+11  -0.6 1.58e+00    -  9.45e-01 8.90e-01f  1
+  12  2.3744101e+02 5.77e-08 9.17e-05  -0.6 1.49e-01    -  1.00e+00 1.00e+00f  1
+  13  2.4588520e+02 1.38e-07 4.83e+10  -1.3 1.92e-01    -  1.00e+00 9.74e-01f  1
+  14  2.4564946e+02 2.15e-06 1.79e-05  -1.3 5.12e-02    -  1.00e+00 1.00e+00f  1
+  15  2.4714016e+02 3.09e-06 6.59e-05  -2.0 3.85e-02    -  1.00e+00 1.00e+00f  1
+  16  2.4744864e+02 9.57e-05 8.16e+08  -3.0 9.88e-02    -  9.83e-01 9.93e-01f  1
+  17  2.4745631e+02 5.85e-04 4.71e-03  -3.0 3.20e-01    -  1.00e+00 1.00e+00h  1
+  18  2.4745557e+02 1.85e-05 3.47e-04  -3.0 2.16e-02    -  1.00e+00 1.00e+00h  1
+  19  2.4749142e+02 2.57e-04 1.34e+09  -4.5 3.03e-01    -  8.07e-01 9.61e-01h  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  20  2.4749613e+02 4.47e-04 1.82e+08  -4.5 5.36e-01    -  8.92e-01 1.00e+00h  1
+  21  2.4749709e+02 3.60e-04 7.69e-04  -4.5 6.05e-01    -  1.00e+00 1.00e+00h  1
+  22  2.4749706e+02 2.34e-05 4.55e-06  -4.5 3.11e-02    -  1.00e+00 1.00e+00h  1
+  23  2.4749891e+02 3.75e-04 7.36e+07  -6.8 4.71e-01    -  6.77e-01 9.44e-01h  1
+  24  2.4749907e+02 1.98e-04 6.19e+06  -6.8 6.09e-02    -  8.72e-01 6.64e-01h  1
+  25  2.4749913e+02 7.97e-05 7.01e+05  -6.8 1.92e-02    -  1.00e+00 8.64e-01h  1
+  26  2.4749914e+02 1.73e-06 5.18e-07  -6.8 3.33e-03    -  1.00e+00 1.00e+00h  1
+  27  2.4749914e+02 1.19e-08 3.41e-11  -6.8 7.33e-04    -  1.00e+00 1.00e+00h  1
+  28  2.4749915e+02 9.60e-08 2.25e+05 -10.0 1.58e-03    -  9.97e-01 8.46e-01h  1
+  29  2.4749915e+02 4.52e-10 9.08e-09 -10.0 2.61e-04    -  1.00e+00 1.00e+00h  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  30  2.4749915e+02 2.64e-13 3.52e-13 -11.0 2.63e-06    -  1.00e+00 1.00e+00h  1
+
+Number of Iterations....: 30
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8999659359829622e+01    2.4749914839957404e+02
+Dual infeasibility......:   3.5226379105357530e-13    8.8065947763393826e-13
+Constraint violation....:   2.6413073117570463e-13    2.6413073117570463e-13
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   1.0324888279435640e-11    2.5812220698589096e-11
+Overall NLP error.......:   1.0324888279435640e-11    2.5812220698589096e-11
+
+
+Number of objective function evaluations             = 32
+Number of objective gradient evaluations             = 31
+Number of equality constraint evaluations            = 32
+Number of inequality constraint evaluations          = 32
+Number of equality constraint Jacobian evaluations   = 31
+Number of inequality constraint Jacobian evaluations = 31
+Number of Lagrangian Hessian evaluations             = 30
+Total seconds in IPOPT (w/o function evaluations)    =      0.006
+Total seconds in NLP function evaluations            =      0.000
+
+
+Timing Statistics:
+
+OverallAlgorithm....................:      0.007 (sys:      0.000 wall:      0.007)
+ PrintProblemStatistics.............:      0.000 (sys:      0.000 wall:      0.000)
+ InitializeIterates.................:      0.001 (sys:      0.000 wall:      0.000)
+ UpdateHessian......................:      0.000 (sys:      0.000 wall:      0.000)
+ OutputIteration....................:      0.000 (sys:      0.000 wall:      0.000)
+ UpdateBarrierParameter.............:      0.001 (sys:      0.000 wall:      0.000)
+ ComputeSearchDirection.............:      0.004 (sys:      0.000 wall:      0.004)
+ ComputeAcceptableTrialPoint........:      0.000 (sys:      0.000 wall:      0.001)
+ AcceptTrialPoint...................:      0.001 (sys:      0.000 wall:      0.000)
+ CheckConvergence...................:      0.000 (sys:      0.000 wall:      0.001)
+PDSystemSolverTotal.................:      0.005 (sys:      0.000 wall:      0.004)
+ PDSystemSolverSolveOnce............:      0.005 (sys:      0.000 wall:      0.003)
+ ComputeResiduals...................:      0.000 (sys:      0.000 wall:      0.000)
+ StdAugSystemSolverMultiSolve.......:      0.006 (sys:      0.000 wall:      0.004)
+ LinearSystemScaling................:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemSymbolicFactorization..:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemFactorization..........:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemBackSolve..............:      0.002 (sys:      0.000 wall:      0.001)
+ LinearSystemStructureConverter.....:      0.000 (sys:      0.000 wall:      0.000)
+  LinearSystemStructureConverterInit:      0.000 (sys:      0.000 wall:      0.000)
+QualityFunctionSearch...............:      0.000 (sys:      0.000 wall:      0.000)
+TryCorrector........................:      0.000 (sys:      0.000 wall:      0.000)
+Task1...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task2...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task3...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task4...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task5...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task6...............................:      0.000 (sys:      0.000 wall:      0.000)
+Function Evaluations................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function.................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function gradient........:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraints...............:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraints.............:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraint Jacobian.......:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraint Jacobian.....:      0.000 (sys:      0.000 wall:      0.000)
+ Lagrangian Hessian.................:      0.000 (sys:      0.000 wall:      0.000)
+
+EXIT: Optimal Solution Found.
+GO3_AC_SOLVE_RETURNED {"timing_scope":"API time includes optimizer setup; native Ipopt timings are logged separately","effective_native_evaluator":"MathOptInterface.Nonlinear.SymbolicAD.Evaluator","native_backend_confirmed":true,"source_feasible_set_changed":false,"interval":3,"model_structure_change_scope":"No further change during this numerical call; exact reserve reduction occurred before optimizer attachment","model_structure_changed":false,"policy":"symbolic_adaptive_v1","pre_solve_exact_zero_reduction":true,"mu_strategy":"adaptive","optimizer_reported_seconds":0.009000062942504883,"floating_point_bits":64,"phase":"continuous_shunts","effective_native_backend":"MathOptInterface.Nonlinear.SymbolicMode","optimize_api_wall_seconds":0.009000062942504883,"source_bounds_changed":false}
+GO3_AC_INITIALIZATION_AUDIT {"native_mapping_complete":true,"variable_count":71,"objective_window_iterations":8,"discrete_solution_claimed":false,"native_original_probe_seconds":0.0,"native_original_row_count":51,"interval":3,"original_probe_interval":5,"certificate_scope":"continuous-shunt candidate only; not an admissible discrete solution, KKT certificate or global bound","minimum_iterations":20,"audit_only":true,"audit_count":0,"native_original_probe_count":1,"model_structure_changed":false,"native_variable_count":71,"candidate_only":true,"native_initialization_audit_requested":true,"external_solution_read":false,"policy":"verified_continuous_shunt_candidate_v1","callback_count":31,"primal_residual_limit":1.0e-8,"residual_screen":"native_original_unscaled","native_initialization":{"complete_mapping":true,"maximum_relative_change_from_requested_start":1.0e-8,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":1.0e-8,"audit_seconds":0.0,"scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":9.99999993922529e-9,"source_bounds_changed":false},"audit_seconds":0.0,"phase":"continuous_shunt_candidate","objective_relative_range_limit":1.0e-7,"enabled":true,"last_native_original_residual":9.99999993922529e-9,"stop_requested":false,"source_bounds_changed":false}
+GO3_AC_PHASE {"solve_seconds":0.009000062942504883,"bound_and_gap_queried":true,"max_primal_residual":2.641307311757046e-13,"objective":247.49914839957404,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":30,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":10.0,"interval":3,"primal_status":"FEASIBLE_POINT","phase":"continuous_shunts","residual_audit_seconds":0.0009999275207519531,"wall_through_audit_seconds":0.009999990463256836,"wall_seconds":0.009000062942504883,"complete_finite_point":true,"relative_gap":null}
+GO3_AC_PRIMAL_START {"requested_policy":"within_interval_primal_dual_v1","policy":"within_interval_complete_v1","variable_count":71,"external_solution_read":false,"dual_start":{"options":{"warm_start_init_point":"yes","warm_start_bound_push":1.0e-8,"warm_start_slack_bound_push":1.0e-8,"warm_start_same_structure":"no","compl_inf_tol":1.0e-8,"warm_start_slack_bound_frac":1.0e-8,"warm_start_mult_bound_push":1.0e-8,"warm_start_bound_frac":1.0e-8,"mu_init":1.0e-6},"new_fixed_shunt_zero_duals":1,"largest_transferred_absolute_dual":255.00576881477662,"reused_dual_count":166,"source":"same_interval_continuous_shunt_solve","accepted_interface_count":167,"constraint_count":167,"complete_current_mapping":true,"removed_shunt_bound_duals":2,"legacy_nonlinear_count":0},"acceptance_scope":"MOI primal attributes set and read back; installed Ipopt wrapper copies them into native x","interval":3,"source":"continuous_shunt_solve_in_same_interval_and_attempt","dual_or_basis_start":true,"bounds_adjusted_start_count":1,"dual_transfer_used":true,"accepted_interface_count":71,"complete":true,"source_bounds_changed":false,"basis_start":false}
+GO3_AC_SOLVE_BEGIN {"epoch_seconds":1.789992403083e9,"policy":"symbolic_adaptive_v1","interval":3,"phase":"rounded_shunts"}
+GO3_AC_NATIVE_INITIALIZATION {"complete_mapping":true,"maximum_relative_change_from_requested_start":9.999800000000004e-9,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":9.999800000000004e-9,"audit_seconds":0.0,"phase":"rounded_shunts","scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":0.0006427117469422483,"source_bounds_changed":false}
+This is Ipopt version 3.14.19, running with linear solver MUMPS 5.9.0.
+
+Number of nonzeros in equality constraint Jacobian...:       91
+Number of nonzeros in inequality constraint Jacobian.:       72
+Number of nonzeros in Lagrangian Hessian.............:      128
+
+Total number of variables............................:       47
+                     variables with only lower bounds:       16
+                variables with lower and upper bounds:       29
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:       22
+Total number of inequality constraints...............:       29
+        inequality constraints with only lower bounds:       12
+   inequality constraints with lower and upper bounds:        3
+        inequality constraints with only upper bounds:       14
+
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+   0  2.4749914e+02 6.43e-04 1.00e-08   0.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1  2.4749915e+02 4.13e-07 3.32e-08 -11.0 6.43e-04    -  9.99e-01 9.99e-01h  1
+In iteration 1, 2 Slacks too small, adjusting variable bounds
+   2  2.4749915e+02 1.71e-13 6.43e-07 -11.0 5.17e-07    -  1.00e+00 1.00e+00h  1
+   3  2.4749915e+02 5.31e-16 9.41e-15 -11.0 5.95e-08    -  1.00e+00 1.00e+00h  1
+
+Number of Iterations....: 3
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -9.8999659359829323e+01    2.4749914839957330e+02
+Dual infeasibility......:   9.4149452144149127e-15    2.3537363036037282e-14
+Constraint violation....:   5.3082538364890297e-16    5.3082538364890297e-16
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   1.0000104519269074e-11    2.5000261298172684e-11
+Overall NLP error.......:   1.0000104519269074e-11    2.5000261298172684e-11
+
+
+Number of objective function evaluations             = 4
+Number of objective gradient evaluations             = 4
+Number of equality constraint evaluations            = 4
+Number of inequality constraint evaluations          = 5
+Number of equality constraint Jacobian evaluations   = 4
+Number of inequality constraint Jacobian evaluations = 4
+Number of Lagrangian Hessian evaluations             = 3
+Total seconds in IPOPT (w/o function evaluations)    =      0.001
+Total seconds in NLP function evaluations            =      0.000
+
+
+Timing Statistics:
+
+OverallAlgorithm....................:      0.001 (sys:      0.000 wall:      0.001)
+ PrintProblemStatistics.............:      0.000 (sys:      0.000 wall:      0.000)
+ InitializeIterates.................:      0.000 (sys:      0.000 wall:      0.000)
+ UpdateHessian......................:      0.000 (sys:      0.000 wall:      0.000)
+ OutputIteration....................:      0.000 (sys:      0.000 wall:      0.000)
+ UpdateBarrierParameter.............:      0.001 (sys:      0.000 wall:      0.001)
+ ComputeSearchDirection.............:      0.000 (sys:      0.000 wall:      0.000)
+ ComputeAcceptableTrialPoint........:      0.000 (sys:      0.000 wall:      0.000)
+ AcceptTrialPoint...................:      0.000 (sys:      0.000 wall:      0.000)
+ CheckConvergence...................:      0.000 (sys:      0.000 wall:      0.000)
+PDSystemSolverTotal.................:      0.001 (sys:      0.000 wall:      0.001)
+ PDSystemSolverSolveOnce............:      0.001 (sys:      0.000 wall:      0.001)
+ ComputeResiduals...................:      0.000 (sys:      0.000 wall:      0.000)
+ StdAugSystemSolverMultiSolve.......:      0.001 (sys:      0.000 wall:      0.001)
+ LinearSystemScaling................:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemSymbolicFactorization..:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemFactorization..........:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemBackSolve..............:      0.000 (sys:      0.000 wall:      0.000)
+ LinearSystemStructureConverter.....:      0.000 (sys:      0.000 wall:      0.000)
+  LinearSystemStructureConverterInit:      0.000 (sys:      0.000 wall:      0.000)
+QualityFunctionSearch...............:      0.000 (sys:      0.000 wall:      0.000)
+TryCorrector........................:      0.000 (sys:      0.000 wall:      0.000)
+Task1...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task2...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task3...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task4...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task5...............................:      0.000 (sys:      0.000 wall:      0.000)
+Task6...............................:      0.000 (sys:      0.000 wall:      0.000)
+Function Evaluations................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function.................:      0.000 (sys:      0.000 wall:      0.000)
+ Objective function gradient........:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraints...............:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraints.............:      0.000 (sys:      0.000 wall:      0.000)
+ Equality constraint Jacobian.......:      0.000 (sys:      0.000 wall:      0.000)
+ Inequality constraint Jacobian.....:      0.000 (sys:      0.000 wall:      0.000)
+ Lagrangian Hessian.................:      0.000 (sys:      0.000 wall:      0.000)
+
+EXIT: Optimal Solution Found.
+GO3_AC_SOLVE_RETURNED {"timing_scope":"API time includes optimizer setup; native Ipopt timings are logged separately","effective_native_evaluator":"MathOptInterface.Nonlinear.SymbolicAD.Evaluator","native_backend_confirmed":true,"source_feasible_set_changed":false,"interval":3,"model_structure_change_scope":"No further change during this numerical call; exact reserve reduction occurred before optimizer attachment","model_structure_changed":false,"policy":"symbolic_adaptive_v1","pre_solve_exact_zero_reduction":true,"mu_strategy":"adaptive","optimizer_reported_seconds":0.003000020980834961,"floating_point_bits":64,"phase":"rounded_shunts","effective_native_backend":"MathOptInterface.Nonlinear.SymbolicMode","optimize_api_wall_seconds":0.003000020980834961,"source_bounds_changed":false}
+GO3_AC_PRIMAL_GUARD {"native_mapping_complete":true,"variable_count":71,"objective_window_iterations":8,"discrete_solution_claimed":false,"native_original_probe_seconds":0.0,"native_original_row_count":51,"interval":3,"original_probe_interval":5,"certificate_scope":"local model feasibility only; objective stagnation is heuristic; no KKT or global optimality claim","minimum_iterations":20,"audit_only":false,"audit_count":0,"native_original_probe_count":1,"model_structure_changed":false,"native_variable_count":71,"candidate_only":false,"native_initialization_audit_requested":true,"external_solution_read":false,"policy":"verified_stable_rounded_primal_v1","callback_count":4,"primal_residual_limit":1.0e-8,"residual_screen":"native_original_unscaled","native_initialization":{"complete_mapping":true,"maximum_relative_change_from_requested_start":9.999800000000004e-9,"iteration":0,"variable_count":71,"maximum_absolute_change_from_requested_start":9.999800000000004e-9,"audit_seconds":0.0,"scope":"Native first iterate readback, including Ipopt interior pushes; not a feasibility or dual certificate","original_unscaled_residual":0.0006427117469422483,"source_bounds_changed":false},"audit_seconds":0.0,"phase":"rounded_shunts","objective_relative_range_limit":1.0e-7,"enabled":true,"last_native_original_residual":0.0006427117469422483,"stop_requested":false,"source_bounds_changed":false}
+GO3_AC_PHASE {"solve_seconds":0.003000020980834961,"bound_and_gap_queried":true,"max_primal_residual":1.2455314557513475e-15,"objective":247.4991483995733,"termination":"LOCALLY_SOLVED","simplex_iterations":null,"bound":null,"barrier_iterations":3,"nodes":null,"native_relative_gap":null,"wall_limit_seconds":15.0,"interval":3,"primal_status":"FEASIBLE_POINT","phase":"rounded_shunts","residual_audit_seconds":0.0,"wall_through_audit_seconds":0.003999948501586914,"wall_seconds":0.003999948501586914,"complete_finite_point":true,"relative_gap":null}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":3,"policy":"exact_source_intersections_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":0.0,"enforced":true,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":3,"policy":"exact_source_intersections_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":0.0,"enforced":true,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+GO3_PROGRESS {"elapsed_worker_seconds":33.242000102996826,"stage":"reserves","remaining_work_seconds":131.2434937953949}
+GO3_PROGRESS {"native_exception":null,"objective":-0.0006000551572222954,"result_count":1,"has_feasible_primal":true,"raw_status":"kHighsModelStatusOptimal","variables":28,"constraints":85,"interval":1,"maximum_model_residual":0.0,"model_released":true,"solver_seconds":0.0002601146697998047,"failure_reason":null,"audit_scope":"original interval LP before pinned projection; full-case verification still required","projection_completed":true,"primal_residual_tolerance":1.0e-8,"stage":"final_reserve_allocation","termination":"OPTIMAL","collection_seconds":0.25799989700317383,"elapsed_worker_seconds":38.519999980926514,"extraction_attempted":true,"accepted":true,"primal_status":"FEASIBLE_POINT","remaining_work_seconds":125.96549391746521}
+GO3_PROGRESS {"native_exception":null,"objective":-0.0012001103144445898,"result_count":1,"has_feasible_primal":true,"raw_status":"kHighsModelStatusOptimal","variables":28,"constraints":85,"interval":2,"maximum_model_residual":0.0,"model_released":true,"solver_seconds":0.0002639293670654297,"failure_reason":null,"audit_scope":"original interval LP before pinned projection; full-case verification still required","projection_completed":true,"primal_residual_tolerance":1.0e-8,"stage":"final_reserve_allocation","termination":"OPTIMAL","collection_seconds":0.2390000820159912,"elapsed_worker_seconds":38.76200008392334,"extraction_attempted":true,"accepted":true,"primal_status":"FEASIBLE_POINT","remaining_work_seconds":125.72349381446838}
+GO3_PROGRESS {"native_exception":null,"objective":-0.00030002757861114746,"result_count":1,"has_feasible_primal":true,"raw_status":"kHighsModelStatusOptimal","variables":28,"constraints":85,"interval":3,"maximum_model_residual":0.0,"model_released":true,"solver_seconds":0.0002818107604980469,"failure_reason":null,"audit_scope":"original interval LP before pinned projection; full-case verification still required","projection_completed":true,"primal_residual_tolerance":1.0e-8,"stage":"final_reserve_allocation","termination":"OPTIMAL","collection_seconds":0.23799991607666016,"elapsed_worker_seconds":39.00399994850159,"extraction_attempted":true,"accepted":true,"primal_status":"FEASIBLE_POINT","remaining_work_seconds":125.48149394989014}
+GO3_PROGRESS {"intervals_required":3,"elapsed_worker_seconds":39.0789999961853,"all_intervals_refined":true,"intervals_finished":3,"stage":"complete","remaining_work_seconds":125.40649390220642}

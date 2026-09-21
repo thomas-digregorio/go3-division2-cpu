@@ -140,3 +140,33 @@ Evidence: [archived summary](../evidence/campaign/campaign_n23643_s003_r14/summa
 Implementation and component details: [r14 initialization](AC_INITIALIZATION_R14.md).
 The consumed r14 latch is retained. Archival and report creation performed no
 additional solve, official reevaluation or replacement run.
+
+## Read-only first-hour checkpoint diagnostic
+
+A later read-only calculation reread the immutable source and hash-matched
+the retained failed checkpoint. It used the existing independent complex AC
+branch-flow and startup/shutdown-trajectory routines, but did **not** run an
+optimizer, the official evaluator or any contingency analysis. It examined
+only interval one and is not an additional feasibility certificate.
+
+- Largest active-power imbalance: `0.0018181311673477474` p.u.
+  (`0.1818131167` MW), at `bus_02154`.
+- Largest reactive-power imbalance: `0.01418553089493746` p.u.
+  (`1.4185530895` MVAr), at `bus_02155`. This agrees, to roundoff, with
+  the failed recovery phase's recorded maximum model residual. It identifies
+  a physical reactive-balance mismatch in the exported point, rather than
+  establishing the cause of the numerical failure.
+- First-hour voltage-box, exact conditional PMIN/PMAX and simple reactive-box
+  checks showed zero violation. These are only selected constraints; reserve,
+  intertemporal and security feasibility are not certified by this diagnostic.
+- The exported point also has source-soft base-case overloads, including
+  `12.839730116898489` p.u. on `acl_12422`. No score or secure dispatch is
+  inferred from this incomplete point.
+- All 6,274 producers and 11,731 consumers are online in this checkpoint.
+- Checkpoint SHA256:
+  `0ee0b4eac5aa3239d74212f5c7ab43aec8a9e88496206750bccac827844dd852`.
+
+This is the export-projected checkpoint, not a retained raw optimizer vector.
+The other 47 hours were not evaluated. The data remain excluded from r15's
+cold initialization. The report and exact diagnostic helper are archived in
+[`evidence/diagnostics/r14_checkpoint_20260921`](../evidence/diagnostics/r14_checkpoint_20260921).

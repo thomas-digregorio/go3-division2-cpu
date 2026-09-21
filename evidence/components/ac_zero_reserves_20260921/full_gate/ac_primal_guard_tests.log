@@ -1,0 +1,21 @@
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Test Summary:                               | Pass  Total  Time
+GO3 primal guard objective and policy gates |   26     26  1.7s
+Test Summary:                                                           | Pass  Total  Time
+GO3 original residual probe does not confuse internal slack feasibility |   36     36  5.7s
+Test Summary:                                                   | Pass  Total  Time
+GO3 original residual screen rejects infeasible original points |    4      4  0.1s
+Test Summary:                                               | Pass  Total  Time
+GO3 native guarded stop returns the audited complete primal |   84     84  0.6s
+Test Summary:                                                 | Pass  Total  Time
+GO3 primal guard allows normal convergence before its trigger |    5      5  0.0s
+Test Summary:                                                    | Pass  Total  Time
+GO3 unfixed-shunt guard certifies only an intermediate candidate |    9      9  0.1s
+Test Summary:                                                      | Pass  Total  Time
+GO3 native initialization audit refuses absent or invalid mappings |    4      4  0.1s

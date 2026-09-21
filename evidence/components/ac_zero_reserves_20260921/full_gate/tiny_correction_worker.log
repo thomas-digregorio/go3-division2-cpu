@@ -1,0 +1,145 @@
+GO3_PROGRESS {"elapsed_worker_seconds":0.07700014114379883,"stage":"loading","remaining_work_seconds":104.49375700950623}
+GO3_PROGRESS {"elapsed_worker_seconds":0.7900002002716064,"stage":"scheduling","remaining_work_seconds":103.78075695037842}
+GO3_SCHEDULING_MODEL {"reserve_policy":"joint_scheduling_then_full_reallocation","constraints_excluding_variable_bounds":181,"source_pq_bound_devices":1,"variables":153,"build_seconds":6.924999952316284,"include_reserves":true,"consumer_online_dominance":{"fixed_online_variables":3,"generator_commitments_changed":0,"policy":"proven_zero_minimum_consumer_online_dominance_v1","eligible_consumers":1,"source_values_changed":false,"rejected_consumers":{},"eligible_consumer_uids":["d"]},"source_startup_windows":{"membership":"begin-tol <= interval_start < end-tol","time_equality_tolerance":1.0e-6,"source_values_changed":false,"windows":4}}
+GO3_PROGRESS {"elapsed_scheduling_seconds":11.135999917984009,"event":"model_built","elapsed_worker_seconds":11.991000175476074,"build_seconds":7.190999984741211,"stage":"scheduling_event","remaining_work_seconds":92.57975697517395}
+GO3_PROGRESS {"elapsed_scheduling_seconds":11.878999948501587,"event":"economic_solve_begin","elapsed_worker_seconds":12.676000118255615,"stage":"scheduling_event","remaining_work_seconds":91.89475703239441}
+Running HiGHS 1.15.1 (git hash: 04024d701f): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+Using BLAS: libblastrampoline 
+ MIP      : 
+Rows      : 181
+Cols      : 153
+Nonzeros  : 517
+Integer   : 18 (15 binary)
+Coefficient ranges:
+  Matrix  [1e-02, 3e+00]
+  Cost    [3e-03, 1e+03]
+  Bound   [5e-01, 4e+00]
+  RHS     [5e-01, 8e+00]
+Presolving model
+Permitted suppression of presolve rules via presolve_rule_off option:
+   Rule  6 (set bit  6 =    64): Forcing row
+   Rule  7 (set bit  7 =   128): Forcing col
+   Rule  8 (set bit  8 =   256): Free col substitution
+   Rule  9 (set bit  9 =   512): Doubleton equation
+   Rule 10 (set bit 10 =  1024): Dependent equations
+   Rule 11 (set bit 11 =  2048): Dependent free columns
+   Rule 12 (set bit 12 =  4096): Aggregator
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+   Rule 14 (set bit 14 = 16384): Sparsify
+   Rule 15 (set bit 15 = 32768): Probing
+   Rule 16 (set bit 16 = 65536): Enumeration
+   Rule 17 (set bit 17 = 131072): Dual fixing
+   Rule 18 (set bit 18 = 262144): Col stuffing
+   Rule 19 (set bit 19 = 524288): Initial sweep
+73 rows, 59 cols, 210 nonzeros 0s
+52 rows, 52 cols, 193 nonzeros 0s
+7 probing evaluations: 0 deleted rows, 0 deleted columns, 0 lifted nonzeros
+51 rows, 51 cols, 203 nonzeros 0s
+Presolve reductions: rows 51(-130); columns 51(-102); nonzeros 203(-314) 
+
+Solving MIP model with:
+   51 rows
+   51 cols (7 binary, 0 integer, 0 implied int., 44 continuous, 0 domain fixed)
+   203 nonzeros
+   Thread count 4 (of 24 threads). Using 1 max workers. Parallel search off
+Feasibility Jump: starting solve. weightUpdateDecay=1, relaxContinuous=0  
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   inf             -250.5             Large        0      0      0         0     0.0s
+ T       0       0         0   0.00%   1737.45         1732.3229          0.30%        0      0      0        17     0.0s
+         1       0         1 100.00%   1732.3229       1732.3229          0.00%        0      0      0        17     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1732.3229
+  Dual bound        1732.3229
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      0.00319013549871
+  Solution status   feasible
+                    1732.3229 (objective)
+                    0 (bound viol.)
+                    2.22044604925e-16 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01
+                    0.00 (Presolve)
+                    0.00 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     17
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+getKktFailures:: cost norm =    1e+03; bound norm =        3
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility 8.88e-16 / 2.22e-16     2.22e-16 / 5.55e-17     8.88e-16 / 2.22e-16
+
+MIP sub-solver profiling: number of threads used = 1
+
+Thread 0
+Solver                    Calls    Time       Time/call      MIP%
+MIP                           1  5.8272e-03  5.8272e-03
+Du simplex (no basis)         1  2.2006e-04  2.2006e-04       3.8
+TOTAL                            2.2006e-04                   3.8
+
+Percent (sub-)MIP time by thread
+
+MIP sub-solver            0
+Du simplex (no basis)   3.8
+===========================
+Total                   3.8
+===========================
+GO3_PROGRESS {"elapsed_scheduling_seconds":12.157000064849854,"event":"economic_solve_returned","elapsed_worker_seconds":12.960000038146973,"stage":"scheduling_event","wall_seconds":0.2780001163482666,"remaining_work_seconds":91.61075711250305}
+Rounded shunt steps:
+GO3_PROGRESS {"devices":2,"final_reserve_optimization_required":true,"full_case_checks_required":true,"policy":"use_joint_schedule_unverified","external_solution_read":false,"initial_solution_verified":false,"stage":"initial_reserve_handoff","source_values_changed":false,"periods":3,"optimization_calls":0,"elapsed_worker_seconds":14.694000005722046,"source":"current_attempt_joint_schedule","reserve_fields":10,"remaining_work_seconds":89.87675714492798}
+GO3_PROGRESS {"elapsed_worker_seconds":14.754000186920166,"stage":"schedule_candidate_ready","remaining_work_seconds":89.81675696372986}
+GO3_PROGRESS {"elapsed_worker_seconds":16.086000204086304,"interval":1,"stage":"ac_optimization","interval_count":3,"remaining_work_seconds":88.48475694656372}
+GO3_CORRECTION_PHASE {"remaining_refinement_seconds":78.398756980896,"event":"begin","hour_deadline":1.789993785476757e9,"fair_share_seconds":26.132918993632,"policy":"remaining_horizon_v1","protected_recovery_deadline":1.789993785476757e9,"global_deadline_reset":false,"future_hours_reserved_seconds":40.0,"interval":1,"hour_allowance_seconds":38.398756980895996,"slp_seconds":11.519627094268799,"phase":"hour_allocation","remaining_intervals":3}
+GO3_CORRECTION_PHASE {"event":"begin","remaining_hour_seconds":31.278757095336914,"phase":"linearized_correction","budget_seconds":11.519627094268799}
+GO3_CORRECTION_NATIVE {"native_primal_status":2,"native_allowance_seconds":5.285627317428589,"start_policy":"fresh_presolved_lp_v1","native_presolve_observed":true,"api_seconds":0.012000083923339844,"import_audit":{"removed_small_coefficients_only":true,"row_error_limit":1.0e-10,"domains_exact":true,"maximum_bounded_row_error":0.0,"scope":"Candidate LP import only; original nonlinear/source checks remain mandatory","unbounded_changed_columns":0,"changed_nonzeros":0,"matrix_import_threshold":1.0e-12,"objective_exact":true,"native_nonzeros":217,"input_nonzeros":225,"pass":true,"maximum_coefficient_change":0.0,"wall_seconds":0.0},"native_ipx_observed":false,"import_status":0,"crossover_requested":"not_applicable","native_optimizations":1,"ipm_iterations":0,"native_model_status":7,"native_warning_error_count":0,"certificate_scope":"linearized candidate subproblem only; no full GO3 bound","bulk_transfer_and_audit_seconds":0.09799981117248535,"native_solver_requested":"simplex","wall_seconds":0.12399983406066895,"native_useful_basis_bypassed_presolve":false,"native_warning_error_excerpt":[],"external_solution_read":false,"native_start_use":"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search","simplex_iterations":2,"native_log_file":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv\\correction_worker\\native_correction\\hour_0001\\jl_BB49.tmp","complete_start_api_status":null,"native_stored_start":false,"requested_seconds":5.383627128601074,"rows":69,"basis_reused":false,"native_run_status":0,"original_linearization_residual":2.942091015256665e-15,"native_seconds":0.010681867599487305,"columns":67,"presolve_requested":"on"}
+GO3_CORRECTION_NATIVE {"native_primal_status":2,"native_allowance_seconds":5.239627075195313,"start_policy":"fresh_presolved_lp_v1","native_presolve_observed":true,"api_seconds":0.0010001659393310547,"import_audit":{"removed_small_coefficients_only":true,"row_error_limit":1.0e-10,"domains_exact":true,"maximum_bounded_row_error":0.0,"scope":"Candidate LP import only; original nonlinear/source checks remain mandatory","unbounded_changed_columns":0,"changed_nonzeros":0,"matrix_import_threshold":1.0e-12,"objective_exact":true,"native_nonzeros":223,"input_nonzeros":225,"pass":true,"maximum_coefficient_change":0.0,"wall_seconds":0.0},"native_ipx_observed":false,"import_status":0,"crossover_requested":"not_applicable","native_optimizations":1,"ipm_iterations":0,"native_model_status":7,"native_warning_error_count":1,"certificate_scope":"linearized candidate subproblem only; no full GO3 bound","bulk_transfer_and_audit_seconds":0.0,"native_solver_requested":"simplex","wall_seconds":0.0010001659393310547,"native_useful_basis_bypassed_presolve":false,"native_warning_error_excerpt":["WARNING: Problem has some excessively small row bounds"],"external_solution_read":false,"native_start_use":"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search","simplex_iterations":10,"native_log_file":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv\\correction_worker\\native_correction\\hour_0001\\jl_BBD6.tmp","complete_start_api_status":null,"native_stored_start":false,"requested_seconds":5.239627075195313,"rows":69,"basis_reused":false,"native_run_status":0,"original_linearization_residual":6.106226635438361e-15,"native_seconds":0.0014061927795410156,"columns":67,"presolve_requested":"on"}
+GO3_CORRECTION_NATIVE {"native_primal_status":2,"native_allowance_seconds":5.228627157211304,"start_policy":"fresh_presolved_lp_v1","native_presolve_observed":true,"api_seconds":0.0010001659393310547,"import_audit":{"removed_small_coefficients_only":true,"row_error_limit":1.0e-10,"domains_exact":true,"maximum_bounded_row_error":0.0,"scope":"Candidate LP import only; original nonlinear/source checks remain mandatory","unbounded_changed_columns":0,"changed_nonzeros":0,"matrix_import_threshold":1.0e-12,"objective_exact":true,"native_nonzeros":223,"input_nonzeros":225,"pass":true,"maximum_coefficient_change":0.0,"wall_seconds":0.0},"native_ipx_observed":false,"import_status":0,"crossover_requested":"not_applicable","native_optimizations":1,"ipm_iterations":0,"native_model_status":7,"native_warning_error_count":1,"certificate_scope":"linearized candidate subproblem only; no full GO3 bound","bulk_transfer_and_audit_seconds":0.0,"native_solver_requested":"simplex","wall_seconds":0.0010001659393310547,"native_useful_basis_bypassed_presolve":false,"native_warning_error_excerpt":["WARNING: Problem has some excessively small row bounds"],"external_solution_read":false,"native_start_use":"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search","simplex_iterations":8,"native_log_file":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv\\correction_worker\\native_correction\\hour_0001\\jl_BBE7.tmp","complete_start_api_status":null,"native_stored_start":false,"requested_seconds":5.228627157211304,"rows":69,"basis_reused":false,"native_run_status":0,"original_linearization_residual":4.551914400963142e-15,"native_seconds":0.0007240772247314453,"columns":67,"presolve_requested":"on"}
+GO3_CORRECTION_NATIVE {"native_primal_status":2,"native_allowance_seconds":5.221626949310303,"start_policy":"fresh_presolved_lp_v1","native_presolve_observed":true,"api_seconds":0.0009999275207519531,"import_audit":{"removed_small_coefficients_only":true,"row_error_limit":1.0e-10,"domains_exact":true,"maximum_bounded_row_error":0.0,"scope":"Candidate LP import only; original nonlinear/source checks remain mandatory","unbounded_changed_columns":0,"changed_nonzeros":0,"matrix_import_threshold":1.0e-12,"objective_exact":true,"native_nonzeros":223,"input_nonzeros":225,"pass":true,"maximum_coefficient_change":0.0,"wall_seconds":0.0},"native_ipx_observed":false,"import_status":0,"crossover_requested":"not_applicable","native_optimizations":1,"ipm_iterations":0,"native_model_status":7,"native_warning_error_count":0,"certificate_scope":"linearized candidate subproblem only; no full GO3 bound","bulk_transfer_and_audit_seconds":0.0,"native_solver_requested":"simplex","wall_seconds":0.0009999275207519531,"native_useful_basis_bypassed_presolve":false,"native_warning_error_excerpt":[],"external_solution_read":false,"native_start_use":"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search","simplex_iterations":10,"native_log_file":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv\\correction_worker\\native_correction\\hour_0001\\jl_BBE8.tmp","complete_start_api_status":null,"native_stored_start":false,"requested_seconds":5.221626949310303,"rows":69,"basis_reused":false,"native_run_status":0,"original_linearization_residual":9.880984919163893e-15,"native_seconds":0.0006740093231201172,"columns":67,"presolve_requested":"on"}
+GO3_CORRECTION_NATIVE {"native_primal_status":2,"native_allowance_seconds":5.215627145767212,"start_policy":"fresh_presolved_lp_v1","native_presolve_observed":true,"api_seconds":0.0009999275207519531,"import_audit":{"removed_small_coefficients_only":true,"row_error_limit":1.0e-10,"domains_exact":true,"maximum_bounded_row_error":0.0,"scope":"Candidate LP import only; original nonlinear/source checks remain mandatory","unbounded_changed_columns":0,"changed_nonzeros":0,"matrix_import_threshold":1.0e-12,"objective_exact":true,"native_nonzeros":223,"input_nonzeros":225,"pass":true,"maximum_coefficient_change":0.0,"wall_seconds":0.0},"native_ipx_observed":false,"import_status":0,"crossover_requested":"not_applicable","native_optimizations":1,"ipm_iterations":0,"native_model_status":7,"native_warning_error_count":1,"certificate_scope":"linearized candidate subproblem only; no full GO3 bound","bulk_transfer_and_audit_seconds":0.0,"native_solver_requested":"simplex","wall_seconds":0.0009999275207519531,"native_useful_basis_bypassed_presolve":false,"native_warning_error_excerpt":["WARNING: Problem has some excessively small row bounds"],"external_solution_read":false,"native_start_use":"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search","simplex_iterations":8,"native_log_file":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv\\correction_worker\\native_correction\\hour_0001\\jl_BBF9.tmp","complete_start_api_status":null,"native_stored_start":false,"requested_seconds":5.215627145767212,"rows":69,"basis_reused":false,"native_run_status":0,"original_linearization_residual":3.552713678800501e-15,"native_seconds":0.0005960464477539062,"columns":67,"presolve_requested":"on"}
+GO3_CORRECTION_NATIVE {"native_primal_status":2,"native_allowance_seconds":5.208626937866211,"start_policy":"fresh_presolved_lp_v1","native_presolve_observed":true,"api_seconds":0.0009999275207519531,"import_audit":{"removed_small_coefficients_only":true,"row_error_limit":1.0e-10,"domains_exact":true,"maximum_bounded_row_error":0.0,"scope":"Candidate LP import only; original nonlinear/source checks remain mandatory","unbounded_changed_columns":0,"changed_nonzeros":0,"matrix_import_threshold":1.0e-12,"objective_exact":true,"native_nonzeros":223,"input_nonzeros":225,"pass":true,"maximum_coefficient_change":0.0,"wall_seconds":0.0},"native_ipx_observed":false,"import_status":0,"crossover_requested":"not_applicable","native_optimizations":1,"ipm_iterations":0,"native_model_status":7,"native_warning_error_count":1,"certificate_scope":"linearized candidate subproblem only; no full GO3 bound","bulk_transfer_and_audit_seconds":0.0,"native_solver_requested":"simplex","wall_seconds":0.0009999275207519531,"native_useful_basis_bypassed_presolve":false,"native_warning_error_excerpt":["WARNING: Problem has some excessively small row bounds"],"external_solution_read":false,"native_start_use":"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search","simplex_iterations":10,"native_log_file":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv\\correction_worker\\native_correction\\hour_0001\\jl_BBFA.tmp","complete_start_api_status":null,"native_stored_start":false,"requested_seconds":5.208626937866211,"rows":69,"basis_reused":false,"native_run_status":0,"original_linearization_residual":1.1102230246251565e-14,"native_seconds":0.0006420612335205078,"columns":67,"presolve_requested":"on"}
+GO3_CORRECTION_NATIVE {"native_primal_status":2,"native_allowance_seconds":5.200627040863037,"start_policy":"fresh_presolved_lp_v1","native_presolve_observed":true,"api_seconds":0.0,"import_audit":{"removed_small_coefficients_only":true,"row_error_limit":1.0e-10,"domains_exact":true,"maximum_bounded_row_error":0.0,"scope":"Candidate LP import only; original nonlinear/source checks remain mandatory","unbounded_changed_columns":0,"changed_nonzeros":0,"matrix_import_threshold":1.0e-12,"objective_exact":true,"native_nonzeros":223,"input_nonzeros":225,"pass":true,"maximum_coefficient_change":0.0,"wall_seconds":0.0009999275207519531},"native_ipx_observed":false,"import_status":0,"crossover_requested":"not_applicable","native_optimizations":1,"ipm_iterations":0,"native_model_status":7,"native_warning_error_count":1,"certificate_scope":"linearized candidate subproblem only; no full GO3 bound","bulk_transfer_and_audit_seconds":0.0009999275207519531,"native_solver_requested":"simplex","wall_seconds":0.0009999275207519531,"native_useful_basis_bypassed_presolve":false,"native_warning_error_excerpt":["WARNING: Problem has some excessively small row bounds"],"external_solution_read":false,"native_start_use":"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search","simplex_iterations":8,"native_log_file":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv\\correction_worker\\native_correction\\hour_0001\\jl_BBFB.tmp","complete_start_api_status":null,"native_stored_start":false,"requested_seconds":5.201626968383789,"rows":69,"basis_reused":false,"native_run_status":0,"original_linearization_residual":2.3037127760972e-15,"native_seconds":0.0006167888641357422,"columns":67,"presolve_requested":"on"}
+GO3_CORRECTION_NATIVE {"native_primal_status":2,"native_allowance_seconds":5.195627164840698,"start_policy":"fresh_presolved_lp_v1","native_presolve_observed":true,"api_seconds":0.0,"import_audit":{"removed_small_coefficients_only":true,"row_error_limit":1.0e-10,"domains_exact":true,"maximum_bounded_row_error":0.0,"scope":"Candidate LP import only; original nonlinear/source checks remain mandatory","unbounded_changed_columns":0,"changed_nonzeros":0,"matrix_import_threshold":1.0e-12,"objective_exact":true,"native_nonzeros":223,"input_nonzeros":225,"pass":true,"maximum_coefficient_change":0.0,"wall_seconds":0.0},"native_ipx_observed":false,"import_status":0,"crossover_requested":"not_applicable","native_optimizations":1,"ipm_iterations":0,"native_model_status":7,"native_warning_error_count":1,"certificate_scope":"linearized candidate subproblem only; no full GO3 bound","bulk_transfer_and_audit_seconds":0.0,"native_solver_requested":"simplex","wall_seconds":0.0,"native_useful_basis_bypassed_presolve":false,"native_warning_error_excerpt":["WARNING: Problem has some excessively small row bounds"],"external_solution_read":false,"native_start_use":"No primal or basis supplied to native LP; current point retained for linearization and nonlinear line search","simplex_iterations":8,"native_log_file":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_iukqiizv\\correction_worker\\native_correction\\hour_0001\\jl_BC0B.tmp","complete_start_api_status":null,"native_stored_start":false,"requested_seconds":5.195627164840698,"rows":69,"basis_reused":false,"native_run_status":0,"original_linearization_residual":1.4432899320127035e-15,"native_seconds":0.0006082057952880859,"columns":67,"presolve_requested":"on"}
+GO3_CORRECTION_PHASE {"event":"end","phase":"linearized_correction","termination":"round_limit","accepted_steps":8,"wall_seconds":7.008000135421753,"residual":0.0009911811931831993}
+GO3_CORRECTION_PHASE {"event":"begin","requested_seconds":12.0,"max_iterations":600,"fixed_shunts":true,"remaining_hour_seconds":24.218757152557373,"barrier_strategy":"adaptive","phase":"fixed_shunt_fallback"}
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+GO3_CORRECTION_PHASE {"event":"end","selected_residual":5.479795506246887e-10,"phase":"fixed_shunt_fallback","termination":"INTERRUPTED","before_residual":0.0009911811931831993,"wall_seconds":4.333000183105469}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":1,"policy":"legacy_tolerance_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":1.0e-8,"enforced":false,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+GO3_PROGRESS {"elapsed_worker_seconds":35.985000133514404,"interval":2,"stage":"ac_optimization","interval_count":3,"remaining_work_seconds":68.58575701713562}
+GO3_CORRECTION_PHASE {"remaining_refinement_seconds":58.486757040023804,"event":"begin","hour_deadline":1.789993805476757e9,"fair_share_seconds":29.243378520011902,"policy":"remaining_horizon_v1","protected_recovery_deadline":1.789993805476757e9,"global_deadline_reset":false,"future_hours_reserved_seconds":20.0,"interval":2,"hour_allowance_seconds":38.486757040023804,"slp_seconds":11.54602711200714,"phase":"hour_allocation","remaining_intervals":2}
+GO3_CORRECTION_PHASE {"event":"begin","remaining_hour_seconds":38.15675711631775,"phase":"linearized_correction","budget_seconds":11.54602711200714}
+GO3_CORRECTION_PHASE {"event":"end","phase":"linearized_correction","termination":"original_model_residual_pass","accepted_steps":0,"wall_seconds":0.018000125885009766,"residual":1.6439321015582209e-9}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":2,"policy":"legacy_tolerance_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":1.0e-8,"enforced":false,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+GO3_PROGRESS {"elapsed_worker_seconds":36.43600010871887,"interval":3,"stage":"ac_optimization","interval_count":3,"remaining_work_seconds":68.13475704193115}
+GO3_CORRECTION_PHASE {"remaining_refinement_seconds":58.13475704193115,"event":"begin","hour_deadline":1.789993812342e9,"fair_share_seconds":58.13475704193115,"policy":"remaining_horizon_v1","protected_recovery_deadline":1.789993812342e9,"global_deadline_reset":false,"future_hours_reserved_seconds":0.0,"interval":3,"hour_allowance_seconds":45.0,"slp_seconds":13.5,"phase":"hour_allocation","remaining_intervals":1}
+GO3_CORRECTION_PHASE {"event":"begin","remaining_hour_seconds":44.996999979019165,"phase":"linearized_correction","budget_seconds":13.5}
+GO3_CORRECTION_PHASE {"event":"end","phase":"linearized_correction","termination":"original_model_residual_pass","accepted_steps":0,"wall_seconds":0.01699995994567871,"residual":1.6439321015582209e-9}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":3,"policy":"legacy_tolerance_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":1.0e-8,"enforced":false,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+Rounded shunt steps:
+GO3_AC_EXPORT_PROJECTION {"maximum_unfinished_bus_injection_change_pu":0.0,"within_guard":true,"official_tolerance_changed":false,"certificate_scope":"Export projection drift only; full independent and official verification still required","refined_intervals":3,"policy":"legacy_tolerance_v1","maximum_refined_device_change_pu":0.0,"maximum_refined_bus_injection_change_pu":0.0,"worst_refined_bus":null,"bookkeeping_tolerance":1.0e-8,"enforced":false,"projection_guard_pu":1.0e-9,"projection_events":0,"refined_projection_events":0,"source_bounds_changed":false}
+GO3_PROGRESS {"elapsed_worker_seconds":36.48300004005432,"stage":"reserves","remaining_work_seconds":68.0877571105957}
+BEGINNING PARALLEL RESERVE CALCULATIONS
+DONE WITH PARALLEL RESERVE CALCULATIONS
+GO3_PROGRESS {"intervals_required":3,"elapsed_worker_seconds":41.63000011444092,"all_intervals_refined":true,"intervals_finished":3,"stage":"complete","remaining_work_seconds":62.940757036209106}

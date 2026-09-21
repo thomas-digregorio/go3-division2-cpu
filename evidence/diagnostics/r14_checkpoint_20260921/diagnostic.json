@@ -1,0 +1,193 @@
+{
+  "diagnostic_only": true,
+  "unverified_checkpoint": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\runs\\C3E4N23643D2_s003_campaign_n23643_s003_r14_20260921T102418Z\\worker\\checkpoints\\candidate_ac_0001.json",
+  "source_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5",
+  "checkpoint_sha256": "0ee0b4eac5aa3239d74212f5c7ab43aec8a9e88496206750bccac827844dd852",
+  "intervals_examined": [
+    1
+  ],
+  "source_intervals": 48,
+  "optimization_calls": 0,
+  "contingency_checks": 0,
+  "official_evaluator_calls": 0,
+  "reused_as_solver_start": false,
+  "certificate": null,
+  "verified_objective": null,
+  "caveat": "Export-projected failed checkpoint, not the raw optimizer iterate. Partial physical diagnostic only; not a feasibility or security certificate. Other 47 intervals not evaluated.",
+  "base_mva": 100.0,
+  "commitment_counts": {
+    "producer": {
+      "source": 6274,
+      "on": 6274
+    },
+    "consumer": {
+      "source": 11731,
+      "on": 11731
+    }
+  },
+  "max_p_imbalance_pu": 0.0018181311673477474,
+  "max_q_imbalance_pu": 0.01418553089493746,
+  "sum_abs_p_imbalance_pu": 0.08453032484911127,
+  "sum_abs_q_imbalance_pu": 0.16196686496715856,
+  "top_p_imbalances": [
+    {
+      "bus_uid": "bus_02154",
+      "signed_imbalance_pu": -0.0018181311673477474,
+      "signed_imbalance_mw": -0.18181311673477474
+    },
+    {
+      "bus_uid": "bus_21516",
+      "signed_imbalance_pu": -0.0013499815863062814,
+      "signed_imbalance_mw": -0.13499815863062814
+    },
+    {
+      "bus_uid": "bus_21622",
+      "signed_imbalance_pu": -0.0007334207404163795,
+      "signed_imbalance_mw": -0.07334207404163795
+    },
+    {
+      "bus_uid": "bus_01685",
+      "signed_imbalance_pu": 0.0006733241549770064,
+      "signed_imbalance_mw": 0.06733241549770064
+    },
+    {
+      "bus_uid": "bus_09284",
+      "signed_imbalance_pu": 0.0006627147198963179,
+      "signed_imbalance_mw": 0.06627147198963179
+    },
+    {
+      "bus_uid": "bus_03614",
+      "signed_imbalance_pu": -0.0006187524053067328,
+      "signed_imbalance_mw": -0.06187524053067328
+    },
+    {
+      "bus_uid": "bus_18990",
+      "signed_imbalance_pu": 0.0006023729913371412,
+      "signed_imbalance_mw": 0.06023729913371412
+    },
+    {
+      "bus_uid": "bus_21521",
+      "signed_imbalance_pu": 0.0005929864977611832,
+      "signed_imbalance_mw": 0.05929864977611832
+    },
+    {
+      "bus_uid": "bus_01418",
+      "signed_imbalance_pu": 0.000589841482817377,
+      "signed_imbalance_mw": 0.0589841482817377
+    },
+    {
+      "bus_uid": "bus_21824",
+      "signed_imbalance_pu": 0.000584554162413653,
+      "signed_imbalance_mw": 0.0584554162413653
+    }
+  ],
+  "top_q_imbalances": [
+    {
+      "bus_uid": "bus_02155",
+      "signed_imbalance_pu": -0.01418553089493746,
+      "signed_imbalance_mvar": -1.418553089493746
+    },
+    {
+      "bus_uid": "bus_02157",
+      "signed_imbalance_pu": -0.009383390726089957,
+      "signed_imbalance_mvar": -0.9383390726089957
+    },
+    {
+      "bus_uid": "bus_21521",
+      "signed_imbalance_pu": -0.0054919961954273955,
+      "signed_imbalance_mvar": -0.5491996195427395
+    },
+    {
+      "bus_uid": "bus_01685",
+      "signed_imbalance_pu": -0.0039308345270029355,
+      "signed_imbalance_mvar": -0.39308345270029355
+    },
+    {
+      "bus_uid": "bus_18990",
+      "signed_imbalance_pu": -0.002402440846352827,
+      "signed_imbalance_mvar": -0.24024408463528268
+    },
+    {
+      "bus_uid": "bus_21824",
+      "signed_imbalance_pu": -0.0020129499649309546,
+      "signed_imbalance_mvar": -0.20129499649309546
+    },
+    {
+      "bus_uid": "bus_21520",
+      "signed_imbalance_pu": -0.002003110281066034,
+      "signed_imbalance_mvar": -0.2003110281066034
+    },
+    {
+      "bus_uid": "bus_09284",
+      "signed_imbalance_pu": -0.001740480454532678,
+      "signed_imbalance_mvar": -0.1740480454532678
+    },
+    {
+      "bus_uid": "bus_21522",
+      "signed_imbalance_pu": -0.0016193998612332727,
+      "signed_imbalance_mvar": -0.16193998612332727
+    },
+    {
+      "bus_uid": "bus_20413",
+      "signed_imbalance_pu": -0.0015260987488897593,
+      "signed_imbalance_mvar": -0.15260987488897593
+    }
+  ],
+  "selected_bound_residuals_not_complete": {
+    "voltage": {
+      "uid": "bus_00000",
+      "violation": 0.0
+    },
+    "conditional_pmin_pmax": {
+      "uid": "sd_00000",
+      "violation": 0.0
+    },
+    "reactive_box": {
+      "uid": "sd_00000",
+      "violation": 0.0
+    }
+  },
+  "top_base_overloads_source_soft_limits": [
+    {
+      "uid": "acl_12422",
+      "overload_pu": 12.839730116898489
+    },
+    {
+      "uid": "acl_12428",
+      "overload_pu": 12.520972882988833
+    },
+    {
+      "uid": "acl_10887",
+      "overload_pu": 7.379390167356739
+    },
+    {
+      "uid": "acl_11296",
+      "overload_pu": 6.8057306509119755
+    },
+    {
+      "uid": "acl_07598",
+      "overload_pu": 5.986144433981494
+    },
+    {
+      "uid": "acl_11147",
+      "overload_pu": 3.9487023638930623
+    },
+    {
+      "uid": "acl_13226",
+      "overload_pu": 3.7074777530247918
+    },
+    {
+      "uid": "acl_07389",
+      "overload_pu": 3.410327757475553
+    },
+    {
+      "uid": "acl_11134",
+      "overload_pu": 3.0810421260845064
+    },
+    {
+      "uid": "acl_06810",
+      "overload_pu": 3.0267635193648097
+    }
+  ],
+  "diagnostic_seconds": 6.063000000023749
+}

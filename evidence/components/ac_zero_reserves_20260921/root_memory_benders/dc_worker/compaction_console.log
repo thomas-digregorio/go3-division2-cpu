@@ -1,0 +1,6 @@
+GO3_PROGRESS {"epoch_seconds":1.789993210704e9,"event":"exact_compaction_begin","pid":27840,"stage":"exact_compaction","remaining_work_seconds":217.382262468338}
+GO3_PROGRESS {"epoch_seconds":1.789993211168e9,"event":"exact_compaction_round","pid":27840,"reductions":20,"stage":"exact_compaction","round":1,"remaining_work_seconds":216.91826248168945}
+GO3_PROGRESS {"epoch_seconds":1.789993211235e9,"event":"exact_compaction_round","pid":27840,"reductions":0,"stage":"exact_compaction","round":2,"remaining_work_seconds":216.8512625694275}
+GO3_PROGRESS {"epoch_seconds":1.789993211622e9,"event":"exact_compaction_verify_begin","pid":27840,"variables":97,"rows":121,"stage":"exact_compaction","remaining_work_seconds":216.46426248550415}
+GO3_PROGRESS {"epoch_seconds":1.789993211714e9,"event":"compaction_proof_columns","pid":27840,"stage":"exact_compaction","checked_columns":153,"remaining_work_seconds":216.37226247787476}
+GO3_PROGRESS {"epoch_seconds":1.789993211874e9,"event":"exact_compaction_verified","pid":27840,"policy":"exact_zero_alias_v1","original_rows_checked":171,"stage":"exact_compaction","proof_steps":20,"source_constraints_weakened":false,"original_columns_checked":153,"compact_manifest_sha256":"259d0bd72e10a671c1f4990e5259d382a2423ad8835b895094e9fb275333aa66","complete":true,"pass":true,"remaining_work_seconds":216.21226239204407}
