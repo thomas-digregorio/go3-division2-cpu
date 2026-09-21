@@ -1,5 +1,30 @@
 # Same-algorithm regression: frozen 2713e5d
 
+## Explicitly authorized replacement after the path-saving failure
+
+The first 617-bus attempt completed optimization and exhaustive verification,
+but the newly lengthened checkout/run identifiers made the retained certificate's
+temporary filename 279 characters long. Windows long-path support was disabled,
+and the frozen controller failed to publish that retained certificate. The queue
+correctly stopped. Its original outputs and consumed authorization remain in
+`C:/Users/thoma/Documents/go3-division2-cpu-2713e5d-regression` without modification.
+
+The user explicitly authorized fixing the saving issue, rerunning 617 cold, then
+continuing. This replacement uses `C:/Users/thoma/Documents/go3-r2713`, short
+`campaign_r2_NNNNN` identifiers, and a new queue/latch. The maximum anticipated
+certificate temporary path is 234 characters, checked against a conservative
+240-character preflight cap. A targeted test invokes the unchanged real
+`Incumbent.consider` / `atomic_json` write-copy-hash-rename sequence at an even
+longer synthetic path and confirms the retained solution and certificate exist.
+Windows registry settings need not change. No numerical source file changes.
+
+The complete 45-stage numerical gate already passed on these exact source bytes
+(93 Python tests, 3,450 Julia assertions); its original evidence is retained and
+hash-audited. The changed registration, path guard and real saving workflow receive
+fresh targeted tests before the replacement is committed, pushed and launched.
+
+## Common frozen contract
+
 User authorization: run the previously selected smaller GO3 Division 2 cases
 on algorithm `2713e5df972f8cae7b77d8963419eba4e1f28424`, including 6,717 buses,
 sequentially, and stop on the first failure. No numerical changes or retry.

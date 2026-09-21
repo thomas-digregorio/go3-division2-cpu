@@ -1,14 +1,33 @@
 {
   "pass": true,
-  "scope": "Registration/stop-on-first-failure synthetic tests only; no competition solve",
-  "tests": 13,
-  "checked_at_utc": "2026-09-21T19:27:48.9956914Z",
+  "scope": "Replacement registration, path guards, stop-on-failure, and real atomic certificate-retention tests only; no competition solve",
+  "tests": 17,
+  "checked_at_utc": "2026-09-21T19:56:17.2351970Z",
   "source_sha256": {
-    "run.py": "2c5caee784a18252ba08128e34f59123088ec56849abf722d7d9d206b59b55fc",
-    "authorization.json": "812c49f512af58e62badac032e12d5d2639c4504ee8f41f39aca98cde6648e2f",
-    "test_harness.py": "892bea2a566f3fe487d3a862cdbe80fdad6ab17175a20cc7c875fbffa8301fe2"
+    "test_harness.py": "bca98b73df73ae284705089d8c7f06b2e793d09f44bbbb7482617607a6942c1c",
+    "configs/C3E4N02000D2_s005.json": "fb12e4a035cbf7d2f45ac443775b1842ff5c9e58c7b676d779c2bea6513275d1",
+    "configs/C3E4N06717D2_s002.json": "89684006a31fa6c2002c8b62d11d3a2f56d2b1cec726eb0033422d24e573fe0c",
+    "configs/C3E4N04224D2_s002.json": "ab3e88682f8200182358866081cec26973fab04e36858e23e7b687dc119bb704",
+    "configs/C3E4N06049D2_s003.json": "fe05173a8af068e09e0f9317d1195e35e437be2b9fbb01ec1fc22250feb1a615",
+    "configs/C3E4N00617D2_s002.json": "e48b87a474e9cf8a20c7248026774a300814203d0ae2da7b83565d018081e0d6",
+    "run.py": "150492b953505edb9fc468e19752f2e8e16df1510a46109d6c070ac7b6345c6a",
+    "authorization.json": "560b22ff4b818c9ce5ce026a81a0787b8e8dc92ec32f08c96af63b72e326b667"
   },
   "original_frozen_source_inventory_matches": true,
-  "component_gate": "Separate complete frozen component suite must also pass before launch",
-  "setup_note": "Restored 111 checkout files to their recorded original byte hashes after core.autocrlf changed line endings. No numerical edits."
+  "output_path_test": {
+    "maximum_planned_temporary_path_characters": 234,
+    "preflight_cap_characters": 240,
+    "real_incumbent_copy_hash_write_rename_test_passed": true,
+    "test_path_longer_than_planned_paths": true,
+    "windows_registry_unchanged": true
+  },
+  "numerical_component_gate": {
+    "stages": 45,
+    "python_tests": 93,
+    "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu-2713e5d-regression\\tmp\\pilot002_component_gate_mo4bbw3l",
+    "julia_assertions": 3450,
+    "all_log_hashes_match": true,
+    "pass": true
+  },
+  "replacement_authorization": "Rerun 617 cold after fixing save paths, then continue smaller-case queue; old failed attempt remains untouched."
 }

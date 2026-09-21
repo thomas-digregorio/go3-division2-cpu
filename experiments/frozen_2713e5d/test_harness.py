@@ -34,6 +34,55 @@ class HarnessTests(unittest.TestCase):
     def test_algorithm_inventory_is_exact(self):
         self.assertTrue(harness.validate_frozen_identity()["original_source_hashes_match"])
 
+    def test_all_case_temporary_paths_fit_legacy_windows(self):
+        for case in harness.authorization()["cases"]:
+            audit = harness.output_path_audit(harness.load(harness.ROOT / case["config_path"]))
+            self.assertLessEqual(audit["maximum_temporary_path_characters"], 240)
+            self.assertFalse(audit["requires_windows_long_paths"])
+
+    def test_original_279_character_failure_is_rejected_before_run(self):
+        case = harness.authorization()["cases"][0]
+        config = harness.load(harness.ROOT / case["config_path"])
+        config["pilot_id"] = "campaign_frozen_2713e5d_n00617_s002"
+        previous_root = harness.ROOT.parent / "go3-division2-cpu-2713e5d-regression"
+        with self.assertRaisesRegex(RuntimeError, "279 characters"):
+            harness.output_path_audit(config, root=previous_root)
+
+    def test_overlong_output_is_rejected_without_creating_directories(self):
+        case = harness.authorization()["cases"][0]
+        config = harness.load(harness.ROOT / case["config_path"])
+        extra_root = harness.ROOT / ("synthetic_overlong_" * 10)
+        self.assertFalse(extra_root.exists())
+        with self.assertRaisesRegex(RuntimeError, "Shorten checkout/run names"):
+            harness.output_path_audit(config, root=extra_root)
+        self.assertFalse(extra_root.exists())
+
+    def test_real_atomic_certificate_retention_at_longest_registered_path(self):
+        from go3cpu.controller import Incumbent
+        configs = [harness.load(harness.ROOT / c["config_path"])
+                   for c in harness.authorization()["cases"]]
+        audit = max((harness.output_path_audit(c) for c in configs),
+                    key=lambda a: a["maximum_temporary_path_characters"])
+        with tempfile.TemporaryDirectory(prefix="io_", dir=harness.ROOT / "tmp") as temporary:
+            directory = Path(temporary)
+            candidate = directory / "synthetic_candidate.json"
+            candidate.write_text('{"synthetic_file_io_test":true}', encoding="utf-8")
+            result, _ = self.valid_result()
+            certificate = result["verified_incumbent"]
+            certificate["candidate_sha256"] = harness.sha256(candidate)
+            # Extra tmp directory makes this path longer than the real run path.
+            output = directory / audit["run_name_template"] / "verified_incumbent"
+            longest = output / certificate["candidate_sha256"] / ("certificate.json." + "0" * 32 + ".pending")
+            self.assertGreaterEqual(len(str(longest)), audit["maximum_temporary_path_characters"])
+            self.assertLess(len(str(longest)), 260)
+            incumbent = Incumbent(output, prefer_physical=True)
+            self.assertTrue(incumbent.consider(candidate, certificate))
+            saved = output / certificate["candidate_sha256"] / "certificate.json"
+            retained = harness.load(saved)
+            self.assertEqual(retained, incumbent.record)
+            self.assertEqual(harness.sha256(retained["retained_solution"]), certificate["candidate_sha256"])
+            self.assertEqual(list(saved.parent.glob("*.pending")), [])
+
     def test_numerical_changes_rejected(self):
         baseline = harness.load(harness.ROOT / harness.authorization()["baseline_config"])
         config = copy.deepcopy(baseline)

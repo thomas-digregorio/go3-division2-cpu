@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "pilot_id": "campaign_frozen_2713e5d_n02000_s005",
+  "pilot_id": "campaign_r2_02000",
   "network": "C3E4N02000D2",
   "scenario": "005",
   "input_path": "data/raw/C3E4N02000D2_s005/scenario.json",

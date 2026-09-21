@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 ALGORITHM = "2713e5df972f8cae7b77d8963419eba4e1f28424"
 ORDER = ["C3E4N00617D2", "C3E4N02000D2", "C3E4N04224D2", "C3E4N06049D2", "C3E4N06717D2"]
+MAX_TEMPORARY_PATH = 240
 IDENTITY_FIELDS = {"pilot_id", "campaign_order_policy", "network", "scenario",
                    "input_path", "input_sha256", "case_manifest_path", "comparison_manifest_path"}
 sys.path.insert(0, str(ROOT))
@@ -40,6 +41,10 @@ def authorization():
             or auth["stop_on_first_failure"] is not True
             or auth["maximum_full_runs_per_case"] != 1
             or auth["total_seconds_per_case"] != 7200
+            or auth.get("output_path_policy") != {
+                "policy": "short_paths_legacy_windows_v1",
+                "maximum_temporary_path_characters": MAX_TEMPORARY_PATH,
+                "registry_changes_required": False}
             or [x["network"] for x in auth["cases"]] != ORDER):
         raise RuntimeError("Frozen regression differs from the user's explicit authorization")
     return auth
@@ -56,6 +61,36 @@ def validate_config(config, baseline):
 
 def queue_directory(auth):
     return ROOT / "runs" / auth["experiment_id"]
+
+
+def output_path_audit(config, root=ROOT):
+    """Check the unchanged controller's final AND temporary filenames before solve.
+
+    Include its 64-character candidate hash and 32-character atomic-write UUID.
+    The 240-character cap leaves headroom below legacy Windows MAX_PATH even
+    when long-path support is disabled. This function creates no directories.
+    """
+    root = local_path(root)
+    run_name = f"{config['network']}_s{config['scenario']}_{config['pilot_id']}_20260921T235959Z"
+    run = root / "runs" / run_name
+    suffix = "." + "0" * 32 + ".pending"
+    paths = [
+        run / "verified_incumbent" / ("0" * 64) / ("certificate.json" + suffix),
+        run / "verified_incumbent" / ("0" * 64) / "solution.json.pending",
+        run / "verification_records" / ("final.json" + suffix),
+        run / "worker" / "progress" / ("00000001.json" + suffix),
+        run / "worker" / "statistics" / "scheduling_events" / ("00000001.json" + suffix),
+        run / ("completion.json" + suffix),
+    ]
+    longest = max(paths, key=lambda p: len(str(p)))
+    count = len(str(longest))
+    if count > MAX_TEMPORARY_PATH:
+        raise RuntimeError(f"Output temporary path has {count} characters; maximum "
+                           f"{MAX_TEMPORARY_PATH}. Shorten checkout/run names before launch: {longest}")
+    return {"policy": "short_paths_legacy_windows_v1", "run_name_template": run_name,
+            "maximum_temporary_path_characters": count,
+            "guard_characters": MAX_TEMPORARY_PATH, "longest_path_template": str(longest),
+            "requires_windows_long_paths": False}
 
 
 def validate_frozen_identity():
@@ -124,6 +159,7 @@ def read_outcome(case, returncode=None):
                completion_sha256=sha256(run / "completion.json"))
     if not passed:
         row["failure"] = result.get("worker_error") or result.get("controller_error") or \
+            result.get("final_verification_error") or \
             "Incomplete pipeline, failed verification/quality gate, or exceeded deadline"
     return row
 
@@ -139,6 +175,7 @@ def regression_latch(root, config):
     if any(config[k] != case[k] for k in ("network", "scenario", "input_sha256")):
         raise RuntimeError("Registered case identity changed")
     validate_config(config, load(ROOT / auth["baseline_config"]))
+    output_path_audit(config)
     state = latest_snapshot(queue_directory(auth) / "state")
     if state.get("status") != "RUNNING" or state.get("current_pilot_id") != config["pilot_id"]:
         raise RuntimeError("Case was not selected by the stop-on-failure queue")
@@ -154,11 +191,18 @@ def check_registration(require_clean=True):
     for case in auth["cases"]:
         config = load(ROOT / case["config_path"])
         validate_config(config, load(ROOT / auth["baseline_config"]))
+        output_path_audit(config)
         if sha256(ROOT / config["input_path"]) != case["input_sha256"]:
             raise RuntimeError(f"Changed input for {case['network']}")
         if (ROOT / "runs" / (case["pilot_id"] + "_latch.json")).exists():
             raise RuntimeError("A regression authorization has already been consumed; no retry")
     if require_clean:
+        report = load(HERE / "harness_test_report.json")
+        if report.get("pass") is not True:
+            raise RuntimeError("Registration and actual certificate-save tests have not passed")
+        for name, digest in report["source_sha256"].items():
+            if sha256(HERE / name) != digest:
+                raise RuntimeError(f"Registration changed after tests: {name}")
         if frozen.git("status", "--porcelain"):
             raise RuntimeError("Commit and push registration/test evidence before launch")
         branch = frozen.git("branch", "--show-current")
@@ -178,6 +222,7 @@ def run_case(identifier):
     config, env, record = frozen.preflight(path)
     record.update(identity)
     record["experiment_authorization_sha256"] = sha256(HERE / "authorization.json")
+    record["output_path_audit"] = output_path_audit(config)
     return frozen.execute(path, config, env, record)
 
 

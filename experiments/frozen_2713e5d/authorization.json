@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "experiment_id": "frozen_2713e5d_regression_20260921",
+  "experiment_id": "f2713_r2_20260921",
   "algorithm_commit": "2713e5df972f8cae7b77d8963419eba4e1f28424",
   "baseline_config": "config/campaign_n08316_s103_r03.json",
   "explicit_user_authorization": true,
-  "user_request": "Run the 2713e5d commit on the smaller bus networks including 6717; post times and scores; stop at the first failure.",
+  "user_request": "Fix the long-name saving issue, rerun and save the 617-bus case, then continue the remaining smaller cases on the unchanged 2713e5d algorithm. Preserve the first failed attempt; stop on the first new failure.",
   "cold_start_required": true,
   "maximum_full_runs_per_case": 1,
   "total_seconds_per_case": 7200,
@@ -18,39 +18,45 @@
   ],
   "cases": [
     {
-      "pilot_id": "campaign_frozen_2713e5d_n00617_s002",
+      "pilot_id": "campaign_r2_00617",
       "network": "C3E4N00617D2",
       "scenario": "002",
       "config_path": "experiments/frozen_2713e5d/configs/C3E4N00617D2_s002.json",
       "input_sha256": "d143b112b9d6959cc59a2c074b041f1b6dcfed4598539d8ae761ea48bba8d1c9"
     },
     {
-      "pilot_id": "campaign_frozen_2713e5d_n02000_s005",
+      "pilot_id": "campaign_r2_02000",
       "network": "C3E4N02000D2",
       "scenario": "005",
       "config_path": "experiments/frozen_2713e5d/configs/C3E4N02000D2_s005.json",
       "input_sha256": "a0036576821f955e79fcf260b66fefbc9ab31127a48a788d0da84b0d8acd81bf"
     },
     {
-      "pilot_id": "campaign_frozen_2713e5d_n04224_s002",
+      "pilot_id": "campaign_r2_04224",
       "network": "C3E4N04224D2",
       "scenario": "002",
       "config_path": "experiments/frozen_2713e5d/configs/C3E4N04224D2_s002.json",
       "input_sha256": "e61ef19ea11a20c88f44a3a2b69a4e6a7588e0df77c401766a495199f87e8855"
     },
     {
-      "pilot_id": "campaign_frozen_2713e5d_n06049_s003",
+      "pilot_id": "campaign_r2_06049",
       "network": "C3E4N06049D2",
       "scenario": "003",
       "config_path": "experiments/frozen_2713e5d/configs/C3E4N06049D2_s003.json",
       "input_sha256": "312b066e51e4e058d0f2e1a96ea32c8f30a3f1dbfc9c4266b6d5d73af4206e41"
     },
     {
-      "pilot_id": "campaign_frozen_2713e5d_n06717_s002",
+      "pilot_id": "campaign_r2_06717",
       "network": "C3E4N06717D2",
       "scenario": "002",
       "config_path": "experiments/frozen_2713e5d/configs/C3E4N06717D2_s002.json",
       "input_sha256": "bccfff47a3f6de9d28117d8c76aabf47716afb92a16982067764dcc6f34f769e"
     }
-  ]
+  ],
+  "replaces_experiment_id": "frozen_2713e5d_regression_20260921",
+  "output_path_policy": {
+    "policy": "short_paths_legacy_windows_v1",
+    "maximum_temporary_path_characters": 240,
+    "registry_changes_required": false
+  }
 }
