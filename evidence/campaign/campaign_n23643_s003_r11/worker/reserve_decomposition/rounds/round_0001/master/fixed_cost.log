@@ -1,0 +1,505 @@
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+  LP      : 
+Rows      : 10931162
+Cols      : 8043170
+Nonzeros  : 32733724
+Coefficient ranges:
+  Matrix  [1e-05, 6e+03]
+  Cost    [1e-01, 1e+06]
+  Bound   [1e-04, 3e+02]
+  RHS     [1e-05, 6e+03]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+Presolving model
+Presolve rules not allowed:
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+2212343 rows, 5420462 cols, 7634224 nonzeros 7s
+Dependent equations search running on 863966 equations with time limit of 7.00s
+Dependent equations search removed 0 rows and 0 nonzeros in 0.11s (limit = 7.00s)
+
+865224 rows, 5412330 cols, 6278716 nonzeros 11s
+Presolve reductions: rows 865224(-10065938); columns 5412330(-2630840); nonzeros 6278716(-26455008) 
+Solving the presolved LP
+Scaling: Matrix has [min, max] values of [1, 1] within [0.2, 5] so no scaling performed
+Using dual simplex solver
+LP  has all |entries|=1; max column count = 6 (limit 24); average column count = 1.2 (limit 6): LP is a candidate for LiDSE
+Cost perturbation for 
+   Initially have 3691070 nonzero costs ( 68%) with min / average / max = 1 / 21315.5 / 1e+06
+   Large so set max_abs_cost = sqrt(sqrt(max_abs_cost)) = 31.6228
+   Perturbation column base = 1.58114e-05
+   Perturbation row    base = 1e-12
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh1          0     0.0000000000e+00 Ph1: 0(0) No reason
+DuPh2          0    -1.2759196109e+10 Pr: 834509(1.18415e+07) No reason
+DuPh2       2632    -1.2156275454e+10 Pr: 832059(1.11627e+07); Du: 0(2.39327e-08) Synthetic clock
+DuPh2       5265    -1.1901478531e+10 Pr: 829457(1.08239e+07); Du: 0(1.92848e-08) Synthetic clock
+DuPh2       7899    -1.1587256790e+10 Pr: 826894(1.05498e+07); Du: 0(1.65938e-08) Synthetic clock
+DuPh2      10536    -1.1306781386e+10 Pr: 824801(1.0308e+07); Du: 0(1.87752e-08) Synthetic clock
+DuPh2      13174    -1.1027025867e+10 Pr: 822980(1.00879e+07); Du: 0(1.50871e-08) Synthetic clock
+DuPh2      15814    -1.0791031806e+10 Pr: 821589(9.88432e+06); Du: 0(1.5474e-08) Synthetic clock
+DuPh2      18455    -1.0587502369e+10 Pr: 819960(9.69488e+06); Du: 0(1.54829e-08) Synthetic clock
+DuPh2      21098    -1.0401157836e+10 Pr: 818635(9.51353e+06); Du: 0(1.77655e-08) Synthetic clock
+DuPh2      23742    -1.0229027268e+10 Pr: 817193(9.33968e+06); Du: 0(1.56633e-08) Synthetic clock
+DuPh2      26388    -1.0036818403e+10 Pr: 815600(9.17375e+06); Du: 0(1.33012e-08) Synthetic clock
+DuPh2      29036    -9.8729562953e+09 Pr: 814154(9.01349e+06); Du: 0(1.42124e-08) Synthetic clock
+DuPh2      31685    -9.7158530827e+09 Pr: 812381(8.85922e+06); Du: 0(1.57341e-08) Synthetic clock
+DuPh2      34336    -9.5576974727e+09 Pr: 810800(8.71136e+06); Du: 0(1.19022e-08) Synthetic clock
+DuPh2      36988    -9.3965744656e+09 Pr: 809088(8.5694e+06); Du: 0(1.14807e-08) Synthetic clock
+DuPh2      39642    -9.2428009934e+09 Pr: 807342(8.43255e+06); Du: 0(1.85773e-08) Synthetic clock
+DuPh2      42297    -9.0719927201e+09 Pr: 805652(8.30039e+06); Du: 0(1.63096e-08) Synthetic clock
+DuPh2      44954    -8.9264937309e+09 Pr: 803871(8.17291e+06); Du: 0(1.39867e-08) Synthetic clock
+DuPh2      47613    -8.7901116174e+09 Pr: 801998(8.05025e+06); Du: 0(1.37423e-08) Synthetic clock
+DuPh2      50273    -8.6278291690e+09 Pr: 800140(7.93126e+06); Du: 0(1.45817e-08) Synthetic clock
+DuPh2      52935    -8.5149203792e+09 Pr: 798308(7.8149e+06); Du: 0(1.52051e-08) Synthetic clock
+DuPh2      55598    -8.4099531499e+09 Pr: 796413(7.70215e+06); Du: 0(1.5339e-08) Synthetic clock
+DuPh2      58263    -8.2918669052e+09 Pr: 794520(7.59273e+06); Du: 0(1.12612e-08) Synthetic clock
+DuPh2      60929    -8.1967080905e+09 Pr: 792503(7.48536e+06); Du: 0(1.24367e-08) Synthetic clock
+DuPh2      63597    -8.0819287852e+09 Pr: 790567(7.38029e+06); Du: 0(1.03772e-08) Synthetic clock
+DuPh2      66266    -7.9663417777e+09 Pr: 788613(7.27683e+06); Du: 0(1.33608e-08) Synthetic clock
+DuPh2      68937    -7.8523411996e+09 Pr: 786656(7.17473e+06); Du: 0(1.49215e-08) Synthetic clock
+DuPh2      71610    -7.7172380339e+09 Pr: 784666(7.0748e+06); Du: 0(1.21456e-08) Synthetic clock
+DuPh2      74284    -7.6262576021e+09 Pr: 782691(6.97634e+06); Du: 0(1.6677e-08) Synthetic clock
+DuPh2      76960    -7.5491746429e+09 Pr: 780576(6.87987e+06); Du: 0(1.49009e-08) Synthetic clock
+DuPh2      79637    -7.4507087646e+09 Pr: 778536(6.78507e+06); Du: 0(1.29775e-08) Synthetic clock
+DuPh2      82316    -7.3574054042e+09 Pr: 776571(6.69194e+06); Du: 0(1.07063e-08) Synthetic clock
+DuPh2      84996    -7.2523260759e+09 Pr: 774544(6.60033e+06); Du: 0(1.21997e-08) Synthetic clock
+DuPh2      87678    -7.1563294673e+09 Pr: 772395(6.51032e+06); Du: 0(1.04071e-08) Synthetic clock
+DuPh2      90362    -7.0757339193e+09 Pr: 770185(6.42177e+06); Du: 0(1.04787e-08) Synthetic clock
+DuPh2      93047    -6.9931935440e+09 Pr: 768151(6.3343e+06); Du: 0(1.20663e-08) Synthetic clock
+DuPh2      95734    -6.9130831093e+09 Pr: 766089(6.24806e+06); Du: 0(9.61271e-09) Synthetic clock
+DuPh2      98422    -6.8255698635e+09 Pr: 764298(6.16281e+06); Du: 0(1.39961e-08) Synthetic clock
+DuPh2     101112    -6.7414500811e+09 Pr: 762123(6.07991e+06); Du: 0(8.91225e-09) Synthetic clock
+DuPh2     103804    -6.6472926267e+09 Pr: 760318(5.99676e+06); Du: 0(9.33574e-09) Synthetic clock
+DuPh2     106497    -6.5712276596e+09 Pr: 758056(5.9162e+06); Du: 0(9.01714e-09) Synthetic clock
+DuPh2     109192    -6.4893456201e+09 Pr: 755693(5.83659e+06); Du: 0(9.44507e-09) Synthetic clock
+DuPh2     111889    -6.4275654329e+09 Pr: 753329(5.75774e+06); Du: 0(9.80794e-09) Synthetic clock
+DuPh2     114587    -6.3424855860e+09 Pr: 750917(5.6797e+06); Du: 0(9.42103e-09) Synthetic clock
+DuPh2     117287    -6.2583450077e+09 Pr: 748577(5.60261e+06); Du: 0(1.08925e-08) Synthetic clock
+DuPh2     119989    -6.1708334955e+09 Pr: 746206(5.52636e+06); Du: 0(1.10332e-08) Synthetic clock
+DuPh2     122693    -6.0996147696e+09 Pr: 744503(5.44931e+06); Du: 0(1.04947e-08) Synthetic clock
+DuPh2     125398    -6.0325991173e+09 Pr: 742133(5.37484e+06); Du: 0(8.83932e-09) Synthetic clock
+DuPh2     128105    -5.9535440516e+09 Pr: 739707(5.30136e+06); Du: 0(7.63916e-09) Synthetic clock
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2     130814    -5.8823060144e+09 Pr: 737295(5.22877e+06); Du: 0(8.04626e-09) Synthetic clock
+DuPh2     133525    -5.8145779778e+09 Pr: 734779(5.15695e+06); Du: 0(8.57198e-09) Synthetic clock
+DuPh2     136237    -5.7510933387e+09 Pr: 732319(5.08568e+06); Du: 0(1.04649e-08) Synthetic clock
+DuPh2     138951    -5.6865295194e+09 Pr: 729839(5.01542e+06); Du: 0(1.09753e-08) Synthetic clock
+DuPh2     141667    -5.6150535014e+09 Pr: 727332(4.94597e+06); Du: 0(8.86243e-09) Synthetic clock
+DuPh2     144385    -5.5277738753e+09 Pr: 724869(4.87714e+06); Du: 0(1.06942e-08) Synthetic clock
+DuPh2     147104    -5.4720724225e+09 Pr: 722269(4.80934e+06); Du: 0(7.8512e-09) Synthetic clock
+DuPh2     149825    -5.4085740259e+09 Pr: 719686(4.74238e+06); Du: 0(8.56954e-09) Synthetic clock
+DuPh2     152548    -5.3594644085e+09 Pr: 717248(4.67574e+06); Du: 0(7.03015e-09) Synthetic clock
+DuPh2     155273    -5.3056204872e+09 Pr: 714670(4.60999e+06); Du: 0(7.3433e-09) Synthetic clock
+DuPh2     158000    -5.2447647786e+09 Pr: 712142(4.5447e+06); Du: 0(8.5289e-09) Synthetic clock
+DuPh2     160729    -5.1984221120e+09 Pr: 709556(4.48011e+06); Du: 0(6.57142e-09) Synthetic clock
+DuPh2     163460    -5.1391262854e+09 Pr: 707165(4.41571e+06); Du: 0(1.00493e-08) Synthetic clock
+DuPh2     166193    -5.0800641288e+09 Pr: 704643(4.35239e+06); Du: 0(7.43445e-09) Synthetic clock
+DuPh2     168927    -5.0224473232e+09 Pr: 702081(4.28958e+06); Du: 0(7.8203e-09) Synthetic clock
+DuPh2     171663    -4.9467502878e+09 Pr: 699438(4.22772e+06); Du: 0(6.36041e-09) Synthetic clock
+DuPh2     174401    -4.8584825251e+09 Pr: 696832(4.16671e+06); Du: 0(8.4905e-09) Synthetic clock
+DuPh2     177141    -4.8026062156e+09 Pr: 694190(4.10626e+06); Du: 0(8.42461e-09) Synthetic clock
+DuPh2     179883    -4.7458695653e+09 Pr: 691537(4.04669e+06); Du: 0(6.51323e-09) Synthetic clock
+DuPh2     182626    -4.6936398850e+09 Pr: 688965(3.98765e+06); Du: 0(8.30851e-09) Synthetic clock
+DuPh2     185371    -4.6217707278e+09 Pr: 686638(3.92896e+06); Du: 0(7.21841e-09) Synthetic clock
+DuPh2     188118    -4.5578749681e+09 Pr: 684016(3.8716e+06); Du: 0(7.11414e-09) Synthetic clock
+DuPh2     190867    -4.4975029926e+09 Pr: 681492(3.81497e+06); Du: 0(7.27049e-09) Synthetic clock
+DuPh2     193618    -4.4356493590e+09 Pr: 678886(3.75914e+06); Du: 0(6.69075e-09) Synthetic clock
+DuPh2     196370    -4.3824453707e+09 Pr: 677375(3.70171e+06); Du: 0(6.31127e-09) Synthetic clock
+DuPh2     199124    -4.3207000838e+09 Pr: 674686(3.64735e+06); Du: 0(7.92601e-09) Synthetic clock
+DuPh2     201880    -4.2686625563e+09 Pr: 672025(3.59359e+06); Du: 0(8.69804e-09) Synthetic clock
+DuPh2     204638    -4.2083622711e+09 Pr: 669482(3.54031e+06); Du: 0(6.12215e-09) Synthetic clock
+DuPh2     207398    -4.1649463474e+09 Pr: 666788(3.48781e+06); Du: 0(6.87818e-09) Synthetic clock
+DuPh2     210160    -4.1144142835e+09 Pr: 664178(3.43603e+06); Du: 0(6.20942e-09) Synthetic clock
+DuPh2     212924    -4.0694409855e+09 Pr: 661466(3.38473e+06); Du: 0(6.20942e-09) Synthetic clock
+DuPh2     215690    -4.0311623923e+09 Pr: 658830(3.33398e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     218458    -3.9755011834e+09 Pr: 656196(3.28395e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     221227    -3.9251938262e+09 Pr: 655522(3.23026e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     223998    -3.8614471605e+09 Pr: 652751(3.18142e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     226771    -3.7960657230e+09 Pr: 650163(3.1329e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     229546    -3.7397623092e+09 Pr: 647388(3.08498e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     232323    -3.7001969630e+09 Pr: 644912(3.03705e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     235102    -3.6482402453e+09 Pr: 642133(2.98986e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     237883    -3.5833791884e+09 Pr: 641272(2.93955e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     240666    -3.5370889755e+09 Pr: 638489(2.89328e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     243451    -3.4807358261e+09 Pr: 635704(2.84746e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     246238    -3.4397669889e+09 Pr: 633218(2.80155e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     249027    -3.3834526688e+09 Pr: 630429(2.75663e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     251818    -3.3317946221e+09 Pr: 627638(2.71232e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     254610    -3.2738144721e+09 Pr: 624846(2.66861e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     257404    -3.2416533585e+09 Pr: 622052(2.62534e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     260200    -3.1989666970e+09 Pr: 619256(2.58275e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     262998    -3.1502212267e+09 Pr: 616458(2.5407e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     265798    -3.1075838469e+09 Pr: 615784(2.49544e+06); Du: 0(5.94465e-09) Synthetic clock
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2     268600    -3.0618100428e+09 Pr: 612982(2.45436e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     271404    -3.0222000990e+09 Pr: 611746(2.41138e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     274210    -2.9884737119e+09 Pr: 608940(2.37102e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     277018    -2.9548334580e+09 Pr: 606132(2.33107e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     279828    -2.9162903076e+09 Pr: 603903(2.29092e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     282640    -2.8730814324e+09 Pr: 602349(2.25165e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     285454    -2.8364435853e+09 Pr: 599535(2.21337e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     288270    -2.7933227340e+09 Pr: 596719(2.17558e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     291088    -2.7558053916e+09 Pr: 593901(2.13825e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     293908    -2.7181036923e+09 Pr: 591082(2.10128e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     296730    -2.6837423519e+09 Pr: 588260(2.06457e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     299555    -2.6443624170e+09 Pr: 585435(2.02824e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     302382    -2.6065342302e+09 Pr: 582608(1.99228e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     305211    -2.5717142863e+09 Pr: 579779(1.9567e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     308042    -2.5317950489e+09 Pr: 578757(1.91949e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     310875    -2.4967194996e+09 Pr: 575924(1.88589e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     313710    -2.4674502555e+09 Pr: 573089(1.85162e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     316547    -2.4322722036e+09 Pr: 570252(1.81772e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     319386    -2.4012743781e+09 Pr: 567413(1.78506e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     322227    -2.3673829971e+09 Pr: 568633(1.75025e+06); Du: 0(5.94465e-09) Synthetic clock
+DuPh2     325070    -2.3329356014e+09 Pr: 565790(1.71847e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     327915    -2.3044889229e+09 Pr: 566145(1.68065e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     330763    -2.2714386638e+09 Pr: 563297(1.65001e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     333613    -2.2417433166e+09 Pr: 560447(1.61826e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     336465    -2.2024865844e+09 Pr: 559706(1.58543e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     339319    -2.1668862039e+09 Pr: 556852(1.55457e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     342175    -2.1346055707e+09 Pr: 553996(1.52417e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     345033    -2.0955420713e+09 Pr: 551138(1.4942e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     347894    -2.0605138355e+09 Pr: 551251(1.46064e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     350757    -2.0302952721e+09 Pr: 548388(1.43133e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     353622    -2.0058503508e+09 Pr: 545523(1.40245e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     356489    -1.9751670439e+09 Pr: 542656(1.37493e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     359358    -1.9442678681e+09 Pr: 544857(1.3434e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     362230    -1.9209056210e+09 Pr: 544142(1.31428e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     365104    -1.8950392687e+09 Pr: 541268(1.28696e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     367980    -1.8676818834e+09 Pr: 540891(1.25753e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     370859    -1.8339426396e+09 Pr: 538012(1.23128e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     373740    -1.8040786381e+09 Pr: 544259(1.19517e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     376623    -1.7727826250e+09 Pr: 548519(1.16087e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     379508    -1.7446279634e+09 Pr: 547503(1.13497e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     382396    -1.7178150656e+09 Pr: 548039(1.11064e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     385286    -1.6891721899e+09 Pr: 545149(1.08783e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     388179    -1.6574436330e+09 Pr: 545922(1.05909e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     391074    -1.6298137211e+09 Pr: 546432(1.03136e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     393972    -1.6111513023e+09 Pr: 545666(1.00673e+06); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     396873    -1.5867932048e+09 Pr: 548913(980588); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     399776    -1.5625450860e+09 Pr: 552799(950466); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     402682    -1.5388400643e+09 Pr: 549893(928924); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     405591    -1.5139735108e+09 Pr: 550502(903415); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     408502    -1.4947907505e+09 Pr: 547593(883021); Du: 0(5.30071e-09) Synthetic clock
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2     411416    -1.4728210842e+09 Pr: 544679(863146); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     414333    -1.4496180907e+09 Pr: 545242(840545); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     417253    -1.4280725025e+09 Pr: 542322(824274); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     420176    -1.3901597567e+09 Pr: 539401(806003); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     423101    -1.3593475985e+09 Pr: 536476(788022); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     426029    -1.3414534152e+09 Pr: 536465(767927); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     428960    -1.3203040295e+09 Pr: 533539(752214); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     431894    -1.3010742045e+09 Pr: 530605(736849); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     434831    -1.2812859145e+09 Pr: 527668(719387); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     437771    -1.2602683196e+09 Pr: 524728(703247); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     440713    -1.2383075483e+09 Pr: 526738(681683); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     443658    -1.2228449307e+09 Pr: 523793(666608); Du: 0(5.30071e-09) Synthetic clock
+DuPh2     446606    -1.2016355968e+09 Pr: 520845(651736); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     449557    -1.1832336296e+09 Pr: 517896(635917); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     452510    -1.1330197030e+09 Pr: 520004(617792); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     455467    -1.1185853625e+09 Pr: 517047(603444); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     458427    -1.1011591885e+09 Pr: 514087(589777); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     461390    -1.0861849876e+09 Pr: 511124(576873); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     464356    -1.0693339229e+09 Pr: 508158(563083); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     467325    -1.0543466567e+09 Pr: 505189(548591); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     470296    -1.0361805451e+09 Pr: 511528(524463); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     473271    -1.0232171492e+09 Pr: 508557(510360); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     476249    -1.0102214222e+09 Pr: 505579(497424); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     479230    -9.9623964760e+08 Pr: 502598(485732); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     482214    -9.8261011856e+08 Pr: 499614(473266); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     485201    -9.6674252836e+08 Pr: 502520(454057); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     488190    -9.4958421746e+08 Pr: 510772(427612); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     491183    -9.3632476665e+08 Pr: 507781(416111); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     494179    -9.2488014250e+08 Pr: 504785(404544); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     497179    -9.1336996920e+08 Pr: 501785(393134); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     500182    -9.0196042578e+08 Pr: 502830(378894); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     503189    -8.9056480174e+08 Pr: 504857(363600); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     506199    -8.7955813439e+08 Pr: 501847(353578); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     509213    -8.6669880697e+08 Pr: 504426(339913); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     512229    -8.5353591026e+08 Pr: 507439(322978); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     515248    -8.4399221651e+08 Pr: 509331(308799); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     518272    -8.3245370243e+08 Pr: 506307(300795); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     521299    -8.2238973742e+08 Pr: 503280(292334); Du: 0(4.30622e-09) Synthetic clock
+DuPh2     524330    -8.1320077129e+08 Pr: 500251(283259); Du: 0(4.37184e-09) Synthetic clock
+DuPh2     527364    -8.0476843223e+08 Pr: 497217(275718); Du: 0(4.37184e-09) Synthetic clock
+DuPh2     530402    -7.9636270720e+08 Pr: 494179(267964); Du: 0(4.20705e-09) Synthetic clock
+DuPh2     533443    -7.8629443433e+08 Pr: 491138(261183); Du: 0(4.20705e-09) Synthetic clock
+DuPh2     536486    -7.7734214125e+08 Pr: 492211(253087); Du: 0(4.20705e-09) Synthetic clock
+DuPh2     539533    -7.6817087431e+08 Pr: 489164(247720); Du: 0(4.20705e-09) Synthetic clock
+DuPh2     542584    -7.5933056050e+08 Pr: 486113(242223); Du: 0(4.20705e-09) Synthetic clock
+DuPh2     545637    -7.4660213577e+08 Pr: 489033(229240); Du: 0(4.20705e-09) Synthetic clock
+DuPh2     548694    -7.3740678773e+08 Pr: 485978(224464); Du: 0(4.20705e-09) Synthetic clock
+DuPh2     551753    -7.2656373647e+08 Pr: 488726(214097); Du: 0(4.20705e-09) Synthetic clock
+DuPh2     554816    -7.1378437669e+08 Pr: 485665(213001); Du: 0(4.20705e-09) Synthetic clock
+DuPh2     557881    -7.0362787880e+08 Pr: 482600(211194); Du: 0(4.20705e-09) Synthetic clock
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2     560949    -6.9195955888e+08 Pr: 479532(209469); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     564019    -6.7943705885e+08 Pr: 476462(209241); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     567091    -6.6753211854e+08 Pr: 476470(206595); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     570166    -6.5951660114e+08 Pr: 473395(204612); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     573243    -6.5340500446e+08 Pr: 470318(201768); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     576324    -6.4788821301e+08 Pr: 467237(198307); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     579408    -6.4138221378e+08 Pr: 466947(193463); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     582494    -6.3444918986e+08 Pr: 465460(189928); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     585581    -6.2665484853e+08 Pr: 466266(185625); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     588672    -6.0806442329e+08 Pr: 465393(182226); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     591766    -6.0072723722e+08 Pr: 466052(177413); Du: 0(4.11506e-09) Synthetic clock
+DuPh2     594861    -5.8942930637e+08 Pr: 464257(175533); Du: 0(3.2219e-09) Synthetic clock
+DuPh2     597667    -5.8350155783e+08 Pr: 465093(172068); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     600473    -5.7210926396e+08 Pr: 487612(149531); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     603575    -5.6249524990e+08 Pr: 507172(129710); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     606674    -5.5840127810e+08 Pr: 519291(114415); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     609775    -5.5371334191e+08 Pr: 534447(97519.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     612881    -5.4592915469e+08 Pr: 539412(89221.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     615990    -5.3704852261e+08 Pr: 538167(87439.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     619102    -5.2982266425e+08 Pr: 535055(88124.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     622216    -5.2689863048e+08 Pr: 533000(86409.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     625330    -5.2151281254e+08 Pr: 533555(82229.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     628446    -5.1782358774e+08 Pr: 532260(80431.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     631566    -5.1507348585e+08 Pr: 530696(78031.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     634683    -5.1151705676e+08 Pr: 533774(71200.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     637804    -5.0944033773e+08 Pr: 531456(70453.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     640930    -5.0785085961e+08 Pr: 528476(69615.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     644057    -5.0522945709e+08 Pr: 526575(67979.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     647188    -5.0398218878e+08 Pr: 523444(67521.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     650321    -5.0301562449e+08 Pr: 520311(67289.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     653454    -5.0187039549e+08 Pr: 519937(63756.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     656583    -5.0053201562e+08 Pr: 519626(59749.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     659712    -4.9897735152e+08 Pr: 521800(53370.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     662854    -4.9739023103e+08 Pr: 519603(51818.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     665988    -4.9587357963e+08 Pr: 519655(48361); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     668487    -4.9507705901e+08 Pr: 517865(47909.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     670891    -4.9409841943e+08 Pr: 517542(45907.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     673574    -4.9325203574e+08 Pr: 517771(43797.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     675875    -4.9258421982e+08 Pr: 516318(43121); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     678339    -4.9171239045e+08 Pr: 515575(41656.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     680755    -4.9075019309e+08 Pr: 515201(40209.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     683016    -4.9002053445e+08 Pr: 513564(39875.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     685819    -4.8925510957e+08 Pr: 512928(38627.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     688976    -4.8850664871e+08 Pr: 512459(36828.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     692141    -4.8736726978e+08 Pr: 509308(36921.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     695300    -4.8688442009e+08 Pr: 506827(36031); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     697995    -4.8645203001e+08 Pr: 504336(36149.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     701175    -4.8607713390e+08 Pr: 501156(36277.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     704355    -4.8574797397e+08 Pr: 498010(36150.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     707543    -4.8545484053e+08 Pr: 494822(36230.6); Du: 0(2.26191e-09) Synthetic clock
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2     710735    -4.8500140790e+08 Pr: 491630(36339.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     713930    -4.8471547506e+08 Pr: 488435(36336.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     717118    -4.8426313504e+08 Pr: 487501(34666.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     720321    -4.8395819923e+08 Pr: 484298(34747.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     723524    -4.8364543945e+08 Pr: 481944(34123.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     726733    -4.8335790832e+08 Pr: 478983(33808.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     729946    -4.8310577905e+08 Pr: 475770(33858.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     733152    -4.8288415116e+08 Pr: 472676(33169.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     736373    -4.8253896039e+08 Pr: 469455(33208.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     739593    -4.8216975899e+08 Pr: 466267(33018.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     742821    -4.8186701173e+08 Pr: 463039(33118.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     746052    -4.8164879116e+08 Pr: 459808(33233.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     749280    -4.8060526181e+08 Pr: 456809(32771.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     752512    -4.8021469559e+08 Pr: 454303(32332.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     755753    -4.8003033269e+08 Pr: 451062(32404.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     758999    -4.7983705543e+08 Pr: 447816(32425.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     762245    -4.7961698548e+08 Pr: 445209(31972.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     765489    -4.7942500674e+08 Pr: 442217(31779.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     768746    -4.7907580116e+08 Pr: 438960(31844.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     772007    -4.7888404870e+08 Pr: 435700(31924.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     775265    -4.7869889963e+08 Pr: 432503(31528.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     778534    -4.7848297216e+08 Pr: 429234(31555.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     781799    -4.7820631851e+08 Pr: 426626(30987.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     785075    -4.7801831393e+08 Pr: 423350(31022); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     788351    -4.7772888583e+08 Pr: 420569(30611.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     791631    -4.7735459392e+08 Pr: 418231(29630); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     794914    -4.7716860645e+08 Pr: 415436(29197.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     798198    -4.7695050283e+08 Pr: 412155(29200.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     801493    -4.7677420866e+08 Pr: 408860(29232.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     804790    -4.7646184254e+08 Pr: 405637(28812.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     808079    -4.7625068099e+08 Pr: 403075(28519.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     811045    -4.7607872621e+08 Pr: 400111(28553.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     814342    -4.7583440905e+08 Pr: 397020(28364.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     817645    -4.7555609007e+08 Pr: 394180(27946.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     820950    -4.7530098931e+08 Pr: 391993(27186.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     823947    -4.7502505319e+08 Pr: 389893(25920.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     827265    -4.7484234763e+08 Pr: 386585(25956.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     830582    -4.7465296818e+08 Pr: 383977(25143.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     833907    -4.7433931242e+08 Pr: 380666(25013.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     837234    -4.7416879344e+08 Pr: 377341(25062.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     840550    -4.7390655458e+08 Pr: 375467(23678); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     843884    -4.7373661421e+08 Pr: 372140(23663.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     847173    -4.7352214303e+08 Pr: 369037(23116.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     850514    -4.7331452444e+08 Pr: 366315(22683.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     853856    -4.7318580032e+08 Pr: 362994(22649.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     857207    -4.7298542612e+08 Pr: 360274(22216.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     860367    -4.7277049590e+08 Pr: 358955(21035.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     863725    -4.7255263336e+08 Pr: 356277(20830.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     867084    -4.7240153332e+08 Pr: 353493(20443.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     870454    -4.7213662410e+08 Pr: 350168(20102); Du: 0(2.26191e-09) Synthetic clock
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2     873826    -4.7195634206e+08 Pr: 346873(19720.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     877195    -4.7184462011e+08 Pr: 343509(19677.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     880330    -4.7162699222e+08 Pr: 340828(19299.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     883712    -4.7145160422e+08 Pr: 337868(18980); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     887090    -4.7133057731e+08 Pr: 334507(18900.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     890474    -4.7116123301e+08 Pr: 332048(18180.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     893859    -4.7095172053e+08 Pr: 329220(17850.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     897253    -4.7071466828e+08 Pr: 326372(17486.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     900656    -4.7049138723e+08 Pr: 323393(17180.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     904051    -4.7034388162e+08 Pr: 320647(16758.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     907460    -4.7022839122e+08 Pr: 317707(16432.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     910874    -4.7003457945e+08 Pr: 314300(16411.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     914287    -4.6987721110e+08 Pr: 310889(16387.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     917709    -4.6974672733e+08 Pr: 307467(16402.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     921128    -4.6963430491e+08 Pr: 304062(16378); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     924558    -4.6951640695e+08 Pr: 300632(16415.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     927976    -4.6942102358e+08 Pr: 297263(16550.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     931414    -4.6926878476e+08 Pr: 293825(16579.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     934838    -4.6911024664e+08 Pr: 290992(16182.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     938281    -4.6902471467e+08 Pr: 287553(16145.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     941726    -4.6870493490e+08 Pr: 284114(16176.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     945162    -4.6859616718e+08 Pr: 281244(15678.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     948617    -4.6849355239e+08 Pr: 278249(15328.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     952069    -4.6835741014e+08 Pr: 274812(15341.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     955017    -4.6826745072e+08 Pr: 271880(15306.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     958413    -4.6811568297e+08 Pr: 269320(14731.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     961877    -4.6794497984e+08 Pr: 265862(14697.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     964572    -4.6788902823e+08 Pr: 263183(14618.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     968049    -4.6759244383e+08 Pr: 259707(14596.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     971526    -4.6738207559e+08 Pr: 256234(14578.5); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     974993    -4.6729637836e+08 Pr: 252800(14505); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     977994    -4.6723696129e+08 Pr: 249827(14403); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     981481    -4.6702780006e+08 Pr: 246349(14374.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     984971    -4.6676908798e+08 Pr: 243370(14271.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     988465    -4.6622239906e+08 Pr: 240633(13709.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     991941    -4.6605194133e+08 Pr: 238370(13025.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     995094    -4.6587373744e+08 Pr: 235937(12492.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2     998581    -4.6576714200e+08 Pr: 233336(11882.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1002088    -4.6538366546e+08 Pr: 229831(11879.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1005593    -4.6515952703e+08 Pr: 226344(11838.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1008956    -4.6498075489e+08 Pr: 223005(11750); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1011216    -4.6494117223e+08 Pr: 221063(11485.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1013541    -4.6475514783e+08 Pr: 219225(11387.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1015916    -4.6446089953e+08 Pr: 216861(11411); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1018371    -4.6442472080e+08 Pr: 214409(11419.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1021892    -4.6412798501e+08 Pr: 210891(11419.3); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1024836    -4.6404845764e+08 Pr: 208338(11138.4); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1027268    -4.6393005735e+08 Pr: 205909(11151); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1029630    -4.6389113827e+08 Pr: 203915(10888.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1031446    -4.6379746942e+08 Pr: 202116(10885.9); Du: 0(2.26191e-09) Synthetic clock
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2    1034981    -4.6338937337e+08 Pr: 198589(10869.7); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1038518    -4.6296223798e+08 Pr: 195052(10889.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1042057    -4.6254778488e+08 Pr: 191519(10875.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1045598    -4.6213051695e+08 Pr: 187982(10881.6); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1049140    -4.6169906802e+08 Pr: 184440(10901.8); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1052655    -4.6159673557e+08 Pr: 182076(10306); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1055265    -4.6154195226e+08 Pr: 179506(10277.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1058039    -4.6149134017e+08 Pr: 177658(9619.78); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1060532    -4.6126292616e+08 Pr: 175567(9521.07); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1064086    -4.6088121754e+08 Pr: 172719(9244.21); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1067643    -4.6048792323e+08 Pr: 169164(9255.24); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1070808    -4.6029958856e+08 Pr: 167148(8498.63); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1073273    -4.6024451260e+08 Pr: 165005(8295.18); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1076361    -4.6007897882e+08 Pr: 162216(8125.52); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1078972    -4.6003255575e+08 Pr: 160408(7587.62); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1082531    -4.5987889391e+08 Pr: 157431(7368.12); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1086103    -4.5967746315e+08 Pr: 153859(7380.01); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1089674    -4.5955595135e+08 Pr: 151178(6830.18); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1091930    -4.5952701235e+08 Pr: 149222(6634.24); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1095508    -4.5929721649e+08 Pr: 145654(6627.9); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1099083    -4.5919073000e+08 Pr: 142378(6563.81); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1102658    -4.5908114883e+08 Pr: 139372(6318.14); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1106231    -4.5903292557e+08 Pr: 136276(5990.02); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1108569    -4.5893451456e+08 Pr: 134211(5927.88); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1112161    -4.5874554771e+08 Pr: 130619(5939.73); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1115748    -4.5870988493e+08 Pr: 127433(5675.72); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1119346    -4.5857278889e+08 Pr: 123835(5667.24); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1122942    -4.5854695104e+08 Pr: 120440(5528.06); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1126546    -4.5836297578e+08 Pr: 116836(5534.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1130151    -4.5817617847e+08 Pr: 113454(5439.61); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1133749    -4.5814946172e+08 Pr: 110363(5188.2); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1137360    -4.5809479887e+08 Pr: 107061(5043.59); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1140973    -4.5802717286e+08 Pr: 103448(5021.34); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1144588    -4.5795619013e+08 Pr: 99833(4999.16); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1148204    -4.5788947873e+08 Pr: 96217(4976.38); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1151822    -4.5782417485e+08 Pr: 92599(4953.71); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1155441    -4.5775666956e+08 Pr: 88980(4930.1); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1159062    -4.5768573129e+08 Pr: 85487(4797.02); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1162677    -4.5766118558e+08 Pr: 82193(4580.41); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1166303    -4.5758234102e+08 Pr: 78567(4575.06); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1169931    -4.5751006827e+08 Pr: 75135(4376.83); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1173551    -4.5747240851e+08 Pr: 71802(4185.13); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1177184    -4.5740167006e+08 Pr: 68169(4190.55); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1180819    -4.5732931573e+08 Pr: 64534(4195.72); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1184456    -4.5725869625e+08 Pr: 60897(4201.33); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1188094    -4.5718692861e+08 Pr: 57552(4044.49); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1191712    -4.5716451382e+08 Pr: 54570(3615.06); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1195352    -4.5707461399e+08 Pr: 51301(3457.98); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1198964    -4.5705339152e+08 Pr: 48827(2763.42); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1202612    -4.5702118657e+08 Pr: 45179(2753.78); Du: 0(2.26191e-09) Synthetic clock
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2    1206262    -4.5697998953e+08 Pr: 41529(2741.37); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1209910    -4.5695382407e+08 Pr: 38052(2611.07); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1213551    -4.5691763085e+08 Pr: 34839(2346.77); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1217205    -4.5687756404e+08 Pr: 31361(2214.84); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1219679    -4.5686872316e+08 Pr: 29344(1917.65); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1222448    -4.5684970560e+08 Pr: 26629(1914.22); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1226001    -4.5683431940e+08 Pr: 23668(1591.77); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1229645    -4.5680865904e+08 Pr: 20525(1350.75); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1233245    -4.5679974776e+08 Pr: 18008(823.78); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1235473    -4.5678588565e+08 Pr: 15873(738.232); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1238643    -4.5677860394e+08 Pr: 12948(585.753); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1241168    -4.5677663548e+08 Pr: 10809(335.795); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1243683    -4.5677404902e+08 Pr: 8357(297.153); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1246185    -4.5677307402e+08 Pr: 6141(134.373); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1249158    -4.5677254795e+08 Pr: 3403(65.6928); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1251908    -4.5677231715e+08 Pr: 745(21.2154); Du: 0(2.26191e-09) Synthetic clock
+DuPh2    1252683    -4.5677227977e+08 Pr: 0(0); Du: 0(2.26191e-09) Possibly optimal
+DuPh2    1252683    -4.5676149137e+08 Pr: 0(0) Perturbation cleanup
+Simplex iterations: DuPh2 1252683; Total 1252683
+dual simplex solver returns 0 primal and 0 dual infeasibilities: Status Optimal
+getKktFailures:: cost norm = 1.47e+05; bound norm =     14.4
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility    6e-10 /  3.9e-11        6e-10 /  3.9e-11            0 /        0
+getKktFailures:   dual infeasibility        0 /        0            0 /        0            0 /        0
+getKktFailures: objective gap        1.78e-13
+Solution optimality conditions: Before postsolve
+num/max      0 /    6e-10 (relative      0 /  3.9e-11) primal infeasibilities     (tolerance = 1e-09)
+num/max      0 /        0 (relative      0 /        0)   dual infeasibilities     (tolerance = 1e-09)
+                                         0 / 1.78e-13  P-D objective error        (tolerance = 1e-07)
+
+Performed postsolve
+Solving the original LP from the solution after postsolve
+Scaling: Original equilibration: min/mean/max     0.01291/      1.083/      316.2 (cols); min/mean/max   0.0001667/      2.317/      1e+05 (rows)
+Scaling: Final    equilibration: min/mean/max         0.5/      1.029/          2 (cols); min/mean/max      0.5008/      1.001/      1.998 (rows)
+Scaling: Extreme equilibration improvement =      (   2.449e+04 +       6e+08) / (           4 +        3.99)  =            6e+08 /        7.99  =    7.51e+07
+Scaling: Mean    equilibration improvement = sqrt((       1.083 *       2.317) / (       1.029 *       1.001)) = sqrt(      2.509 /        1.03) =       1.561
+Scaling: Yields [min, max, ratio] matrix values of [0.0128, 84.38, 6592]; Originally [1e-05, 6000, 6e+08]: Improvement of 9.102e+04
+Scaling: Improves    mean equilibration by a factor 1.561
+Scaling: Improves extreme equilibration by a factor 7.51e+07
+Scaling: Improves max/min matrix values by a factor 9.102e+04
+Scaling: Factors are in [0.003906, 256] for columns and in [0.0002441, 512] for rows
+Scaling: Improvement factor is 1.067e+13 >= 1 so scale LP
+getKktFailures:: cost norm = 1.47e+05; bound norm =    6e+03
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility    6e-10 /    1e-13     4.34e-19 / 7.23e-23        6e-10 /    1e-13
+getKktFailures:   dual infeasibility        0 /        0            0 /        0            0 /        0
+getKktFailures: objective gap        3.67e-13
+Solution optimality conditions
+num/max      0 /    6e-10 (relative      0 /    1e-13) primal infeasibilities     (tolerance = 1e-09)
+num/max      0 /        0 (relative      0 /        0)   dual infeasibilities     (tolerance = 1e-09)
+                                         0 / 3.67e-13  P-D objective error        (tolerance = 1e-07)
+
+Postsolve  : 0
+Time           :   142.69
+Time Pre       :    11.91
+Time PreLP     :   121.63
+Time OriginalLP:     8.15
+For LP                     : Presolve    11.91 (  8%)    : Solve presolved LP   121.63 ( 85%)    : Postsolve     0.31 (  0%)    : Solve original LP     8.15 (  5%)
+Model status        : Optimal
+Simplex   iterations: 1252683
+Objective value     :  4.5676149137e+08
+P-D objective error :  3.6662295854e-13
+HiGHS run time      :        142.74
+
+MIP sub-solver profiling: number of threads used = 1
