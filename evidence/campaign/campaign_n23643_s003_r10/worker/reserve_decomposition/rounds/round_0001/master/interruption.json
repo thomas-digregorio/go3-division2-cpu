@@ -1,0 +1,35 @@
+{
+  "schema": "go3_native_stage_interruption_v1",
+  "identity": {
+    "partition_manifest_sha256": "3eeca2ae1d74be1fd682c8e42723cc728becd170812b3fdd288e0fc0507dcc30",
+    "source_manifest_sha256": "dccd7fa91409d78fb532086eb23b470184c194508322451c6b4e2cba44fcf393"
+  },
+  "request_sha256": "7172df8b71c651f2301a2a5ff147b5be4c85fb81f19fa1d40060fe4589bce21d",
+  "mode": "master",
+  "round": 1,
+  "error": "Native master call exceeded its 300-second wall limit",
+  "kind": "native_call_deadline",
+  "native_call": {
+    "pid": 23184,
+    "begin_event": {
+      "epoch_seconds": 1789962148.988,
+      "event": "reserve_benders_solve_begin",
+      "actual_limit_seconds": 300.0,
+      "pid": 23184,
+      "mode": "master",
+      "stage": "source_reserve_benders",
+      "phase": "online_construction",
+      "round": 1,
+      "remaining_work_seconds": 1157.9607005119324
+    },
+    "observed_epoch_seconds": 1789962449.0901027,
+    "native_deadline_epoch": 1789962448.988,
+    "native_elapsed_seconds": 300.10210275650024,
+    "process_wall_seconds": 312.1314641999779,
+    "poll_interval_seconds": 0.25,
+    "stage_deadline_epoch": 1789963306.9487004
+  },
+  "launch_cleanup_completed": true,
+  "no_relaunch": true,
+  "stage_deadline_epoch": 1789963306.9487004
+}

@@ -1,0 +1,134 @@
+GO3-HIGHS-Root-LP logging_enabled=1 highs_debug_level=0
+Solving LP without presolve or useful basis
+Scaling: Original equilibration: min/mean/max     0.01304/      1.197/        100 (cols); min/mean/max     0.01304/      2.318/        100 (rows)
+Scaling: Final    equilibration: min/mean/max         0.5/      1.037/      2.076 (cols); min/mean/max      0.5043/      1.001/      1.981 (rows)
+Scaling: Extreme equilibration improvement =      (        7671 +        7671) / (       4.152 +       3.927)  =        1.534e+04 /       8.079  =        1899
+Scaling: Mean    equilibration improvement = sqrt((       1.197 *       2.318) / (       1.037 *       1.001)) = sqrt(      2.776 /       1.037) =       1.636
+Scaling: Yields [min, max, ratio] matrix values of [0.0128, 64, 5000]; Originally [0.0001, 5885, 5.885e+07]: Improvement of 1.177e+04
+Scaling: Improves    mean equilibration by a factor 1.636
+Scaling: Improves extreme equilibration by a factor 1899
+Scaling: Improves max/min matrix values by a factor 1.177e+04
+Scaling: Factors are in [0.001953, 256] for columns and in [0.007812, 1024] for rows
+Scaling: Improvement factor is 3.656e+07 >= 1 so scale LP
+Using dual simplex solver
+Cost perturbation for 
+   Initially have 839144 nonzero costs ( 20%) with min / average / max = 0.00390625 / 23.8172 / 256
+   Large so set max_abs_cost = sqrt(sqrt(max_abs_cost)) = 4
+   Perturbation column base = 2e-06
+   Perturbation row    base = 1e-12
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh1          0     0.0000000000e+00 Ph1: 0(0) No reason
+DuPh2          0    -8.3700149097e+05 Pr: 1295380(1.28962e+06) No reason
+DuPh2       5000    -8.3691322403e+05 Pr: 1266233(157760); Du: 0(3.47218e-10) Update limit reached
+DuPh2      10000    -8.3691219893e+05 Pr: 1255712(132182); Du: 0(2.03932e-10) Update limit reached
+DuPh2      15000    -8.3689718092e+05 Pr: 1245893(112378); Du: 0(5.64278e-10) Update limit reached
+DuPh2      20000    -8.3689716805e+05 Pr: 1237367(97416.3); Du: 0(3.70427e-10) Update limit reached
+DuPh2      25000    -8.3689615847e+05 Pr: 1229600(85396.3); Du: 0(4.92159e-10) Update limit reached
+DuPh2      30000    -8.3687215030e+05 Pr: 1222328(75328.4); Du: 0(4.48165e-10) Update limit reached
+DuPh2      35000    -8.3687214408e+05 Pr: 1215656(66973.5); Du: 0(6.79124e-10) Update limit reached
+DuPh2      40000    -8.3687213895e+05 Pr: 1209168(59949.6); Du: 0(2.9467e-10) Update limit reached
+DuPh2      45000    -8.3687213487e+05 Pr: 1203011(54096.2); Du: 0(3.87526e-10) Update limit reached
+DuPh2      50000    -8.3687113148e+05 Pr: 1197105(49109.6); Du: 0(6.23866e-10) Update limit reached
+DuPh2      55000    -8.3687112879e+05 Pr: 1191353(44795.2); Du: 0(3.64532e-10) Update limit reached
+DuPh2      60000    -8.3687112649e+05 Pr: 1185736(41115.7); Du: 0(4.27882e-10) Update limit reached
+DuPh2      65000    -8.3687112461e+05 Pr: 1180253(37896.6); Du: 0(4.93597e-10) Update limit reached
+DuPh2      70000    -8.3687012272e+05 Pr: 1174707(35132.4); Du: 0(4.24572e-10) Update limit reached
+DuPh2      75000    -8.3687012139e+05 Pr: 1169346(32915.4); Du: 0(7.26845e-10) Update limit reached
+DuPh2      80000    -8.3687012024e+05 Pr: 1164061(31020.5); Du: 0(2.40898e-10) Update limit reached
+DuPh2      85000    -8.3687011917e+05 Pr: 1158861(29406.9); Du: 0(5.56403e-10) Update limit reached
+DuPh2      90000    -8.3687011832e+05 Pr: 1153698(28049.3); Du: 0(2.60065e-10) Update limit reached
+DuPh2      95000    -8.3687011756e+05 Pr: 1148514(26865.8); Du: 0(3.26712e-10) Update limit reached
+DuPh2     100000    -8.3687011704e+05 Pr: 1143478(25895.2); Du: 0(2.62875e-10) Update limit reached
+DuPh2     105000    -8.3687011665e+05 Pr: 1138440(25042.7); Du: 0(4.42504e-10) Update limit reached
+DuPh2     110000    -8.3687011623e+05 Pr: 1133420(24284.3); Du: 0(4.63054e-10) Update limit reached
+DuPh2     115000    -8.3687011582e+05 Pr: 1128401(23590.8); Du: 0(3.87002e-10) Update limit reached
+DuPh2     120000    -8.3687011536e+05 Pr: 1123401(22973.3); Du: 0(3.87002e-10) Update limit reached
+DuPh2     125000    -8.3687011488e+05 Pr: 1118411(22426.1); Du: 0(3.4452e-10) Update limit reached
+DuPh2     130000    -8.3687011443e+05 Pr: 1113428(21910.2); Du: 0(3.3976e-10) Update limit reached
+DuPh2     135000    -8.3687011398e+05 Pr: 1108461(21436.6); Du: 0(2.67951e-10) Update limit reached
+DuPh2     140000    -8.3687011352e+05 Pr: 1103492(20993.8); Du: 0(3.69024e-10) Update limit reached
+DuPh2     145000    -8.3687011302e+05 Pr: 1098531(20574.1); Du: 0(2.44883e-10) Update limit reached
+DuPh2     150000    -8.3687011262e+05 Pr: 1093559(20191.4); Du: 0(1.67479e-10) Update limit reached
+DuPh2     155000    -8.3687011216e+05 Pr: 1088596(19818.2); Du: 0(3.84395e-10) Update limit reached
+DuPh2     160000    -8.3687011174e+05 Pr: 1083632(19472.9); Du: 0(3.06209e-10) Update limit reached
+DuPh2     165000    -8.3687011132e+05 Pr: 1078654(19129.6); Du: 0(3.38335e-10) Update limit reached
+DuPh2     170000    -8.3687011084e+05 Pr: 1073694(18831.2); Du: 0(3.36315e-10) Update limit reached
+DuPh2     175000    -8.3687011040e+05 Pr: 1068719(18527.7); Du: 0(5.0793e-10) Update limit reached
+DuPh2     180000    -8.3687011004e+05 Pr: 1063741(18237.7); Du: 0(2.3207e-10) Update limit reached
+DuPh2     185000    -8.3687010965e+05 Pr: 1058764(17950.5); Du: 0(1.54958e-10) Update limit reached
+DuPh2     190000    -8.3687010932e+05 Pr: 1053800(17689.5); Du: 0(2.13703e-11) Update limit reached
+DuPh2     195000    -8.3687010904e+05 Pr: 1048828(17424); Du: 0(1.835e-10) Update limit reached
+DuPh2     200000    -8.3687010875e+05 Pr: 1043835(17162.7); Du: 0(2.05294e-10) Update limit reached
+DuPh2     205000    -8.3687010838e+05 Pr: 1038878(16914.1); Du: 0(1.9039e-10) Update limit reached
+DuPh2     210000    -8.3687010802e+05 Pr: 1033929(16675.7); Du: 0(2.13703e-11) Update limit reached
+DuPh2     215000    -8.3687010771e+05 Pr: 1028966(16438); Du: 0(1.55477e-10) Update limit reached
+DuPh2     220000    -8.3687010739e+05 Pr: 1023994(16216.6); Du: 0(2.3596e-10) Update limit reached
+DuPh2     225000    -8.3687010710e+05 Pr: 1019035(15989.8); Du: 0(5.97885e-10) Update limit reached
+DuPh2     230000    -8.3687010675e+05 Pr: 1014056(15769.5); Du: 0(5.3374e-10) Update limit reached
+DuPh2     235000    -8.3687010649e+05 Pr: 1009096(15558); Du: 0(3.73195e-10) Update limit reached
+DuPh2     240000    -8.3687010625e+05 Pr: 1004115(15346.4); Du: 0(3.61253e-10) Update limit reached
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2     245000    -8.3687010585e+05 Pr: 999185(15153.2); Du: 0(3.01065e-10) Update limit reached
+DuPh2     250000    -8.3687010564e+05 Pr: 994202(14949.8); Du: 0(1.85933e-10) Update limit reached
+DuPh2     255000    -8.3687010527e+05 Pr: 989237(14752.3); Du: 0(3.85299e-11) Update limit reached
+DuPh2     260000    -8.3687010496e+05 Pr: 984281(14572.8); Du: 0(2.86895e-11) Update limit reached
+DuPh2     265000    -8.3687010466e+05 Pr: 979315(14385.5); Du: 0(2.95187e-10) Update limit reached
+DuPh2     270000    -8.3687010433e+05 Pr: 974365(14206.8); Du: 0(4.74868e-10) Update limit reached
+DuPh2     275000    -8.3687010398e+05 Pr: 969406(14030.3); Du: 0(5.74743e-11) Update limit reached
+DuPh2     280000    -8.3687010381e+05 Pr: 964445(13851.6); Du: 0(6.55236e-11) Update limit reached
+DuPh2     285000    -8.3687010347e+05 Pr: 959462(13681.8); Du: 0(1.53468e-10) Update limit reached
+DuPh2     290000    -8.3687010317e+05 Pr: 954477(13507.4); Du: 0(1.29382e-10) Update limit reached
+DuPh2     295000    -8.3687010281e+05 Pr: 949541(13359); Du: 0(3.28858e-10) Update limit reached
+DuPh2     300000    -8.3687010257e+05 Pr: 944589(13191.2); Du: 0(3.26624e-10) Update limit reached
+DuPh2     305000    -8.3687010225e+05 Pr: 939594(13026.2); Du: 0(3.26624e-10) Update limit reached
+DuPh2     310000    -8.3687010209e+05 Pr: 934643(12878.2); Du: 0(4.42231e-10) Update limit reached
+DuPh2     315000    -8.3687010171e+05 Pr: 929668(12718.9); Du: 0(3.87565e-10) Update limit reached
+DuPh2     320000    -8.3687010149e+05 Pr: 924733(12570.5); Du: 0(2.55834e-10) Update limit reached
+DuPh2     325000    -8.3687010117e+05 Pr: 919725(12410.2); Du: 0(2.55834e-10) Update limit reached
+DuPh2     330000    -8.3687010099e+05 Pr: 914790(12268.3); Du: 0(4.67155e-10) Update limit reached
+DuPh2     335000    -8.3687010062e+05 Pr: 909787(12115.8); Du: 0(4.67155e-10) Update limit reached
+DuPh2     340000    -8.3687010045e+05 Pr: 904865(11979.7); Du: 0(6.10105e-10) Update limit reached
+DuPh2     345000    -8.3687010004e+05 Pr: 899868(11830.4); Du: 0(5.16444e-10) Update limit reached
+DuPh2     350000    -8.3687009996e+05 Pr: 894887(11681.5); Du: 0(6.16796e-10) Update limit reached
+DuPh2     355000    -8.3687009966e+05 Pr: 889937(11549.3); Du: 0(7.14235e-10) Update limit reached
+DuPh2     360000    -8.3687009939e+05 Pr: 884973(11405.6); Du: 0(2.42091e-10) Update limit reached
+DuPh2     365000    -8.3687009910e+05 Pr: 880021(11279.3); Du: 0(2.18927e-10) Update limit reached
+DuPh2     370000    -8.3687009883e+05 Pr: 875023(11137.7); Du: 0(2.26683e-10) Update limit reached
+DuPh2     375000    -8.3687009865e+05 Pr: 870105(11002); Du: 0(3.53883e-10) Update limit reached
+DuPh2     380000    -8.3687009825e+05 Pr: 865108(10870.2); Du: 0(3.53883e-10) Update limit reached
+DuPh2     385000    -8.3687009806e+05 Pr: 860167(10737); Du: 0(3.46515e-10) Update limit reached
+DuPh2     390000    -8.3687009780e+05 Pr: 855199(10608.7); Du: 0(3.25143e-10) Update limit reached
+DuPh2     395000    -8.3687009757e+05 Pr: 850201(10479.9); Du: 0(3.25143e-10) Update limit reached
+DuPh2     400000    -8.3687009738e+05 Pr: 845263(10358.5); Du: 0(3.37901e-10) Update limit reached
+DuPh2     405000    -8.3687009712e+05 Pr: 840293(10232.9); Du: 0(3.60892e-10) Update limit reached
+DuPh2     410000    -8.3687009690e+05 Pr: 835321(10110.1); Du: 0(2.40241e-10) Update limit reached
+DuPh2     415000    -8.3687009673e+05 Pr: 830389(9995.38); Du: 0(4.84106e-10) Update limit reached
+DuPh2     420000    -8.3687009638e+05 Pr: 825395(9873.48); Du: 0(5.77101e-10) Update limit reached
+DuPh2     425000    -8.3687009624e+05 Pr: 820418(9751.55); Du: 0(7.00105e-10) Update limit reached
+DuPh2     430000    -8.3687009606e+05 Pr: 815476(9636.2); Du: 0(6.18364e-10) Update limit reached
+DuPh2     435000    -8.3687009578e+05 Pr: 810501(9521.57); Du: 0(5.11301e-10) Update limit reached
+DuPh2     440000    -8.3687009556e+05 Pr: 805518(9399.9); Du: 0(4.71786e-10) Update limit reached
+DuPh2     445000    -8.3687009538e+05 Pr: 800571(9290.44); Du: 0(2.56484e-10) Update limit reached
+DuPh2     449956    -8.3687009515e+05 Pr: 795675(9183.99); Du: 0(2.50829e-10) Synthetic clock
+DuPh2     454956    -8.3687009487e+05 Pr: 790670(9069.21); Du: 0(2.50829e-10) Update limit reached
+DuPh2     459956    -8.3687009482e+05 Pr: 785713(8957.61); Du: 0(1.1749e-10) Update limit reached
+DuPh2     464860    -8.3687009463e+05 Pr: 780867(8856.99); Du: 0(2.30858e-10) Synthetic clock
+DuPh2     469860    -8.3687009436e+05 Pr: 775875(8737.28); Du: 0(2.97274e-10) Update limit reached
+DuPh2     474860    -8.3687009412e+05 Pr: 770900(8629.19); Du: 0(3.67653e-10) Update limit reached
+DuPh2     479860    -8.3687009393e+05 Pr: 765962(8537.88); Du: 0(3.4764e-10) Update limit reached
+DuPh2     484754    -8.3687009384e+05 Pr: 761131(8432.28); Du: 0(3.48695e-10) Synthetic clock
+DuPh2     489754    -8.3687009351e+05 Pr: 756138(8329.34); Du: 0(3.48695e-10) Update limit reached
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh2     494754    -8.3687009337e+05 Pr: 751155(8215.52); Du: 0(5.04878e-10) Update limit reached
+DuPh2     499754    -8.3687009318e+05 Pr: 746213(8117.71); Du: 0(3.45889e-10) Update limit reached
+DuPh2     504705    -8.3687009310e+05 Pr: 741318(8013.1); Du: 0(4.90393e-10) Synthetic clock
+DuPh2     509705    -8.3687009279e+05 Pr: 736323(7915.05); Du: 0(4.90393e-10) Update limit reached
+DuPh2     514705    -8.3687009262e+05 Pr: 731360(7817.91); Du: 0(5.10579e-10) Update limit reached
+DuPh2     519705    -8.3687009243e+05 Pr: 726400(7719.99); Du: 0(1.72219e-10) Update limit reached
+DuPh2     524701    -8.3687009237e+05 Pr: 721468(7625.04); Du: 0(4.01129e-10) Synthetic clock
+DuPh2     529701    -8.3687009211e+05 Pr: 716474(7529.1); Du: 0(4.01129e-10) Update limit reached
+DuPh2     534701    -8.3687009186e+05 Pr: 711474(7430.99); Du: 0(4.01129e-10) Update limit reached
+DuPh2     539701    -8.3687009180e+05 Pr: 706519(7334.79); Du: 0(8.19193e-10) Update limit reached
+DuPh2     544701    -8.3687009162e+05 Pr: 701574(7239.81); Du: 0(6.64735e-10) Update limit reached
+DuPh2     549701    -8.3687009151e+05 Pr: 696610(7155.89); Du: 0(1.7043e-10) Update limit reached
+DuPh2     554701    -8.3687009122e+05 Pr: 691612(7064.17); Du: 0(1.7043e-10) Update limit reached
