@@ -1,0 +1,25 @@
+GO3_PROGRESS {"epoch_seconds":1.789970172255e9,"event":"reserve_benders_worker_started","raw_case_parsed":false,"pid":14400,"native_backend":{"analytic_center_requested":false,"git_hash":"04024d7","library_sha256":"06fa04b2f66ae80f3446e8e2a95ad1bea09faa0414b3151c1764bbb6bf7395c8","root_presolve_only_requested":true,"version":"1.15.1","policy":"root_memory_guard_v1","library_path":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\environments\\highs-root-memory-build\\bin\\libhighs.dll","highs_int_bits":32,"manifest_sha256":"73ceb849300d5ec00761156f21326c61e5343e1acb856a3206410eee69eba794","floating_point_bits":64,"objective_clique_max_size":0},"mode":"recourse","stage":"source_reserve_benders","round":2,"remaining_work_seconds":97.28880786895752}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.7899701739e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":5.0,"pid":14400,"period":1,"mode":"recourse","stage":"source_reserve_benders","round":2,"remaining_work_seconds":95.643807888031}
+LP has 1 row; 1 col; 1 nonzero
+Coefficient ranges:
+  Matrix  [1e+00, 1e+00]
+  Cost    [3e+00, 3e+00]
+  Bound   [0e+00, 0e+00]
+  RHS     [0e+00, 0e+00]
+Presolving model
+0 rows, 0 cols, 0 nonzeros 0s
+0 rows, 0 cols, 0 nonzeros 0s
+Presolve reductions: rows 0(-1); columns 0(-1); nonzeros 0(-1) - Reduced to empty
+Performed postsolve
+Solving the original LP from the solution after postsolve
+
+Model status        : Optimal
+Objective value     :  0.0000000000e+00
+P-D objective error :  0.0000000000e+00
+HiGHS run time      :          0.00
+GO3_PROGRESS {"epoch_seconds":1.789970173919e9,"event":"reserve_benders_solve_returned","solve_seconds":0.00038504600524902344,"pid":14400,"mode":"recourse","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":0,"barrier_iterations":0,"has_primal":true,"period":1,"native_status":7,"solve_wall_seconds":0.0009999275207519531,"round":2,"remaining_work_seconds":95.62480807304382}
+GO3_PROGRESS {"epoch_seconds":1.789970174349e9,"event":"reserve_benders_hour_complete","pid":14400,"mode":"recourse","hours_completed":1,"stage":"source_reserve_benders","hours_required":1,"kind":"cost","period":1,"round":2,"remaining_work_seconds":95.19480800628662}
+GO3_PROGRESS {"epoch_seconds":1.789970174602e9,"event":"reserve_benders_incumbent_audited","pid":14400,"mode":"recourse","objective":-0.75,"stage":"source_reserve_benders","round":2,"maximum_residual":0.0,"remaining_work_seconds":94.94180798530579}
+GO3_PROGRESS {"epoch_seconds":1.789970174645e9,"event":"reserve_benders_stage_complete","pid":14400,"result_sha256":"4798d8dac35c1f28821b5cefa02e39916b9c1ea4bdbfc69ff6ee7a1890a5e52a","mode":"recourse","stage":"source_reserve_benders","round":2,"remaining_work_seconds":94.89880800247192}

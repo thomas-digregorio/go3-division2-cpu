@@ -1,0 +1,12 @@
+{
+  "mode": "recourse",
+  "round": 2,
+  "identity": {
+    "partition_manifest_sha256": "bc4e58e513846f75992ed7ce5fa88d80f216919bfc6299a71b42bc3902d7c03e",
+    "source_manifest_sha256": "72610b2bb433b856ba35f6f5a36bc8c9b1dd8ddb238af84ca47c45a313510e9e"
+  },
+  "master_result": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_dxn2x8si\\cost_feedback\\reserve_decomposition\\rounds\\round_0002\\master\\result.json",
+    "sha256": "02a1bdf6026ef59db6679c6a567de7a3bb8712a57abb839929a61d9d48591ffe"
+  }
+}

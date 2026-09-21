@@ -1,0 +1,1 @@
+{"builder_solve_calls":0,"proof":"Enumerate binary u; minimize the decreasing affine cost on 0<=dispatch<=u","objective":-0.75,"expected_minimum_rounds":3}

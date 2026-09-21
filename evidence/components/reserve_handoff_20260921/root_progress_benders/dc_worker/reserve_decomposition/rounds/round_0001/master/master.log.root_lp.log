@@ -1,0 +1,35 @@
+GO3-HIGHS-Root-LP logging_enabled=1 highs_debug_level=0
+Solving LP without presolve or useful basis
+Using dual simplex solver
+Cost perturbation for 
+   Initially have 13 nonzero costs (100%) with min / average / max = 0.025 / 269.506 / 1010
+   Large so set max_abs_cost = sqrt(sqrt(max_abs_cost)) = 5.63742
+   Perturbation column base = 2.81871e-06
+   Perturbation row    base = 1e-12
+       Iteration        Objective     Infeasibilities num(sum)
+DuPh1          0     0.0000000000e+00 Ph1: 0(0) No reason
+DuPh2          0    -4.5000593349e-01 Pr: 3(3) No reason
+DuPh2          4    -3.2499665317e-01 Pr: 0(0) Possibly optimal
+DuPh2          4    -3.2500000000e-01 Pr: 0(0) Perturbation cleanup
+Simplex iterations: DuPh2 4; Total 4
+dual simplex solver returns 0 primal and 0 dual infeasibilities: Status Optimal
+getKktFailures:: cost norm =      0.1; bound norm =        1
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility        0 /        0            0 /        0            0 /        0
+getKktFailures:   dual infeasibility        0 /        0            0 /        0            0 /        0
+getKktFailures: objective gap        3.36e-17
+Solution optimality conditions
+num/max      0 /        0 (relative      0 /        0) primal infeasibilities     (tolerance = 1e-09)
+num/max      0 /        0 (relative      0 /        0)   dual infeasibilities     (tolerance = 1e-10)
+                                         0 / 3.36e-17  P-D objective error        (tolerance = 1e-07)
+
+Postsolve  : 
+Time           :     0.00
+Time OriginalLP:     0.00
+For LP                     : Solve original LP     0.00 ( 83%)
+Strange: Solve time = 0.000509977; Sum times = 0.000423908: relative difference = 0.16877
+Model status        : Optimal
+Simplex   iterations: 4
+Objective value     : -3.2500000000e-01
+P-D objective error :  3.3643121958e-17
+HiGHS run time      :          0.00

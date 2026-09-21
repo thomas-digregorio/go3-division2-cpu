@@ -1,0 +1,56 @@
+{
+  "round": 2,
+  "master": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_mdask4vu\\dc_worker\\reserve_decomposition\\rounds\\round_0002\\master\\result.json",
+    "sha256": "df4fc77367064f7c632cd0b5e3f73e36783d0dce19f3591135cce29cf367053c"
+  },
+  "master_statistics": {
+    "solve_seconds": 0.001001119613647461,
+    "objective": 1732.1479,
+    "bound": 1732.1479,
+    "has_primal": true,
+    "native_status": 7,
+    "termination": "OPTIMAL",
+    "simplex_iterations": 0,
+    "barrier_iterations": -1,
+    "nodes": 0,
+    "solve_wall_seconds": 0.002000093460083008,
+    "relative_gap": 0.0
+  },
+  "master_start": {
+    "supplied": true,
+    "scope": "complete within-attempt primal; no external seed",
+    "native_consumption_reported": true,
+    "source_result": {
+      "sha256": "fd81d5d02583d73fa0c927611057ceb07581327ece493ff9e84e9850547aa776",
+      "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_mdask4vu\\dc_worker\\reserve_decomposition\\rounds\\round_0001\\recourse\\result.json"
+    },
+    "api_returncode": 0,
+    "api_accepted": true,
+    "original_master_audit": {
+      "variables": 46,
+      "scope": "Original scheduling rows, bounds, integer domains and objective; not full GO3 verification",
+      "rows": 70,
+      "objective": 1732.1479000000002,
+      "complete": true,
+      "pass": true,
+      "maximum_residual": 0.0,
+      "tolerance": 1e-08
+    },
+    "maximum_cut_violation": 0.0,
+    "native_log_evidence": [
+      "MIP start solution is feasible, objective value is 1732.1479"
+    ]
+  },
+  "master_process_wall_seconds": 4.663687399995979,
+  "master_upper_bound": 1732.1479,
+  "recourse": {
+    "path": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_mdask4vu\\dc_worker\\reserve_decomposition\\rounds\\round_0002\\recourse\\result.json",
+    "sha256": "d78be09f2b49193ecc7b04036f0fd23d3113cb15fae90b1341004777695bcee9"
+  },
+  "verified_incumbent": 1732.1479,
+  "recourse_process_wall_seconds": 5.68853109999327,
+  "all_source_hours_feasible": true,
+  "added_cuts": 3,
+  "relative_gap": 0.0
+}

@@ -1,0 +1,1 @@
+{"elapsed_scheduling_seconds":14.45199990272522,"event":"cost_original_model_audit_complete","objective":1732.3228999999924,"stage":"scheduling_event","maximum_residual":1.034244570426926e-16,"constraints_including_bounds_and_integrality":433,"variables":153,"elapsed_worker_seconds":15.243000030517578,"complete":true,"pass":true,"remaining_work_seconds":89.47941374778748}

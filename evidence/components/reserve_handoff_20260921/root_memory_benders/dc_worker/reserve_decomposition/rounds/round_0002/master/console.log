@@ -1,0 +1,86 @@
+GO3_PROGRESS {"epoch_seconds":1.789970285503e9,"event":"reserve_benders_worker_started","raw_case_parsed":false,"pid":28056,"native_backend":{"analytic_center_requested":false,"git_hash":"04024d7","library_sha256":"06fa04b2f66ae80f3446e8e2a95ad1bea09faa0414b3151c1764bbb6bf7395c8","root_presolve_only_requested":true,"version":"1.15.1","policy":"root_memory_guard_v1","library_path":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\environments\\highs-root-memory-build\\bin\\libhighs.dll","highs_int_bits":32,"manifest_sha256":"73ceb849300d5ec00761156f21326c61e5343e1acb856a3206410eee69eba794","floating_point_bits":64,"objective_clique_max_size":0},"mode":"master","stage":"source_reserve_benders","round":2,"remaining_work_seconds":76.89923405647278}
+Running HiGHS 1.15.1 (git hash: 04024d7): Copyright (c) 2026 under MIT licence terms
+Includes third-party software components, see THIRD_PARTY_NOTICES.md for full details
+GO3_PROGRESS {"epoch_seconds":1.789970286786e9,"event":"reserve_benders_master_loaded","cut_count":3,"pid":28056,"start":{"supplied":true,"scope":"complete within-attempt primal; no external seed","source_result":{"sha256":"105905c4f273e0f3862aa4c9e549b9a6298342233822e34ffa39fdbe4e9a7a79","path":"C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_6tym2n5n\\dc_worker\\reserve_decomposition\\rounds\\round_0001\\recourse\\result.json"},"api_returncode":0,"api_accepted":true,"original_master_audit":{"variables":46,"scope":"Original scheduling rows, bounds, integer domains and objective; not full GO3 verification","rows":70,"objective":1732.1479000000002,"complete":true,"pass":true,"maximum_residual":0.0,"tolerance":1.0e-8},"maximum_cut_violation":0.0},"mode":"master","stage":"source_reserve_benders","variables":46,"nonzeros":152,"rows":73,"round":2,"remaining_work_seconds":75.61623406410217}
+GO3_PROGRESS {"epoch_seconds":1.789970286889e9,"event":"reserve_benders_solve_begin","actual_limit_seconds":10.0,"pid":28056,"mode":"master","stage":"source_reserve_benders","round":2,"remaining_work_seconds":75.51323413848877}
+ MIP      : 
+Rows      : 73
+Cols      : 46
+Nonzeros  : 152
+Integer   : 18 (15 binary)
+Coefficient ranges:
+  Matrix  [5e-05, 3e+00]
+  Cost    [3e-02, 1e+03]
+  Bound   [1e+00, 3e+00]
+  RHS     [1e-18, 2e+00]
+WARNING: Problem has some excessively small row bounds
+Assessing feasibility of MIP using primal feasibility and integrality tolerance of       1e-09
+Solution has               num          max          sum
+Col     infeasibilities      0            0            0
+Integer infeasibilities      0            0            0
+Row     infeasibilities      0            0            0
+Row     residuals            0            0            0
+Presolving model
+Presolve rules not allowed:
+   Rule 13 (set bit 13 =  8192): Parallel rows and columns
+29 rows, 27 cols, 69 nonzeros 0s
+21 rows, 20 cols, 64 nonzeros 0s
+Fixed 3 dominated columns and strengthened 0 bounds
+7 probing evaluations: 0 deleted rows, 0 deleted columns, 0 lifted nonzeros
+13 rows, 13 cols, 42 nonzeros 0s
+Presolve reductions: rows 13(-60); columns 13(-33); nonzeros 42(-110) 
+MIP-Timing:     0.00064 - completed presolve
+MIP-Timing:     0.00065 - starting  setup
+GO3-HIGHS-Setup stage=initialization solve_elapsed=0.000660
+
+MIP start solution is feasible, objective value is 1732.1479
+GO3-HIGHS-Setup stage=transpose_and_locks solve_elapsed=0.000684
+GO3-HIGHS-Setup stage=row_integrality solve_elapsed=0.000691
+GO3-HIGHS-Setup stage=objective_clique_partition solve_elapsed=0.000698
+GO3-HIGHS-Setup optional_objective_clique_skipped binary_columns=7 limit=0 source_model_unchanged=1
+GO3-HIGHS-Setup stage=objective_propagation solve_elapsed=0.000712
+GO3-HIGHS-Setup stage=row_activities solve_elapsed=0.000721
+GO3-HIGHS-Setup stage=domain_propagation solve_elapsed=0.000728
+GO3-HIGHS-Setup stage=domain_propagation_complete solve_elapsed=0.000741
+MIP-Timing:     0.00075 - completed setup
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0 100.00%   1732.1479       1732.1479          0.00%        0      0      0         0     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      1732.1479
+  Dual bound        1732.1479
+  Gap               0% (tolerance: 0.0001%)
+  P-D integral      0
+  Solution status   feasible
+                    1732.1479 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00
+                    0.00 (Presolve)
+                    0.00 (Solve)
+                    0.00 (Postsolve)
+  Max sub-MIP depth 0
+  Nodes             0
+  Repair LPs        0
+  LP iterations     0
+getKktFailures:: cost norm =    1e+03; bound norm =        1
+getKktFailures:                      LP  (abs / rel)         Col (abs / rel)         Row (abs / rel)
+getKktFailures: primal infeasibility        0 /        0            0 /        0            0 /        0
+
+MIP sub-solver profiling: number of threads used = 1
+
+Thread 0
+Solver                    Calls    Time       Time/call      MIP%
+MIP                           1  9.1600e-04  9.1600e-04
+GO3_PROGRESS {"epoch_seconds":1.789970286913e9,"event":"reserve_benders_solve_returned","solve_seconds":0.0009982585906982422,"pid":28056,"mode":"master","stage":"source_reserve_benders","termination":"OPTIMAL","simplex_iterations":0,"barrier_iterations":-1,"has_primal":true,"native_status":7,"solve_wall_seconds":0.0010001659393310547,"round":2,"remaining_work_seconds":75.48923397064209}
+GO3_PROGRESS {"epoch_seconds":1.789970287068e9,"event":"reserve_benders_stage_complete","pid":28056,"result_sha256":"9b6e5636e9ff48cec1c29d7902945a25ea3b6b6a7d59c45ff871bfd69c323f8b","mode":"master","stage":"source_reserve_benders","round":2,"remaining_work_seconds":75.33423399925232}

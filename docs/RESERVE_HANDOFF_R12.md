@@ -79,3 +79,28 @@ were one, and objective agreement passed. The final objective was
 `1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`
 matches the previous tiny baseline byte for byte. This focused development check
 does not replace the mandatory fresh full regression gate.
+
+## Completed full pre-run gate
+
+The fresh gate at `tmp/pilot002_component_gate_j9ystf11` passed all 80 stages,
+162 Python tests and 16,591 Julia assertions. Summed stage wall time was
+2679.465568 seconds, which is setup rather than a competition-case run. Its
+manifest SHA256 is
+`c4f01204e245d80cbacd5e975efb08479ec072e8d2ab07d162cd426eca332c40`.
+The exact evidence directory, every stage-log hash, complete source inventory,
+dependency runtime and all five nested decomposition pipelines were checked
+again after completion. No full-case run was launched by the gate.
+
+Both the new handoff pipeline and the cold-primal integration passed independent
+and official checking, including 9/9 contingency evaluations and both official
+feasibility flags equal to one. Their final objective was 1732.1459647319407,
+with objective agreement and candidate SHA256
+`1f1c5a600925f14c2bb494aed9a4276ebe29f7a4d1e50009fccb774fe14d1c65`.
+This remains byte-identical to the earlier tiny baseline. Original-MILP bounds
+are still not claimed by the cold-primal construction heuristic.
+
+`evidence/components/reserve_handoff_20260921` retains the full gate, its five
+nested integrations, the focused development evidence, the manifest and an
+archive summary. All 5,168 copied source files were individually SHA256-compared
+with their originals. Originals remain local; nothing was deleted. These are
+component-validation results, not evidence of a successful 23,643-bus run.

@@ -1,0 +1,58 @@
+{
+  "operation": "Completed component evidence copy and SHA256 verification only; no solve or reevaluation",
+  "pass": true,
+  "complete": true,
+  "full_case_runs": 0,
+  "files_deleted": 0,
+  "stages": 80,
+  "python_tests": 162,
+  "julia_assertions": 16591,
+  "manifest_sha256": "c4f01204e245d80cbacd5e975efb08479ec072e8d2ab07d162cd426eca332c40",
+  "evidence_directory": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_j9ystf11",
+  "archives": {
+    "full_gate": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\pilot002_component_gate_j9ystf11",
+      "files": 1484,
+      "bytes": 5213133,
+      "inventory_sha256": "a92281d909a361ef81e9f3548b8bd4775b82aa71e1320ece759b564166b51eac"
+    },
+    "stock_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_yghuh5tn",
+      "files": 741,
+      "bytes": 1032078,
+      "inventory_sha256": "8633935f0e169047001230a8107c0493c102ebf67b15b353f952bb1381477e56"
+    },
+    "setup_guard_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_dxn2x8si",
+      "files": 741,
+      "bytes": 1042919,
+      "inventory_sha256": "1d9dd5ada287f91b3480f8ee295195177e6831a7fd1c23b9c501a401b43aebf1"
+    },
+    "root_memory_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_6tym2n5n",
+      "files": 741,
+      "bytes": 1048013,
+      "inventory_sha256": "04db95c0f03f98e8351489dbd97868963776d2a7fe5af4ddfe5b3554f42841fc"
+    },
+    "root_progress_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_mdask4vu",
+      "files": 742,
+      "bytes": 1061688,
+      "inventory_sha256": "cb5dd1f823f3560cec18b064d58cbf0e36b3454d6d114736771410a65415f125"
+    },
+    "cold_primal_benders": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_loop_components_o6vzaru1",
+      "files": 660,
+      "bytes": 895852,
+      "inventory_sha256": "7a6bac464c0e7894b09775922e891428fd4c58de1a8762d3fade75230c211abc"
+    },
+    "focused_development": {
+      "source": "C:\\Users\\thoma\\Documents\\go3-division2-cpu\\tmp\\reserve_handoff_development_ctk_m6r0",
+      "files": 59,
+      "bytes": 234608,
+      "inventory_sha256": "fb17355560f8f479c6e7f586602a4c2bc2590486e5944e610d87a87a22f4ecce"
+    }
+  },
+  "inventory_encoding": "UTF-8 concatenation in source FullName sort order: slash-separated relative path, NUL, decimal byte count, NUL, lowercase SHA256, LF. Every copied file separately compared to original.",
+  "original_evidence_retained": true
+}
