@@ -86,7 +86,26 @@
     "registered_next_attempt": "campaign_n23643_s003_r12",
     "scope": "One new cold attempt under the active low-RAM goal after a fresh complete source-matched component gate. Preserve r11 scheduling implementation and budgets, FP64, all source constraints, PMIN, 48 periods, quality gate, exhaustive checks, 7200-second global cap, 2400-second final verification reserve and memory/disk floors. Guard reserve LP result extraction with actual status and original-row residual checks. Use only this attempt's joint scheduling awards as an explicitly unverified initial AC candidate; do not reuse previous solutions. Final reserve optimization remains mandatory, with a 30-second per-interval cap and 600-second reserved end-of-work allowance, each clipped by the unchanged global deadline. These are implementation choices within the existing goal, not quoted user selections. This registration promises neither full-case feasibility nor runtime or score success; no prior latch is reused."
   },
+  "ac_numerics_goal_continuation": {
+    "user_direction": "Continue to get the 23k case running with existing RAM; another run may follow bug fixes; reduced precision is not required.",
+    "registered_next_attempt": "campaign_n23643_s003_r13",
+    "implementation_choices": [
+      "Select and verify the effective modern SymbolicMode backend instead of an inapplicable legacy keyword.",
+      "Use adaptive barrier from the first AC phase; retain exact source model, tolerances, FP64 and full validation.",
+      "Allow the first continuous-shunt AC phase up to 600 seconds, clipped to the unchanged global deadline.",
+      "Do not exhaustively evaluate an incomplete-horizon checkpoint; retain it as explicitly unverified and failed.",
+      "One newly registered cold attempt only after the complete source-matched component gate."
+    ],
+    "source_or_quality_gate_relaxation": false,
+    "external_optimized_start": false,
+    "full_case_runs_registered": 1
+  },
   "attempts": {
+    "campaign_n23643_s003_r13": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5"
+    },
     "campaign_n23643_s003_r12": {
       "network": "C3E4N23643D2",
       "scenario": "003",

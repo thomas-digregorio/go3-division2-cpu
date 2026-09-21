@@ -16,6 +16,7 @@ include(joinpath(@__DIR__,"ac_interval_start.jl"))
 include(joinpath(@__DIR__,"ac_ramp_bounds.jl"))
 include(joinpath(@__DIR__,"ac_recovery.jl"))
 include(joinpath(@__DIR__,"ac_primal_guard.jl"))
+include(joinpath(@__DIR__,"ac_numerics.jl"))
 include(joinpath(@__DIR__,"reserve_ac.jl"))
 include(joinpath(@__DIR__,"reserve_storage.jl"))
 include(joinpath(@__DIR__,"ac_correction.jl"))
@@ -188,6 +189,10 @@ function run_worker(case_path, output, config, work_deadline)
     ac_guard=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
         error("AC primal guard requires the reserve-aware adapter and local residual checks")
     ac_correction=get(config,"ac_correction_policy","off")
+    ac_numerics=get(config,"ac_numerics_policy","legacy_v1")
+    ac_numerics in ("legacy_v1",AC_NUMERICS_POLICY) || error("Unknown AC numerics policy")
+    ac_numerics=="legacy_v1" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" &&
+        ac_fail_fast && ac_correction=="off") || error("Explicit AC numerics requires audited reserve-aware AC")
     (ac_correction=="off" || ac_correction in AC_CORRECTION_POLICIES) || error("Unknown network correction policy")
     ac_correction=="off" || (ac_reserve_policy=="source_joint_reserves_in_ac_v1" && ac_fail_fast) ||
         error("Network corrections require the full reserve-aware AC model and residual screen")
@@ -346,7 +351,9 @@ function run_worker(case_path, output, config, work_deadline)
             "honor_original_bounds"=>"yes", "bound_relax_factor"=>0.0,
             "tol"=>1e-9,"constr_viol_tol"=>1e-9,"acceptable_tol"=>1e-8,
             "acceptable_constr_viol_tol"=>1e-9,"max_iter"=>500,
-            "max_wall_time"=>rounded_ac_time_limit(config["ac_seconds_per_solve"],refinement_deadline),
+            "max_wall_time"=>rounded_ac_time_limit(i==first(input.periods) ?
+                get(config,"ac_first_interval_seconds_per_solve",config["ac_seconds_per_solve"]) :
+                config["ac_seconds_per_solve"],refinement_deadline),
             "print_level"=>get(config,"ac_print_level",3))
         ac_start = time()
         if ac_correction in AC_CORRECTION_POLICIES
@@ -379,7 +386,7 @@ function run_worker(case_path, output, config, work_deadline)
                 numerical_recovery=ac_recovery,
                 recovery_seconds=get(config,"ac_recovery_seconds_per_solve",360.0),
                 recovery_max_iter=get(config,"ac_recovery_max_iterations",1000),
-                primal_guard=ac_guard)
+                primal_guard=ac_guard,numerics_policy=ac_numerics)
         else
             ac_model, result = GO3.compute_optimal_power_flow_at_interval(working,i;
                 on_status=current_on,real_power=current_p,optimizer=ipopt,

@@ -57,7 +57,10 @@ def skip_intermediate_verification(config):
 
 
 def final_verification_required(config, progress, returncode, statistics, hours):
-    if not config.get("pilot_id", "").startswith("speedup_"):
+    policy=config.get("final_verification_policy","legacy_v1")
+    if policy not in ("legacy_v1","complete_pipeline_only_v1"):
+        raise ValueError("Unknown final verification policy")
+    if policy=="legacy_v1" and not config.get("pilot_id", "").startswith("speedup_"):
         return True
     from .campaign import pipeline_coverage
     return pipeline_coverage(progress, returncode, statistics, hours)["complete"]

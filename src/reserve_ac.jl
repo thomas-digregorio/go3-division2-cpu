@@ -150,7 +150,7 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         optimizer,set_silent=false,shunt_primal_start="off",audit_phases=false,
         rounded_seconds=nothing,work_deadline=Inf,rounded_max_iter=500,interval_seed=nothing,
         numerical_recovery="off",recovery_seconds=360.0,recovery_max_iter=1000,
-        primal_guard="off")
+        primal_guard="off",numerics_policy="legacy_v1")
     shunt_primal_start in ("off","within_interval_complete_v1","within_interval_primal_dual_v1") ||
         error("Unknown AC primal start policy")
     shunt_primal_start=="within_interval_primal_dual_v1" && !audit_phases &&
@@ -166,8 +166,13 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         recovery_max_iter isa Integer && !(recovery_max_iter isa Bool) &&
             recovery_max_iter>0 || error("Invalid AC recovery iteration limit")
     end
+    build_started=time()
     model,reserve=build_reserve_aware_ac(working,source,i;on_status,real_power,curves)
+    model.ext[:reserve_ac]["model_build_seconds"]=time()-build_started
+    numerical_calls=Any[]
+    model.ext[:reserve_ac]["numerical_calls"]=numerical_calls
     set_optimizer(model,optimizer)
+    configure_ac_numerics!(model,numerics_policy)
     set_silent && JuMP.set_silent(model)
     if interval_seed!==nothing
         record=apply_ac_interval_start!(model,source,i,interval_seed,real_power)
@@ -180,7 +185,8 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
     # Use the configured Ipopt accuracy/iteration/wall limits. Do not use the
     # upstream early callback, which may stop at a 1e-3 primal residual.
     phase_started=time()
-    optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
+    push!(numerical_calls,optimize_audited_ac!(model;policy=numerics_policy,
+        interval=i,phase="continuous_shunts",deadline=work_deadline))
     has_values(model) || error("Reserve-aware AC solve returned no primal point")
     point=(audit_phases || shunt_primal_start!="off") ? capture_complete_ac_primal(model) : nothing
     phases=Any[]
@@ -188,8 +194,11 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
         audit_phases || return
         phase=merge(model_stats(model),Dict("phase"=>name,
             "wall_seconds"=>time()-phase_started,"complete_finite_point"=>true,
-            "wall_limit_seconds"=>get_optimizer_attribute(model,"max_wall_time"),
-            "max_primal_residual"=>ac_primal_residual(model,point)))
+            "wall_limit_seconds"=>get_optimizer_attribute(model,"max_wall_time")))
+        audit_started=time()
+        phase["max_primal_residual"]=ac_primal_residual(model,point)
+        phase["residual_audit_seconds"]=time()-audit_started
+        phase["wall_through_audit_seconds"]=time()-phase_started
         push!(phases,phase)
         println("GO3_AC_PHASE ",JSON.json(merge(Dict("interval"=>i),phase)));flush(stdout)
     end
@@ -236,7 +245,8 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
     guarded_phases=Any[]
     guard=install_ac_primal_guard!(model;policy=primal_guard,phase="rounded_shunts")
     phase_started=time()
-    optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
+    push!(numerical_calls,optimize_audited_ac!(model;policy=numerics_policy,
+        interval=i,phase="rounded_shunts",deadline=work_deadline))
     has_values(model) || error("Rounded-shunt reserve-aware AC solve returned no primal point")
     guard_record=finish_ac_primal_guard!(model,guard)
     push!(guarded_phases,guard_record)
@@ -251,6 +261,7 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
             point=capture_complete_ac_primal(model)
             recovery_record=prepare_ac_recovery!(model,optimizer,point;
                 seconds=recovery_seconds,deadline=work_deadline,max_iter=recovery_max_iter)
+            configure_ac_numerics!(model,numerics_policy)
             set_silent && JuMP.set_silent(model)
             # Recompute immediately before optimize: mapping/audit time counts.
             allowance=rounded_ac_time_limit(recovery_seconds,work_deadline)
@@ -259,7 +270,8 @@ function compute_reserve_aware_ac(working,source,i;on_status,real_power,curves,
             println("GO3_AC_NUMERICAL_RECOVERY ",JSON.json(merge(Dict("interval"=>i),recovery_record)));flush(stdout)
             guard=install_ac_primal_guard!(model;policy=primal_guard,phase="numerical_recovery")
             phase_started=time()
-            optimize!(model,_differentiation_backend=GO3.MathOptSymbolicAD.DefaultBackend())
+            push!(numerical_calls,optimize_audited_ac!(model;policy=numerics_policy,
+                interval=i,phase="numerical_recovery",deadline=work_deadline))
             has_values(model) || error("AC numerical recovery returned no primal point")
             guard_record=finish_ac_primal_guard!(model,guard)
             push!(guarded_phases,guard_record)

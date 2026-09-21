@@ -60,6 +60,28 @@ def bounded_reserve_pipeline_audit(evidence, worker="bounded_reserve_worker"):
     return audits
 
 
+def symbolic_ac_pipeline_audit(evidence):
+    verified=dc_pipeline_audit(evidence,"symbolic_ac_worker","symbolic_ac_verification")
+    stats=json.loads((evidence/"symbolic_ac_worker/solver_statistics.json").read_text())
+    for interval in stats["ac_intervals"]:
+        info=interval["reserve_ac"]
+        calls=info["numerical_calls"]
+        if (len(calls)<2 or info["model_build_seconds"]<0
+                or any(c["policy"]!="symbolic_adaptive_v1" or c["mu_strategy"]!="adaptive"
+                    or "SymbolicMode" not in c["effective_native_backend"]
+                    or "SymbolicAD.Evaluator" not in c["effective_native_evaluator"]
+                    or not c["native_backend_confirmed"] or c["floating_point_bits"]!=64
+                    or c["model_structure_changed"] or c["source_bounds_changed"] for c in calls)
+                or any(p["residual_audit_seconds"]<0 for p in info["phases"])
+                or info["phases"][-1]["max_primal_residual"]>1e-8):
+            raise RuntimeError("Tiny AC numerical policy was not applied or residuals failed")
+    reserves=stats["final_reserve_storage"]
+    if (reserves["intervals_completed"]!=3 or not reserves["all_models_released"]
+            or any(not r["accepted"] for r in reserves["intervals"])):
+        raise RuntimeError("Symbolic AC pipeline omitted final source reserve optimization")
+    return {"verification":verified,"statistics":stats}
+
+
 def main():
     tested_sources=source_hashes()
     env=runtime_environment()
@@ -130,6 +152,8 @@ def main():
         "scripts/test_ac_primal_start.jl"])
     stage("ac_interval_start_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_interval_start.jl"])
+    stage("ac_numerics_tests",[str(JULIA),"--startup-file=no","--project=.",
+        "scripts/test_ac_numerics.jl"],timeout=180)
     stage("ac_ramp_bound_tests",[str(JULIA),"--startup-file=no","--project=.",
         "scripts/test_ac_ramp_bounds.jl"])
     stage("ac_primal_guard_tests",[str(JULIA),"--startup-file=no","--project=.",
@@ -267,6 +291,14 @@ def main():
             or final_reserves["intervals_completed"]!=3 or not final_reserves["all_models_released"]
             or any(not r["accepted"] or r["maximum_model_residual"]>1e-8 for r in final_reserves["intervals"])):
         raise RuntimeError("Tiny reserve handoff omitted final optimization or claimed initial verification")
+    stage("tiny_symbolic_ac_worker",[str(JULIA),"--startup-file=no","--project=.","src/pilot_worker.jl",
+        "tmp/official_tiny/dc_problem.json",str(evidence/"symbolic_ac_worker"),
+        "config/tiny_ac_symbolic_adaptive.json",str(time.time()+180)],timeout=185)
+    stage("tiny_symbolic_ac_check",[sys.executable,"scripts/verify_candidate.py",
+        "--input","tmp/official_tiny/dc_problem.json",
+        "--solution",str(evidence/"symbolic_ac_worker/candidate_final.json"),
+        "--output",str(evidence/"symbolic_ac_verification"),"--seconds","60"])
+    symbolic_ac=symbolic_ac_pipeline_audit(evidence)
     stage("tiny_batched_official_check",[sys.executable,"scripts/verify_candidate.py",
         "--input","tmp/official_tiny/dc_problem.json",
         "--solution",str(evidence/"bounded_reserve_worker/candidate_final.json"),
@@ -735,7 +767,8 @@ def main():
                     continuation_certificate,original_guard_certificate,guarded_recovery_certificate,
                     native_scheduling_certificate,exact_ramp_certificate,dc_audit["certificate"],
                     bounded_reserve_dc["certificate"],disk_dc["certificate"],isolated_dc["certificate"],
-                    compacted_dc["certificate"],handoff_dc["certificate"]):
+                    compacted_dc["certificate"],handoff_dc["certificate"],
+                    symbolic_ac["verification"]["certificate"]):
         if (not checked["pass"] or not checked["complete"] or checked["official_phys_feas"]!=1 or
                 checked["contingencies_completed"]!=9 or checked["contingencies_required"]!=9):
             raise RuntimeError("A complete tiny pipeline failed physical/exhaustive verification")
@@ -745,7 +778,7 @@ def main():
                  "continuous_correction_worker","hot_repair_worker","continuation_worker","original_guard_worker",
                  "guarded_recovery_worker","native_scheduling_worker","exact_ramp_worker","dc_worker",
                  "bounded_reserve_worker","disk_scheduling_worker","isolated_scheduling_worker","compacted_scheduling_worker",
-                 "reserve_handoff_worker"):
+                 "reserve_handoff_worker","symbolic_ac_worker"):
         from go3cpu.controller import latest_snapshot
         stats=json.loads((evidence/name/"solver_statistics.json").read_text())
         progress=latest_snapshot(evidence/name/"progress")
@@ -774,6 +807,7 @@ def main():
     # The new decomposition tests use descriptive (non-GO3-prefixed) names.
     # Count their summaries explicitly rather than silently omitting them.
     for name,expected_sets in (("reserve_benders_certificate_tests",5),
+                               ("ac_numerics_tests",2),
                                ("reserve_benders_partition_tests",3),
                                ("reserve_benders_runtime_tests",2),
                                ("cold_benders_primal_tests",2),
@@ -810,6 +844,7 @@ def main():
         "tiny_bounded_reserve_pipeline":bounded_reserve_dc,
         "tiny_reserve_handoff_pipeline":handoff_dc,
         "tiny_reserve_handoff_statistics":handoff_stats,
+        "tiny_symbolic_ac_pipeline":symbolic_ac,
         "tiny_batched_official_pipeline":batched_dc,
         "tiny_trimmed_scheduling_pipeline":trimmed_dc,
         "tiny_trimmed_scheduling_storage":trimmed_storage,

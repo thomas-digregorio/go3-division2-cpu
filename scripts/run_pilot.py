@@ -60,6 +60,8 @@ def runtime_identity():
 
 def preflight(config_path):
     config=json.loads(local_path(config_path).read_text())
+    from go3cpu.ac_numerics import validate_ac_numerics
+    validate_ac_numerics(config)
     if (config.get("pilot_ready") is not True or config["maximum_full_runs"]!=1 or
         not registered_budget(config) or not config["cold_start"] or config["allow_pop_solution"]):
         raise RuntimeError("Pilot registration is not ready or scope changed")
