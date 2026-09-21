@@ -78,7 +78,16 @@
     "registered_next_attempt": "campaign_n23643_s003_r10",
     "scope": "One cold attempt under the active low-RAM goal after complete source-matched component tests. Construct a within-attempt feasible scheduling commitment by maximizing source online intervals, then restore source economics in a fresh presolved fixed-integer LP. Retain every source row and reserve subproblem, exact PMIN, FP64, tolerances, 48 periods, all contingency checks, score target, 7200-second deadline and safety floors. Construction and restricted LP bounds are never original MILP certificates. A saved constructed master point still owes all reserve and original-scheduling audits before AC. Preserve prior algorithms and immutable run latches. These are implementation choices, not quoted user selections."
   },
+  "cold_primal_budget_goal_continuation": {
+    "registered_next_attempt": "campaign_n23643_s003_r11",
+    "scope": "One newly registered cold attempt under the active low-RAM goal after a fresh complete source-matched component gate. Preserve r10's solver implementation, entire original model, FP64, source PMIN, tolerances, all 48 hours, exhaustive contingency verification, score target, 7200-second global cap and host memory/disk floors. Increase only construction native-call budget from 300 to 700 seconds, master allowance from 1100 to 1500 seconds and scheduling-stage allowance from 1500 to 2000 seconds. Retain the 700-second cost-LP allowance, 300-second reserve-recourse reserve, 30-second scheduling finalization reserve and 2400-second final verification reserve. Every internal limit remains clipped by the original absolute global work deadline. No previous model, optimized start or consumed latch is reused. These budget choices are implementation decisions within the goal, not quoted user settings; no successful result is promised."
+  },
   "attempts": {
+    "campaign_n23643_s003_r11": {
+      "network": "C3E4N23643D2",
+      "scenario": "003",
+      "input_sha256": "9bc54c983ac79a16a5f40f1d27e17d4750c84ed8659e40ad64a68d171943c5e5"
+    },
     "campaign_n23643_s003_r10": {
       "network": "C3E4N23643D2",
       "scenario": "003",

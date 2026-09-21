@@ -16,6 +16,31 @@ from go3cpu.controller import atomic_json, sha256
 
 
 class ColdBendersPrimalTests(unittest.TestCase):
+    def test_r11_changes_only_constructor_budget_and_enclosing_allowances(self):
+        previous=json.loads((ROOT/"config/campaign_n23643_s003_r10.json").read_text())
+        current=json.loads((ROOT/"config/campaign_n23643_s003_r11.json").read_text())
+        changed={k for k in previous.keys() | current.keys() if previous.get(k)!=current.get(k)}
+        self.assertEqual(changed,{"pilot_id","scheduling_seconds",
+            "scheduling_benders_master_round_seconds","scheduling_benders_construction_seconds"})
+        validate_configuration(current)
+        self.assertEqual(current["scheduling_benders_construction_seconds"],700)
+        self.assertEqual(current["scheduling_benders_fixed_cost_seconds"],700)
+        self.assertEqual(current["scheduling_benders_master_round_seconds"],1500)
+        self.assertEqual(current["scheduling_seconds"],2000)
+        self.assertEqual(current["total_seconds"],7200)
+        self.assertEqual(current["evaluation_reserve_seconds"],2400)
+        self.assertEqual(current["minimum_available_memory_gib"],2)
+        self.assertEqual(current["minimum_free_gib"],30)
+        self.assertGreater(current["scheduling_seconds"],sum(current[k] for k in (
+            "scheduling_benders_master_round_seconds","scheduling_benders_recourse_reserve_seconds",
+            "scheduling_benders_finalize_seconds")))
+        self.assertEqual(current["maximum_full_runs"],1)
+        auth=json.loads((ROOT/"manifests/authorization_campaign.json").read_text())
+        self.assertEqual(auth["cold_primal_budget_goal_continuation"]["registered_next_attempt"],
+                         current["pilot_id"])
+        self.assertEqual(auth["attempts"][current["pilot_id"]],
+                         {k:current[k] for k in ("network","scenario","input_sha256")})
+
     def test_registered_change_preserves_every_existing_contract(self):
         previous=json.loads((ROOT/"config/campaign_n23643_s003_r09.json").read_text())
         current=json.loads((ROOT/"config/campaign_n23643_s003_r10.json").read_text())

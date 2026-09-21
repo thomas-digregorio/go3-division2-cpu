@@ -3,7 +3,8 @@
 Policy: `cold_online_then_fixed_cost_v1`. This is an opt-in primal heuristic
 inside the existing source-reserve decomposition, not a new physical model or
 a global economic certificate. The ordinary economic MILP route remains the
-default when the policy is absent. The proposed full-case registration is r10.
+default when the policy is absent. Initial full-case registration was r10; the
+separately registered r11 changes only its time allocation as described below.
 
 ## Motivation
 
@@ -52,7 +53,7 @@ penalty, constraint or PMIN number in the source model is rewritten.
 
 ## Deadline recovery
 
-The constructor has a 300-second native-call cap and the economic LP a
+In r10 the constructor had a 300-second native-call cap and the economic LP a
 700-second cap, within the existing 1,100-second per-master allowance and
 1,500-second scheduling-stage budget. Each call retains the external wall-clock
 watchdog and RAM floor. The global cap remains 7,200 seconds.
@@ -63,6 +64,29 @@ process tree has stopped. This point is **not** an already verified GO3 result:
 reserve recourse, full original scheduling recomposition, AC and every final
 check remain mandatory. The interrupted call and non-normal exit are recorded
 explicitly, not hidden as a successful solver return.
+
+### r11 budget-only follow-up
+
+r10 ended at the constructor's 300-second sub-limit, not the two-hour global
+limit or RAM floor. The first root LP started at 208.846 seconds, leaving only
+about 91 seconds of the constructor allowance. No feasible point was saved;
+see `CAMPAIGN_N23643_R10.md` for the observed timings and exact evidence.
+
+r11 retains the same implementation and every source-model and acceptance
+contract. Its only configuration differences are the new single-use identity,
+700-second construction cap, 1,500-second master allowance and 2,000-second
+scheduling-stage allowance. The economic LP retains 700 seconds. Reserve
+recourse and scheduling finalization retain their 300/30-second reserves.
+This fits inside the scheduling allowance with 170 seconds beyond the master
+allowance for loading, auditing and other overhead. That arithmetic is an
+allocation, not a runtime prediction.
+
+The 7,200-second global deadline and 2,400-second final verification reserve
+remain unchanged. Increasing scheduling time can leave less time for AC;
+the original absolute work deadline clips every stage. No phase can borrow
+the final verification reserve, weaken a check, or claim success without the
+entire source case passing. More construction time is an evidence-led
+experiment, not proof that the first LP or the whole case will finish.
 
 ## Validation requirements
 
