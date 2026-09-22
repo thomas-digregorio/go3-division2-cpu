@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "experiment_id": "f2713_6717_r3_20260922",
+  "algorithm_commit": "2713e5df972f8cae7b77d8963419eba4e1f28424",
+  "explicit_user_authorization": true,
+  "user_request": "Rerun the 6717 bus network on the same algorithm and post scenario, score, time, and pass/fail.",
+  "previous_attempt": "runs/C3E4N06717D2_s002_campaign_r2_06717_20260921T225431Z",
+  "previous_attempt_status": "USER_REQUESTED_STOP",
+  "preserve_previous_attempt": true,
+  "pilot_id": "campaign_r3_06717",
+  "network": "C3E4N06717D2",
+  "scenario": "002",
+  "input_sha256": "bccfff47a3f6de9d28117d8c76aabf47716afb92a16982067764dcc6f34f769e",
+  "config_path": "experiments/frozen_2713e5d/configs/C3E4N06717D2_s002_r3.json",
+  "cold_start_required": true,
+  "maximum_full_runs": 1,
+  "total_seconds": 7200,
+  "automatic_retry": false
+}

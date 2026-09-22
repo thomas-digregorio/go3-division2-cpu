@@ -1,0 +1,12 @@
+{
+  "pass": true,
+  "tests": 8,
+  "scope": "New 6717 authorization and identical configuration only; no full-case solve",
+  "checked_at_utc": "2026-09-22T14:32:27.214237+00:00",
+  "source_sha256": {
+    "rerun_6717.py": "0ff28b240d9e88c8e17d3376ad16de32dfeef694679880037337acc89d3a23a1",
+    "test_rerun_6717.py": "91c7e80fe946eea8adb2f9c849edf66a63fea36d557e08ea7713cf57487ee8ca",
+    "rerun_6717_authorization.json": "7580f12ca37f53c7a07ec59b7b023ea534ba29edf476fdb803ff0140e9bf3582",
+    "configs/C3E4N06717D2_s002_r3.json": "f0a9b30319e95cb7e792b55c4f776f2a5e6d603c7b94f2d3ecd2676074566518"
+  }
+}
